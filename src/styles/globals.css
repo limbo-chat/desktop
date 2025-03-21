@@ -1,0 +1,7 @@
+body {
+	background-color: var(--theme-background-primary);
+	color: var(--theme-text-color-default);
+	font-size: var(--theme-font-size-md);
+	font-family: var(--theme-font-default);
+	font-weight: var(--theme-font-weight-regular);
+}

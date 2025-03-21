@@ -1,0 +1,9 @@
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@theme {
+	--radius-sm: var(--theme-rounding-sm);
+	--radius-md: var(--theme-rounding-md);
+	--radius-lg: var(--theme-rounding-lg);
+	--radius-xl: var(--theme-rounding-xl);
+}
