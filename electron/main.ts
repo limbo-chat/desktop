@@ -1,28 +1,14 @@
 import { app, BrowserWindow } from "electron";
-import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { createIPCHandler } from "trpc-electron/main";
 import { mainRouter } from "./router";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-// not sure why the boilerplate is setting values on process.env, but it is.
-process.env.APP_ROOT = path.join(__dirname, "..");
-
-// this are exported from the boilerplate, leaving this way fr now
-export const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
-export const MAIN_DIST = path.join(process.env.APP_ROOT, "dist-electron");
-export const RENDERER_DIST = path.join(process.env.APP_ROOT, "dist");
-
-process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
-	? path.join(process.env.APP_ROOT, "public")
-	: RENDERER_DIST;
+import { RENDERER_DIST, VITE_DEV_SERVER_URL, VITE_PUBLIC } from "./constants";
 
 let win: BrowserWindow | null;
 
 function createWindow() {
 	win = new BrowserWindow({
-		icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
+		icon: path.join(VITE_PUBLIC, "electron-vite.svg"),
 		webPreferences: {
 			preload: path.join(__dirname, "preload.mjs"),
 		},
@@ -33,7 +19,6 @@ function createWindow() {
 	if (VITE_DEV_SERVER_URL) {
 		win.loadURL(VITE_DEV_SERVER_URL);
 	} else {
-		// win.loadFile('dist/index.html')
 		win.loadFile(path.join(RENDERER_DIST, "index.html"));
 	}
 }
