@@ -1,7 +1,12 @@
+::selection {
+	background-color: var(--theme-color-text-selection);
+}
+
 body {
-	background-color: var(--theme-background-primary);
-	color: var(--theme-text-color-default);
+	background-color: var(--theme-color-background-primary);
+	color: var(--theme-color-text-default);
 	font-size: var(--theme-font-size-md);
 	font-family: var(--theme-font-default);
 	font-weight: var(--theme-font-weight-regular);
+	caret-color: var(--theme-color-caret);
 }

@@ -1,20 +1,25 @@
 {
-	"name": "llm-thing",
+	"name": "llmbo",
 	"private": true,
-	"version": "0.0.0",
 	"type": "module",
+	"version": "0.0.0",
 	"main": "dist-electron/main.js",
 	"scripts": {
 		"dev": "vite",
-		"build": "tsc && vite build && electron-builder",
-		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+		"build": "tsc --noEmit && vite build && electron-builder",
 		"preview": "vite preview"
 	},
 	"dependencies": {
 		"@tanstack/react-query": "^5.69.0",
 		"@tanstack/react-router": "^1.114.27",
+		"@trpc/client": "^11.0.0",
+		"@trpc/server": "^11.0.0",
+		"@trpc/tanstack-react-query": "^11.0.0",
 		"react": "^18.3.1",
-		"react-dom": "^18.3.1"
+		"react-dom": "^18.3.1",
+		"react-hook-form": "^7.54.2",
+		"superjson": "^2.2.2",
+		"trpc-electron": "^0.1.2"
 	},
 	"devDependencies": {
 		"@tailwindcss/vite": "^4.0.15",

@@ -1,9 +1,12 @@
 import { app, BrowserWindow } from "electron";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { createIPCHandler } from "trpc-electron/main";
+import { mainRouter } from "./router";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+// not sure why the boilerplate is setting values on process.env, but it is.
 process.env.APP_ROOT = path.join(__dirname, "..");
 
 // this are exported from the boilerplate, leaving this way fr now
@@ -25,10 +28,7 @@ function createWindow() {
 		},
 	});
 
-	// Test active push message to Renderer-process.
-	win.webContents.on("did-finish-load", () => {
-		win?.webContents.send("main-process-message", new Date().toLocaleString());
-	});
+	createIPCHandler({ router: mainRouter, windows: [win] });
 
 	if (VITE_DEV_SERVER_URL) {
 		win.loadURL(VITE_DEV_SERVER_URL);

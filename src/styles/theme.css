@@ -1,6 +1,3 @@
-/* 
-	these css variables are inspired by Obsidian 
-*/
 :root {
 	/* spacing */
 	--theme-spacing-xxs: 2px;
@@ -19,7 +16,7 @@
 
 	/* typography */
 	--theme-font-default: "Inter", sans-serif;
-	--theme-font-mono: "Inter", monospace;
+	--theme-font-mono: "Fira Code", monospace;
 
 	--theme-font-size-xs: 12px;
 	--theme-font-size-sm: 14px;
@@ -34,8 +31,8 @@
 	--theme-font-weight-bold: 700;
 
 	/* text colors */
-	--theme-text-color-default: #ffffff;
-	--theme-text-color-muted: #a0a0a0;
+	--theme-color-text-default: #ffffff;
+	--theme-color-text-muted: #a0a0a0;
 
 	/* single tokens */
 	--theme-border-width: 1px;
@@ -44,6 +41,12 @@
 	--theme-color-white: #ffffff;
 	--theme-color-black: #000000;
 
-	--theme-background-primary: #151515;
-	--theme-background-primary-alt: #242424;
+	--theme-color-accent: #007aff;
+	--theme-color-accent-light: #1a87ff;
+
+	--theme-color-background-primary: #151515;
+	--theme-color-background-primary-alt: #242424;
+
+	--theme-color-text-selection: #007aff;
+	--theme-color-caret: #007aff;
 }
