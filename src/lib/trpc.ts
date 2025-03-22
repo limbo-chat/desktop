@@ -3,6 +3,6 @@ import type { MainRouter } from "../../electron/router";
 
 const mainRouterContext = createTRPCContext<MainRouter>();
 
-export const MainProvider = mainRouterContext.TRPCProvider;
-export const useMain = mainRouterContext.useTRPC;
-export const useMainClient = mainRouterContext.useTRPCClient;
+export const MainRouterProvider = mainRouterContext.TRPCProvider;
+export const useMainRouter = mainRouterContext.useTRPC;
+export const useMainRouterClient = mainRouterContext.useTRPCClient;

@@ -1,6 +1,6 @@
 import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
-import { MainProvider } from "../lib/trpc";
+import { MainRouterProvider } from "../lib/trpc";
 import { useMemo } from "react";
 import { ipcLink } from "trpc-electron/renderer";
 import { createTRPCClient } from "@trpc/client";
@@ -34,9 +34,9 @@ function RootLayout() {
 
 	return (
 		<QueryClientProvider client={routerContext.queryClient}>
-			<MainProvider trpcClient={trpcClient} queryClient={routerContext.queryClient}>
+			<MainRouterProvider trpcClient={trpcClient} queryClient={routerContext.queryClient}>
 				<Outlet />
-			</MainProvider>
+			</MainRouterProvider>
 		</QueryClientProvider>
 	);
 }
