@@ -1,5 +1,3 @@
-import "./sidebar.scss";
-
 export const Sidebar = () => {
-	return <div className="sidebar"></div>;
+	return <div className="bg-surface w-[250px] p-sm border-r border-border"></div>;
 };

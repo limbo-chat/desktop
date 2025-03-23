@@ -1,9 +1,8 @@
 import type { PropsWithChildren } from "react";
 import { Markdown } from "../../markdown/components/markdown";
 import type { ChatMessageType } from "../types";
-import clsx from "clsx";
 import { Text } from "../../../components/text";
-import "./chat-message.scss";
+import clsx from "clsx";
 
 export interface ChatMessageProps {
 	message: ChatMessageType;
@@ -24,7 +23,13 @@ const ChatMessageContainer = ({
 
 const UserChatMessage = ({ message, className }: ChatMessageProps) => {
 	return (
-		<ChatMessageContainer message={message} className={clsx("chat-message--user", className)}>
+		<ChatMessageContainer
+			message={message}
+			className={clsx(
+				"self-end p-md rounded-md bg-surface border border-border max-w-[80%]",
+				className
+			)}
+		>
 			<Text>{message.content}</Text>
 		</ChatMessageContainer>
 	);
@@ -32,10 +37,7 @@ const UserChatMessage = ({ message, className }: ChatMessageProps) => {
 
 const AssistantChatMessage = ({ message, className }: ChatMessageProps) => {
 	return (
-		<ChatMessageContainer
-			message={message}
-			className={clsx("chat-message--assistant", className)}
-		>
+		<ChatMessageContainer message={message} className={className}>
 			<Markdown content={message.content} />
 		</ChatMessageContainer>
 	);

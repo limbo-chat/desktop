@@ -1,8 +1,51 @@
 @layer base, utilities;
 
-@config "../../tailwind.config.js";
 @import "tailwindcss/preflight.css" layer(base);
 @import "tailwindcss/utilities.css" layer(utilities);
 
 @theme {
+	--spacing: var(--theme-spacing-unit);
+	--spacing-xs: var(--theme-spacing-xs);
+	--spacing-sm: var(--theme-spacing-sm);
+	--spacing-md: var(--theme-spacing-md);
+	--spacing-lg: var(--theme-spacing-lg);
+	--spacing-xl: var(--theme-spacing-xl);
+
+	--radius-xs: var(--theme-rounding-xs);
+	--radius-sm: var(--theme-rounding-sm);
+	--radius-md: var(--theme-rounding-md);
+	--radius-lg: var(--theme-rounding-lg);
+	--radius-xl: var(--theme-rounding-xl);
+
+	--font-default: var(--theme-font-default);
+	--font-mono: var(--theme-font-mono);
+
+	--font-weight-regular: var(--theme-font-weight-regular);
+	--font-weight-medium: var(--theme-font-weight-medium);
+	--font-weight-semibold: var(--theme-font-weight-semibold);
+	--font-weight-bold: var(--theme-font-weight-bold);
+
+	--text-xs: var(--theme-font-size-xs);
+	--text-sm: var(--theme-font-size-sm);
+	--text-md: var(--theme-font-size-md);
+	--text-lg: var(--theme-font-size-lg);
+	--text-xl: var(--theme-font-size-xl);
+
+	--color-black: var(--theme-color-black);
+	--color-white: var(--theme-color-white);
+
+	--color-primary: var(--theme-color-primary);
+	--color-primary-hover: var(--theme-color-primary-hover);
+
+	--color-secondary: #363636;
+	--color-secondary-hover: #3f3f3f;
+
+	--color-background: var(--theme-color-background);
+	--color-surface: var(--theme-color-surface);
+	--color-surface-alt: var(--theme-color-surface-alt);
+
+	--color-border: var(--theme-color-border);
+
+	--color-t-default: var(--theme-color-text-default);
+	--color-t-muted: var(--theme-color-text-muted);
 }

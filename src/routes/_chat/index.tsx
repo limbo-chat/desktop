@@ -8,7 +8,7 @@ import { Sidebar } from "./-components/sidebar";
 import { useChatMessages, useLLMChunkSubscriber } from "../../features/chat/hooks";
 import { useMainRouter } from "../../lib/trpc";
 import { useChatStore } from "../../features/chat/stores";
-import "./styles.scss";
+import { TextInput } from "../../components/text-input";
 
 export const Route = createFileRoute("/_chat/")({
 	component: ChatPage,
@@ -62,17 +62,16 @@ function ChatPage() {
 	useLLMChunkSubscriber();
 
 	return (
-		<div className="app-layout">
+		<div className="flex min-h-svh">
 			<Sidebar />
-			<div className="chat-content">
-				<div className="chat-log-container">
-					<ChatLog className="main-chat-log" messages={messages} />
+			<div className="h-[100svh] flex flex-col flex-1">
+				<div className="overflow-y-auto flex-1">
+					<ChatLog className="mx-auto w-full max-w-[75ch]" messages={messages} />
 				</div>
-
-				<div className="chat-controls">
-					<form className="chat-controls__input-row" onSubmit={onSubmit}>
+				<div className="mx-auto max-h-[400px] w-full max-w-[80ch] p-md border-t border-l border-r border-border bg-surface-alt rounded-t-md">
+					<form className="flex" onSubmit={onSubmit}>
 						<textarea
-							className="chat-controls__input"
+							className="flex-1 resize-none outline-none overflow-y-auto"
 							placeholder="Type your message here..."
 							onKeyDown={(e) => {
 								if (e.key === "Enter" && !e.shiftKey) {
