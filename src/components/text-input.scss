@@ -1,0 +1,19 @@
+.text-input {
+	height: 40px;
+	color: var(--theme-color-text-default);
+	font-size: var(--theme-font-size-sm);
+	background-color: var(--theme-color-secondary);
+	border-radius: var(--theme-rounding-sm);
+	padding-inline: var(--theme-spacing-sm);
+	border-width: var(--theme-border-width);
+	border-color: var(--theme-color-border);
+
+	&::placeholder {
+		color: var(--theme-color-text-muted);
+	}
+
+	&:focus {
+		outline: none;
+		border-color: var(--theme-color-primary);
+	}
+}

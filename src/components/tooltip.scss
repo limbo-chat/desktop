@@ -1,0 +1,16 @@
+.tooltip {
+	--animation-duration: 0.3s;
+
+	background-color: var(--theme-color-surface-alt);
+	color: var(--theme-color-white);
+	font-size: var(--theme-font-size-xs);
+	padding: var(--theme-spacing-sm);
+	border-radius: var(--theme-rounding-md);
+
+	// &[data-state="open"] {
+	// 	animation: fadeInUp var(--animation-duration) ease-in-out;
+	// }
+
+	// &[data-state="closed"] {
+	// }
+}

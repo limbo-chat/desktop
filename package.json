@@ -6,17 +6,23 @@
 	"main": "dist-electron/main.js",
 	"scripts": {
 		"dev": "vite",
-		"build": "tsc --noEmit && vite build && electron-builder",
+		"build-vite": "vite build",
+		"build": "vite build && electron-builder",
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"@ark-ui/react": "^5.2.0",
 		"@tanstack/react-query": "^5.69.0",
 		"@tanstack/react-router": "^1.114.27",
 		"@trpc/client": "^11.0.0",
 		"@trpc/server": "^11.0.0",
 		"@trpc/tanstack-react-query": "^11.0.0",
-		"react": "^18.3.1",
-		"react-dom": "^18.3.1",
+		"class-variance-authority": "^0.7.1",
+		"clsx": "^2.1.1",
+		"lucide-react": "^0.483.0",
+		"markdown-to-jsx": "^7.7.4",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
 		"react-hook-form": "^7.54.2",
 		"superjson": "^2.2.2",
 		"trpc-electron": "^0.1.2"
@@ -24,16 +30,17 @@
 	"devDependencies": {
 		"@tailwindcss/vite": "^4.0.15",
 		"@tanstack/router-plugin": "^1.114.27",
-		"@types/react": "^18.3.19",
-		"@types/react-dom": "^18.3.5",
+		"@types/react": "^19.0.12",
+		"@types/react-dom": "^19.0.4",
 		"@vitejs/plugin-react": "^4.3.4",
-		"electron": "^30.5.1",
-		"electron-builder": "^24.13.3",
+		"electron": "^35.0.3",
+		"electron-builder": "^25.1.8",
 		"prettier": "^3.5.3",
+		"sass-embedded": "^1.86.0",
 		"tailwindcss": "^4.0.15",
 		"typescript": "^5.8.2",
-		"vite": "^5.4.14",
-		"vite-plugin-electron": "^0.28.8",
+		"vite": "^6.2.2",
+		"vite-plugin-electron": "^0.29.0",
 		"vite-plugin-electron-renderer": "^0.14.6"
 	}
 }

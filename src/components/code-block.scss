@@ -1,0 +1,20 @@
+.code-block {
+	border-radius: var(--theme-rounding-sm);
+	background-color: var(--theme-color-background-primary-alt);
+	font-size: var(--theme-font-size-sm);
+}
+
+.code-block-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-block: var(--theme-spacing-sm);
+	padding-inline: var(--theme-spacing-lg);
+	border-bottom: 1px solid var(--theme-color-border);
+	background-color: var(--theme-color-surface-alt);
+}
+
+.code-block-content {
+	font-family: var(--theme-font-mono);
+	padding: 14px;
+}
