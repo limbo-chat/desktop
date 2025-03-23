@@ -1,107 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowUpIcon } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 import { Button } from "../../components/button";
 import { ChatLog } from "../../features/chat/components/chat-log";
-import { useForm } from "react-hook-form";
-import type { ChatMessageType } from "../../features/chat/types";
 import { Sidebar } from "./-components/sidebar";
+import { useChatMessages, useLLMChunkSubscriber } from "../../features/chat/hooks";
+import { useMainRouter } from "../../lib/trpc";
+import { useChatStore } from "../../features/chat/stores";
 import "./styles.scss";
 
 export const Route = createFileRoute("/_chat/")({
 	component: ChatPage,
 });
 
-const testMessages: ChatMessageType[] = [
-	{
-		id: 1,
-		role: "user",
-		content: "Hello, how are you?",
-	},
-	{
-		id: 2,
-		role: "assistant",
-		content: `# Markdown Renderer Test
-
-## Headings
-
-# H1
-## H2
-### H3
-#### H4
-##### H5
-###### H6
-
-## Text Formatting
-
-**Bold text**  
-*Italic text*  
-***Bold and Italic text***  
-~~Strikethrough~~  
-\`Inline code\`  
-
-## Lists
-
-### Unordered List
-- Item 1
-- Item 2
-  - Subitem 2.1
-  - Subitem 2.2
-
-### Ordered List
-1. First item
-2. Second item
-   1. Subitem 2.1
-   2. Subitem 2.2
-
-## Links
-
-[OpenAI](https://openai.com)
-
-## Images
-
-![Alt text](https://www.calgaryzoo.com/wp-content/uploads/2024/09/DSC01798-1.jpg)
-
-## Blockquotes
-
-> This is a blockquote.
->
-> - Nested blockquote
-
-## Code Blocks
-
-\`\`\`javascript
-// This is a JavaScript code block
-function hello() {
-    console.log("Hello, World!", 1 <= 5);
-}
-\`\`\`
-
-## Tables
-
-| Column 1 | Column 2 | Column 3 |
-|----------|----------|----------|
-| Row 1    | Data 1   | Data 2   |
-| Row 2    | Data 3   | Data 4   |
-
-## Task Lists
-
-- [x] Task 1
-- [ ] Task 2
-- [ ] Task 3
-
-## Horizontal Rule
-
----
-
-## Emoji
-
-🚀 🎉 👍 😃
-
-		`,
-	},
-];
-
 function ChatPage() {
+	const messages = useChatMessages();
+
+	const mainRouter = useMainRouter();
+	const sendMessageMutation = useMutation(mainRouter.chats.sendMessage.mutationOptions());
+
 	const form = useForm({
 		defaultValues: {
 			message: "",
@@ -109,17 +27,46 @@ function ChatPage() {
 	});
 
 	const onSubmit = form.handleSubmit((data) => {
-		console.log(data);
+		const chatStore = useChatStore.getState();
 
 		form.reset();
+
+		chatStore.addMessage({
+			id: Date.now(),
+			role: "user",
+			content: data.message,
+		});
+
+		chatStore.addMessage({
+			id: Date.now() + 1,
+			role: "assistant",
+			content: "",
+		});
+
+		sendMessageMutation.mutate(
+			{
+				message: data.message,
+			},
+			{
+				onError: (err) => {
+					console.log("failed to generate AI response", err);
+
+					form.reset({
+						message: data.message,
+					});
+				},
+			}
+		);
 	});
+
+	useLLMChunkSubscriber();
 
 	return (
 		<div className="app-layout">
 			<Sidebar />
 			<div className="chat-content">
 				<div className="chat-log-container">
-					<ChatLog className="main-chat-log" messages={testMessages} />
+					<ChatLog className="main-chat-log" messages={messages} />
 				</div>
 
 				<div className="chat-controls">

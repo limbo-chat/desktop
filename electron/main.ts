@@ -21,7 +21,15 @@ function createWindow() {
 		return { action: "deny" };
 	});
 
-	createIPCHandler({ router: mainRouter, windows: [win] });
+	createIPCHandler({
+		router: mainRouter,
+		windows: [win],
+		createContext: async () => {
+			return {
+				win: win as BrowserWindow,
+			};
+		},
+	});
 
 	if (VITE_DEV_SERVER_URL) {
 		win.loadURL(VITE_DEV_SERVER_URL);
