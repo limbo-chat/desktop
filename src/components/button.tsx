@@ -5,12 +5,12 @@ import "./button.scss";
 const buttonVariants = cva("button", {
 	variants: {
 		color: {
-			primary: "button-primary",
-			secondary: "button-secondary",
+			primary: "button--primary",
+			secondary: "button--secondary",
 		},
 		size: {
-			default: "button-default",
-			icon: "button-icon",
+			default: "button--default",
+			icon: "button--icon",
 		},
 	},
 	defaultVariants: {

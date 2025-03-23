@@ -1,0 +1,12 @@
+.chat-message--user {
+	align-self: flex-end;
+	padding: var(--theme-spacing-md);
+	border-radius: var(--theme-rounding-md);
+	background-color: var(--theme-color-surface);
+	border-width: var(--theme-border-width);
+	border-color: var(--theme-color-border);
+	max-width: 80%;
+}
+
+.chat-message--assistant {
+}

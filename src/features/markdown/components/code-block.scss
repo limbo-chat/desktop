@@ -2,19 +2,25 @@
 	border-radius: var(--theme-rounding-sm);
 	background-color: var(--theme-color-background-primary-alt);
 	font-size: var(--theme-font-size-sm);
+	overflow: hidden;
 }
 
-.code-block-header {
+.code-block__header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	padding-block: var(--theme-spacing-sm);
-	padding-inline: var(--theme-spacing-lg);
-	border-bottom: 1px solid var(--theme-color-border);
+	padding-inline: var(--theme-spacing-md);
 	background-color: var(--theme-color-surface-alt);
+	border-bottom-width: var(--theme-border-width);
+	border-color: var(--theme-color-border);
 }
 
-.code-block-content {
+.code-block__content {
+	padding: var(--theme-spacing-md);
+	background-color: var(--theme-color-surface);
+}
+
+.code-block__code {
 	font-family: var(--theme-font-mono);
-	padding: 14px;
 }

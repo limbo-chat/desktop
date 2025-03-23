@@ -1,21 +1,27 @@
 import MarkdownToJsx from "markdown-to-jsx";
 import "./markdown.scss";
 import { CodeBlock } from "./code-block";
+import type { HTMLAttributes } from "react";
+import clsx from "clsx";
 
-export interface MarkdownProps {
+export interface MarkdownProps extends HTMLAttributes<HTMLDivElement> {
 	content: string;
 }
 
-export const Markdown = ({ content }: MarkdownProps) => {
+export const Markdown = ({ content, className, ...divProps }: MarkdownProps) => {
 	return (
-		<div className="md">
+		<div className={clsx("md", className)} {...divProps}>
 			<MarkdownToJsx
 				options={{
 					overrides: {
 						a: {
-							component: "a",
 							props: {
 								target: "_blank",
+							},
+						},
+						input: {
+							props: {
+								disabled: true,
 							},
 						},
 						code: (props) => (

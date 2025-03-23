@@ -5,21 +5,21 @@ import "./text.scss";
 const textVariants = cva("text", {
 	variants: {
 		color: {
-			default: "text-default",
-			muted: "text-muted",
+			default: "text--default",
+			muted: "text--muted",
 		},
 		size: {
-			xs: "text-xs",
-			sm: "text-sm",
-			md: "text-md",
-			lg: "text-lg",
-			xl: "text-xl",
+			xs: "text--xs",
+			sm: "text--sm",
+			md: "text--md",
+			lg: "text--lg",
+			xl: "text--xl",
 		},
 		weight: {
-			regular: "font-normal",
-			medium: "font-medium",
-			semibold: "font-semibold",
-			bold: "font-bold",
+			regular: "text--fw-regular",
+			medium: "text--fw-medium",
+			semibold: "text--fw-semibold",
+			bold: "text--fw-bold",
 		},
 	},
 	defaultVariants: {

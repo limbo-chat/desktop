@@ -15,23 +15,23 @@
 		transform: translateY(1px);
 	}
 
-	&-default {
+	&--default {
 		height: 40px;
 		padding-inline: var(--theme-spacing-md);
 		padding-block: var(--theme-spacing-sm);
 	}
 
-	&-icon {
+	&--icon {
 		height: 36px;
 		width: 36px;
 	}
 
-	&-primary {
+	&--primary {
 		--background-color: var(--theme-color-primary);
 		--hover-color: var(--theme-color-primary-hover);
 	}
 
-	&-secondary {
+	&--secondary {
 		--background-color: var(--theme-color-secondary);
 		--hover-color: var(--theme-color-secondary-hover);
 	}
