@@ -5,17 +5,28 @@ import { useForm } from "react-hook-form";
 import { Button } from "../../components/button";
 import { ChatLog } from "../../features/chat/components/chat-log";
 import { Sidebar } from "./-components/sidebar";
-import { useChatMessages, useLLMChunkSubscriber } from "../../features/chat/hooks";
+import { useChatMessages } from "../../features/chat/hooks";
 import { useMainRouter } from "../../lib/trpc";
 import { useChatStore } from "../../features/chat/stores";
-import { TextInput } from "../../components/text-input";
+import { useLLMElements, useToolbarToggleButtonElements } from "../../features/plugins/hooks";
 
 export const Route = createFileRoute("/_chat/")({
 	component: ChatPage,
 });
 
-function ChatPage() {
+const MainChatLog = () => {
 	const messages = useChatMessages();
+
+	return <ChatLog className="mx-auto px-xl w-full max-w-[75ch]" messages={messages} />;
+};
+
+interface ChatControlsProps {
+	className?: string;
+}
+
+const ChatControls = () => {
+	// const llmElements = useLLMElements();
+	// const toggleButtonElements = useToolbarToggleButtonElements();
 
 	const mainRouter = useMainRouter();
 	const sendMessageMutation = useMutation(mainRouter.chats.sendMessage.mutationOptions());
@@ -31,66 +42,82 @@ function ChatPage() {
 
 		form.reset();
 
-		chatStore.addMessage({
-			id: Date.now(),
-			role: "user",
-			content: data.message,
-		});
+		// chatStore.addMessage({
+		// 	id: Date.now(),
+		// 	role: "user",
+		// 	content: data.message,
+		// });
 
-		chatStore.addMessage({
-			id: Date.now() + 1,
-			role: "assistant",
-			content: "",
-		});
+		// chatStore.addMessage({
+		// 	id: Date.now() + 1,
+		// 	role: "assistant",
+		// 	content: "",
+		// });
 
-		sendMessageMutation.mutate(
-			{
-				message: data.message,
-			},
-			{
-				onError: (err) => {
-					console.log("failed to generate AI response", err);
+		// sendMessageMutation.mutate(
+		// 	{
+		// 		message: data.message,
+		// 	},
+		// 	{
+		// 		onError: (err) => {
+		// 			console.log("failed to generate AI response", err);
 
-					form.reset({
-						message: data.message,
-					});
-				},
-			}
-		);
+		// 			form.reset({
+		// 				message: data.message,
+		// 			});
+		// 		},
+		// 	}
+		// );
 	});
 
-	useLLMChunkSubscriber();
+	return (
+		<div className="p-md border-t border-l border-r border-border bg-surface-alt rounded-t-md">
+			<form className="flex" onSubmit={onSubmit}>
+				<textarea
+					className="flex-1 resize-none outline-none overflow-y-auto"
+					placeholder="Type your message here..."
+					onKeyDown={(e) => {
+						if (e.key === "Enter" && !e.shiftKey) {
+							e.preventDefault();
 
+							onSubmit();
+						}
+					}}
+					{...form.register("message", {
+						required: true,
+						minLength: 1,
+					})}
+				/>
+				<div>
+					<Button type="submit" size="icon" color="secondary">
+						<ArrowUpIcon size={20} />
+					</Button>
+				</div>
+			</form>
+			<div>
+				{/* <div>
+					{llmElements.map((llm) => (
+						<div key={llm.id}>{llm.name}</div>
+					))}
+				</div> */}
+				{/* {toggleButtonElements.map((button) => (
+					<div key={button.id}>{button.label}</div>
+				))} */}
+			</div>
+		</div>
+	);
+};
+
+function ChatPage() {
 	return (
 		<div className="flex min-h-svh">
 			<Sidebar />
 			<div className="h-[100svh] flex flex-col flex-1">
 				<div className="overflow-y-auto flex-1">
-					<ChatLog className="mx-auto w-full max-w-[75ch]" messages={messages} />
+					<MainChatLog />
 				</div>
-				<div className="mx-auto max-h-[400px] w-full max-w-[80ch] p-md border-t border-l border-r border-border bg-surface-alt rounded-t-md">
-					<form className="flex" onSubmit={onSubmit}>
-						<textarea
-							className="flex-1 resize-none outline-none overflow-y-auto"
-							placeholder="Type your message here..."
-							onKeyDown={(e) => {
-								if (e.key === "Enter" && !e.shiftKey) {
-									e.preventDefault();
-
-									onSubmit();
-								}
-							}}
-							{...form.register("message", {
-								required: true,
-								minLength: 1,
-							})}
-						/>
-						<div>
-							<Button type="submit" size="icon" color="secondary">
-								<ArrowUpIcon size={20} />
-							</Button>
-						</div>
-					</form>
+				<div className="px-xl mx-auto max-h-[400px] w-full max-w-[80ch]">
+					<ChatControls />
 				</div>
 			</div>
 		</div>

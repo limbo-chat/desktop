@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow } from "electron";
+import { app, shell, BrowserWindow, protocol, net } from "electron";
 import path from "node:path";
 import { createIPCHandler } from "trpc-electron/main";
 import { mainRouter } from "./router";
@@ -56,4 +56,6 @@ app.on("activate", () => {
 	}
 });
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+	createWindow();
+});
