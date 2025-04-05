@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { MainRouterProvider } from "../lib/trpc";
 import { Suspense, useMemo, type PropsWithChildren } from "react";
 import { ipcLink } from "trpc-electron/renderer";
@@ -17,6 +17,14 @@ import "../styles/tailwind.css";
 
 export const Route = createRootRoute({
 	component: RootLayout,
+	notFoundComponent: () => {
+		return (
+			<div>
+				<p>not found</p>
+				<Link to="/chat">home</Link>
+			</div>
+		);
+	},
 	beforeLoad: () => {
 		return {
 			queryClient: new QueryClient(),
@@ -38,8 +46,7 @@ function RootLayoutProviders({ children }: PropsWithChildren) {
 	}, []);
 
 	const pluginManager = useMemo(() => {
-		// @ts-ignore
-		return new PluginManager({});
+		return new PluginManager();
 	}, []);
 
 	return (

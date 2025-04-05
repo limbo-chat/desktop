@@ -1,16 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowUpIcon } from "lucide-react";
+import { useChatMessages } from "../../../features/chat/hooks";
+import { ChatLog } from "../../../features/chat/components/chat-log";
+import { useToolbarToggleElements } from "../../../features/plugins/hooks";
+import { useMainRouter } from "../../../lib/trpc";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { Button } from "../../components/button";
-import { ChatLog } from "../../features/chat/components/chat-log";
-import { Sidebar } from "./-components/sidebar";
-import { useChatMessages } from "../../features/chat/hooks";
-import { useMainRouter } from "../../lib/trpc";
-import { useChatStore } from "../../features/chat/stores";
-import { useLLMElements, useToolbarToggleElements } from "../../features/plugins/hooks";
+import { useChatStore } from "../../../features/chat/stores";
+import { Button } from "../../../components/button";
+import { ArrowUpIcon } from "lucide-react";
 
-export const Route = createFileRoute("/_chat/")({
+export const Route = createFileRoute("/chat/$id/")({
 	component: ChatPage,
 });
 
@@ -26,7 +25,6 @@ interface ChatControlsProps {
 
 const ChatControls = () => {
 	// const llmElements = useLLMElements();
-	const toggleButtonElements = useToolbarToggleElements();
 
 	const mainRouter = useMainRouter();
 	const sendMessageMutation = useMutation(mainRouter.chats.sendMessage.mutationOptions());
@@ -110,15 +108,12 @@ const ChatControls = () => {
 
 function ChatPage() {
 	return (
-		<div className="flex min-h-svh">
-			<Sidebar />
-			<div className="h-[100svh] flex flex-col flex-1">
-				<div className="overflow-y-auto flex-1">
-					<MainChatLog />
-				</div>
-				<div className="px-xl mx-auto max-h-[400px] w-full max-w-[80ch]">
-					<ChatControls />
-				</div>
+		<div className="h-[100svh] flex flex-col flex-1">
+			<div className="overflow-y-auto flex-1">
+				<MainChatLog />
+			</div>
+			<div className="px-xl mx-auto max-h-[400px] w-full max-w-[80ch]">
+				<ChatControls />
 			</div>
 		</div>
 	);

@@ -11,60 +11,126 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as ChatIndexImport } from './routes/_chat/index'
+import { Route as ChatRouteImport } from './routes/chat/route'
+import { Route as IndexImport } from './routes/index'
+import { Route as ChatIndexImport } from './routes/chat/index'
+import { Route as ChatIdIndexImport } from './routes/chat/$id/index'
 
 // Create/Update Routes
 
-const ChatIndexRoute = ChatIndexImport.update({
-  id: '/_chat/',
+const ChatRouteRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const IndexRoute = IndexImport.update({
+  id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const ChatIndexRoute = ChatIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ChatRouteRoute,
+} as any)
+
+const ChatIdIndexRoute = ChatIdIndexImport.update({
+  id: '/$id/',
+  path: '/$id/',
+  getParentRoute: () => ChatRouteRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_chat/': {
-      id: '/_chat/'
+    '/': {
+      id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof ChatIndexImport
+      preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
+    }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/chat/': {
+      id: '/chat/'
+      path: '/'
+      fullPath: '/chat/'
+      preLoaderRoute: typeof ChatIndexImport
+      parentRoute: typeof ChatRouteImport
+    }
+    '/chat/$id/': {
+      id: '/chat/$id/'
+      path: '/$id'
+      fullPath: '/chat/$id'
+      preLoaderRoute: typeof ChatIdIndexImport
+      parentRoute: typeof ChatRouteImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface ChatRouteRouteChildren {
+  ChatIndexRoute: typeof ChatIndexRoute
+  ChatIdIndexRoute: typeof ChatIdIndexRoute
+}
+
+const ChatRouteRouteChildren: ChatRouteRouteChildren = {
+  ChatIndexRoute: ChatIndexRoute,
+  ChatIdIndexRoute: ChatIdIndexRoute,
+}
+
+const ChatRouteRouteWithChildren = ChatRouteRoute._addFileChildren(
+  ChatRouteRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
-  '/': typeof ChatIndexRoute
+  '/': typeof IndexRoute
+  '/chat': typeof ChatRouteRouteWithChildren
+  '/chat/': typeof ChatIndexRoute
+  '/chat/$id': typeof ChatIdIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof ChatIndexRoute
+  '/': typeof IndexRoute
+  '/chat': typeof ChatIndexRoute
+  '/chat/$id': typeof ChatIdIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/_chat/': typeof ChatIndexRoute
+  '/': typeof IndexRoute
+  '/chat': typeof ChatRouteRouteWithChildren
+  '/chat/': typeof ChatIndexRoute
+  '/chat/$id/': typeof ChatIdIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/chat' | '/chat/' | '/chat/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/_chat/'
+  to: '/' | '/chat' | '/chat/$id'
+  id: '__root__' | '/' | '/chat' | '/chat/' | '/chat/$id/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  ChatIndexRoute: typeof ChatIndexRoute
+  IndexRoute: typeof IndexRoute
+  ChatRouteRoute: typeof ChatRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  ChatIndexRoute: ChatIndexRoute,
+  IndexRoute: IndexRoute,
+  ChatRouteRoute: ChatRouteRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -77,11 +143,27 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/_chat/"
+        "/",
+        "/chat"
       ]
     },
-    "/_chat/": {
-      "filePath": "_chat/index.tsx"
+    "/": {
+      "filePath": "index.tsx"
+    },
+    "/chat": {
+      "filePath": "chat/route.tsx",
+      "children": [
+        "/chat/",
+        "/chat/$id/"
+      ]
+    },
+    "/chat/": {
+      "filePath": "chat/index.tsx",
+      "parent": "/chat"
+    },
+    "/chat/$id/": {
+      "filePath": "chat/$id/index.tsx",
+      "parent": "/chat"
     }
   }
 }
