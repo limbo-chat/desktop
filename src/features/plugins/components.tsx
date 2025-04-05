@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from "react";
 import { PluginManagerContext } from "./contexts";
-import type { PluginManager } from "./manager";
+import type { PluginManager } from "./core/plugin-manager";
 
 export interface PluginManagerProviderProps {
 	pluginManager: PluginManager;

@@ -10,7 +10,7 @@ export const pluginManifestSchema = z.object({
 	name: z.string(),
 	description: z.string(),
 	version: semverSchema,
-	minAppVersion: semverSchema.optional(),
+	minApiVersion: semverSchema.optional(),
 	author: z.object({
 		name: z.string().optional(),
 		email: z.string().optional(),

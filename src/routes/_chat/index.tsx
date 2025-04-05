@@ -8,7 +8,7 @@ import { Sidebar } from "./-components/sidebar";
 import { useChatMessages } from "../../features/chat/hooks";
 import { useMainRouter } from "../../lib/trpc";
 import { useChatStore } from "../../features/chat/stores";
-import { useLLMElements, useToolbarToggleButtonElements } from "../../features/plugins/hooks";
+import { useLLMElements, useToolbarToggleElements } from "../../features/plugins/hooks";
 
 export const Route = createFileRoute("/_chat/")({
 	component: ChatPage,
@@ -26,7 +26,7 @@ interface ChatControlsProps {
 
 const ChatControls = () => {
 	// const llmElements = useLLMElements();
-	// const toggleButtonElements = useToolbarToggleButtonElements();
+	const toggleButtonElements = useToolbarToggleElements();
 
 	const mainRouter = useMainRouter();
 	const sendMessageMutation = useMutation(mainRouter.chats.sendMessage.mutationOptions());
