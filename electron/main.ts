@@ -3,11 +3,11 @@ import path from "node:path";
 import { createIPCHandler } from "trpc-electron/main";
 import { mainRouter } from "./router";
 import { MAIN_DIST, RENDERER_DIST, VITE_DEV_SERVER_URL, VITE_PUBLIC } from "./constants";
-
-let win: BrowserWindow | null;
+import { createServer } from "./server";
+import getPort from "get-port";
 
 function createWindow() {
-	win = new BrowserWindow({
+	const window = new BrowserWindow({
 		icon: path.join(VITE_PUBLIC, "electron-vite.svg"),
 		webPreferences: {
 			preload: path.join(MAIN_DIST, "preload.mjs"),
@@ -15,28 +15,43 @@ function createWindow() {
 	});
 
 	// open links externally
-	win.webContents.setWindowOpenHandler((details) => {
+	window.webContents.setWindowOpenHandler((details) => {
 		shell.openExternal(details.url);
 
 		return { action: "deny" };
 	});
 
+	if (VITE_DEV_SERVER_URL) {
+		window.loadURL(VITE_DEV_SERVER_URL);
+	} else {
+		window.loadFile(path.join(RENDERER_DIST, "index.html"));
+	}
+
+	return window;
+}
+
+app.whenReady().then(async () => {
+	const window = createWindow();
+
 	createIPCHandler({
 		router: mainRouter,
-		windows: [win],
+		windows: [window],
 		createContext: async () => {
 			return {
-				win: win as BrowserWindow,
+				win: window,
 			};
 		},
 	});
 
-	if (VITE_DEV_SERVER_URL) {
-		win.loadURL(VITE_DEV_SERVER_URL);
-	} else {
-		win.loadFile(path.join(RENDERER_DIST, "index.html"));
-	}
-}
+	const server = createServer(window);
+
+	// this will try getting port 5151 first, if it's occupied it will find a free port and start the server on it
+	const port = await getPort({
+		port: 5151,
+	});
+
+	server.listen(port);
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -44,7 +59,6 @@ function createWindow() {
 app.on("window-all-closed", () => {
 	if (process.platform !== "darwin") {
 		app.quit();
-		win = null;
 	}
 });
 
@@ -54,8 +68,4 @@ app.on("activate", () => {
 	if (BrowserWindow.getAllWindows().length === 0) {
 		createWindow();
 	}
-});
-
-app.whenReady().then(() => {
-	createWindow();
 });

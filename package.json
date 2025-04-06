@@ -12,7 +12,6 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"limbo": "file:../limbo-api",
 		"@ark-ui/react": "^5.2.0",
 		"@tanstack/react-query": "^5.69.0",
 		"@tanstack/react-router": "^1.114.27",
@@ -22,7 +21,10 @@
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"eventemitter3": "^5.0.1",
+		"find-my-way": "^9.3.0",
+		"get-port": "^7.1.0",
 		"immer": "^10.1.1",
+		"limbo": "file:../limbo-api",
 		"lucide-react": "^0.483.0",
 		"markdown-to-jsx": "^7.7.4",
 		"openai": "^4.89.0",

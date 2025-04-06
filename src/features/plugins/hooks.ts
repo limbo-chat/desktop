@@ -85,8 +85,6 @@ export const useInitialPluginLoader = () => {
 
 				await plugin.loadModule();
 
-				console.log("loaded module");
-
 				pluginManager.addPlugin(plugin);
 			} catch {
 				console.log("failed to load plugin");

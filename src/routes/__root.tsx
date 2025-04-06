@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { MainRouterProvider } from "../lib/trpc";
-import { Suspense, useMemo, type PropsWithChildren } from "react";
+import { Suspense, useEffect, useMemo, type PropsWithChildren } from "react";
 import { ipcLink } from "trpc-electron/renderer";
 import { createTRPCClient } from "@trpc/client";
 import superjson from "superjson";
@@ -47,6 +47,12 @@ function RootLayoutProviders({ children }: PropsWithChildren) {
 
 	const pluginManager = useMemo(() => {
 		return new PluginManager();
+	}, []);
+
+	useEffect(() => {
+		window.ipcRenderer.on("plugin-reload", (event, pluginId) => {
+			console.log(`Received plugin-reload for ${pluginId}`);
+		});
 	}, []);
 
 	return (
