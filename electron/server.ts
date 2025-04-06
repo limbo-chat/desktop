@@ -5,7 +5,7 @@ import type { BrowserWindow } from "electron";
 export function createServer(mainWindow: BrowserWindow) {
 	const router = createRouter();
 
-	router.on("POST", "/plugins/:pluginId/reload", (req, res, params) => {
+	router.on("POST", "/plugins/:pluginId/reload", async (req, res, params) => {
 		const pluginId = params.pluginId as string;
 
 		mainWindow.webContents.send("plugin-reload", pluginId);

@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { PluginManagerContext } from "./contexts";
-import { useMainRouter } from "../../lib/trpc";
+import { useMainRouter, useMainRouterClient } from "../../lib/trpc";
 import { Plugin } from "./core/plugin";
 import type { MainRouterOutputs } from "../../../electron/router";
 import { usePluginElementStore } from "./stores";
@@ -72,7 +72,6 @@ export const useInitialPluginLoader = () => {
 	const mainRouter = useMainRouter();
 	const getPluginsQuery = useSuspenseQuery(mainRouter.plugins.getPlugins.queryOptions());
 	const pluginManager = usePluginManager();
-	const hasLoadedInitialPlugins = useRef(false);
 	const plugins = getPluginsQuery.data;
 	const subscribePlugin = usePluginBridgeFactory();
 
@@ -85,7 +84,7 @@ export const useInitialPluginLoader = () => {
 
 				await plugin.loadModule();
 
-				pluginManager.addPlugin(plugin);
+				pluginManager.addPlugin(pluginData.manifest.id, plugin);
 			} catch {
 				console.log("failed to load plugin");
 				// noop for now, will need to indicate errors
@@ -96,14 +95,58 @@ export const useInitialPluginLoader = () => {
 	}, []);
 
 	useEffect(() => {
-		if (!plugins || hasLoadedInitialPlugins.current) {
-			return;
-		}
-
-		hasLoadedInitialPlugins.current = true;
-
 		loadPlugins(plugins);
-	}, [plugins, pluginManager]);
+	}, []);
+};
+
+export const usePluginHotReloader = () => {
+	const mainRouterClient = useMainRouterClient();
+	const pluginManager = usePluginManager();
+
+	// TODO, should I update the query data for getting the plugins?
+	useEffect(() => {
+		const handler = async (_event: any, pluginId: string) => {
+			let newPluginData;
+
+			try {
+				newPluginData = await mainRouterClient.plugins.getPlugin.query({
+					id: pluginId,
+				});
+			} catch {
+				// noop
+
+				return;
+			}
+
+			const oldPlugin = pluginManager.getPlugin(pluginId);
+
+			if (!oldPlugin) {
+				return;
+			}
+
+			await oldPlugin.deactivate();
+
+			const newPlugin = new Plugin(newPluginData);
+
+			await newPlugin.loadModule();
+
+			// replace the old plugin with the new one
+			await pluginManager.addPlugin(newPlugin.manifest.id, newPlugin);
+
+			console.info(
+				`%c hot reloaded plugin: "${newPlugin.manifest.id}"`,
+				"color: cornflowerblue; font-weight: bold;"
+			);
+
+			await newPlugin.activate();
+		};
+
+		window.ipcRenderer.on("plugin-reload", handler);
+
+		return () => {
+			window.ipcRenderer.off("plugin-reload", handler);
+		};
+	}, []);
 };
 
 export const useLLMElements = () => {

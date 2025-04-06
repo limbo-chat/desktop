@@ -1,35 +1,39 @@
 import type { Plugin } from "./plugin";
 
 export class PluginManager {
-	private plugins: Plugin[];
+	private plugins = new Map<string, Plugin>();
 
-	constructor() {
-		this.plugins = [];
+	public getActivePlugins() {
+		const activePlugins: Plugin[] = [];
+
+		for (const plugin of this.plugins.values()) {
+			activePlugins.push(plugin);
+		}
+
+		return activePlugins;
 	}
 
-	public addPlugin(plugin: Plugin) {
-		this.plugins.push(plugin);
+	public getPlugin(pluginId: string): Plugin | null {
+		return this.plugins.get(pluginId) || null;
+	}
+
+	public addPlugin(pluginId: string, plugin: Plugin) {
+		this.plugins.set(pluginId, plugin);
+	}
+
+	public async removePlugin(pluginId: string) {
+		this.plugins.delete(pluginId);
 	}
 
 	public async activatePlugins() {
-		for (const plugin of this.plugins) {
+		for (const plugin of this.plugins.values()) {
 			await plugin.activate();
 		}
 	}
 
 	public async deactivatePlugins() {
-		for (const plugin of this.plugins) {
+		for (const plugin of this.plugins.values()) {
 			await plugin.deactivate();
 		}
-	}
-
-	public async deactivatePlugin(pluginId: string) {
-		const plugin = this.plugins.find((p) => p.manifest.id === pluginId);
-
-		if (!plugin) {
-			return;
-		}
-
-		await plugin.deactivate();
 	}
 }
