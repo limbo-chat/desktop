@@ -1,14 +1,13 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { MainRouterProvider } from "../lib/trpc";
-import { Suspense, useEffect, useMemo, type PropsWithChildren } from "react";
+import { Suspense, useMemo, type PropsWithChildren } from "react";
 import { ipcLink } from "trpc-electron/renderer";
 import { createTRPCClient } from "@trpc/client";
 import superjson from "superjson";
 import type { MainRouter } from "../../electron/router";
-import { PluginManagerProvider } from "../features/plugins/components";
+import { PluginController, PluginManagerProvider } from "../features/plugins/components";
 import { PluginManager } from "../features/plugins/core/plugin-manager";
-import { useInitialPluginLoader, usePluginHotReloader } from "../features/plugins/hooks";
 import { useLLMChunkSubscriber } from "../features/chat/hooks";
 
 import "../styles/default-fonts.css";
@@ -49,6 +48,8 @@ function RootLayoutProviders({ children }: PropsWithChildren) {
 		return new PluginManager();
 	}, []);
 
+	useLLMChunkSubscriber();
+
 	return (
 		<QueryClientProvider client={routerContext.queryClient}>
 			<MainRouterProvider trpcClient={trpcClient} queryClient={routerContext.queryClient}>
@@ -60,24 +61,12 @@ function RootLayoutProviders({ children }: PropsWithChildren) {
 	);
 }
 
-function RootLayoutContent() {
-	// load the plugins
-	useInitialPluginLoader();
-
-	// setup hot reloading for plugins
-	usePluginHotReloader();
-
-	// subscribe to LLM chunks
-	useLLMChunkSubscriber();
-
-	return <Outlet />;
-}
-
 function RootLayout() {
 	return (
 		<RootLayoutProviders>
 			<Suspense fallback={<div>Loading...</div>}>
-				<RootLayoutContent />
+				<PluginController />
+				<Outlet />
 			</Suspense>
 		</RootLayoutProviders>
 	);

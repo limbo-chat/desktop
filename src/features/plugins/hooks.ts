@@ -70,8 +70,8 @@ export const usePluginBridgeFactory = () => {
 
 export const useInitialPluginLoader = () => {
 	const mainRouter = useMainRouter();
-	const getPluginsQuery = useSuspenseQuery(mainRouter.plugins.getPlugins.queryOptions());
 	const pluginManager = usePluginManager();
+	const getPluginsQuery = useSuspenseQuery(mainRouter.plugins.getPlugins.queryOptions());
 	const plugins = getPluginsQuery.data;
 	const subscribePlugin = usePluginBridgeFactory();
 
@@ -124,8 +124,13 @@ export const usePluginHotReloader = () => {
 				return;
 			}
 
+			// deactivate the old plugin before reloading
 			await oldPlugin.deactivate();
 
+			// remove all event listeners from the old plugin
+			oldPlugin.events.removeAllListeners();
+
+			// create the new plugin
 			const newPlugin = new Plugin(newPluginData);
 
 			await newPlugin.loadModule();
@@ -138,6 +143,7 @@ export const usePluginHotReloader = () => {
 				"color: cornflowerblue; font-weight: bold;"
 			);
 
+			// activate the new plugin
 			await newPlugin.activate();
 		};
 

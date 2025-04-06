@@ -40,11 +40,8 @@ export class Plugin {
 	constructor(opts: PluginOptions) {
 		this.manifest = opts.manifest;
 		this.js = opts.js;
-		this.api = this.createAPI();
-	}
 
-	private createAPI(): PluginAPI.API {
-		return {
+		this.api = {
 			showNotification: (notification) => {
 				this.events.emit("notification", notification);
 			},
@@ -130,6 +127,12 @@ export class Plugin {
 		};
 	}
 
+	public resetState() {
+		this.registeredSettings = [];
+		this.registeredToolbarToggles = [];
+		this.registeredLLMs = [];
+	}
+
 	public async activate() {
 		if (this.isActive || !this.pluginModule) {
 			return;
@@ -147,12 +150,27 @@ export class Plugin {
 			return;
 		}
 
-		this.events.emit("deactivate");
-
 		this.isActive = false;
 
+		this.resetState();
+
+		this.events.emit("deactivate");
+
+		// the deactivate function is optional, but if it exists it should be called
 		if (typeof this.pluginModule.deactivate === "function") {
 			await this.pluginModule.deactivate();
 		}
+	}
+
+	public getRegisteredSettings() {
+		return this.registeredSettings;
+	}
+
+	public getRegisteredToolbarToggles() {
+		return this.registeredToolbarToggles;
+	}
+
+	public getRegisteredLLMs() {
+		return this.registeredLLMs;
 	}
 }

@@ -3,16 +3,6 @@ import type { Plugin } from "./plugin";
 export class PluginManager {
 	private plugins = new Map<string, Plugin>();
 
-	public getActivePlugins() {
-		const activePlugins: Plugin[] = [];
-
-		for (const plugin of this.plugins.values()) {
-			activePlugins.push(plugin);
-		}
-
-		return activePlugins;
-	}
-
 	public getPlugin(pluginId: string): Plugin | null {
 		return this.plugins.get(pluginId) || null;
 	}
@@ -35,5 +25,21 @@ export class PluginManager {
 		for (const plugin of this.plugins.values()) {
 			await plugin.deactivate();
 		}
+	}
+
+	public getActivePlugins() {
+		const activePlugins: Plugin[] = [];
+
+		for (const plugin of this.plugins.values()) {
+			activePlugins.push(plugin);
+		}
+
+		return activePlugins;
+	}
+
+	public getRegisteredLLMs() {
+		const activePlugins = this.getActivePlugins();
+
+		return activePlugins.flatMap((plugin) => plugin.getRegisteredLLMs());
 	}
 }
