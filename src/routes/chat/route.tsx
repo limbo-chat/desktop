@@ -33,6 +33,7 @@ const Sidebar = () => {
 						"p-sm rounded-md hover:bg-secondary",
 						params.id && chat.id === parseInt(params.id) && "bg-secondary"
 					)}
+					key={chat.id}
 				>
 					{chat.title}
 				</Link>

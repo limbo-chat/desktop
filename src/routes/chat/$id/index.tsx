@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useChatMessages } from "../../../features/chat/hooks";
 import { ChatLog } from "../../../features/chat/components/chat-log";
-import { useToolbarToggleElements } from "../../../features/plugins/hooks";
 import { useMainRouter } from "../../../lib/trpc";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
