@@ -2,16 +2,19 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import type * as PluginAPI from "limbo";
 
-export interface PluginElementStoreSetting extends PluginAPI.Setting {
+export interface PluginElementStoreSetting {
 	pluginId: string;
+	setting: PluginAPI.Setting;
 }
 
-export interface PluginElementStoreLLM extends PluginAPI.LLM {
+export interface PluginElementStoreLLM {
 	pluginId: string;
+	llm: PluginAPI.LLM; // This is to ensure compatibility with the PluginAPI.LLM interface
 }
 
-export interface PluginElementStoreToolbarToggle extends PluginAPI.ToolbarToggle {
+export interface PluginElementStoreToolbarToggle {
 	pluginId: string;
+	toolbarToggle: PluginAPI.ToolbarToggle; // This is to ensure compatibility with the PluginAPI.ToolbarToggle interface
 }
 
 export interface PluginElementStore {
@@ -50,7 +53,7 @@ export const usePluginElementStore = create(
 		},
 		removeSetting(settingId) {
 			set((state) => {
-				state.settings = state.settings.filter((setting) => setting.id !== settingId);
+				state.settings = state.settings.filter((setting) => setting.pluginId !== settingId);
 			});
 		},
 		addLLM(llm) {
@@ -60,7 +63,7 @@ export const usePluginElementStore = create(
 		},
 		removeLLM(llmId) {
 			set((state) => {
-				state.llms = state.llms.filter((llm) => llm.id !== llmId);
+				state.llms = state.llms.filter((llm) => llm.pluginId !== llmId);
 			});
 		},
 		addToolbarToggle(toolbarToggle) {
@@ -71,7 +74,7 @@ export const usePluginElementStore = create(
 		removeToolbarToggle(toolbarToggleId) {
 			set((state) => {
 				state.toolbarToggles = state.toolbarToggles.filter(
-					(toolbarToggle) => toolbarToggle.id !== toolbarToggleId
+					(toolbarToggle) => toolbarToggle.pluginId !== toolbarToggleId
 				);
 			});
 		},

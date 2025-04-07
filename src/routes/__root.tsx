@@ -10,14 +10,9 @@ import { PluginController, PluginManagerProvider } from "../features/plugins/com
 import { PluginManager } from "../features/plugins/core/plugin-manager";
 import { useLLMChunkSubscriber } from "../features/chat/hooks";
 
-import { createToaster, Toaster } from "@ark-ui/react";
-import { ToastCloseTrigger, ToastDescription, ToastRoot, ToastTitle } from "../components/toast";
-
 import "../styles/default-fonts.css";
 import "../styles/default-theme.css";
 import "../styles/tailwind.css";
-import { XIcon } from "lucide-react";
-import { Button } from "../components/button";
 
 export const Route = createRootRoute({
 	component: RootLayout,

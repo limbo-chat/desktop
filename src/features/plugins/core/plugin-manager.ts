@@ -28,18 +28,12 @@ export class PluginManager {
 	}
 
 	public getActivePlugins() {
-		const activePlugins: Plugin[] = [];
+		const activePlugins = [];
 
 		for (const plugin of this.plugins.values()) {
 			activePlugins.push(plugin);
 		}
 
 		return activePlugins;
-	}
-
-	public getRegisteredLLMs() {
-		const activePlugins = this.getActivePlugins();
-
-		return activePlugins.flatMap((plugin) => plugin.getRegisteredLLMs());
 	}
 }

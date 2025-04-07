@@ -36,7 +36,7 @@ export const usePluginSubscriber = () => {
 		plugin.events.on("registeredSetting", (setting) => {
 			pluginElementsStore.addSetting({
 				pluginId: plugin.manifest.id,
-				...setting,
+				setting,
 			});
 		});
 
@@ -47,7 +47,7 @@ export const usePluginSubscriber = () => {
 		plugin.events.on("registeredLLM", (llm) => {
 			pluginElementsStore.addLLM({
 				pluginId: plugin.manifest.id,
-				...llm,
+				llm,
 			});
 		});
 
@@ -58,7 +58,7 @@ export const usePluginSubscriber = () => {
 		plugin.events.on("registeredToolbarToggle", (toolbarToggle) => {
 			pluginElementsStore.addToolbarToggle({
 				pluginId: plugin.manifest.id,
-				...toolbarToggle,
+				toolbarToggle,
 			});
 		});
 
@@ -102,6 +102,7 @@ export const useInitialPluginLoader = () => {
 export const usePluginHotReloader = () => {
 	const mainRouterClient = useMainRouterClient();
 	const pluginManager = usePluginManager();
+	const subscribePlugin = usePluginSubscriber();
 
 	// TODO, should I update the query data for getting the plugins?
 	useEffect(() => {
@@ -134,6 +135,8 @@ export const usePluginHotReloader = () => {
 			const newPlugin = new Plugin(newPluginData);
 
 			await newPlugin.loadModule();
+
+			subscribePlugin(newPlugin);
 
 			// replace the old plugin with the new one
 			await pluginManager.addPlugin(newPlugin.manifest.id, newPlugin);
