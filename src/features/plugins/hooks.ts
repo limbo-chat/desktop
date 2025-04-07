@@ -16,7 +16,7 @@ export const usePluginManager = () => {
 	return pluginManager;
 };
 
-export const usePluginBridgeFactory = () => {
+export const usePluginSubscriber = () => {
 	// we don't need to read any state, just access the store methods
 	const pluginElementsStore = usePluginElementStore.getState();
 
@@ -73,7 +73,7 @@ export const useInitialPluginLoader = () => {
 	const pluginManager = usePluginManager();
 	const getPluginsQuery = useSuspenseQuery(mainRouter.plugins.getPlugins.queryOptions());
 	const plugins = getPluginsQuery.data;
-	const subscribePlugin = usePluginBridgeFactory();
+	const subscribePlugin = usePluginSubscriber();
 
 	const loadPlugins = useCallback(async (plugins: MainRouterOutputs["plugins"]["getPlugins"]) => {
 		for (const pluginData of plugins) {

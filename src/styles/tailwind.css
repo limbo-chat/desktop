@@ -48,4 +48,8 @@
 
 	--color-t-default: var(--theme-color-text-default);
 	--color-t-muted: var(--theme-color-text-muted);
+
+	--shadow-sm: var(--theme-shadow-sm);
+	--shadow-md: var(--theme-shadow-md);
+	--shadow-lg: var(--theme-shadow-lg);
 }
