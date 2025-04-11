@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { PluginManagerContext } from "./contexts";
 import { useMainRouter, useMainRouterClient } from "../../lib/trpc";

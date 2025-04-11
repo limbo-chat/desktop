@@ -25,6 +25,12 @@ const Sidebar = () => {
 			>
 				New Chat
 			</Link>
+			<Link
+				to="/settings"
+				className="bg-primary p-sm rounded-md hover:bg-primary-hover text-center mb-md"
+			>
+				settings
+			</Link>
 			{chats.map((chat) => (
 				<Link
 					to={`/chat/$id`}

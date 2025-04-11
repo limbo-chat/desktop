@@ -18,10 +18,6 @@ const MainChatLog = () => {
 	return <ChatLog className="mx-auto px-xl w-full max-w-[75ch]" messages={messages} />;
 };
 
-interface ChatControlsProps {
-	className?: string;
-}
-
 const ChatControls = () => {
 	// const llmElements = useLLMElements();
 
