@@ -1,49 +1,28 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { useMainRouter } from "../../lib/trpc";
-import { Link, useParams } from "@tanstack/react-router";
-import clsx from "clsx";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/chat")({
 	component: ChatLayout,
 });
 
 const Sidebar = () => {
-	const mainRouter = useMainRouter();
-	const listChatsQuery = useSuspenseQuery(mainRouter.chats.list.queryOptions());
-	const chats = listChatsQuery.data;
-
-	const params = useParams({
-		strict: false,
-	});
-
 	return (
-		<div className="bg-surface w-[250px] p-md border-r flex flex-col border-border">
-			<Link
-				to="/chat"
-				className="bg-primary p-sm rounded-md hover:bg-primary-hover text-center mb-md"
-			>
-				New Chat
-			</Link>
-			<Link
-				to="/settings"
-				className="bg-primary p-sm rounded-md hover:bg-primary-hover text-center mb-md"
-			>
-				settings
-			</Link>
-			{chats.map((chat) => (
+		<div className="bg-surface w-[250px] p-md border-r flex flex-col justify-between border-border">
+			<div className="flex flex-col flex-1">
 				<Link
-					to={`/chat/$id`}
-					params={{ id: chat.id.toString() }}
-					className={clsx(
-						"p-sm rounded-md hover:bg-secondary",
-						params.id && chat.id === parseInt(params.id) && "bg-secondary"
-					)}
-					key={chat.id}
+					to="/chat"
+					className="bg-primary p-sm rounded-md hover:bg-primary-hover text-center mb-md"
 				>
-					{chat.title}
+					New Chat
 				</Link>
-			))}
+			</div>
+			<div>
+				<Link to="/settings">
+					<div className="bg-secondary p-sm rounded-md hover:bg-secondary-hover text-center">
+						Open settings
+					</div>
+				</Link>
+			</div>
 		</div>
 	);
 };

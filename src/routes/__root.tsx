@@ -6,7 +6,8 @@ import { ipcLink } from "trpc-electron/renderer";
 import { createTRPCClient } from "@trpc/client";
 import superjson from "superjson";
 import type { MainRouter } from "../../electron/router";
-import { PluginController, PluginManagerProvider } from "../features/plugins/components";
+import { PluginController } from "../features/plugins/components/plugin-controller";
+import { PluginManagerProvider } from "../features/plugins/components/plugin-manager-provider";
 import { PluginManager } from "../features/plugins/core/plugin-manager";
 import { useLLMChunkSubscriber } from "../features/chat/hooks";
 

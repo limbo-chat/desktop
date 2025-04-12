@@ -1,5 +1,5 @@
 import EventEmitter from "eventemitter3";
-import type * as PluginAPI from "limbo";
+import type * as limbo from "limbo";
 import type { PluginManifest } from "../../../../electron/plugins/schemas";
 
 export interface PluginModule {
@@ -10,13 +10,11 @@ export interface PluginModule {
 export interface PluginEvents {
 	activate: () => void;
 	deactivate: () => void;
-	notification: (notification: PluginAPI.Notification) => void;
-	registeredSetting: (settings: PluginAPI.Setting) => void;
+	notification: (notification: limbo.Notification) => void;
+	registeredSetting: (settings: limbo.Setting) => void;
 	unregisteredSetting: (settingId: string) => void;
-	registeredLLM: (llms: PluginAPI.LLM) => void;
+	registeredLLM: (llms: limbo.LLM) => void;
 	unregisteredLLM: (llmId: string) => void;
-	registeredToolbarToggle: (toolbarToggle: PluginAPI.ToolbarToggle) => void;
-	unregisteredToolbarToggle: (toolbarToggleId: string) => void;
 }
 
 export interface PluginOptions {
@@ -29,63 +27,79 @@ export class Plugin {
 	public events: EventEmitter<PluginEvents> = new EventEmitter();
 	public isActive: boolean = false;
 	private js: string;
-	private api: PluginAPI.API;
+	private api: limbo.API;
 	private pluginModule: PluginModule | null = null;
+	private settingsCache: Map<string, any> = new Map();
 
 	// plugin state
-	private registeredSettings: PluginAPI.Setting[] = [];
-	private registeredLLMs: PluginAPI.LLM[] = [];
-	private registeredToolbarToggles: PluginAPI.ToolbarToggle[] = [];
+	private registeredSettings: limbo.Setting[] = [];
+	private registeredLLMs: limbo.LLM[] = [];
 
 	constructor(opts: PluginOptions) {
 		this.manifest = opts.manifest;
 		this.js = opts.js;
 
 		this.api = {
-			showNotification: (notification) => {
-				this.events.emit("notification", notification);
+			notifications: {
+				show: (notification) => {
+					this.events.emit("notification", notification);
+				},
 			},
-			registerSetting: (setting) => {
-				this.registeredSettings.push(setting);
+			settings: {
+				register: (setting) => {
+					this.registeredSettings.push(setting);
 
-				this.events.emit("registeredSetting", setting);
+					this.events.emit("registeredSetting", setting);
+				},
+				unregister: (settingId) => {
+					this.registeredSettings = this.registeredSettings.filter(
+						(setting) => setting.id !== settingId
+					);
+
+					this.events.emit("unregisteredSetting", settingId);
+				},
+				get: (settingId) => {
+					return this.settingsCache.get(settingId);
+				},
 			},
-			unregisterSetting: (settingId) => {
-				this.registeredSettings = this.registeredSettings.filter(
-					(setting) => setting.id !== settingId
-				);
+			llms: {
+				register: (llm) => {
+					this.registeredLLMs.push(llm);
 
-				this.events.emit("unregisteredSetting", settingId);
-			},
-			registerLLM: (llm) => {
-				this.registeredLLMs.push(llm);
+					this.events.emit("registeredLLM", llm);
+				},
+				unregister: (llmId) => {
+					this.registeredLLMs = this.registeredLLMs.filter((llm) => llm.id !== llmId);
 
-				this.events.emit("registeredLLM", llm);
-			},
-			unregisterLLM: (llmId) => {
-				this.registeredLLMs = this.registeredLLMs.filter((llm) => llm.id !== llmId);
-
-				this.events.emit("unregisteredLLM", llmId);
-			},
-			registerToolbarToggle: (toolbarToggle) => {
-				this.registeredToolbarToggles.push(toolbarToggle);
-
-				this.events.emit("registeredToolbarToggle", toolbarToggle);
-			},
-			unregisterToolbarToggle: (toolbarToggleId) => {
-				this.registeredToolbarToggles = this.registeredToolbarToggles.filter(
-					(toolbarToggle) => toolbarToggle.id !== toolbarToggleId
-				);
-
-				this.events.emit("unregisteredToolbarToggle", toolbarToggleId);
+					this.events.emit("unregisteredLLM", llmId);
+				},
 			},
 		};
 	}
 
-	public async loadModule() {
+	public setManifest(manifest: PluginManifest) {
+		this.manifest = manifest;
+	}
+
+	public setJS(js: string) {
+		this.js = js;
+	}
+
+	public getCachedSetting(settingId: string) {
+		return this.settingsCache.get(settingId);
+	}
+
+	public setCachedSetting(settingId: string, value: any) {
+		this.settingsCache.set(settingId, value);
+	}
+
+	public setSettingsCache(settingsMap: Map<string, any>) {
+		this.settingsCache = settingsMap;
+	}
+
+	public loadModule() {
 		const sandboxedImports: Record<string, any> = {
 			limbo: this.api,
-			react: await import("react"),
 		};
 
 		const sandboxedRequire = (moduleId: string) => {
@@ -129,7 +143,6 @@ export class Plugin {
 
 	public resetState() {
 		this.registeredSettings = [];
-		this.registeredToolbarToggles = [];
 		this.registeredLLMs = [];
 	}
 
@@ -164,10 +177,6 @@ export class Plugin {
 
 	public getRegisteredSettings() {
 		return this.registeredSettings;
-	}
-
-	public getRegisteredToolbarToggles() {
-		return this.registeredToolbarToggles;
 	}
 
 	public getRegisteredLLMs() {
