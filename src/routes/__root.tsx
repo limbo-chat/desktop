@@ -21,7 +21,7 @@ export const Route = createRootRoute({
 		return (
 			<div>
 				<p>not found</p>
-				<Link to="/chat">home</Link>
+				<Link to="/">home</Link>
 			</div>
 		);
 	},

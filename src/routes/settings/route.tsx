@@ -30,7 +30,7 @@ const Sidebar = () => {
 	return (
 		<div className="bg-surface w-[250px] p-md border-r flex gap-md flex-col border-border">
 			<div className="flex flex-col gap-sm">
-				<Link to="/chat">
+				<Link to="/">
 					<SidebarLink isActive={false}>
 						<div className="flex items-center gap-xs">
 							<ArrowLeftIcon size={18} />
