@@ -12,12 +12,11 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings/route'
-import { Route as ChatRouteImport } from './routes/chat/route'
-import { Route as IndexImport } from './routes/index'
+import { Route as chatRouteImport } from './routes/(chat)/route'
 import { Route as SettingsIndexImport } from './routes/settings/index'
-import { Route as ChatIndexImport } from './routes/chat/index'
+import { Route as chatIndexImport } from './routes/(chat)/index'
 import { Route as SettingsPluginsIndexImport } from './routes/settings/plugins/index'
-import { Route as ChatIdIndexImport } from './routes/chat/$id/index'
+import { Route as chatIdIndexImport } from './routes/(chat)/$id/index'
 import { Route as SettingsPluginsIdImport } from './routes/settings/plugins/$id'
 
 // Create/Update Routes
@@ -28,15 +27,8 @@ const SettingsRouteRoute = SettingsRouteImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ChatRouteRoute = ChatRouteImport.update({
-  id: '/chat',
-  path: '/chat',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const IndexRoute = IndexImport.update({
-  id: '/',
-  path: '/',
+const chatRouteRoute = chatRouteImport.update({
+  id: '/(chat)',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -46,10 +38,10 @@ const SettingsIndexRoute = SettingsIndexImport.update({
   getParentRoute: () => SettingsRouteRoute,
 } as any)
 
-const ChatIndexRoute = ChatIndexImport.update({
+const chatIndexRoute = chatIndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => ChatRouteRoute,
+  getParentRoute: () => chatRouteRoute,
 } as any)
 
 const SettingsPluginsIndexRoute = SettingsPluginsIndexImport.update({
@@ -58,10 +50,10 @@ const SettingsPluginsIndexRoute = SettingsPluginsIndexImport.update({
   getParentRoute: () => SettingsRouteRoute,
 } as any)
 
-const ChatIdIndexRoute = ChatIdIndexImport.update({
+const chatIdIndexRoute = chatIdIndexImport.update({
   id: '/$id/',
   path: '/$id/',
-  getParentRoute: () => ChatRouteRoute,
+  getParentRoute: () => chatRouteRoute,
 } as any)
 
 const SettingsPluginsIdRoute = SettingsPluginsIdImport.update({
@@ -74,18 +66,11 @@ const SettingsPluginsIdRoute = SettingsPluginsIdImport.update({
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/(chat)': {
+      id: '/(chat)'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/chat': {
-      id: '/chat'
-      path: '/chat'
-      fullPath: '/chat'
-      preLoaderRoute: typeof ChatRouteImport
+      preLoaderRoute: typeof chatRouteImport
       parentRoute: typeof rootRoute
     }
     '/settings': {
@@ -95,12 +80,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRoute
     }
-    '/chat/': {
-      id: '/chat/'
+    '/(chat)/': {
+      id: '/(chat)/'
       path: '/'
-      fullPath: '/chat/'
-      preLoaderRoute: typeof ChatIndexImport
-      parentRoute: typeof ChatRouteImport
+      fullPath: '/'
+      preLoaderRoute: typeof chatIndexImport
+      parentRoute: typeof chatRouteImport
     }
     '/settings/': {
       id: '/settings/'
@@ -116,12 +101,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsPluginsIdImport
       parentRoute: typeof SettingsRouteImport
     }
-    '/chat/$id/': {
-      id: '/chat/$id/'
+    '/(chat)/$id/': {
+      id: '/(chat)/$id/'
       path: '/$id'
-      fullPath: '/chat/$id'
-      preLoaderRoute: typeof ChatIdIndexImport
-      parentRoute: typeof ChatRouteImport
+      fullPath: '/$id'
+      preLoaderRoute: typeof chatIdIndexImport
+      parentRoute: typeof chatRouteImport
     }
     '/settings/plugins/': {
       id: '/settings/plugins/'
@@ -135,18 +120,18 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
-interface ChatRouteRouteChildren {
-  ChatIndexRoute: typeof ChatIndexRoute
-  ChatIdIndexRoute: typeof ChatIdIndexRoute
+interface chatRouteRouteChildren {
+  chatIndexRoute: typeof chatIndexRoute
+  chatIdIndexRoute: typeof chatIdIndexRoute
 }
 
-const ChatRouteRouteChildren: ChatRouteRouteChildren = {
-  ChatIndexRoute: ChatIndexRoute,
-  ChatIdIndexRoute: ChatIdIndexRoute,
+const chatRouteRouteChildren: chatRouteRouteChildren = {
+  chatIndexRoute: chatIndexRoute,
+  chatIdIndexRoute: chatIdIndexRoute,
 }
 
-const ChatRouteRouteWithChildren = ChatRouteRoute._addFileChildren(
-  ChatRouteRouteChildren,
+const chatRouteRouteWithChildren = chatRouteRoute._addFileChildren(
+  chatRouteRouteChildren,
 )
 
 interface SettingsRouteRouteChildren {
@@ -166,34 +151,30 @@ const SettingsRouteRouteWithChildren = SettingsRouteRoute._addFileChildren(
 )
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/chat': typeof ChatRouteRouteWithChildren
+  '/': typeof chatIndexRoute
   '/settings': typeof SettingsRouteRouteWithChildren
-  '/chat/': typeof ChatIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/settings/plugins/$id': typeof SettingsPluginsIdRoute
-  '/chat/$id': typeof ChatIdIndexRoute
+  '/$id': typeof chatIdIndexRoute
   '/settings/plugins': typeof SettingsPluginsIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/chat': typeof ChatIndexRoute
+  '/': typeof chatIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/settings/plugins/$id': typeof SettingsPluginsIdRoute
-  '/chat/$id': typeof ChatIdIndexRoute
+  '/$id': typeof chatIdIndexRoute
   '/settings/plugins': typeof SettingsPluginsIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/chat': typeof ChatRouteRouteWithChildren
+  '/(chat)': typeof chatRouteRouteWithChildren
   '/settings': typeof SettingsRouteRouteWithChildren
-  '/chat/': typeof ChatIndexRoute
+  '/(chat)/': typeof chatIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/settings/plugins/$id': typeof SettingsPluginsIdRoute
-  '/chat/$id/': typeof ChatIdIndexRoute
+  '/(chat)/$id/': typeof chatIdIndexRoute
   '/settings/plugins/': typeof SettingsPluginsIndexRoute
 }
 
@@ -201,43 +182,32 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/chat'
     | '/settings'
-    | '/chat/'
     | '/settings/'
     | '/settings/plugins/$id'
-    | '/chat/$id'
+    | '/$id'
     | '/settings/plugins'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/chat'
-    | '/settings'
-    | '/settings/plugins/$id'
-    | '/chat/$id'
-    | '/settings/plugins'
+  to: '/' | '/settings' | '/settings/plugins/$id' | '/$id' | '/settings/plugins'
   id:
     | '__root__'
-    | '/'
-    | '/chat'
+    | '/(chat)'
     | '/settings'
-    | '/chat/'
+    | '/(chat)/'
     | '/settings/'
     | '/settings/plugins/$id'
-    | '/chat/$id/'
+    | '/(chat)/$id/'
     | '/settings/plugins/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  ChatRouteRoute: typeof ChatRouteRouteWithChildren
+  chatRouteRoute: typeof chatRouteRouteWithChildren
   SettingsRouteRoute: typeof SettingsRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  ChatRouteRoute: ChatRouteRouteWithChildren,
+  chatRouteRoute: chatRouteRouteWithChildren,
   SettingsRouteRoute: SettingsRouteRouteWithChildren,
 }
 
@@ -251,19 +221,15 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
-        "/chat",
+        "/(chat)",
         "/settings"
       ]
     },
-    "/": {
-      "filePath": "index.tsx"
-    },
-    "/chat": {
-      "filePath": "chat/route.tsx",
+    "/(chat)": {
+      "filePath": "(chat)/route.tsx",
       "children": [
-        "/chat/",
-        "/chat/$id/"
+        "/(chat)/",
+        "/(chat)/$id/"
       ]
     },
     "/settings": {
@@ -274,9 +240,9 @@ export const routeTree = rootRoute
         "/settings/plugins/"
       ]
     },
-    "/chat/": {
-      "filePath": "chat/index.tsx",
-      "parent": "/chat"
+    "/(chat)/": {
+      "filePath": "(chat)/index.tsx",
+      "parent": "/(chat)"
     },
     "/settings/": {
       "filePath": "settings/index.tsx",
@@ -286,9 +252,9 @@ export const routeTree = rootRoute
       "filePath": "settings/plugins/$id.tsx",
       "parent": "/settings"
     },
-    "/chat/$id/": {
-      "filePath": "chat/$id/index.tsx",
-      "parent": "/chat"
+    "/(chat)/$id/": {
+      "filePath": "(chat)/$id/index.tsx",
+      "parent": "/(chat)"
     },
     "/settings/plugins/": {
       "filePath": "settings/plugins/index.tsx",
