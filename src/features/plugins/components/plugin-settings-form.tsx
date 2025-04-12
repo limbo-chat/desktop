@@ -64,9 +64,9 @@ const SettingWrapper = ({ setting, children }: PropsWithChildren<SettingWrapperP
 	return (
 		<div className="flex justify-between items-center">
 			<div>
-				<label htmlFor={setting.id}>{setting.title}</label>
+				<label htmlFor={setting.id}>{setting.label}</label>
 				<Text size="sm" color="muted">
-					{setting.helpText}
+					{setting.description}
 				</Text>
 			</div>
 			{children}
