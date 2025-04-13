@@ -36,21 +36,22 @@
 	--theme-color-white: #ffffff;
 	--theme-color-black: #000000;
 
-	--theme-color-border: #4a4a4a;
+	--theme-color-background: #0e0e10;
+	--theme-color-surface: #1a1a1d;
+	--theme-color-surface-alt: #222228;
+	--theme-color-border: #2e2e33;
 
-	--theme-color-primary: #007aff;
-	--theme-color-primary-hover: #1a87ff;
+	--theme-color-primary: #4d89c4;
+	--theme-color-primary-hover: #5c9cd4;
+	--theme-color-secondary: #2a2a31;
+	--theme-color-secondary-hover: #34343c;
 
-	--theme-color-secondary: #363636;
-	--theme-color-secondary-hover: #3f3f3f;
+	--theme-color-text-default: #e5e5e5;
+	--theme-color-text-muted: #9a9aa0;
 
-	--theme-color-background: #151515;
-	--theme-color-surface: #242424;
-	--theme-color-surface-alt: #363636;
-
-	/* text colors */
-	--theme-color-text-default: #ffffff;
-	--theme-color-text-muted: #a0a0a0;
+	/* Semantic colors */
+	--theme-color-error: #ff5c57;
+	--theme-color-warning: #f1c40f;
 
 	/* misc */
 	--theme-border-width: 1px;
