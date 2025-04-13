@@ -1,5 +1,4 @@
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { Text } from "../../../components/text";
+import { createFileRoute } from "@tanstack/react-router";
 import { usePlugins } from "../../../features/plugins/hooks";
 
 export const Route = createFileRoute("/settings/plugins/")({
@@ -12,15 +11,15 @@ function RouteComponent() {
 	return (
 		<div>
 			<div>
-				<Text size="lg">Installed plugins</Text>
+				<p>Installed plugins</p>
 			</div>
 			<div className="flex flex-col gap-sm">
 				{plugins.map((plugin) => (
 					<div key={plugin.manifest.id}>
-						<Text>{plugin.manifest.name}</Text>
-						<Text size="sm">Version {plugin.manifest.version}</Text>
-						<Text size="sm">By {plugin.manifest.author.name}</Text>
-						<Text size="sm">{plugin.manifest.description}</Text>
+						<p>{plugin.manifest.name}</p>
+						<p>Version {plugin.manifest.version}</p>
+						<p>By {plugin.manifest.author.name}</p>
+						<p>{plugin.manifest.description}</p>
 					</div>
 				))}
 			</div>

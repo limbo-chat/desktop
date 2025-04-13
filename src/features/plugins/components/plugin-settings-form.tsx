@@ -4,7 +4,6 @@ import type { Plugin } from "../core/plugin";
 import type * as limbo from "limbo";
 import { useEffect, type HTMLProps, type PropsWithChildren } from "react";
 import { TextInput } from "../../../components/text-input";
-import { Text } from "../../../components/text";
 
 interface TextSettingRendererProps {
 	setting: limbo.TextSetting;
@@ -65,9 +64,7 @@ const SettingWrapper = ({ setting, children }: PropsWithChildren<SettingWrapperP
 		<div className="flex justify-between items-center">
 			<div>
 				<label htmlFor={setting.id}>{setting.label}</label>
-				<Text size="sm" color="muted">
-					{setting.description}
-				</Text>
+				<p>{setting.description}</p>
 			</div>
 			{children}
 		</div>

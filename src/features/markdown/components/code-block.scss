@@ -1,0 +1,24 @@
+.code-block {
+	overflow: hidden;
+	border-radius: var(--theme-rounding-sm);
+	font-size: var(--theme-font-size-sm);
+}
+
+.code-block__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background-color: var(--theme-color-surface-alt);
+	padding-inline: var(--theme-spacing-md);
+	border-width: var(--theme-border-width);
+	border-color: var(--theme-color-border);
+}
+
+.code-block__body {
+	background-color: var(--theme-color-surface);
+	padding: var(--theme-spacing-md);
+}
+
+.code-block__code {
+	font-family: var(--theme-font-family-mono);
+}

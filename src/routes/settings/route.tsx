@@ -1,5 +1,4 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
-import { Text } from "../../components/text";
 import { usePlugins } from "../../features/plugins/hooks";
 import { type PropsWithChildren } from "react";
 import { ArrowLeftIcon } from "lucide-react";
@@ -50,9 +49,7 @@ const Sidebar = () => {
 				</Link>
 			</div>
 			<div className="flex flex-col gap-sm">
-				<Text size="sm" color="muted" weight="medium" className="ml-sm">
-					Plugins
-				</Text>
+				<p>Plugins</p>
 				<div className="flex flex-col gap-sm">
 					{plugins.map((plugin) => (
 						<Link

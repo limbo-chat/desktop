@@ -11,9 +11,9 @@ import { PluginManagerProvider } from "../features/plugins/components/plugin-man
 import { PluginManager } from "../features/plugins/core/plugin-manager";
 import { useLLMChunkSubscriber } from "../features/chat/hooks";
 
+import "../styles/preflight.css";
 import "../styles/default-fonts.css";
 import "../styles/default-theme.css";
-import "../styles/tailwind.css";
 
 export const Route = createRootRoute({
 	component: RootLayout,

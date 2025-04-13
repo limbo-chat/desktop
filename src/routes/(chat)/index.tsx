@@ -5,5 +5,5 @@ export const Route = createFileRoute("/(chat)/")({
 });
 
 function NewChatPage() {
-	return <div className="h-full flex items-center justify-center">new chat</div>;
+	return <div className="chat-column">new chat</div>;
 }

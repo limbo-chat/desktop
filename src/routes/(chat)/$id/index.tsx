@@ -14,7 +14,7 @@ const MainChatLog = () => {
 
 function ChatPage() {
 	return (
-		<div className="pt-xl">
+		<div className="chat-column">
 			<MainChatLog />
 		</div>
 	);

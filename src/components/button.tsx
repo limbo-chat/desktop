@@ -1,20 +1,19 @@
 import type { ButtonHTMLAttributes } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import "./button.scss";
 
-const buttonVariants = cva("inline-flex justify-center items-center cursor-pointer rounded-sm", {
+const buttonVariants = cva("button", {
 	variants: {
 		color: {
-			primary: "bg-primary hover:bg-primary-hover",
-			secondary: "bg-secondary hover:bg-secondary-hover",
+			primary: "button--primary",
+			secondary: "button--secondary",
 		},
 		size: {
-			default: "h-10 px-md py-sm",
-			icon: "size-9",
+			icon: "button--icon",
 		},
 	},
 	defaultVariants: {
 		color: "primary",
-		size: "default",
 	},
 });
 

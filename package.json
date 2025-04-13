@@ -38,7 +38,6 @@
 		"zustand": "^5.0.3"
 	},
 	"devDependencies": {
-		"@tailwindcss/vite": "^4.0.15",
 		"@tanstack/router-plugin": "^1.114.27",
 		"@types/react": "^19.0.12",
 		"@types/react-dom": "^19.0.4",
@@ -48,7 +47,6 @@
 		"electron-builder": "^25.1.8",
 		"prettier": "^3.5.3",
 		"sass-embedded": "^1.86.0",
-		"tailwindcss": "^4.0.15",
 		"typescript": "^5.8.2",
 		"vite": "^6.2.2",
 		"vite-plugin-electron": "^0.29.0",

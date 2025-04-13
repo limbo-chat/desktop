@@ -1,0 +1,22 @@
+.chat-composer {
+	display: flex;
+	margin-inline: auto;
+	max-width: 750px;
+	width: 100%;
+	background-color: var(--theme-color-surface-alt);
+	padding: var(--theme-spacing-md);
+	border-top-left-radius: var(--theme-rounding-md);
+	border-top-right-radius: var(--theme-rounding-md);
+	border-top-right-radius: var(--theme-rounding-md);
+	border-color: var(--theme-color-border);
+	border-left-width: var(--theme-border-width);
+	border-right-width: var(--theme-border-width);
+	border-top-width: var(--theme-border-width);
+}
+
+.chat-composer__input {
+	flex: 1;
+	resize: none;
+	outline: none;
+	overflow-y: auto;
+}

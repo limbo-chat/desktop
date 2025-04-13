@@ -1,6 +1,7 @@
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../../../components/button";
+import "./code-block.scss";
 
 export interface CodeBlockProps {
 	lang: string;
@@ -33,14 +34,14 @@ const CopyButton = ({ onClick }: CopyButtonProps) => {
 
 export const CodeBlock = ({ lang, content }: CodeBlockProps) => {
 	return (
-		<div className="rounded-sm text-sm overflow-hidden">
-			<div className="flex items-center justify-between bg-surface-alt px-md py-sm border-b border-border">
+		<div className="code-block">
+			<div className="code-block__header">
 				<span>{lang}</span>
 				<CopyButton onClick={() => navigator.clipboard.writeText(content)} />
 			</div>
-			<div className="p-md bg-surface">
+			<div className="code-block__body">
 				<pre>
-					<code className="font-mono">{content}</code>
+					<code className="code-block__code">{content}</code>
 				</pre>
 			</div>
 		</div>

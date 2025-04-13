@@ -1,0 +1,10 @@
+.chat-sidebar {
+	width: 200px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	background-color: var(--theme-color-surface);
+	padding: var(--theme-spacing-md);
+	border-right-width: var(--theme-border-width);
+	border-right-color: var(--theme-color-border);
+}
