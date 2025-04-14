@@ -10,7 +10,8 @@ function createWindow() {
 	const window = new BrowserWindow({
 		icon: path.join(VITE_PUBLIC, "electron-vite.svg"),
 		titleBarStyle: "hidden",
-		// expose window controlls in Windows/Linux
+		transparent: true,
+		// expose window controls in Windows/Linux
 		...(process.platform !== "darwin" ? { titleBarOverlay: true } : {}),
 		webPreferences: {
 			preload: path.join(MAIN_DIST, "preload.mjs"),

@@ -4,6 +4,9 @@ import "./button.scss";
 
 export const buttonVariants = cva("button", {
 	variants: {
+		variant: {
+			ghost: "button--ghost",
+		},
 		color: {
 			primary: "button--primary",
 			secondary: "button--secondary",
@@ -21,6 +24,8 @@ export interface ButtonProps
 	extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "color">,
 		VariantProps<typeof buttonVariants> {}
 
-export const Button = ({ color, size, className, ...buttonProps }: ButtonProps) => {
-	return <button className={buttonVariants({ className, color, size })} {...buttonProps} />;
+export const Button = ({ variant, color, size, className, ...buttonProps }: ButtonProps) => {
+	return (
+		<button className={buttonVariants({ className, variant, color, size })} {...buttonProps} />
+	);
 };

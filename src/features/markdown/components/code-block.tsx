@@ -9,14 +9,14 @@ export interface CodeBlockProps {
 }
 
 interface CopyButtonProps {
-	onClick: () => void;
+	content: string;
 }
 
-const CopyButton = ({ onClick }: CopyButtonProps) => {
+const CopyButton = ({ content }: CopyButtonProps) => {
 	const [copied, setCopied] = useState(false);
 
 	const handleClick = () => {
-		onClick();
+		navigator.clipboard.writeText(content);
 
 		setCopied(true);
 
@@ -26,8 +26,8 @@ const CopyButton = ({ onClick }: CopyButtonProps) => {
 	};
 
 	return (
-		<Button size="icon" color="secondary" onClick={handleClick}>
-			{copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
+		<Button color="secondary" variant="ghost" size="icon" onClick={handleClick}>
+			{copied ? <CheckIcon /> : <CopyIcon />}
 		</Button>
 	);
 };
@@ -37,7 +37,7 @@ export const CodeBlock = ({ lang, content }: CodeBlockProps) => {
 		<div className="code-block">
 			<div className="code-block__header">
 				<span>{lang}</span>
-				<CopyButton onClick={() => navigator.clipboard.writeText(content)} />
+				<CopyButton content={content} />
 			</div>
 			<div className="code-block__body">
 				<pre>

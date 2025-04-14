@@ -73,18 +73,18 @@ function RootLayout() {
 
 	return (
 		<RootLayoutProviders>
-			<Suspense fallback={<div>Loading...</div>}>
-				<PluginController />
-				<div className={clsx("app", appIsFocused && "app-focused")}>
-					<Titlebar />
+			<div className={clsx("app", appIsFocused && "app-focused")}>
+				<Titlebar />
+				<Suspense fallback={"loading, todo replace"}>
+					<PluginController />
 					<div className="app-row">
 						<SideDock />
 						<div className="app-content">
 							<Outlet />
 						</div>
 					</div>
-				</div>
-			</Suspense>
+				</Suspense>
+			</div>
 		</RootLayoutProviders>
 	);
 }

@@ -1,21 +1,27 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useChatMessages } from "../../../features/chat/hooks";
 import { ChatLog } from "../../../features/chat/components/chat-log";
 
 export const Route = createFileRoute("/(chat)/$id/")({
 	component: ChatPage,
 });
 
-const MainChatLog = () => {
-	const messages = useChatMessages();
-
-	return <ChatLog className="mx-auto px-xl w-full max-w-[75ch]" messages={messages} />;
-};
-
 function ChatPage() {
+	// const messages = useChatMessages();
+
 	return (
-		<div className="chat-column">
-			<MainChatLog />
-		</div>
+		<ChatLog
+			messages={[
+				{
+					id: 1,
+					role: "user",
+					content: "Hello!",
+				},
+				{
+					id: 2,
+					role: "assistant",
+					content: `Hello brother!\n# Heading 1\n## heading 2\n## heading 3 \n text 1 \n\n *text 2* [google](https://google.com) \n \`\`\`typescript\nconsole.log("test")\n\`\`\``,
+				},
+			]}
+		/>
 	);
 }
