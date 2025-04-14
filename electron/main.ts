@@ -9,6 +9,9 @@ import getPort from "get-port";
 function createWindow() {
 	const window = new BrowserWindow({
 		icon: path.join(VITE_PUBLIC, "electron-vite.svg"),
+		titleBarStyle: "hidden",
+		// expose window controlls in Windows/Linux
+		...(process.platform !== "darwin" ? { titleBarOverlay: true } : {}),
 		webPreferences: {
 			preload: path.join(MAIN_DIST, "preload.mjs"),
 		},
@@ -19,6 +22,14 @@ function createWindow() {
 		shell.openExternal(details.url);
 
 		return { action: "deny" };
+	});
+
+	window.on("focus", () => {
+		window.webContents.send("focus");
+	});
+
+	window.on("blur", () => {
+		window.webContents.send("blur");
 	});
 
 	if (VITE_DEV_SERVER_URL) {

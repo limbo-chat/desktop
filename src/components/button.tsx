@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import "./button.scss";
 
-const buttonVariants = cva("button", {
+export const buttonVariants = cva("button", {
 	variants: {
 		color: {
 			primary: "button--primary",

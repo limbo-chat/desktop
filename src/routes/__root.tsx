@@ -10,10 +10,16 @@ import { PluginController } from "../features/plugins/components/plugin-controll
 import { PluginManagerProvider } from "../features/plugins/components/plugin-manager-provider";
 import { PluginManager } from "../features/plugins/core/plugin-manager";
 import { useLLMChunkSubscriber } from "../features/chat/hooks";
+import { SideDock } from "./-components/side-dock";
 
 import "../styles/preflight.css";
 import "../styles/default-fonts.css";
 import "../styles/default-theme.css";
+import "./styles.scss";
+
+import { Titlebar } from "./-components/titlebar";
+import { useIsAppFocused } from "../hooks/common";
+import clsx from "clsx";
 
 export const Route = createRootRoute({
 	component: RootLayout,
@@ -63,11 +69,21 @@ function RootLayoutProviders({ children }: PropsWithChildren) {
 }
 
 function RootLayout() {
+	const appIsFocused = useIsAppFocused();
+
 	return (
 		<RootLayoutProviders>
 			<Suspense fallback={<div>Loading...</div>}>
 				<PluginController />
-				<Outlet />
+				<div className={clsx("app", appIsFocused && "app-focused")}>
+					<Titlebar />
+					<div className="app-row">
+						<SideDock />
+						<div className="app-content">
+							<Outlet />
+						</div>
+					</div>
+				</div>
 			</Suspense>
 		</RootLayoutProviders>
 	);

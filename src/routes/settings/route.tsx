@@ -1,7 +1,6 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { usePlugins } from "../../features/plugins/hooks";
 import { type PropsWithChildren } from "react";
-import { ArrowLeftIcon } from "lucide-react";
 import clsx from "clsx";
 
 export const Route = createFileRoute("/settings")({
@@ -29,14 +28,6 @@ const Sidebar = () => {
 	return (
 		<div className="bg-surface w-[250px] p-md border-r flex gap-md flex-col border-border">
 			<div className="flex flex-col gap-sm">
-				<Link to="/">
-					<SidebarLink isActive={false}>
-						<div className="flex items-center gap-xs">
-							<ArrowLeftIcon size={18} />
-							Go back
-						</div>
-					</SidebarLink>
-				</Link>
 				<Link to="/settings">
 					<SidebarLink isActive={location.pathname.endsWith("/settings")}>
 						General

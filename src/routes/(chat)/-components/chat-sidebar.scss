@@ -2,9 +2,32 @@
 	width: 200px;
 	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
 	background-color: var(--theme-color-surface);
 	padding: var(--theme-spacing-md);
 	border-right-width: var(--theme-border-width);
 	border-right-color: var(--theme-color-border);
+}
+
+.new-chat-button {
+	margin-bottom: var(--theme-spacing-md);
+}
+
+.chat-links {
+	display: flex;
+	flex-direction: column;
+	gap: var(--theme-spacing-sm);
+}
+
+.chat-link {
+	background-color: transparent;
+	padding: var(--theme-spacing-sm);
+	border-radius: var(--theme-rounding-sm);
+
+	&:hover {
+		background-color: var(--theme-color-secondary-hover) !important;
+	}
+}
+
+.chat-link.active {
+	background-color: var(--theme-color-secondary);
 }

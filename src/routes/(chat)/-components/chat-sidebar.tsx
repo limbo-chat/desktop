@@ -1,23 +1,33 @@
 import { Link } from "@tanstack/react-router";
 import "./chat-sidebar.scss";
+import { PlusIcon } from "lucide-react";
+import { Button, buttonVariants } from "../../../components/button";
+
+interface ChatLinkProps {
+	id: string;
+	title: string;
+}
+
+const ChatLink = ({ id, title }: ChatLinkProps) => {
+	return (
+		<Link to="/$id" params={{ id }} className="chat-link">
+			{title}
+		</Link>
+	);
+};
 
 export const ChatSidebar = () => {
 	return (
 		<div className="chat-sidebar">
-			<div className="flex flex-col flex-1">
-				<Link
-					to="/"
-					className="bg-primary p-sm rounded-md hover:bg-primary-hover text-center mb-md"
-				>
-					New Chat
-				</Link>
-			</div>
-			<div>
-				<Link to="/settings">
-					<div className="bg-secondary p-sm rounded-md hover:bg-secondary-hover text-center">
-						Open settings
-					</div>
-				</Link>
+			<Link
+				to="/"
+				className={buttonVariants({ className: "new-chat-button", color: "secondary" })}
+			>
+				New chat
+			</Link>
+			<div className="chat-links">
+				<ChatLink id="1" title="Chat 1" />
+				<ChatLink id="2" title="Chat 2" />
 			</div>
 		</div>
 	);

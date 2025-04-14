@@ -1,0 +1,13 @@
+.app {
+	min-height: 100svh;
+}
+
+.app-row {
+	display: flex;
+	flex-direction: row;
+	min-height: 100svh;
+}
+
+.app-content {
+	flex: 1;
+}
