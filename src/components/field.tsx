@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import type { HTMLAttributes } from "react";
-import "./field.scss";
 import { cva, type VariantProps } from "class-variance-authority";
+import "./field.scss";
 
 const fieldVariants = cva("field", {
 	variants: {
@@ -15,24 +15,24 @@ export interface FieldProps
 	extends HTMLAttributes<HTMLDivElement>,
 		VariantProps<typeof fieldVariants> {}
 
-export const Field = ({ variant, className, children }: FieldProps) => {
-	return <div className={fieldVariants({ className, variant })}>{children}</div>;
+export const Field = ({ variant, className, ...divProps }: FieldProps) => {
+	return <div className={fieldVariants({ className, variant })} {...divProps} />;
 };
 
 export interface FieldInfoProps extends HTMLAttributes<HTMLDivElement> {}
 
-export const FieldInfo = ({ className, children }: FieldInfoProps) => {
-	return <div className={clsx("field-info", className)}>{children}</div>;
+export const FieldInfo = ({ className, ...divProps }: FieldInfoProps) => {
+	return <div className={clsx("field-info", className)} {...divProps} />;
 };
 
 export interface FieldLabelProps extends HTMLAttributes<HTMLLabelElement> {}
 
-export const FieldLabel = ({ className, children }: FieldLabelProps) => {
-	return <label className={clsx("field-label", className)}>{children}</label>;
+export const FieldLabel = ({ className, ...labelProps }: FieldLabelProps) => {
+	return <label className={clsx("field-label", className)} {...labelProps} />;
 };
 
 export interface FieldDescriptionProps extends HTMLAttributes<HTMLParagraphElement> {}
 
-export const FieldDescription = ({ className, children }: FieldDescriptionProps) => {
-	return <p className={clsx("field-description", className)}>{children}</p>;
+export const FieldDescription = ({ className, children, ...pProps }: FieldDescriptionProps) => {
+	return <p className={clsx("field-description", className)} {...pProps} />;
 };

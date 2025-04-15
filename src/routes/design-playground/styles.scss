@@ -1,0 +1,10 @@
+.design-system-page {
+	height: 100%;
+	display: flex;
+	flex-direction: row;
+}
+
+.design-system-content {
+	flex: 1;
+	padding: var(--theme-spacing-lg);
+}

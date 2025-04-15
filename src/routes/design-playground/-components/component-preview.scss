@@ -1,0 +1,29 @@
+.component-preview {
+	display: flex;
+	flex-direction: row;
+	border-radius: var(--theme-rounding-md);
+	border-width: var(--theme-border-width);
+	border-color: var(--theme-color-border);
+	overflow: hidden;
+}
+
+.component-preview-content {
+	flex: 1;
+	min-height: 300px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: var(--theme-spacing-sm);
+}
+
+.component-preview-panel {
+	display: flex;
+	flex-direction: column;
+	gap: var(--theme-spacing-md);
+	width: 100%;
+	max-width: 200px;
+	background-color: var(--theme-color-surface);
+	padding: var(--theme-spacing-md);
+	border-left-width: var(--theme-border-width);
+	border-left-color: var(--theme-color-border);
+}

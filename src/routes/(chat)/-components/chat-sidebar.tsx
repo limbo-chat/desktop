@@ -36,6 +36,14 @@ export const ChatSidebar = () => {
 						{({ isActive }) => <SidebarItem isActive={isActive}>Chat 2</SidebarItem>}
 					</Link>
 				</SidebarGroup>
+				<SidebarGroup title="Last 7 days">
+					<Link to="/$id" params={{ id: "3" }}>
+						{({ isActive }) => <SidebarItem isActive={isActive}>Chat 3</SidebarItem>}
+					</Link>
+					<Link to="/$id" params={{ id: "4" }}>
+						{({ isActive }) => <SidebarItem isActive={isActive}>Chat 4</SidebarItem>}
+					</Link>
+				</SidebarGroup>
 			</div>
 		</Sidebar>
 	);

@@ -6,7 +6,7 @@
 	border-color: var(--theme-color-border);
 }
 
-.code-block__header {
+.code-block-header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -18,11 +18,11 @@
 	border-bottom-color: var(--theme-color-border);
 }
 
-.code-block__body {
+.code-block-body {
 	background-color: var(--theme-color-surface);
 	padding: var(--theme-spacing-md);
 }
 
-.code-block__code {
+.code-block-code {
 	font-family: var(--theme-font-family-mono);
 }

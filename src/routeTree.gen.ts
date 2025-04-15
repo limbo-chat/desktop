@@ -12,18 +12,29 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings/route'
+import { Route as DesignPlaygroundRouteImport } from './routes/design-playground/route'
 import { Route as chatRouteImport } from './routes/(chat)/route'
 import { Route as SettingsIndexImport } from './routes/settings/index'
+import { Route as DesignPlaygroundIndexImport } from './routes/design-playground/index'
 import { Route as chatIndexImport } from './routes/(chat)/index'
+import { Route as SettingsDeveloperImport } from './routes/settings/developer'
 import { Route as SettingsPluginsIndexImport } from './routes/settings/plugins/index'
 import { Route as chatIdIndexImport } from './routes/(chat)/$id/index'
 import { Route as SettingsPluginsIdImport } from './routes/settings/plugins/$id'
+import { Route as DesignPlaygroundElementsButtonImport } from './routes/design-playground/elements/button'
+import { Route as DesignPlaygroundDesignSystemColorsImport } from './routes/design-playground/design-system/colors'
 
 // Create/Update Routes
 
 const SettingsRouteRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DesignPlaygroundRouteRoute = DesignPlaygroundRouteImport.update({
+  id: '/design-playground',
+  path: '/design-playground',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -38,10 +49,22 @@ const SettingsIndexRoute = SettingsIndexImport.update({
   getParentRoute: () => SettingsRouteRoute,
 } as any)
 
+const DesignPlaygroundIndexRoute = DesignPlaygroundIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DesignPlaygroundRouteRoute,
+} as any)
+
 const chatIndexRoute = chatIndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => chatRouteRoute,
+} as any)
+
+const SettingsDeveloperRoute = SettingsDeveloperImport.update({
+  id: '/developer',
+  path: '/developer',
+  getParentRoute: () => SettingsRouteRoute,
 } as any)
 
 const SettingsPluginsIndexRoute = SettingsPluginsIndexImport.update({
@@ -62,6 +85,20 @@ const SettingsPluginsIdRoute = SettingsPluginsIdImport.update({
   getParentRoute: () => SettingsRouteRoute,
 } as any)
 
+const DesignPlaygroundElementsButtonRoute =
+  DesignPlaygroundElementsButtonImport.update({
+    id: '/elements/button',
+    path: '/elements/button',
+    getParentRoute: () => DesignPlaygroundRouteRoute,
+  } as any)
+
+const DesignPlaygroundDesignSystemColorsRoute =
+  DesignPlaygroundDesignSystemColorsImport.update({
+    id: '/design-system/colors',
+    path: '/design-system/colors',
+    getParentRoute: () => DesignPlaygroundRouteRoute,
+  } as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -73,12 +110,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof chatRouteImport
       parentRoute: typeof rootRoute
     }
+    '/design-playground': {
+      id: '/design-playground'
+      path: '/design-playground'
+      fullPath: '/design-playground'
+      preLoaderRoute: typeof DesignPlaygroundRouteImport
+      parentRoute: typeof rootRoute
+    }
     '/settings': {
       id: '/settings'
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRoute
+    }
+    '/settings/developer': {
+      id: '/settings/developer'
+      path: '/developer'
+      fullPath: '/settings/developer'
+      preLoaderRoute: typeof SettingsDeveloperImport
+      parentRoute: typeof SettingsRouteImport
     }
     '/(chat)/': {
       id: '/(chat)/'
@@ -87,12 +138,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof chatIndexImport
       parentRoute: typeof chatRouteImport
     }
+    '/design-playground/': {
+      id: '/design-playground/'
+      path: '/'
+      fullPath: '/design-playground/'
+      preLoaderRoute: typeof DesignPlaygroundIndexImport
+      parentRoute: typeof DesignPlaygroundRouteImport
+    }
     '/settings/': {
       id: '/settings/'
       path: '/'
       fullPath: '/settings/'
       preLoaderRoute: typeof SettingsIndexImport
       parentRoute: typeof SettingsRouteImport
+    }
+    '/design-playground/design-system/colors': {
+      id: '/design-playground/design-system/colors'
+      path: '/design-system/colors'
+      fullPath: '/design-playground/design-system/colors'
+      preLoaderRoute: typeof DesignPlaygroundDesignSystemColorsImport
+      parentRoute: typeof DesignPlaygroundRouteImport
+    }
+    '/design-playground/elements/button': {
+      id: '/design-playground/elements/button'
+      path: '/elements/button'
+      fullPath: '/design-playground/elements/button'
+      preLoaderRoute: typeof DesignPlaygroundElementsButtonImport
+      parentRoute: typeof DesignPlaygroundRouteImport
     }
     '/settings/plugins/$id': {
       id: '/settings/plugins/$id'
@@ -134,13 +206,33 @@ const chatRouteRouteWithChildren = chatRouteRoute._addFileChildren(
   chatRouteRouteChildren,
 )
 
+interface DesignPlaygroundRouteRouteChildren {
+  DesignPlaygroundIndexRoute: typeof DesignPlaygroundIndexRoute
+  DesignPlaygroundDesignSystemColorsRoute: typeof DesignPlaygroundDesignSystemColorsRoute
+  DesignPlaygroundElementsButtonRoute: typeof DesignPlaygroundElementsButtonRoute
+}
+
+const DesignPlaygroundRouteRouteChildren: DesignPlaygroundRouteRouteChildren = {
+  DesignPlaygroundIndexRoute: DesignPlaygroundIndexRoute,
+  DesignPlaygroundDesignSystemColorsRoute:
+    DesignPlaygroundDesignSystemColorsRoute,
+  DesignPlaygroundElementsButtonRoute: DesignPlaygroundElementsButtonRoute,
+}
+
+const DesignPlaygroundRouteRouteWithChildren =
+  DesignPlaygroundRouteRoute._addFileChildren(
+    DesignPlaygroundRouteRouteChildren,
+  )
+
 interface SettingsRouteRouteChildren {
+  SettingsDeveloperRoute: typeof SettingsDeveloperRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   SettingsPluginsIdRoute: typeof SettingsPluginsIdRoute
   SettingsPluginsIndexRoute: typeof SettingsPluginsIndexRoute
 }
 
 const SettingsRouteRouteChildren: SettingsRouteRouteChildren = {
+  SettingsDeveloperRoute: SettingsDeveloperRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   SettingsPluginsIdRoute: SettingsPluginsIdRoute,
   SettingsPluginsIndexRoute: SettingsPluginsIndexRoute,
@@ -152,16 +244,25 @@ const SettingsRouteRouteWithChildren = SettingsRouteRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '/': typeof chatIndexRoute
+  '/design-playground': typeof DesignPlaygroundRouteRouteWithChildren
   '/settings': typeof SettingsRouteRouteWithChildren
+  '/settings/developer': typeof SettingsDeveloperRoute
+  '/design-playground/': typeof DesignPlaygroundIndexRoute
   '/settings/': typeof SettingsIndexRoute
+  '/design-playground/design-system/colors': typeof DesignPlaygroundDesignSystemColorsRoute
+  '/design-playground/elements/button': typeof DesignPlaygroundElementsButtonRoute
   '/settings/plugins/$id': typeof SettingsPluginsIdRoute
   '/$id': typeof chatIdIndexRoute
   '/settings/plugins': typeof SettingsPluginsIndexRoute
 }
 
 export interface FileRoutesByTo {
+  '/settings/developer': typeof SettingsDeveloperRoute
   '/': typeof chatIndexRoute
+  '/design-playground': typeof DesignPlaygroundIndexRoute
   '/settings': typeof SettingsIndexRoute
+  '/design-playground/design-system/colors': typeof DesignPlaygroundDesignSystemColorsRoute
+  '/design-playground/elements/button': typeof DesignPlaygroundElementsButtonRoute
   '/settings/plugins/$id': typeof SettingsPluginsIdRoute
   '/$id': typeof chatIdIndexRoute
   '/settings/plugins': typeof SettingsPluginsIndexRoute
@@ -170,9 +271,14 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/(chat)': typeof chatRouteRouteWithChildren
+  '/design-playground': typeof DesignPlaygroundRouteRouteWithChildren
   '/settings': typeof SettingsRouteRouteWithChildren
+  '/settings/developer': typeof SettingsDeveloperRoute
   '/(chat)/': typeof chatIndexRoute
+  '/design-playground/': typeof DesignPlaygroundIndexRoute
   '/settings/': typeof SettingsIndexRoute
+  '/design-playground/design-system/colors': typeof DesignPlaygroundDesignSystemColorsRoute
+  '/design-playground/elements/button': typeof DesignPlaygroundElementsButtonRoute
   '/settings/plugins/$id': typeof SettingsPluginsIdRoute
   '/(chat)/$id/': typeof chatIdIndexRoute
   '/settings/plugins/': typeof SettingsPluginsIndexRoute
@@ -182,19 +288,38 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/design-playground'
     | '/settings'
+    | '/settings/developer'
+    | '/design-playground/'
     | '/settings/'
+    | '/design-playground/design-system/colors'
+    | '/design-playground/elements/button'
     | '/settings/plugins/$id'
     | '/$id'
     | '/settings/plugins'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/settings' | '/settings/plugins/$id' | '/$id' | '/settings/plugins'
+  to:
+    | '/settings/developer'
+    | '/'
+    | '/design-playground'
+    | '/settings'
+    | '/design-playground/design-system/colors'
+    | '/design-playground/elements/button'
+    | '/settings/plugins/$id'
+    | '/$id'
+    | '/settings/plugins'
   id:
     | '__root__'
     | '/(chat)'
+    | '/design-playground'
     | '/settings'
+    | '/settings/developer'
     | '/(chat)/'
+    | '/design-playground/'
     | '/settings/'
+    | '/design-playground/design-system/colors'
+    | '/design-playground/elements/button'
     | '/settings/plugins/$id'
     | '/(chat)/$id/'
     | '/settings/plugins/'
@@ -203,11 +328,13 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   chatRouteRoute: typeof chatRouteRouteWithChildren
+  DesignPlaygroundRouteRoute: typeof DesignPlaygroundRouteRouteWithChildren
   SettingsRouteRoute: typeof SettingsRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   chatRouteRoute: chatRouteRouteWithChildren,
+  DesignPlaygroundRouteRoute: DesignPlaygroundRouteRouteWithChildren,
   SettingsRouteRoute: SettingsRouteRouteWithChildren,
 }
 
@@ -222,6 +349,7 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/(chat)",
+        "/design-playground",
         "/settings"
       ]
     },
@@ -232,21 +360,46 @@ export const routeTree = rootRoute
         "/(chat)/$id/"
       ]
     },
+    "/design-playground": {
+      "filePath": "design-playground/route.tsx",
+      "children": [
+        "/design-playground/",
+        "/design-playground/design-system/colors",
+        "/design-playground/elements/button"
+      ]
+    },
     "/settings": {
       "filePath": "settings/route.tsx",
       "children": [
+        "/settings/developer",
         "/settings/",
         "/settings/plugins/$id",
         "/settings/plugins/"
       ]
     },
+    "/settings/developer": {
+      "filePath": "settings/developer.tsx",
+      "parent": "/settings"
+    },
     "/(chat)/": {
       "filePath": "(chat)/index.tsx",
       "parent": "/(chat)"
     },
+    "/design-playground/": {
+      "filePath": "design-playground/index.tsx",
+      "parent": "/design-playground"
+    },
     "/settings/": {
       "filePath": "settings/index.tsx",
       "parent": "/settings"
+    },
+    "/design-playground/design-system/colors": {
+      "filePath": "design-playground/design-system/colors.tsx",
+      "parent": "/design-playground"
+    },
+    "/design-playground/elements/button": {
+      "filePath": "design-playground/elements/button.tsx",
+      "parent": "/design-playground"
     },
     "/settings/plugins/$id": {
       "filePath": "settings/plugins/$id.tsx",

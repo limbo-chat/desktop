@@ -8,9 +8,10 @@ export interface MarkdownProps extends HTMLAttributes<HTMLDivElement> {
 	content: string;
 }
 
+// TODO, separate the markdown style component from the markdown parser. Will be useful for the design system page
 export const Markdown = ({ content, className, ...divProps }: MarkdownProps) => {
 	return (
-		<div className={clsx("md", className)} {...divProps}>
+		<div className={clsx("markdown", className)} {...divProps}>
 			<MarkdownToJsx
 				options={{
 					overrides: {

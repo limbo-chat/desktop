@@ -35,13 +35,13 @@ const CopyButton = ({ content }: CopyButtonProps) => {
 export const CodeBlock = ({ lang, content }: CodeBlockProps) => {
 	return (
 		<div className="code-block">
-			<div className="code-block__header">
+			<div className="code-block-header">
 				<span>{lang}</span>
 				<CopyButton content={content} />
 			</div>
-			<div className="code-block__body">
+			<div className="code-block-body">
 				<pre>
-					<code className="code-block__code">{content}</code>
+					<code className="code-block-code">{content}</code>
 				</pre>
 			</div>
 		</div>

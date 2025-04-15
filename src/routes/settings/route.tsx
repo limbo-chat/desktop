@@ -19,6 +19,11 @@ const SettingsSidebar = () => {
 						General
 					</SidebarItem>
 				</Link>
+				<Link to="/settings/developer">
+					<SidebarItem isActive={location.pathname.endsWith("/settings/development")}>
+						Developer
+					</SidebarItem>
+				</Link>
 				<Link to="/settings/plugins">
 					<SidebarItem isActive={location.pathname.endsWith("/settings/plugins")}>
 						Plugins

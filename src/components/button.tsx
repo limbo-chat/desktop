@@ -5,6 +5,7 @@ import "./button.scss";
 export const buttonVariants = cva("button", {
 	variants: {
 		variant: {
+			default: "",
 			ghost: "button--ghost",
 		},
 		color: {
@@ -12,6 +13,7 @@ export const buttonVariants = cva("button", {
 			secondary: "button--secondary",
 		},
 		size: {
+			md: "",
 			icon: "button--icon",
 		},
 	},
