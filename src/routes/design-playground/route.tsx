@@ -17,6 +17,9 @@ const DesignSystemSidebar = () => {
 				<Link to="/design-playground/elements/button">
 					{({ isActive }) => <SidebarItem isActive={isActive}>Button</SidebarItem>}
 				</Link>
+				<Link to="/design-playground/elements/markdown">
+					{({ isActive }) => <SidebarItem isActive={isActive}>Markdown</SidebarItem>}
+				</Link>
 			</SidebarGroup>
 		</Sidebar>
 	);

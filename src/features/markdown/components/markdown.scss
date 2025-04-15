@@ -1,7 +1,7 @@
 .markdown {
 	h1 {
 		font-size: 2.25em;
-		margin-bottom: 2em;
+		margin-bottom: 1em;
 		line-height: 2.5;
 		font-weight: 700;
 	}
@@ -137,7 +137,8 @@
 		border-color: var(--theme-color-border);
 	}
 
-	thead {
+	thead,
+	tfoot {
 		background-color: var(--theme-color-surface-alt);
 	}
 
