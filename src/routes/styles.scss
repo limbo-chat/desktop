@@ -6,6 +6,8 @@
 
 .app-row {
 	flex: 1;
+	// to account for the titlebar
+	height: calc(100svh - 30px);
 	display: flex;
 	flex-direction: row;
 }

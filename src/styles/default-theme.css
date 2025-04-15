@@ -71,6 +71,7 @@ body {
 	font-weight: var(--theme-font-weight-regular);
 	line-height: var(--theme-line-height-default);
 	caret-color: var(--theme-color-accent);
+	overflow: hidden;
 }
 
 ::selection {

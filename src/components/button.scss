@@ -14,6 +14,10 @@
 	&:hover {
 		background-color: var(--button-hover-color);
 	}
+
+	&:active {
+		transform: translateY(1px);
+	}
 }
 
 // colors
