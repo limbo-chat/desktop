@@ -1,0 +1,10 @@
+.settings-page {
+	display: flex;
+	flex-direction: row;
+	height: 100%;
+}
+
+.settings-content {
+	flex: 1;
+	padding: var(--theme-spacing-lg);
+}

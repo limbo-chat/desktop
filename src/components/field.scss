@@ -1,0 +1,29 @@
+.field {
+	display: flex;
+	flex-direction: column;
+	gap: var(--theme-spacing-sm);
+}
+
+.field--horizontal {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.field-info {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+	gap: var(--theme-spacing-xs);
+}
+
+.field-label {
+	font-size: var(--theme-font-size-sm);
+}
+
+.field-description {
+	color: var(--theme-color-text-muted);
+	font-size: var(--theme-font-size-xs);
+}

@@ -43,8 +43,11 @@
 
 	--theme-color-primary: #4d89c4;
 	--theme-color-primary-hover: #5c9cd4;
+	--theme-color-primary-foreground: #e5e5e5;
+
 	--theme-color-secondary: #2a2a31;
 	--theme-color-secondary-hover: #34343c;
+	--theme-color-secondary-foreground: #e5e5e5;
 
 	--theme-color-text-default: #e5e5e5;
 	--theme-color-text-muted: #9a9aa0;

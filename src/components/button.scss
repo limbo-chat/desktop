@@ -25,11 +25,13 @@
 .button--primary {
 	--button-color: var(--theme-color-primary);
 	--button-hover-color: var(--theme-color-primary-hover);
+	--button-text-color: var(--theme-color-primary-foreground);
 }
 
 .button--secondary {
 	--button-color: var(--theme-color-secondary);
 	--button-hover-color: var(--theme-color-secondary-hover);
+	--button-text-color: var(--theme-color-secondary-foreground);
 }
 
 // variants

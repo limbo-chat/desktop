@@ -1,11 +1,5 @@
 .chat-sidebar {
-	width: 200px;
-	display: flex;
-	flex-direction: column;
-	background-color: var(--theme-color-surface);
-	border-right-width: var(--theme-border-width);
-	border-right-color: var(--theme-color-border);
-	padding: var(--theme-spacing-sm);
+	gap: 0;
 }
 
 .chat-sidebar-actions {
@@ -14,35 +8,10 @@
 	justify-content: flex-end;
 	align-items: center;
 	gap: var(--theme-spacing-sm);
-	margin-bottom: var(--theme-spacing-sm);
-}
-
-.new-chat-button {
-	margin-bottom: var(--theme-spacing-md);
 }
 
 .chat-sidebar-main {
 	display: flex;
 	flex-direction: column;
 	overflow-y: auto;
-}
-
-.chat-links {
-	display: flex;
-	flex-direction: column;
-	gap: var(--theme-spacing-sm);
-}
-
-.chat-link {
-	background-color: transparent;
-	padding: var(--theme-spacing-sm);
-	border-radius: var(--theme-rounding-md);
-
-	&:hover {
-		background-color: var(--theme-color-secondary-hover) !important;
-	}
-}
-
-.chat-link.active {
-	background-color: var(--theme-color-secondary);
 }

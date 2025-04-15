@@ -1,73 +1,56 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
+import { Sidebar, SidebarGroup, SidebarItem } from "../../components/sidebar";
 import { usePlugins } from "../../features/plugins/hooks";
-import { type PropsWithChildren } from "react";
-import clsx from "clsx";
+import "./styles.scss";
 
 export const Route = createFileRoute("/settings")({
 	component: SettingsLayout,
 });
 
-interface SidebarLinkProps {
-	isActive: boolean;
-}
-
-const SidebarLink = ({ isActive, children }: PropsWithChildren<SidebarLinkProps>) => {
-	return (
-		<div
-			className={clsx("p-sm rounded-md hover:bg-secondary-hover", isActive && "bg-secondary")}
-		>
-			{children}
-		</div>
-	);
-};
-
-const Sidebar = () => {
+const SettingsSidebar = () => {
 	const plugins = usePlugins();
 	const location = useLocation();
 
 	return (
-		<div className="bg-surface w-[250px] p-md border-r flex gap-md flex-col border-border">
-			<div className="flex flex-col gap-sm">
+		<Sidebar className="settings-sidebar">
+			<SidebarGroup title="Settings">
 				<Link to="/settings">
-					<SidebarLink isActive={location.pathname.endsWith("/settings")}>
+					<SidebarItem isActive={location.pathname.endsWith("/settings")}>
 						General
-					</SidebarLink>
+					</SidebarItem>
 				</Link>
 				<Link to="/settings/plugins">
-					<SidebarLink isActive={location.pathname.endsWith("/settings/plugins")}>
+					<SidebarItem isActive={location.pathname.endsWith("/settings/plugins")}>
 						Plugins
-					</SidebarLink>
+					</SidebarItem>
 				</Link>
-			</div>
-			<div className="flex flex-col gap-sm">
-				<p>Plugins</p>
-				<div className="flex flex-col gap-sm">
-					{plugins.map((plugin) => (
-						<Link
-							to="/settings/plugins/$id"
-							params={{ id: plugin.manifest.id }}
-							key={plugin.manifest.id}
+			</SidebarGroup>
+			<SidebarGroup title="Plugins">
+				{plugins.map((plugin) => (
+					<Link
+						to="/settings/plugins/$id"
+						params={{ id: plugin.manifest.id }}
+						key={plugin.manifest.id}
+					>
+						<SidebarItem
+							isActive={location.pathname.endsWith(
+								`/settings/plugins/${plugin.manifest.id}`
+							)}
 						>
-							<SidebarLink
-								isActive={location.pathname.endsWith(
-									`/settings/plugins/${plugin.manifest.id}`
-								)}
-							>
-								{plugin.manifest.name}
-							</SidebarLink>
-						</Link>
-					))}
-				</div>
-			</div>
-		</div>
+							{plugin.manifest.name}
+						</SidebarItem>
+					</Link>
+				))}
+			</SidebarGroup>
+		</Sidebar>
 	);
 };
 
 function SettingsLayout() {
 	return (
-		<div className="flex min-h-svh">
-			<Sidebar />
-			<div className="flex-1 p-lg">
+		<div className="settings-page">
+			<SettingsSidebar />
+			<div className="settings-content">
 				<Outlet />
 			</div>
 		</div>

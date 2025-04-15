@@ -4,6 +4,7 @@ import type { Plugin } from "../core/plugin";
 import type * as limbo from "limbo";
 import { useEffect, type HTMLProps, type PropsWithChildren } from "react";
 import { TextInput } from "../../../components/text-input";
+import { Field, FieldDescription, FieldInfo, FieldLabel } from "../../../components/field";
 
 interface TextSettingRendererProps {
 	setting: limbo.TextSetting;
@@ -59,15 +60,15 @@ interface SettingWrapperProps {
 	setting: limbo.Setting;
 }
 
-const SettingWrapper = ({ setting, children }: PropsWithChildren<SettingWrapperProps>) => {
+const SettingField = ({ setting, children }: PropsWithChildren<SettingWrapperProps>) => {
 	return (
-		<div className="flex justify-between items-center">
-			<div>
-				<label htmlFor={setting.id}>{setting.label}</label>
-				<p>{setting.description}</p>
-			</div>
+		<Field variant="horizontal">
+			<FieldInfo>
+				<FieldLabel>{setting.label}</FieldLabel>
+				<FieldDescription>{setting.description}</FieldDescription>
+			</FieldInfo>
 			{children}
-		</div>
+		</Field>
 	);
 };
 
@@ -78,15 +79,11 @@ interface SettingRendererProps {
 const SettingRenderer = ({ setting }: SettingRendererProps) => {
 	const Renderer = settingRendererMap[setting.type];
 
-	if (!Renderer) {
-		return null;
-	}
-
 	return (
-		<SettingWrapper setting={setting}>
+		<SettingField setting={setting}>
 			{/* @ts-expect-error */}
 			<Renderer setting={setting} />
-		</SettingWrapper>
+		</SettingField>
 	);
 };
 
