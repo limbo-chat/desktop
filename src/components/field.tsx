@@ -33,6 +33,6 @@ export const FieldLabel = ({ className, ...labelProps }: FieldLabelProps) => {
 
 export interface FieldDescriptionProps extends HTMLAttributes<HTMLParagraphElement> {}
 
-export const FieldDescription = ({ className, children, ...pProps }: FieldDescriptionProps) => {
+export const FieldDescription = ({ className, ...pProps }: FieldDescriptionProps) => {
 	return <p className={clsx("field-description", className)} {...pProps} />;
 };

@@ -1,5 +1,6 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { Sidebar, SidebarGroup, SidebarItem } from "../../components/sidebar";
+import "./styles.scss";
 
 export const Route = createFileRoute("/design-playground")({
 	component: DesignPlaygroundLayout,

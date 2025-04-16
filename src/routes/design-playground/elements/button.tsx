@@ -5,19 +5,12 @@ import {
 	ComponentPreview,
 	ComponentPreviewContent,
 	ComponentPreviewPanel,
-} from "../-components/component-preview";
+} from "../../../features/design-playground/components/component-preview";
 import { Field, FieldLabel } from "../../../components/field";
 import {
-	SelectContent,
-	SelectControl,
-	SelectIndicator,
 	SelectItem,
 	SelectItemText,
-	SelectRoot,
-	SelectTrigger,
-	SelectValueText,
 	SelectItemIndicator,
-	SelectHiddenSelect,
 	Select,
 } from "../../../components/select";
 import { createListCollection } from "@ark-ui/react";
