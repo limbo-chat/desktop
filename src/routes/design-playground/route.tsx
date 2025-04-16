@@ -6,9 +6,9 @@ export const Route = createFileRoute("/design-playground")({
 	component: DesignPlaygroundLayout,
 });
 
-const DesignSystemSidebar = () => {
+const DesignPlaygroundSidebar = () => {
 	return (
-		<Sidebar>
+		<Sidebar className="design-playground-sidebar">
 			<SidebarGroup title="Design system">
 				<Link to="/design-playground/design-system/colors">
 					{({ isActive }) => <SidebarItem isActive={isActive}>Colors</SidebarItem>}
@@ -28,9 +28,9 @@ const DesignSystemSidebar = () => {
 
 function DesignPlaygroundLayout() {
 	return (
-		<div className="design-system-page">
-			<DesignSystemSidebar />
-			<div className="design-system-content">
+		<div className="design-playground-page">
+			<DesignPlaygroundSidebar />
+			<div className="design-playground-content">
 				<Outlet />
 			</div>
 		</div>

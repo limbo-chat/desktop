@@ -18,6 +18,7 @@ import { Route as SettingsIndexImport } from './routes/settings/index'
 import { Route as DesignPlaygroundIndexImport } from './routes/design-playground/index'
 import { Route as chatIndexImport } from './routes/(chat)/index'
 import { Route as SettingsDeveloperImport } from './routes/settings/developer'
+import { Route as SettingsAppearanceImport } from './routes/settings/appearance'
 import { Route as SettingsPluginsIndexImport } from './routes/settings/plugins/index'
 import { Route as chatIdIndexImport } from './routes/(chat)/$id/index'
 import { Route as SettingsPluginsIdImport } from './routes/settings/plugins/$id'
@@ -65,6 +66,12 @@ const chatIndexRoute = chatIndexImport.update({
 const SettingsDeveloperRoute = SettingsDeveloperImport.update({
   id: '/developer',
   path: '/developer',
+  getParentRoute: () => SettingsRouteRoute,
+} as any)
+
+const SettingsAppearanceRoute = SettingsAppearanceImport.update({
+  id: '/appearance',
+  path: '/appearance',
   getParentRoute: () => SettingsRouteRoute,
 } as any)
 
@@ -131,6 +138,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRoute
+    }
+    '/settings/appearance': {
+      id: '/settings/appearance'
+      path: '/appearance'
+      fullPath: '/settings/appearance'
+      preLoaderRoute: typeof SettingsAppearanceImport
+      parentRoute: typeof SettingsRouteImport
     }
     '/settings/developer': {
       id: '/settings/developer'
@@ -242,6 +256,7 @@ const DesignPlaygroundRouteRouteWithChildren =
   )
 
 interface SettingsRouteRouteChildren {
+  SettingsAppearanceRoute: typeof SettingsAppearanceRoute
   SettingsDeveloperRoute: typeof SettingsDeveloperRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   SettingsPluginsIdRoute: typeof SettingsPluginsIdRoute
@@ -249,6 +264,7 @@ interface SettingsRouteRouteChildren {
 }
 
 const SettingsRouteRouteChildren: SettingsRouteRouteChildren = {
+  SettingsAppearanceRoute: SettingsAppearanceRoute,
   SettingsDeveloperRoute: SettingsDeveloperRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   SettingsPluginsIdRoute: SettingsPluginsIdRoute,
@@ -263,6 +279,7 @@ export interface FileRoutesByFullPath {
   '/': typeof chatIndexRoute
   '/design-playground': typeof DesignPlaygroundRouteRouteWithChildren
   '/settings': typeof SettingsRouteRouteWithChildren
+  '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/developer': typeof SettingsDeveloperRoute
   '/design-playground/': typeof DesignPlaygroundIndexRoute
   '/settings/': typeof SettingsIndexRoute
@@ -275,6 +292,7 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
+  '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/developer': typeof SettingsDeveloperRoute
   '/': typeof chatIndexRoute
   '/design-playground': typeof DesignPlaygroundIndexRoute
@@ -292,6 +310,7 @@ export interface FileRoutesById {
   '/(chat)': typeof chatRouteRouteWithChildren
   '/design-playground': typeof DesignPlaygroundRouteRouteWithChildren
   '/settings': typeof SettingsRouteRouteWithChildren
+  '/settings/appearance': typeof SettingsAppearanceRoute
   '/settings/developer': typeof SettingsDeveloperRoute
   '/(chat)/': typeof chatIndexRoute
   '/design-playground/': typeof DesignPlaygroundIndexRoute
@@ -310,6 +329,7 @@ export interface FileRouteTypes {
     | '/'
     | '/design-playground'
     | '/settings'
+    | '/settings/appearance'
     | '/settings/developer'
     | '/design-playground/'
     | '/settings/'
@@ -321,6 +341,7 @@ export interface FileRouteTypes {
     | '/settings/plugins'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/settings/appearance'
     | '/settings/developer'
     | '/'
     | '/design-playground'
@@ -336,6 +357,7 @@ export interface FileRouteTypes {
     | '/(chat)'
     | '/design-playground'
     | '/settings'
+    | '/settings/appearance'
     | '/settings/developer'
     | '/(chat)/'
     | '/design-playground/'
@@ -395,11 +417,16 @@ export const routeTree = rootRoute
     "/settings": {
       "filePath": "settings/route.tsx",
       "children": [
+        "/settings/appearance",
         "/settings/developer",
         "/settings/",
         "/settings/plugins/$id",
         "/settings/plugins/"
       ]
+    },
+    "/settings/appearance": {
+      "filePath": "settings/appearance.tsx",
+      "parent": "/settings"
     },
     "/settings/developer": {
       "filePath": "settings/developer.tsx",

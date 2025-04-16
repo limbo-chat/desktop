@@ -1,8 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { buttonVariants } from "../../components/button";
-import { Field, FieldDescription, FieldLabel } from "../../components/field";
+import { createFileRoute } from "@tanstack/react-router";
 import { Checkbox } from "../../components/checkbox";
 import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/card";
 
 export const Route = createFileRoute("/settings/developer")({
 	component: DeveloperSettingsPage,
@@ -13,22 +12,21 @@ function DeveloperSettingsPage() {
 
 	return (
 		<div>
-			<div className="card">
-				<Field>
-					<FieldLabel>Developer mode</FieldLabel>
-					<FieldDescription>
+			<Card>
+				<CardHeader>
+					<CardTitle>Developer mode</CardTitle>
+					<CardDescription>
 						Developer mode activates the development server which enables hot reloading
-						of plugins and custom styles.
-					</FieldDescription>
+						of plugins and custom styles
+					</CardDescription>
+				</CardHeader>
+				<CardContent>
 					<Checkbox
 						checked={isDevMode}
 						onCheckedChange={(e) => setIsDevMode(e.checked as boolean)}
 					/>
-				</Field>
-			</div>
-			<Link className={buttonVariants()} to="/design-playground">
-				Open design playground
-			</Link>
+				</CardContent>
+			</Card>
 		</div>
 	);
 }

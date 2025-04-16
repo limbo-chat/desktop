@@ -19,6 +19,8 @@ export const buttonVariants = cva("button", {
 	},
 	defaultVariants: {
 		color: "primary",
+		variant: "default",
+		size: "md",
 	},
 });
 

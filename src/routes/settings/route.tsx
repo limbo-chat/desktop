@@ -19,6 +19,11 @@ const SettingsSidebar = () => {
 						General
 					</SidebarItem>
 				</Link>
+				<Link to="/settings/appearance">
+					<SidebarItem isActive={location.pathname.endsWith("/appearance")}>
+						Apperance
+					</SidebarItem>
+				</Link>
 				<Link to="/settings/developer">
 					<SidebarItem isActive={location.pathname.endsWith("/settings/development")}>
 						Developer
@@ -55,9 +60,7 @@ function SettingsLayout() {
 	return (
 		<div className="settings-page">
 			<SettingsSidebar />
-			<div className="settings-content">
-				<Outlet />
-			</div>
+			<Outlet />
 		</div>
 	);
 }
