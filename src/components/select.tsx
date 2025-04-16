@@ -3,7 +3,6 @@ import {
 	Select as ArkSelect,
 	Portal as ArkPortal,
 	type PortalProps as ArkPortalProps,
-	type ListCollection,
 } from "@ark-ui/react";
 import { ChevronsUpDownIcon } from "lucide-react";
 import clsx from "clsx";
@@ -90,19 +89,39 @@ export const SelectItemGroupLabel = ArkSelect.ItemGroupLabel;
 
 export const SelectHiddenSelect = ArkSelect.HiddenSelect;
 
-export interface SelectProps extends ArkSelect.RootProps<any> {}
+export interface SelectProps extends ArkSelect.RootProps<any> {
+	placeholder?: string;
+}
 
-export const Select = ({ children, ...rootProps }: PropsWithChildren<SelectProps>) => {
+export const SimpleSelect = ({
+	placeholder,
+	children,
+	...rootProps
+}: PropsWithChildren<SelectProps>) => {
 	return (
 		<SelectRoot {...rootProps}>
 			<SelectControl>
 				<SelectTrigger>
-					<SelectValueText />
+					<SelectValueText placeholder={placeholder} />
 					<SelectIndicator />
 				</SelectTrigger>
 			</SelectControl>
 			<SelectContent>{children}</SelectContent>
 			<SelectHiddenSelect />
 		</SelectRoot>
+	);
+};
+
+export interface SimpleSelectItemProps extends SelectItemProps {
+	item: any;
+	label: string;
+}
+
+export const SimpleSelectItem = ({ item, label }: SimpleSelectItemProps) => {
+	return (
+		<SelectItem item={item}>
+			<SelectItemText>{label}</SelectItemText>
+			<SelectItemIndicator />
+		</SelectItem>
 	);
 };

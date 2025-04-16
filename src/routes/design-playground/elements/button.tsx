@@ -7,12 +7,7 @@ import {
 	ComponentPreviewPanel,
 } from "../../../features/design-playground/components/component-preview";
 import { Field, FieldLabel } from "../../../components/field";
-import {
-	SelectItem,
-	SelectItemText,
-	SelectItemIndicator,
-	Select,
-} from "../../../components/select";
+import { SimpleSelect, SimpleSelectItem } from "../../../components/select";
 import { createListCollection } from "@ark-ui/react";
 import { HeartIcon } from "lucide-react";
 
@@ -73,48 +68,39 @@ function ButtonElementPage() {
 				<ComponentPreviewPanel>
 					<Field>
 						<FieldLabel>Color</FieldLabel>
-						<Select
+						<SimpleSelect
 							collection={buttonColorCollection}
 							value={[buttonColor]}
 							onValueChange={(e) => setButtonColor(e.value[0])}
 						>
 							{buttonColorCollection.items.map((item) => (
-								<SelectItem item={item} key={item.value}>
-									<SelectItemText>{item.label}</SelectItemText>
-									<SelectItemIndicator />
-								</SelectItem>
+								<SimpleSelectItem item={item} label={item.label} key={item.value} />
 							))}
-						</Select>
+						</SimpleSelect>
 					</Field>
 					<Field>
 						<FieldLabel>Variant</FieldLabel>
-						<Select
+						<SimpleSelect
 							value={[buttonVariant]}
 							collection={buttonVariantCollection}
 							onValueChange={(e) => setButtonVariant(e.value[0])}
 						>
 							{buttonVariantCollection.items.map((item) => (
-								<SelectItem item={item} key={item.value}>
-									<SelectItemText>{item.label}</SelectItemText>
-									<SelectItemIndicator />
-								</SelectItem>
+								<SimpleSelectItem item={item} label={item.label} key={item.value} />
 							))}
-						</Select>
+						</SimpleSelect>
 					</Field>
 					<Field>
 						<FieldLabel>Size</FieldLabel>
-						<Select
+						<SimpleSelect
 							value={[buttonSize]}
 							collection={buttonSizeCollection}
 							onValueChange={(e) => setButtonSize(e.value[0])}
 						>
 							{buttonSizeCollection.items.map((item) => (
-								<SelectItem item={item} key={item.value}>
-									<SelectItemText>{item.label}</SelectItemText>
-									<SelectItemIndicator />
-								</SelectItem>
+								<SimpleSelectItem item={item} label={item.label} key={item.value} />
 							))}
-						</Select>
+						</SimpleSelect>
 					</Field>
 				</ComponentPreviewPanel>
 			</ComponentPreview>
