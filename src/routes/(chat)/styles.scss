@@ -10,4 +10,6 @@
 	flex-direction: column;
 	overflow-y: auto;
 	padding-inline: var(--theme-spacing-lg);
+	max-width: 750px;
+	margin-inline: auto;
 }

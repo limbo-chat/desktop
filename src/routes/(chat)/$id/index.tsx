@@ -18,8 +18,33 @@ function ChatPage() {
 				},
 				{
 					id: 2,
-					role: "assistant",
-					content: `Hello brother!\n# Heading 1\n## heading 2\n## heading 3 \n text 1 \n\n *text 2* [google](https://google.com) \n \`\`\`typescript\nconsole.log("test")\n\`\`\``,
+					role: "user",
+					content: "Hello!",
+				},
+				{
+					id: 3,
+					role: "user",
+					content: "Hello!",
+				},
+				{
+					id: 4,
+					role: "user",
+					content: "Hello!",
+				},
+				{
+					id: 5,
+					role: "user",
+					content: "Hello!",
+				},
+				{
+					id: 6,
+					role: "user",
+					content: "Hello!",
+				},
+				{
+					id: 7,
+					role: "user",
+					content: "Hello!",
 				},
 			]}
 		/>
