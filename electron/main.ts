@@ -6,6 +6,7 @@ import { MAIN_DIST, RENDERER_DIST, VITE_DEV_SERVER_URL, VITE_PUBLIC } from "./co
 import { createServer } from "./server";
 import getPort from "get-port";
 import { migrateToLatest } from "./db/migrate";
+import { readSettings } from "./settings/utils";
 
 function createWindow() {
 	const window = new BrowserWindow({
@@ -43,8 +44,12 @@ function createWindow() {
 	return window;
 }
 
+async function ensureFilesExist() {
+	await Promise.all([readSettings(), migrateToLatest()]);
+}
+
 app.whenReady().then(async () => {
-	await migrateToLatest();
+	await ensureFilesExist();
 
 	const window = createWindow();
 
