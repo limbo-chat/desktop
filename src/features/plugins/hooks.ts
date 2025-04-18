@@ -1,9 +1,11 @@
-import { useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { PluginManagerContext } from "./contexts";
 import { useMainRouter, useMainRouterClient } from "../../lib/trpc";
 import { Plugin } from "./core/plugin";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import type { MainRouterOutputs } from "../../../electron/trpc/router";
+import { useLocalStore } from "../storage/stores";
+import type * as limbo from "limbo";
 
 export const usePluginManager = () => {
 	const pluginManager = useContext(PluginManagerContext);
@@ -144,4 +146,26 @@ export const usePlugin = (pluginId: string) => {
 	return useMemo(() => {
 		return plugins.find((plugin) => plugin.manifest.id === pluginId);
 	}, [plugins, pluginId]);
+};
+
+export const useSelectedLLM = () => {
+	const plugins = usePlugins();
+	const selectedPlugin = useLocalStore((state) => state.selectedModel);
+
+	return useMemo<limbo.LLM | undefined>(() => {
+		if (!selectedPlugin) {
+			return undefined;
+		}
+
+		const plugin = plugins.find((plugin) => plugin.manifest.id === selectedPlugin.pluginId);
+
+		if (!plugin) {
+			return undefined;
+		}
+
+		const registeredLLMs = plugin.getRegisteredLLMs();
+		const llm = registeredLLMs.find((llm) => llm.id === selectedPlugin.modelId);
+
+		return llm;
+	}, [plugins, selectedPlugin]);
 };

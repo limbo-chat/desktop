@@ -24,7 +24,6 @@ export class Plugin {
 	public events: EventEmitter<PluginEvents> = new EventEmitter();
 	public isActive: boolean = false;
 	private js: string;
-	private api: limbo.API;
 	private pluginModule: PluginModule | null = null;
 	private settingsCache: Map<string, any> = new Map();
 
@@ -35,43 +34,6 @@ export class Plugin {
 	constructor(opts: PluginOptions) {
 		this.manifest = opts.manifest;
 		this.js = opts.js;
-
-		this.api = {
-			notifications: {
-				show: (notification) => {
-					this.events.emit("notification", notification);
-				},
-			},
-			settings: {
-				register: (setting) => {
-					this.registeredSettings.push(setting);
-
-					this.events.emit("stateChange");
-				},
-				unregister: (settingId) => {
-					this.registeredSettings = this.registeredSettings.filter(
-						(setting) => setting.id !== settingId
-					);
-
-					this.events.emit("stateChange");
-				},
-				get: (settingId) => {
-					return this.settingsCache.get(settingId);
-				},
-			},
-			llms: {
-				register: (llm) => {
-					this.registeredLLMs.push(llm);
-
-					this.events.emit("stateChange");
-				},
-				unregister: (llmId) => {
-					this.registeredLLMs = this.registeredLLMs.filter((llm) => llm.id !== llmId);
-
-					this.events.emit("stateChange");
-				},
-			},
-		};
 	}
 
 	public setManifest(manifest: PluginManifest) {
@@ -95,8 +57,10 @@ export class Plugin {
 	}
 
 	public loadModule() {
+		const pluginAPI = this.createPluginAPI();
+
 		const sandboxedImports: Record<string, any> = {
-			limbo: this.api,
+			limbo: pluginAPI,
 		};
 
 		const sandboxedRequire = (moduleId: string) => {
@@ -178,5 +142,44 @@ export class Plugin {
 
 	public getRegisteredLLMs() {
 		return this.registeredLLMs;
+	}
+
+	private createPluginAPI(): limbo.API {
+		return {
+			notifications: {
+				show: (notification) => {
+					this.events.emit("notification", notification);
+				},
+			},
+			settings: {
+				register: (setting) => {
+					this.registeredSettings.push(setting);
+
+					this.events.emit("stateChange");
+				},
+				unregister: (settingId) => {
+					this.registeredSettings = this.registeredSettings.filter(
+						(setting) => setting.id !== settingId
+					);
+
+					this.events.emit("stateChange");
+				},
+				get: (settingId) => {
+					return this.settingsCache.get(settingId);
+				},
+			},
+			llms: {
+				register: (llm) => {
+					this.registeredLLMs.push(llm);
+
+					this.events.emit("stateChange");
+				},
+				unregister: (llmId) => {
+					this.registeredLLMs = this.registeredLLMs.filter((llm) => llm.id !== llmId);
+
+					this.events.emit("stateChange");
+				},
+			},
+		};
 	}
 }

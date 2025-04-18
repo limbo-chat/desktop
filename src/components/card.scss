@@ -3,6 +3,7 @@
 	border-width: var(--theme-border-width);
 	border-color: var(--theme-color-border);
 	border-radius: var(--theme-rounding-md);
+	font-size: var(--theme-font-size-sm);
 }
 
 .card-header {
@@ -17,7 +18,6 @@
 }
 
 .card-description {
-	font-size: var(--theme-font-size-sm);
 	color: var(--theme-color-text-muted);
 }
 

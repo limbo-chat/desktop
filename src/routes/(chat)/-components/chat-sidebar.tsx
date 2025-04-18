@@ -29,7 +29,7 @@ export const ChatSidebar = () => {
 			<div className="chat-sidebar-main">
 				<SidebarGroup title="All time">
 					{listChatsQuery.data.map((chat) => (
-						<Link to="/$id" params={{ id: chat.id.toString() }}>
+						<Link to="/$id" params={{ id: chat.id.toString() }} key={chat.id}>
 							{({ isActive }) => (
 								<SidebarItem isActive={isActive}>{chat.title}</SidebarItem>
 							)}

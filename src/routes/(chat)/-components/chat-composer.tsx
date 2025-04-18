@@ -5,7 +5,7 @@ import { ArrowUpIcon } from "lucide-react";
 import { SimpleSelect, SimpleSelectItem } from "../../../components/select";
 import { createListCollection } from "@ark-ui/react";
 import TextareaAutosize from "react-textarea-autosize";
-import { usePlugins } from "../../../features/plugins/hooks";
+import { usePlugins, useSelectedLLM } from "../../../features/plugins/hooks";
 import { IconButton } from "../../../components/icon-button";
 import { useSendMessage } from "../../../features/chat/hooks";
 import "./chat-composer.scss";
@@ -14,6 +14,7 @@ export const ChatComposer = () => {
 	const router = useRouter();
 	const plugins = usePlugins();
 	const sendMessage = useSendMessage();
+	const selectedLLM = useSelectedLLM();
 
 	const params = useParams({
 		strict: false,
@@ -47,7 +48,7 @@ export const ChatComposer = () => {
 			const pluginLLMs = plugin.getRegisteredLLMs();
 
 			return pluginLLMs.map((llm) => ({
-				value: llm.id,
+				value: `${plugin.manifest.id}/${llm.id}`,
 				label: llm.name,
 			}));
 		});

@@ -1,5 +1,5 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createRootRoute, createRootRouteWithContext, Link, Outlet } from "@tanstack/react-router";
 import { MainRouterProvider } from "../lib/trpc";
 import { Suspense, useMemo, type PropsWithChildren } from "react";
 import { ipcLink } from "trpc-electron/renderer";
@@ -21,7 +21,11 @@ import { Titlebar } from "./-components/titlebar";
 import { useIsAppFocused } from "../hooks/common";
 import clsx from "clsx";
 
-export const Route = createRootRoute({
+export interface RouterContext {
+	queryClient: QueryClient;
+}
+
+export const Route = createRootRouteWithContext<RouterContext>()({
 	component: RootLayout,
 	notFoundComponent: () => {
 		return (
@@ -31,15 +35,12 @@ export const Route = createRootRoute({
 			</div>
 		);
 	},
-	beforeLoad: () => {
-		return {
-			queryClient: new QueryClient(),
-		};
-	},
 });
 
 function RootLayoutProviders({ children }: PropsWithChildren) {
-	const routerContext = Route.useRouteContext();
+	const ctx = Route.useRouteContext();
+
+	console.log("root layout providers");
 
 	const trpcClient = useMemo(() => {
 		return createTRPCClient<MainRouter>({
@@ -55,11 +56,9 @@ function RootLayoutProviders({ children }: PropsWithChildren) {
 		return new PluginManager();
 	}, []);
 
-	useLLMChunkSubscriber();
-
 	return (
-		<QueryClientProvider client={routerContext.queryClient}>
-			<MainRouterProvider trpcClient={trpcClient} queryClient={routerContext.queryClient}>
+		<QueryClientProvider client={ctx.queryClient}>
+			<MainRouterProvider trpcClient={trpcClient} queryClient={ctx.queryClient}>
 				<PluginManagerProvider pluginManager={pluginManager}>
 					{children}
 				</PluginManagerProvider>
@@ -70,6 +69,8 @@ function RootLayoutProviders({ children }: PropsWithChildren) {
 
 function RootLayout() {
 	const appIsFocused = useIsAppFocused();
+
+	useLLMChunkSubscriber();
 
 	return (
 		<RootLayoutProviders>
