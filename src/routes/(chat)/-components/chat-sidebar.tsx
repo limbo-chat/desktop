@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { MessageCirclePlusIcon, SearchIcon } from "lucide-react";
 import { Sidebar, SidebarGroup, SidebarItem } from "../../../components/sidebar";
-import { Button, buttonVariants } from "../../../components/button";
+import { IconButton, iconButtonVariants } from "../../../components/icon-button";
 import "./chat-sidebar.scss";
 
 interface ChatLinkProps {
@@ -13,13 +13,12 @@ export const ChatSidebar = () => {
 	return (
 		<Sidebar className="chat-sidebar">
 			<div className="chat-sidebar-actions">
-				<Button size="icon" variant="ghost" color="secondary">
+				<IconButton variant="ghost" color="secondary">
 					<SearchIcon />
-				</Button>
+				</IconButton>
 				<Link
 					to="/"
-					className={buttonVariants({
-						size: "icon",
+					className={iconButtonVariants({
 						color: "secondary",
 						variant: "ghost",
 					})}

@@ -18,7 +18,6 @@ export const Route = createFileRoute("/design-playground/elements/button")({
 function ButtonElementPage() {
 	const [buttonColor, setButtonColor] = useState("primary");
 	const [buttonVariant, setButtonVariant] = useState("default");
-	const [buttonSize, setButtonSize] = useState("md");
 
 	const buttonColorCollection = createListCollection({
 		items: [
@@ -40,29 +39,12 @@ function ButtonElementPage() {
 		],
 	});
 
-	const buttonSizeCollection = createListCollection({
-		items: [
-			{
-				value: "md",
-				label: "Medium",
-			},
-			{
-				value: "icon",
-				label: "Icon",
-			},
-		],
-	});
-
 	return (
 		<div>
 			<ComponentPreview>
 				<ComponentPreviewContent>
-					<Button
-						color={buttonColor as any}
-						variant={buttonVariant as any}
-						size={buttonSize as any}
-					>
-						{buttonSize === "icon" ? <HeartIcon /> : "Click me"}
+					<Button color={buttonColor as any} variant={buttonVariant as any}>
+						Click me
 					</Button>
 				</ComponentPreviewContent>
 				<ComponentPreviewPanel>
@@ -86,18 +68,6 @@ function ButtonElementPage() {
 							onValueChange={(e) => setButtonVariant(e.value[0])}
 						>
 							{buttonVariantCollection.items.map((item) => (
-								<SimpleSelectItem item={item} label={item.label} key={item.value} />
-							))}
-						</SimpleSelect>
-					</Field>
-					<Field>
-						<FieldLabel>Size</FieldLabel>
-						<SimpleSelect
-							value={[buttonSize]}
-							collection={buttonSizeCollection}
-							onValueChange={(e) => setButtonSize(e.value[0])}
-						>
-							{buttonSizeCollection.items.map((item) => (
 								<SimpleSelectItem item={item} label={item.label} key={item.value} />
 							))}
 						</SimpleSelect>

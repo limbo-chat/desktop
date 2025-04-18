@@ -1,16 +1,18 @@
-import { useEffect } from "react";
+import { useMemo } from "react";
 import { useParams, useRouter } from "@tanstack/react-router";
 import { Controller, useForm } from "react-hook-form";
 import { useChatStore } from "../../../features/chat/stores";
-import { Button } from "../../../components/button";
 import { ArrowUpIcon } from "lucide-react";
 import { SimpleSelect, SimpleSelectItem } from "../../../components/select";
 import { createListCollection } from "@ark-ui/react";
 import TextareaAutosize from "react-textarea-autosize";
+import { usePlugins } from "../../../features/plugins/hooks";
+import { IconButton } from "../../../components/icon-button";
 import "./chat-composer.scss";
 
 export const ChatComposer = () => {
 	const router = useRouter();
+	const plugins = usePlugins();
 
 	const params = useParams({
 		strict: false,
@@ -37,37 +39,29 @@ export const ChatComposer = () => {
 
 		form.reset();
 
+		// temp
 		chatStore.addMessage({
 			id: Date.now(),
 			role: "user",
 			content: data.message,
 		});
-
-		// chatStore.addMessage({
-		// 	id: Date.now() + 1,
-		// 	role: "assistant",
-		// 	content: "",
-		// });
-
-		// sendMessageMutation.mutate(
-		// 	{
-		// 		message: data.message,
-		// 	},
-		// 	{
-		// 		onError: (err) => {
-		// 			console.log("failed to generate AI response", err);
-
-		// 			form.reset({
-		// 				message: data.message,
-		// 			});
-		// 		},
-		// 	}
-		// );
 	});
 
-	const tempCollection = createListCollection({
-		items: ["gpt4o", "gpt4", "gpt3.5"],
-	});
+	// temp
+	const llmCollection = useMemo(() => {
+		const items = plugins.flatMap((plugin) => {
+			const pluginLLMs = plugin.getRegisteredLLMs();
+
+			return pluginLLMs.map((llm) => ({
+				value: llm.id,
+				label: llm.name,
+			}));
+		});
+
+		return createListCollection({
+			items,
+		});
+	}, []);
 
 	return (
 		<div className="chat-composer">
@@ -95,18 +89,18 @@ export const ChatComposer = () => {
 						/>
 					)}
 				></Controller>
-				<Button type="submit" size="icon" color="secondary">
+				<IconButton color="secondary">
 					<ArrowUpIcon size={20} />
-				</Button>
+				</IconButton>
 			</form>
 			<div className="chat-composer-accessories">
 				<SimpleSelect
 					className="chat-model-select"
 					placeholder="Select model"
-					collection={tempCollection}
+					collection={llmCollection}
 				>
-					{tempCollection.items.map((item) => (
-						<SimpleSelectItem item={item} label={item} key={item} />
+					{llmCollection.items.map((item) => (
+						<SimpleSelectItem item={item} label={item.label} key={item.value} />
 					))}
 				</SimpleSelect>
 			</div>

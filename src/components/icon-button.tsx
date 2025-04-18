@@ -1,0 +1,28 @@
+import { cva, type VariantProps } from "class-variance-authority";
+import type { HTMLAttributes } from "react";
+import "./icon-button.scss";
+
+export const iconButtonVariants = cva("icon-button", {
+	variants: {
+		color: {
+			primary: "icon-button--primary",
+			secondary: "icon-button--secondary",
+		},
+		variant: {
+			default: "",
+			ghost: "icon-button--ghost",
+		},
+	},
+	defaultVariants: {
+		color: "primary",
+		variant: "default",
+	},
+});
+
+export interface IconButtonProps
+	extends Omit<HTMLAttributes<HTMLButtonElement>, "color">,
+		VariantProps<typeof iconButtonVariants> {}
+
+export const IconButton = ({ variant, color, className, ...props }: IconButtonProps) => {
+	return <button className={iconButtonVariants({ className, variant, color })} {...props} />;
+};

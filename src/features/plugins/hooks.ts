@@ -2,8 +2,8 @@ import { useCallback, useContext, useEffect, useMemo, useState, useSyncExternalS
 import { PluginManagerContext } from "./contexts";
 import { useMainRouter, useMainRouterClient } from "../../lib/trpc";
 import { Plugin } from "./core/plugin";
-import type { MainRouterOutputs } from "../../../electron/router";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import type { MainRouterOutputs } from "../../../electron/router";
 
 export const usePluginManager = () => {
 	const pluginManager = useContext(PluginManagerContext);

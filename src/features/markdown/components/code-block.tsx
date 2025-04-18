@@ -2,6 +2,7 @@ import { CheckIcon, CopyIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../../../components/button";
 import "./code-block.scss";
+import { IconButton } from "../../../components/icon-button";
 
 export interface CodeBlockProps {
 	lang: string;
@@ -26,9 +27,9 @@ const CopyButton = ({ content }: CopyButtonProps) => {
 	};
 
 	return (
-		<Button color="secondary" variant="ghost" size="icon" onClick={handleClick}>
+		<IconButton color="secondary" variant="ghost" onClick={handleClick}>
 			{copied ? <CheckIcon /> : <CopyIcon />}
-		</Button>
+		</IconButton>
 	);
 };
 

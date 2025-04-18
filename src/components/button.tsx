@@ -12,15 +12,10 @@ export const buttonVariants = cva("button", {
 			primary: "button--primary",
 			secondary: "button--secondary",
 		},
-		size: {
-			md: "",
-			icon: "button--icon",
-		},
 	},
 	defaultVariants: {
 		color: "primary",
 		variant: "default",
-		size: "md",
 	},
 });
 
@@ -28,8 +23,6 @@ export interface ButtonProps
 	extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "color">,
 		VariantProps<typeof buttonVariants> {}
 
-export const Button = ({ variant, color, size, className, ...buttonProps }: ButtonProps) => {
-	return (
-		<button className={buttonVariants({ className, variant, color, size })} {...buttonProps} />
-	);
+export const Button = ({ variant, color, className, ...buttonProps }: ButtonProps) => {
+	return <button className={buttonVariants({ className, variant, color })} {...buttonProps} />;
 };
