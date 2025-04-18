@@ -1,18 +1,19 @@
 import { useMemo } from "react";
 import { useParams, useRouter } from "@tanstack/react-router";
 import { Controller, useForm } from "react-hook-form";
-import { useChatStore } from "../../../features/chat/stores";
 import { ArrowUpIcon } from "lucide-react";
 import { SimpleSelect, SimpleSelectItem } from "../../../components/select";
 import { createListCollection } from "@ark-ui/react";
 import TextareaAutosize from "react-textarea-autosize";
 import { usePlugins } from "../../../features/plugins/hooks";
 import { IconButton } from "../../../components/icon-button";
+import { useSendMessage } from "../../../features/chat/hooks";
 import "./chat-composer.scss";
 
 export const ChatComposer = () => {
 	const router = useRouter();
 	const plugins = usePlugins();
+	const sendMessage = useSendMessage();
 
 	const params = useParams({
 		strict: false,
@@ -35,16 +36,9 @@ export const ChatComposer = () => {
 			});
 		}
 
-		const chatStore = useChatStore.getState();
+		sendMessage(data.message);
 
 		form.reset();
-
-		// temp
-		chatStore.addMessage({
-			id: Date.now(),
-			role: "user",
-			content: data.message,
-		});
 	});
 
 	// temp

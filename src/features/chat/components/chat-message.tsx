@@ -1,8 +1,10 @@
 import type { PropsWithChildren } from "react";
+import MarkdownToJsx from "markdown-to-jsx";
 import { Markdown } from "../../markdown/components/markdown";
 import type { ChatMessageType } from "../types";
 import clsx from "clsx";
 import "./chat-message.scss";
+import { CodeBlock } from "../../markdown/components/code-block";
 
 export interface ChatMessageProps {
 	message: ChatMessageType;
@@ -36,7 +38,36 @@ const UserChatMessage = ({ message }: ChatMessageProps) => {
 const AssistantChatMessage = ({ message }: ChatMessageProps) => {
 	return (
 		<ChatMessageContainer message={message} className={"assistant-message"}>
-			<Markdown content={message.content} />
+			<Markdown>
+				<MarkdownToJsx
+					options={{
+						overrides: {
+							a: {
+								props: {
+									target: "_blank",
+								},
+							},
+							input: {
+								props: {
+									disabled: true,
+								},
+							},
+							code: (props) => (
+								<CodeBlock
+									lang={
+										props.className
+											? props.className.split("lang-")[1]
+											: undefined
+									}
+									content={props.children}
+								/>
+							),
+						},
+					}}
+				>
+					{message.content}
+				</MarkdownToJsx>
+			</Markdown>
 		</ChatMessageContainer>
 	);
 };
