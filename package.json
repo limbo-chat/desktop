@@ -9,7 +9,8 @@
 		"build-vite": "vite build",
 		"build": "vite build && electron-builder",
 		"preview": "vite preview",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"electron:rebuild-packages": "electron-rebuild -f -w better-sqlite3"
 	},
 	"dependencies": {
 		"@ark-ui/react": "^5.2.0",
@@ -18,12 +19,14 @@
 		"@trpc/client": "^11.0.0",
 		"@trpc/server": "^11.0.0",
 		"@trpc/tanstack-react-query": "^11.0.0",
+		"better-sqlite3": "^11.9.1",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"eventemitter3": "^5.0.1",
 		"find-my-way": "^9.3.0",
 		"get-port": "^7.1.0",
 		"immer": "^10.1.1",
+		"kysely": "^0.28.0",
 		"limbo": "file:../limbo-api",
 		"lucide-react": "^0.483.0",
 		"markdown-to-jsx": "^7.7.4",
@@ -38,8 +41,10 @@
 		"zustand": "^5.0.3"
 	},
 	"devDependencies": {
+		"@electron/rebuild": "^3.7.1",
 		"@tailwindcss/vite": "^4.0.15",
 		"@tanstack/router-plugin": "^1.114.27",
+		"@types/better-sqlite3": "^7.6.13",
 		"@types/react": "^19.0.12",
 		"@types/react-dom": "^19.0.4",
 		"@types/semver": "^7.5.8",

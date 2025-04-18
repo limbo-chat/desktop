@@ -1,10 +1,11 @@
 import { app, shell, BrowserWindow } from "electron";
 import path from "node:path";
 import { createIPCHandler } from "trpc-electron/main";
-import { mainRouter } from "./router";
+import { mainRouter } from "./trpc/router";
 import { MAIN_DIST, RENDERER_DIST, VITE_DEV_SERVER_URL, VITE_PUBLIC } from "./constants";
 import { createServer } from "./server";
 import getPort from "get-port";
+import { migrateToLatest } from "./db/migrate";
 
 function createWindow() {
 	const window = new BrowserWindow({
@@ -31,6 +32,8 @@ function createWindow() {
 }
 
 app.whenReady().then(async () => {
+	await migrateToLatest();
+
 	const window = createWindow();
 
 	createIPCHandler({

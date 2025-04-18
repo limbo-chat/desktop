@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../trpc";
-import { getPlugins, getPlugin } from "../plugins/utils";
+import { getPlugins, getPlugin } from "../../plugins/utils";
 
 const getPluginInputSchema = z.object({
 	id: z.string(),
