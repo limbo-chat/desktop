@@ -1,10 +1,9 @@
-import { useCallback, useContext, useEffect, useRef } from "react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { PluginManagerContext } from "./contexts";
 import { useMainRouter, useMainRouterClient } from "../../lib/trpc";
 import { Plugin } from "./core/plugin";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import type { MainRouterOutputs } from "../../../electron/router";
-import { usePluginElementStore } from "./stores";
 
 export const usePluginManager = () => {
 	const pluginManager = useContext(PluginManagerContext);
@@ -16,95 +15,50 @@ export const usePluginManager = () => {
 	return pluginManager;
 };
 
-export const usePluginSubscriber = () => {
-	// we don't need to read any state, just access the store methods
-	const pluginElementsStore = usePluginElementStore.getState();
-
-	return useCallback((plugin: Plugin) => {
-		plugin.events.on("activate", () => {
-			// noop for now
-		});
-
-		plugin.events.on("deactivate", () => {
-			pluginElementsStore.removePluginElements(plugin.manifest.id);
-		});
-
-		plugin.events.on("notification", (notification) => {
-			console.log("showing notification in react!", notification);
-		});
-
-		plugin.events.on("registeredSetting", (setting) => {
-			pluginElementsStore.addSetting({
-				pluginId: plugin.manifest.id,
-				setting,
-			});
-		});
-
-		plugin.events.on("unregisteredSetting", (settingId) => {
-			pluginElementsStore.removeSetting(plugin.manifest.id, settingId);
-		});
-
-		plugin.events.on("registeredLLM", (llm) => {
-			pluginElementsStore.addLLM({
-				pluginId: plugin.manifest.id,
-				llm,
-			});
-		});
-
-		plugin.events.on("unregisteredLLM", (llmId) => {
-			pluginElementsStore.removeLLM(plugin.manifest.id, llmId);
-		});
-
-		plugin.events.on("registeredToolbarToggle", (toolbarToggle) => {
-			pluginElementsStore.addToolbarToggle({
-				pluginId: plugin.manifest.id,
-				toolbarToggle,
-			});
-		});
-
-		plugin.events.on("unregisteredToolbarToggle", (toolbarToggleId) => {
-			pluginElementsStore.removeToolbarToggle(plugin.manifest.id, toolbarToggleId);
-		});
-	}, []);
-};
-
-export const useInitialPluginLoader = () => {
+export const usePluginLoader = () => {
 	const mainRouter = useMainRouter();
-	const pluginManager = usePluginManager();
 	const getPluginsQuery = useSuspenseQuery(mainRouter.plugins.getPlugins.queryOptions());
-	const plugins = getPluginsQuery.data;
-	const subscribePlugin = usePluginSubscriber();
+	const pluginManager = usePluginManager();
 
-	const loadPlugins = useCallback(async (plugins: MainRouterOutputs["plugins"]["getPlugins"]) => {
-		for (const pluginData of plugins) {
-			try {
-				const plugin = new Plugin(pluginData);
+	const loadPlugin = useCallback((pluginData: MainRouterOutputs["plugins"]["getPlugins"][0]) => {
+		const plugin = new Plugin({
+			js: pluginData.js,
+			manifest: pluginData.manifest,
+		});
 
-				subscribePlugin(plugin);
-
-				await plugin.loadModule();
-
-				pluginManager.addPlugin(pluginData.manifest.id, plugin);
-			} catch {
-				console.log("failed to load plugin");
-				// noop for now, will need to indicate errors
-			}
+		// add the settings to the cache
+		for (const [key, val] of Object.entries(pluginData.data.settings)) {
+			plugin.setCachedSetting(key, val);
 		}
 
+		try {
+			plugin.loadModule();
+		} catch {
+			// todo, show notification
+			console.error(`failed to load plugin "${plugin.manifest.id}"`);
+		}
+
+		pluginManager.addPlugin(pluginData.manifest.id, plugin);
+	}, []);
+
+	const loadPlugins = useCallback(async () => {
+		for (const pluginData of getPluginsQuery.data) {
+			loadPlugin(pluginData);
+		}
+
+		// activate all plugins at the same time
 		await pluginManager.activatePlugins();
 	}, []);
 
 	useEffect(() => {
-		loadPlugins(plugins);
+		loadPlugins();
 	}, []);
 };
 
 export const usePluginHotReloader = () => {
 	const mainRouterClient = useMainRouterClient();
 	const pluginManager = usePluginManager();
-	const subscribePlugin = usePluginSubscriber();
 
-	// TODO, should I update the query data for getting the plugins?
 	useEffect(() => {
 		const handler = async (_event: any, pluginId: string) => {
 			let newPluginData;
@@ -119,27 +73,27 @@ export const usePluginHotReloader = () => {
 				return;
 			}
 
-			const oldPlugin = pluginManager.getPlugin(pluginId);
+			const plugin = pluginManager.getPlugin(pluginId);
 
-			if (!oldPlugin) {
+			if (!plugin) {
 				return;
 			}
 
 			// deactivate the old plugin before reloading
-			await oldPlugin.deactivate();
+			await plugin.deactivate();
 
-			// remove all event listeners from the old plugin
-			oldPlugin.events.removeAllListeners();
+			const newPlugin = new Plugin({
+				manifest: newPluginData.manifest,
+				js: newPluginData.js,
+			});
 
-			// create the new plugin
-			const newPlugin = new Plugin(newPluginData);
+			newPlugin.loadModule();
 
-			await newPlugin.loadModule();
+			// remove the old plugin
+			pluginManager.removePlugin(pluginId);
 
-			subscribePlugin(newPlugin);
-
-			// replace the old plugin with the new one
-			await pluginManager.addPlugin(newPlugin.manifest.id, newPlugin);
+			// aadd the new plugin
+			pluginManager.addPlugin(newPlugin.manifest.id, newPlugin);
 
 			console.info(
 				`%c hot reloaded plugin: "${newPlugin.manifest.id}"`,
@@ -158,10 +112,53 @@ export const usePluginHotReloader = () => {
 	}, []);
 };
 
-export const useLLMElements = () => {
-	return usePluginElementStore((state) => state.llms);
+export const usePlugins = () => {
+	const pluginManager = usePluginManager();
+	const [plugins, setPlugins] = useState<Plugin[]>(() => pluginManager.getPlugins());
+
+	useEffect(() => {
+		// also get the plugins on mount
+		setPlugins([...pluginManager.getPlugins()]);
+
+		const handler = () => {
+			setPlugins([...pluginManager.getPlugins()]);
+		};
+
+		pluginManager.events.on("pluginAdded", handler);
+		pluginManager.events.on("pluginRemoved", handler);
+
+		return () => {
+			pluginManager.events.removeListener("pluginAdded", handler);
+			pluginManager.events.removeListener("pluginRemoved", handler);
+		};
+	}, []);
+
+	return plugins;
 };
 
-export const useToolbarToggleElements = () => {
-	return usePluginElementStore((state) => state.toolbarToggles);
+export const usePlugin = (pluginId: string) => {
+	const plugins = usePlugins();
+
+	return useMemo(() => {
+		return plugins.find((plugin) => plugin.manifest.id === pluginId);
+	}, [plugins, pluginId]);
+};
+
+export const usePluginRegisteredSettings = (plugin: Plugin) => {
+	return useSyncExternalStore(
+		(onChange) => {
+			const handler = () => {
+				onChange();
+			};
+
+			plugin.events.on("registeredSetting", handler);
+			plugin.events.on("unregisteredSetting", handler);
+
+			return () => {
+				plugin.events.removeListener("registeredSetting", handler);
+				plugin.events.removeListener("unregisteredSetting", handler);
+			};
+		},
+		() => plugin.getRegisteredSettings()
+	);
 };

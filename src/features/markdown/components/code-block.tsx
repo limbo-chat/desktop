@@ -1,6 +1,8 @@
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../../../components/button";
+import "./code-block.scss";
+import { IconButton } from "../../../components/icon-button";
 
 export interface CodeBlockProps {
 	lang: string;
@@ -8,14 +10,14 @@ export interface CodeBlockProps {
 }
 
 interface CopyButtonProps {
-	onClick: () => void;
+	content: string;
 }
 
-const CopyButton = ({ onClick }: CopyButtonProps) => {
+const CopyButton = ({ content }: CopyButtonProps) => {
 	const [copied, setCopied] = useState(false);
 
 	const handleClick = () => {
-		onClick();
+		navigator.clipboard.writeText(content);
 
 		setCopied(true);
 
@@ -25,22 +27,22 @@ const CopyButton = ({ onClick }: CopyButtonProps) => {
 	};
 
 	return (
-		<Button size="icon" color="secondary" onClick={handleClick}>
-			{copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
-		</Button>
+		<IconButton color="secondary" variant="ghost" onClick={handleClick}>
+			{copied ? <CheckIcon /> : <CopyIcon />}
+		</IconButton>
 	);
 };
 
 export const CodeBlock = ({ lang, content }: CodeBlockProps) => {
 	return (
-		<div className="rounded-sm text-sm overflow-hidden">
-			<div className="flex items-center justify-between bg-surface-alt px-md py-sm border-b border-border">
+		<div className="code-block">
+			<div className="code-block-header">
 				<span>{lang}</span>
-				<CopyButton onClick={() => navigator.clipboard.writeText(content)} />
+				<CopyButton content={content} />
 			</div>
-			<div className="p-md bg-surface">
+			<div className="code-block-body">
 				<pre>
-					<code className="font-mono">{content}</code>
+					<code className="code-block-code">{content}</code>
 				</pre>
 			</div>
 		</div>

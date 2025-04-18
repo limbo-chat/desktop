@@ -11,126 +11,376 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as ChatRouteImport } from './routes/chat/route'
-import { Route as IndexImport } from './routes/index'
-import { Route as ChatIndexImport } from './routes/chat/index'
-import { Route as ChatIdIndexImport } from './routes/chat/$id/index'
+import { Route as SettingsRouteImport } from './routes/settings/route'
+import { Route as DesignPlaygroundRouteImport } from './routes/design-playground/route'
+import { Route as chatRouteImport } from './routes/(chat)/route'
+import { Route as SettingsIndexImport } from './routes/settings/index'
+import { Route as DesignPlaygroundIndexImport } from './routes/design-playground/index'
+import { Route as chatIndexImport } from './routes/(chat)/index'
+import { Route as SettingsDeveloperImport } from './routes/settings/developer'
+import { Route as SettingsAppearanceImport } from './routes/settings/appearance'
+import { Route as SettingsPluginsIndexImport } from './routes/settings/plugins/index'
+import { Route as chatIdIndexImport } from './routes/(chat)/$id/index'
+import { Route as SettingsPluginsIdImport } from './routes/settings/plugins/$id'
+import { Route as DesignPlaygroundElementsMarkdownImport } from './routes/design-playground/elements/markdown'
+import { Route as DesignPlaygroundElementsButtonImport } from './routes/design-playground/elements/button'
+import { Route as DesignPlaygroundDesignSystemColorsImport } from './routes/design-playground/design-system/colors'
 
 // Create/Update Routes
 
-const ChatRouteRoute = ChatRouteImport.update({
-  id: '/chat',
-  path: '/chat',
+const SettingsRouteRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRoute,
 } as any)
 
-const IndexRoute = IndexImport.update({
-  id: '/',
-  path: '/',
+const DesignPlaygroundRouteRoute = DesignPlaygroundRouteImport.update({
+  id: '/design-playground',
+  path: '/design-playground',
   getParentRoute: () => rootRoute,
 } as any)
 
-const ChatIndexRoute = ChatIndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => ChatRouteRoute,
+const chatRouteRoute = chatRouteImport.update({
+  id: '/(chat)',
+  getParentRoute: () => rootRoute,
 } as any)
 
-const ChatIdIndexRoute = ChatIdIndexImport.update({
+const SettingsIndexRoute = SettingsIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SettingsRouteRoute,
+} as any)
+
+const DesignPlaygroundIndexRoute = DesignPlaygroundIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DesignPlaygroundRouteRoute,
+} as any)
+
+const chatIndexRoute = chatIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => chatRouteRoute,
+} as any)
+
+const SettingsDeveloperRoute = SettingsDeveloperImport.update({
+  id: '/developer',
+  path: '/developer',
+  getParentRoute: () => SettingsRouteRoute,
+} as any)
+
+const SettingsAppearanceRoute = SettingsAppearanceImport.update({
+  id: '/appearance',
+  path: '/appearance',
+  getParentRoute: () => SettingsRouteRoute,
+} as any)
+
+const SettingsPluginsIndexRoute = SettingsPluginsIndexImport.update({
+  id: '/plugins/',
+  path: '/plugins/',
+  getParentRoute: () => SettingsRouteRoute,
+} as any)
+
+const chatIdIndexRoute = chatIdIndexImport.update({
   id: '/$id/',
   path: '/$id/',
-  getParentRoute: () => ChatRouteRoute,
+  getParentRoute: () => chatRouteRoute,
 } as any)
+
+const SettingsPluginsIdRoute = SettingsPluginsIdImport.update({
+  id: '/plugins/$id',
+  path: '/plugins/$id',
+  getParentRoute: () => SettingsRouteRoute,
+} as any)
+
+const DesignPlaygroundElementsMarkdownRoute =
+  DesignPlaygroundElementsMarkdownImport.update({
+    id: '/elements/markdown',
+    path: '/elements/markdown',
+    getParentRoute: () => DesignPlaygroundRouteRoute,
+  } as any)
+
+const DesignPlaygroundElementsButtonRoute =
+  DesignPlaygroundElementsButtonImport.update({
+    id: '/elements/button',
+    path: '/elements/button',
+    getParentRoute: () => DesignPlaygroundRouteRoute,
+  } as any)
+
+const DesignPlaygroundDesignSystemColorsRoute =
+  DesignPlaygroundDesignSystemColorsImport.update({
+    id: '/design-system/colors',
+    path: '/design-system/colors',
+    getParentRoute: () => DesignPlaygroundRouteRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/(chat)': {
+      id: '/(chat)'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexImport
+      preLoaderRoute: typeof chatRouteImport
       parentRoute: typeof rootRoute
     }
-    '/chat': {
-      id: '/chat'
-      path: '/chat'
-      fullPath: '/chat'
-      preLoaderRoute: typeof ChatRouteImport
+    '/design-playground': {
+      id: '/design-playground'
+      path: '/design-playground'
+      fullPath: '/design-playground'
+      preLoaderRoute: typeof DesignPlaygroundRouteImport
       parentRoute: typeof rootRoute
     }
-    '/chat/': {
-      id: '/chat/'
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/settings/appearance': {
+      id: '/settings/appearance'
+      path: '/appearance'
+      fullPath: '/settings/appearance'
+      preLoaderRoute: typeof SettingsAppearanceImport
+      parentRoute: typeof SettingsRouteImport
+    }
+    '/settings/developer': {
+      id: '/settings/developer'
+      path: '/developer'
+      fullPath: '/settings/developer'
+      preLoaderRoute: typeof SettingsDeveloperImport
+      parentRoute: typeof SettingsRouteImport
+    }
+    '/(chat)/': {
+      id: '/(chat)/'
       path: '/'
-      fullPath: '/chat/'
-      preLoaderRoute: typeof ChatIndexImport
-      parentRoute: typeof ChatRouteImport
+      fullPath: '/'
+      preLoaderRoute: typeof chatIndexImport
+      parentRoute: typeof chatRouteImport
     }
-    '/chat/$id/': {
-      id: '/chat/$id/'
+    '/design-playground/': {
+      id: '/design-playground/'
+      path: '/'
+      fullPath: '/design-playground/'
+      preLoaderRoute: typeof DesignPlaygroundIndexImport
+      parentRoute: typeof DesignPlaygroundRouteImport
+    }
+    '/settings/': {
+      id: '/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexImport
+      parentRoute: typeof SettingsRouteImport
+    }
+    '/design-playground/design-system/colors': {
+      id: '/design-playground/design-system/colors'
+      path: '/design-system/colors'
+      fullPath: '/design-playground/design-system/colors'
+      preLoaderRoute: typeof DesignPlaygroundDesignSystemColorsImport
+      parentRoute: typeof DesignPlaygroundRouteImport
+    }
+    '/design-playground/elements/button': {
+      id: '/design-playground/elements/button'
+      path: '/elements/button'
+      fullPath: '/design-playground/elements/button'
+      preLoaderRoute: typeof DesignPlaygroundElementsButtonImport
+      parentRoute: typeof DesignPlaygroundRouteImport
+    }
+    '/design-playground/elements/markdown': {
+      id: '/design-playground/elements/markdown'
+      path: '/elements/markdown'
+      fullPath: '/design-playground/elements/markdown'
+      preLoaderRoute: typeof DesignPlaygroundElementsMarkdownImport
+      parentRoute: typeof DesignPlaygroundRouteImport
+    }
+    '/settings/plugins/$id': {
+      id: '/settings/plugins/$id'
+      path: '/plugins/$id'
+      fullPath: '/settings/plugins/$id'
+      preLoaderRoute: typeof SettingsPluginsIdImport
+      parentRoute: typeof SettingsRouteImport
+    }
+    '/(chat)/$id/': {
+      id: '/(chat)/$id/'
       path: '/$id'
-      fullPath: '/chat/$id'
-      preLoaderRoute: typeof ChatIdIndexImport
-      parentRoute: typeof ChatRouteImport
+      fullPath: '/$id'
+      preLoaderRoute: typeof chatIdIndexImport
+      parentRoute: typeof chatRouteImport
+    }
+    '/settings/plugins/': {
+      id: '/settings/plugins/'
+      path: '/plugins'
+      fullPath: '/settings/plugins'
+      preLoaderRoute: typeof SettingsPluginsIndexImport
+      parentRoute: typeof SettingsRouteImport
     }
   }
 }
 
 // Create and export the route tree
 
-interface ChatRouteRouteChildren {
-  ChatIndexRoute: typeof ChatIndexRoute
-  ChatIdIndexRoute: typeof ChatIdIndexRoute
+interface chatRouteRouteChildren {
+  chatIndexRoute: typeof chatIndexRoute
+  chatIdIndexRoute: typeof chatIdIndexRoute
 }
 
-const ChatRouteRouteChildren: ChatRouteRouteChildren = {
-  ChatIndexRoute: ChatIndexRoute,
-  ChatIdIndexRoute: ChatIdIndexRoute,
+const chatRouteRouteChildren: chatRouteRouteChildren = {
+  chatIndexRoute: chatIndexRoute,
+  chatIdIndexRoute: chatIdIndexRoute,
 }
 
-const ChatRouteRouteWithChildren = ChatRouteRoute._addFileChildren(
-  ChatRouteRouteChildren,
+const chatRouteRouteWithChildren = chatRouteRoute._addFileChildren(
+  chatRouteRouteChildren,
+)
+
+interface DesignPlaygroundRouteRouteChildren {
+  DesignPlaygroundIndexRoute: typeof DesignPlaygroundIndexRoute
+  DesignPlaygroundDesignSystemColorsRoute: typeof DesignPlaygroundDesignSystemColorsRoute
+  DesignPlaygroundElementsButtonRoute: typeof DesignPlaygroundElementsButtonRoute
+  DesignPlaygroundElementsMarkdownRoute: typeof DesignPlaygroundElementsMarkdownRoute
+}
+
+const DesignPlaygroundRouteRouteChildren: DesignPlaygroundRouteRouteChildren = {
+  DesignPlaygroundIndexRoute: DesignPlaygroundIndexRoute,
+  DesignPlaygroundDesignSystemColorsRoute:
+    DesignPlaygroundDesignSystemColorsRoute,
+  DesignPlaygroundElementsButtonRoute: DesignPlaygroundElementsButtonRoute,
+  DesignPlaygroundElementsMarkdownRoute: DesignPlaygroundElementsMarkdownRoute,
+}
+
+const DesignPlaygroundRouteRouteWithChildren =
+  DesignPlaygroundRouteRoute._addFileChildren(
+    DesignPlaygroundRouteRouteChildren,
+  )
+
+interface SettingsRouteRouteChildren {
+  SettingsAppearanceRoute: typeof SettingsAppearanceRoute
+  SettingsDeveloperRoute: typeof SettingsDeveloperRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
+  SettingsPluginsIdRoute: typeof SettingsPluginsIdRoute
+  SettingsPluginsIndexRoute: typeof SettingsPluginsIndexRoute
+}
+
+const SettingsRouteRouteChildren: SettingsRouteRouteChildren = {
+  SettingsAppearanceRoute: SettingsAppearanceRoute,
+  SettingsDeveloperRoute: SettingsDeveloperRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
+  SettingsPluginsIdRoute: SettingsPluginsIdRoute,
+  SettingsPluginsIndexRoute: SettingsPluginsIndexRoute,
+}
+
+const SettingsRouteRouteWithChildren = SettingsRouteRoute._addFileChildren(
+  SettingsRouteRouteChildren,
 )
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/chat': typeof ChatRouteRouteWithChildren
-  '/chat/': typeof ChatIndexRoute
-  '/chat/$id': typeof ChatIdIndexRoute
+  '/': typeof chatIndexRoute
+  '/design-playground': typeof DesignPlaygroundRouteRouteWithChildren
+  '/settings': typeof SettingsRouteRouteWithChildren
+  '/settings/appearance': typeof SettingsAppearanceRoute
+  '/settings/developer': typeof SettingsDeveloperRoute
+  '/design-playground/': typeof DesignPlaygroundIndexRoute
+  '/settings/': typeof SettingsIndexRoute
+  '/design-playground/design-system/colors': typeof DesignPlaygroundDesignSystemColorsRoute
+  '/design-playground/elements/button': typeof DesignPlaygroundElementsButtonRoute
+  '/design-playground/elements/markdown': typeof DesignPlaygroundElementsMarkdownRoute
+  '/settings/plugins/$id': typeof SettingsPluginsIdRoute
+  '/$id': typeof chatIdIndexRoute
+  '/settings/plugins': typeof SettingsPluginsIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/chat': typeof ChatIndexRoute
-  '/chat/$id': typeof ChatIdIndexRoute
+  '/settings/appearance': typeof SettingsAppearanceRoute
+  '/settings/developer': typeof SettingsDeveloperRoute
+  '/': typeof chatIndexRoute
+  '/design-playground': typeof DesignPlaygroundIndexRoute
+  '/settings': typeof SettingsIndexRoute
+  '/design-playground/design-system/colors': typeof DesignPlaygroundDesignSystemColorsRoute
+  '/design-playground/elements/button': typeof DesignPlaygroundElementsButtonRoute
+  '/design-playground/elements/markdown': typeof DesignPlaygroundElementsMarkdownRoute
+  '/settings/plugins/$id': typeof SettingsPluginsIdRoute
+  '/$id': typeof chatIdIndexRoute
+  '/settings/plugins': typeof SettingsPluginsIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/chat': typeof ChatRouteRouteWithChildren
-  '/chat/': typeof ChatIndexRoute
-  '/chat/$id/': typeof ChatIdIndexRoute
+  '/(chat)': typeof chatRouteRouteWithChildren
+  '/design-playground': typeof DesignPlaygroundRouteRouteWithChildren
+  '/settings': typeof SettingsRouteRouteWithChildren
+  '/settings/appearance': typeof SettingsAppearanceRoute
+  '/settings/developer': typeof SettingsDeveloperRoute
+  '/(chat)/': typeof chatIndexRoute
+  '/design-playground/': typeof DesignPlaygroundIndexRoute
+  '/settings/': typeof SettingsIndexRoute
+  '/design-playground/design-system/colors': typeof DesignPlaygroundDesignSystemColorsRoute
+  '/design-playground/elements/button': typeof DesignPlaygroundElementsButtonRoute
+  '/design-playground/elements/markdown': typeof DesignPlaygroundElementsMarkdownRoute
+  '/settings/plugins/$id': typeof SettingsPluginsIdRoute
+  '/(chat)/$id/': typeof chatIdIndexRoute
+  '/settings/plugins/': typeof SettingsPluginsIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/chat' | '/chat/' | '/chat/$id'
+  fullPaths:
+    | '/'
+    | '/design-playground'
+    | '/settings'
+    | '/settings/appearance'
+    | '/settings/developer'
+    | '/design-playground/'
+    | '/settings/'
+    | '/design-playground/design-system/colors'
+    | '/design-playground/elements/button'
+    | '/design-playground/elements/markdown'
+    | '/settings/plugins/$id'
+    | '/$id'
+    | '/settings/plugins'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/chat' | '/chat/$id'
-  id: '__root__' | '/' | '/chat' | '/chat/' | '/chat/$id/'
+  to:
+    | '/settings/appearance'
+    | '/settings/developer'
+    | '/'
+    | '/design-playground'
+    | '/settings'
+    | '/design-playground/design-system/colors'
+    | '/design-playground/elements/button'
+    | '/design-playground/elements/markdown'
+    | '/settings/plugins/$id'
+    | '/$id'
+    | '/settings/plugins'
+  id:
+    | '__root__'
+    | '/(chat)'
+    | '/design-playground'
+    | '/settings'
+    | '/settings/appearance'
+    | '/settings/developer'
+    | '/(chat)/'
+    | '/design-playground/'
+    | '/settings/'
+    | '/design-playground/design-system/colors'
+    | '/design-playground/elements/button'
+    | '/design-playground/elements/markdown'
+    | '/settings/plugins/$id'
+    | '/(chat)/$id/'
+    | '/settings/plugins/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  ChatRouteRoute: typeof ChatRouteRouteWithChildren
+  chatRouteRoute: typeof chatRouteRouteWithChildren
+  DesignPlaygroundRouteRoute: typeof DesignPlaygroundRouteRouteWithChildren
+  SettingsRouteRoute: typeof SettingsRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  ChatRouteRoute: ChatRouteRouteWithChildren,
+  chatRouteRoute: chatRouteRouteWithChildren,
+  DesignPlaygroundRouteRoute: DesignPlaygroundRouteRouteWithChildren,
+  SettingsRouteRoute: SettingsRouteRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -143,27 +393,80 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
-        "/chat"
+        "/(chat)",
+        "/design-playground",
+        "/settings"
       ]
     },
-    "/": {
-      "filePath": "index.tsx"
-    },
-    "/chat": {
-      "filePath": "chat/route.tsx",
+    "/(chat)": {
+      "filePath": "(chat)/route.tsx",
       "children": [
-        "/chat/",
-        "/chat/$id/"
+        "/(chat)/",
+        "/(chat)/$id/"
       ]
     },
-    "/chat/": {
-      "filePath": "chat/index.tsx",
-      "parent": "/chat"
+    "/design-playground": {
+      "filePath": "design-playground/route.tsx",
+      "children": [
+        "/design-playground/",
+        "/design-playground/design-system/colors",
+        "/design-playground/elements/button",
+        "/design-playground/elements/markdown"
+      ]
     },
-    "/chat/$id/": {
-      "filePath": "chat/$id/index.tsx",
-      "parent": "/chat"
+    "/settings": {
+      "filePath": "settings/route.tsx",
+      "children": [
+        "/settings/appearance",
+        "/settings/developer",
+        "/settings/",
+        "/settings/plugins/$id",
+        "/settings/plugins/"
+      ]
+    },
+    "/settings/appearance": {
+      "filePath": "settings/appearance.tsx",
+      "parent": "/settings"
+    },
+    "/settings/developer": {
+      "filePath": "settings/developer.tsx",
+      "parent": "/settings"
+    },
+    "/(chat)/": {
+      "filePath": "(chat)/index.tsx",
+      "parent": "/(chat)"
+    },
+    "/design-playground/": {
+      "filePath": "design-playground/index.tsx",
+      "parent": "/design-playground"
+    },
+    "/settings/": {
+      "filePath": "settings/index.tsx",
+      "parent": "/settings"
+    },
+    "/design-playground/design-system/colors": {
+      "filePath": "design-playground/design-system/colors.tsx",
+      "parent": "/design-playground"
+    },
+    "/design-playground/elements/button": {
+      "filePath": "design-playground/elements/button.tsx",
+      "parent": "/design-playground"
+    },
+    "/design-playground/elements/markdown": {
+      "filePath": "design-playground/elements/markdown.tsx",
+      "parent": "/design-playground"
+    },
+    "/settings/plugins/$id": {
+      "filePath": "settings/plugins/$id.tsx",
+      "parent": "/settings"
+    },
+    "/(chat)/$id/": {
+      "filePath": "(chat)/$id/index.tsx",
+      "parent": "/(chat)"
+    },
+    "/settings/plugins/": {
+      "filePath": "settings/plugins/index.tsx",
+      "parent": "/settings"
     }
   }
 }

@@ -1,8 +1,8 @@
 import type { PropsWithChildren } from "react";
 import { Markdown } from "../../markdown/components/markdown";
 import type { ChatMessageType } from "../types";
-import { Text } from "../../../components/text";
 import clsx from "clsx";
+import "./chat-message.scss";
 
 export interface ChatMessageProps {
 	message: ChatMessageType;
@@ -15,29 +15,27 @@ const ChatMessageContainer = ({
 	children,
 }: PropsWithChildren<ChatMessageProps>) => {
 	return (
-		<div className={className} data-message-id={message.id} data-message-role={message.role}>
+		<div
+			className={clsx("chat-message", className)}
+			data-message-id={message.id}
+			data-message-role={message.role}
+		>
 			{children}
 		</div>
 	);
 };
 
-const UserChatMessage = ({ message, className }: ChatMessageProps) => {
+const UserChatMessage = ({ message }: ChatMessageProps) => {
 	return (
-		<ChatMessageContainer
-			message={message}
-			className={clsx(
-				"self-end p-md rounded-md bg-surface border border-border max-w-[80%]",
-				className
-			)}
-		>
-			<Text>{message.content}</Text>
+		<ChatMessageContainer message={message} className="user-message">
+			<p>{message.content}</p>
 		</ChatMessageContainer>
 	);
 };
 
-const AssistantChatMessage = ({ message, className }: ChatMessageProps) => {
+const AssistantChatMessage = ({ message }: ChatMessageProps) => {
 	return (
-		<ChatMessageContainer message={message} className={className}>
+		<ChatMessageContainer message={message} className={"assistant-message"}>
 			<Markdown content={message.content} />
 		</ChatMessageContainer>
 	);

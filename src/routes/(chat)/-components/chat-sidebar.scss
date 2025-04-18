@@ -1,0 +1,19 @@
+.chat-sidebar {
+	gap: 0;
+	padding-top: var(--theme-spacing-sm);
+}
+
+.chat-sidebar-actions {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: center;
+	gap: var(--theme-spacing-sm);
+}
+
+.chat-sidebar-main {
+	display: flex;
+	flex-direction: column;
+	overflow-y: auto;
+	gap: var(--theme-spacing-lg);
+}

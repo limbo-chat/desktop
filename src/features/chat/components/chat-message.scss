@@ -1,0 +1,9 @@
+.user-message {
+	align-self: flex-end;
+	padding: var(--theme-spacing-md);
+	border-radius: var(--theme-rounding-lg);
+	background-color: var(--theme-color-surface);
+	border-width: var(--theme-border-width);
+	border-color: var(--theme-color-border);
+	max-width: 80%;
+}

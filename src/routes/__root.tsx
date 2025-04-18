@@ -6,13 +6,20 @@ import { ipcLink } from "trpc-electron/renderer";
 import { createTRPCClient } from "@trpc/client";
 import superjson from "superjson";
 import type { MainRouter } from "../../electron/router";
-import { PluginController, PluginManagerProvider } from "../features/plugins/components";
+import { PluginController } from "../features/plugins/components/plugin-controller";
+import { PluginManagerProvider } from "../features/plugins/components/plugin-manager-provider";
 import { PluginManager } from "../features/plugins/core/plugin-manager";
 import { useLLMChunkSubscriber } from "../features/chat/hooks";
+import { SideDock } from "./-components/side-dock";
 
+import "../styles/preflight.css";
 import "../styles/default-fonts.css";
 import "../styles/default-theme.css";
-import "../styles/tailwind.css";
+import "./styles.scss";
+
+import { Titlebar } from "./-components/titlebar";
+import { useIsAppFocused } from "../hooks/common";
+import clsx from "clsx";
 
 export const Route = createRootRoute({
 	component: RootLayout,
@@ -20,7 +27,7 @@ export const Route = createRootRoute({
 		return (
 			<div>
 				<p>not found</p>
-				<Link to="/chat">home</Link>
+				<Link to="/">home</Link>
 			</div>
 		);
 	},
@@ -62,12 +69,22 @@ function RootLayoutProviders({ children }: PropsWithChildren) {
 }
 
 function RootLayout() {
+	const appIsFocused = useIsAppFocused();
+
 	return (
 		<RootLayoutProviders>
-			<Suspense fallback={<div>Loading...</div>}>
-				<PluginController />
-				<Outlet />
-			</Suspense>
+			<div className={clsx("app", appIsFocused && "app-focused")}>
+				<Titlebar />
+				<Suspense fallback={"loading, todo replace"}>
+					<PluginController />
+					<div className="app-row">
+						<SideDock />
+						<div className="app-content">
+							<Outlet />
+						</div>
+					</div>
+				</Suspense>
+			</div>
 		</RootLayoutProviders>
 	);
 }
