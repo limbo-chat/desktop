@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { usePlugin } from "../../../features/plugins/hooks";
 import { PluginSettingsForm } from "../../../features/plugins/components/plugin-settings-form";
+import { SettingsPage } from "../-components/settings-page";
 
 export const Route = createFileRoute("/settings/plugins/$id")({
 	component: PluginSettingsPage,
@@ -15,12 +16,12 @@ function PluginSettingsPage() {
 	}
 
 	return (
-		<div>
+		<SettingsPage className="settings-page--plugin">
 			<PluginSettingsForm
 				className="flex flex-col gap-lg"
 				onSubmit={console.log}
 				plugin={plugin}
 			/>
-		</div>
+		</SettingsPage>
 	);
 }

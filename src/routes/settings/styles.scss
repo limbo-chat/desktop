@@ -1,5 +1,10 @@
-.settings-page {
+.settings-layout {
 	display: flex;
 	flex-direction: row;
 	height: 100%;
+}
+
+.settings-page {
+	padding: var(--theme-spacing-md);
+	flex: 1;
 }

@@ -58,7 +58,7 @@ const SettingsSidebar = () => {
 
 function SettingsLayout() {
 	return (
-		<div className="settings-page">
+		<div className="settings-layout">
 			<SettingsSidebar />
 			<Outlet />
 		</div>

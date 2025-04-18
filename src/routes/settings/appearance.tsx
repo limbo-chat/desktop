@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { buttonVariants } from "../../components/button";
+import { SettingsPage } from "./-components/settings-page";
 
 export const Route = createFileRoute("/settings/appearance")({
 	component: AppearanceSettingsPage,
@@ -7,10 +8,10 @@ export const Route = createFileRoute("/settings/appearance")({
 
 function AppearanceSettingsPage() {
 	return (
-		<div>
+		<SettingsPage className="settings-page--appearance">
 			<Link className={buttonVariants()} to="/design-playground">
 				Open design playground
 			</Link>
-		</div>
+		</SettingsPage>
 	);
 }
