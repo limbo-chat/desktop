@@ -6,7 +6,8 @@ export async function up(db: Kysely<any>): Promise<void> {
 		.addColumn("id", "integer", (col) => col.primaryKey().autoIncrement())
 		.addColumn("title", "text", (col) => col.notNull())
 		.addColumn("created_at", "timestamp", (col) => col.notNull())
-		.ifNotExists();
+		.ifNotExists()
+		.execute();
 
 	await db.schema
 		.createTable("chat_message")
@@ -17,7 +18,8 @@ export async function up(db: Kysely<any>): Promise<void> {
 		.addColumn("role", "text", (col) => col.notNull()) // e.g., user, assistant
 		.addColumn("content", "text", (col) => col.notNull()) // The actual message content
 		.addColumn("created_at", "timestamp", (col) => col.notNull())
-		.ifNotExists();
+		.ifNotExists()
+		.execute();
 }
 
 export async function down(db: Kysely<any>): Promise<void> {

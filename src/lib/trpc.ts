@@ -1,5 +1,5 @@
 import { createTRPCContext } from "@trpc/tanstack-react-query";
-import type { MainRouter } from "../../electron/router";
+import type { MainRouter } from "../../electron/trpc/router";
 
 const mainRouterContext = createTRPCContext<MainRouter>();
 

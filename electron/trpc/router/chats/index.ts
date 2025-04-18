@@ -1,32 +1,31 @@
 import { publicProcedure, router } from "../../trpc";
-import { z } from "zod";
 import { chatMessagesRouter } from "./messages";
+import { db } from "../../../db/db";
+import { z } from "zod";
 
-const sendMessageInputSchema = z.object({
-	message: z.string().min(1),
+const createChatInputSchema = z.object({
+	title: z.string(),
 });
 
 export const chatsRouter = router({
 	messages: chatMessagesRouter,
-	list: publicProcedure.query(() => {
-		return [
-			{
-				id: 1,
-				title: "First chat",
-			},
-			{
-				id: 2,
-				title: "Second chat",
-			},
-			{
-				id: 3,
-				title: "Third chat",
-			},
-		];
+	list: publicProcedure.query(async () => {
+		const chats = await db.selectFrom("chat").selectAll().execute();
+
+		return chats;
 	}),
-	sendMessage: publicProcedure.input(sendMessageInputSchema).mutation(async ({ input, ctx }) => {
-		return {
-			success: true,
-		};
+	create: publicProcedure.input(createChatInputSchema).mutation(async ({ input, ctx }) => {
+		const { title } = input;
+
+		const chat = await db
+			.insertInto("chat")
+			.values({
+				title,
+				created_at: new Date().toISOString(),
+			})
+			.returningAll()
+			.executeTakeFirstOrThrow();
+
+		return chat;
 	}),
 });

@@ -45,6 +45,7 @@ function createWindow() {
 }
 
 async function ensureFilesExist() {
+	// TODO, ensure plugin files and dir exists
 	await Promise.all([readSettings(), migrateToLatest()]);
 }
 

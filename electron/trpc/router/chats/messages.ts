@@ -1,23 +1,19 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../../trpc";
+import { db } from "../../../db/db";
 
 const listChatMessagesInputSchema = z.object({
-	chatId: z.number(),
+	chat_id: z.number(),
 });
 
 export const chatMessagesRouter = router({
-	list: publicProcedure.input(listChatMessagesInputSchema).query(() => {
-		return [
-			{
-				id: 1,
-				role: "assistant",
-				content: "This is the first message from the assistant.",
-			},
-			{
-				id: 2,
-				role: "user",
-				content: "This is the first message from the user.",
-			},
-		];
+	list: publicProcedure.input(listChatMessagesInputSchema).query(async ({ input }) => {
+		const chatMessages = await db
+			.selectFrom("chat_message")
+			.selectAll()
+			.where("chat_id", "=", input.chat_id)
+			.execute();
+
+		return chatMessages;
 	}),
 });

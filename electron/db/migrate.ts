@@ -1,18 +1,18 @@
-import { FileMigrationProvider, Migrator } from "kysely";
+import { Migrator } from "kysely";
 import { db } from "./db";
-import { MIGRATIONS_PATH } from "./constants";
-import path from "node:path";
-import fs from "node:fs/promises";
+import * as migration0 from "./migrations/0";
 
 export const migrator = new Migrator({
 	db,
-	provider: new FileMigrationProvider({
-		migrationFolder: MIGRATIONS_PATH,
-		path,
-		fs,
-	}),
+	provider: {
+		async getMigrations() {
+			return {
+				"0": migration0,
+			};
+		},
+	},
 });
 
-export function migrateToLatest() {
-	return migrator.migrateToLatest();
+export async function migrateToLatest() {
+	return await migrator.migrateToLatest();
 }
