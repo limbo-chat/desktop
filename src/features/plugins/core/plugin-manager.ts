@@ -4,6 +4,7 @@ import type { Plugin } from "./plugin";
 export interface PluginManagerEvents {
 	pluginAdded: (pluginId: string) => void;
 	pluginRemoved: (pluginId: string) => void;
+	pluginStateChange: (pluginId: string) => void;
 }
 
 export class PluginManager {
@@ -21,10 +22,20 @@ export class PluginManager {
 	public addPlugin(pluginId: string, plugin: Plugin) {
 		this.plugins.set(pluginId, plugin);
 
+		plugin.events.on("stateChange", this.handlePluginStateChange.bind(this, pluginId));
+
 		this.events.emit("pluginAdded", pluginId);
 	}
 
 	public async removePlugin(pluginId: string) {
+		const plugin = this.plugins.get(pluginId);
+
+		if (!plugin) {
+			return;
+		}
+
+		plugin.events.off("stateChange", this.handlePluginStateChange.bind(this, pluginId));
+
 		this.plugins.delete(pluginId);
 
 		this.events.emit("pluginRemoved", pluginId);
@@ -40,5 +51,9 @@ export class PluginManager {
 		for (const plugin of this.plugins.values()) {
 			await plugin.deactivate();
 		}
+	}
+
+	private handlePluginStateChange(pluginId: string) {
+		this.events.emit("pluginStateChange", pluginId);
 	}
 }

@@ -5,7 +5,7 @@ import { Suspense, useMemo, type PropsWithChildren } from "react";
 import { ipcLink } from "trpc-electron/renderer";
 import { createTRPCClient } from "@trpc/client";
 import superjson from "superjson";
-import type { MainRouter } from "../../electron/router";
+import type { MainRouter } from "../../electron/trpc/router";
 import { PluginController } from "../features/plugins/components/plugin-controller";
 import { PluginManagerProvider } from "../features/plugins/components/plugin-manager-provider";
 import { PluginManager } from "../features/plugins/core/plugin-manager";

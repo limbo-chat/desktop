@@ -1,4 +1,3 @@
-import { usePluginRegisteredSettings } from "../hooks";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import type { Plugin } from "../core/plugin";
 import type * as limbo from "limbo";
@@ -97,7 +96,7 @@ export const PluginSettingsForm = ({
 	onSubmit,
 	...htmlFormProps
 }: PluginSettingsFormProps) => {
-	const registeredSettings = usePluginRegisteredSettings(plugin);
+	const registeredSettings = plugin.getRegisteredSettings();
 
 	const form = useForm({
 		mode: "onBlur",

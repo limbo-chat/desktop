@@ -55,7 +55,7 @@ export const ChatComposer = () => {
 		return createListCollection({
 			items,
 		});
-	}, []);
+	}, [plugins]);
 
 	return (
 		<div className="chat-composer">

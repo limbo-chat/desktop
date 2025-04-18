@@ -3,7 +3,7 @@ import { PluginManagerContext } from "./contexts";
 import { useMainRouter, useMainRouterClient } from "../../lib/trpc";
 import { Plugin } from "./core/plugin";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import type { MainRouterOutputs } from "../../../electron/router";
+import type { MainRouterOutputs } from "../../../electron/trpc/router";
 
 export const usePluginManager = () => {
 	const pluginManager = useContext(PluginManagerContext);
@@ -117,7 +117,7 @@ export const usePlugins = () => {
 	const [plugins, setPlugins] = useState<Plugin[]>(() => pluginManager.getPlugins());
 
 	useEffect(() => {
-		// also get the plugins on mount
+		// also get the plugins on mount (they may have been empty when the component mounted)
 		setPlugins([...pluginManager.getPlugins()]);
 
 		const handler = () => {
@@ -126,10 +126,12 @@ export const usePlugins = () => {
 
 		pluginManager.events.on("pluginAdded", handler);
 		pluginManager.events.on("pluginRemoved", handler);
+		pluginManager.events.on("pluginStateChange", handler);
 
 		return () => {
-			pluginManager.events.removeListener("pluginAdded", handler);
-			pluginManager.events.removeListener("pluginRemoved", handler);
+			pluginManager.events.off("pluginAdded", handler);
+			pluginManager.events.off("pluginRemoved", handler);
+			pluginManager.events.off("pluginStateChange", handler);
 		};
 	}, []);
 
@@ -142,23 +144,4 @@ export const usePlugin = (pluginId: string) => {
 	return useMemo(() => {
 		return plugins.find((plugin) => plugin.manifest.id === pluginId);
 	}, [plugins, pluginId]);
-};
-
-export const usePluginRegisteredSettings = (plugin: Plugin) => {
-	return useSyncExternalStore(
-		(onChange) => {
-			const handler = () => {
-				onChange();
-			};
-
-			plugin.events.on("registeredSetting", handler);
-			plugin.events.on("unregisteredSetting", handler);
-
-			return () => {
-				plugin.events.removeListener("registeredSetting", handler);
-				plugin.events.removeListener("unregisteredSetting", handler);
-			};
-		},
-		() => plugin.getRegisteredSettings()
-	);
 };

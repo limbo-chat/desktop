@@ -11,10 +11,7 @@ export interface PluginEvents {
 	activate: () => void;
 	deactivate: () => void;
 	notification: (notification: limbo.Notification) => void;
-	registeredSetting: (settings: limbo.Setting) => void;
-	unregisteredSetting: (settingId: string) => void;
-	registeredLLM: (llms: limbo.LLM) => void;
-	unregisteredLLM: (llmId: string) => void;
+	stateChange: () => void;
 }
 
 export interface PluginOptions {
@@ -49,14 +46,14 @@ export class Plugin {
 				register: (setting) => {
 					this.registeredSettings.push(setting);
 
-					this.events.emit("registeredSetting", setting);
+					this.events.emit("stateChange");
 				},
 				unregister: (settingId) => {
 					this.registeredSettings = this.registeredSettings.filter(
 						(setting) => setting.id !== settingId
 					);
 
-					this.events.emit("unregisteredSetting", settingId);
+					this.events.emit("stateChange");
 				},
 				get: (settingId) => {
 					return this.settingsCache.get(settingId);
@@ -66,12 +63,12 @@ export class Plugin {
 				register: (llm) => {
 					this.registeredLLMs.push(llm);
 
-					this.events.emit("registeredLLM", llm);
+					this.events.emit("stateChange");
 				},
 				unregister: (llmId) => {
 					this.registeredLLMs = this.registeredLLMs.filter((llm) => llm.id !== llmId);
 
-					this.events.emit("unregisteredLLM", llmId);
+					this.events.emit("stateChange");
 				},
 			},
 		};
