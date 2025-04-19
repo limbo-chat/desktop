@@ -1,36 +1,46 @@
-import { useEffect } from "react";
 import { useChatStore } from "./stores";
 import { useMainRouterClient } from "../../lib/trpc";
+import { usePluginManager } from "../plugins/hooks";
+import { useLocalStore } from "../storage/stores";
 
 export const useChatMessages = () => {
 	return useChatStore((state) => state.messages);
 };
 
-export const useLLMChunkSubscriber = () => {
-	useEffect(() => {
-		const chatStore = useChatStore.getState();
-
-		function onLLMCompletionChunk(e: any, data: any) {
-			chatStore.addChunkToMessage(data.text);
-		}
-
-		window.ipcRenderer.on("llm-chunk", onLLMCompletionChunk);
-
-		return () => {
-			window.ipcRenderer.off("llm-chunk", onLLMCompletionChunk);
-		};
-	}, []);
-};
+export interface SendMessageOptions {
+	chatId: number;
+	message: string;
+}
 
 export const useSendMessage = () => {
+	const pluginManager = usePluginManager();
 	const mainRouter = useMainRouterClient();
-	const chatStoreState = useChatStore.getState();
 
-	const sendMessage = async (message: string) => {
+	const sendMessage = async ({ chatId, message }: SendMessageOptions) => {
+		const localStoreState = useLocalStore.getState();
+		const chatStoreState = useChatStore.getState();
+
+		if (!localStoreState.selectedModel) {
+			return;
+		}
+
+		const plugin = pluginManager.getPlugin(localStoreState.selectedModel.pluginId);
+
+		if (!plugin) {
+			return;
+		}
+
+		const pluginLLMs = plugin.getRegisteredLLMs();
+		const llm = pluginLLMs.find((llm) => llm.id === localStoreState.selectedModel!.modelId);
+
+		if (!llm) {
+			return;
+		}
+
 		const newUserMessage = await mainRouter.chats.messages.create.mutate({
 			role: "user",
 			content: message,
-			chat_id: 1,
+			chat_id: chatId,
 			created_at: new Date().toISOString(),
 		});
 
@@ -42,24 +52,35 @@ export const useSendMessage = () => {
 
 		chatStoreState.setIsResponsePending(true);
 
-		// TODO, really implement generateText
-		// const generatedText = await llm.generateText();
-		const generatedText = "***assistant***.";
-
 		const newAssistantMessage = await mainRouter.chats.messages.create.mutate({
+			chat_id: chatId,
 			role: "assistant",
-			content: generatedText,
-			chat_id: 1,
+			content: "",
 			created_at: new Date().toISOString(),
 		});
 
-		chatStoreState.setIsResponsePending(false);
+		let firstChunkReceived = false;
+		let responseText = "";
 
-		chatStoreState.addMessage({
-			role: "assistant",
-			id: newAssistantMessage.id,
-			content: newAssistantMessage.content,
+		await llm.generateText({
+			onChunk: (chunk) => {
+				responseText += chunk;
+
+				if (firstChunkReceived) {
+					chatStoreState.addChunkToLastMessage(chunk);
+				} else {
+					firstChunkReceived = true;
+
+					chatStoreState.addMessage({
+						role: "assistant",
+						id: newAssistantMessage.id,
+						content: chunk,
+					});
+				}
+			},
 		});
+
+		chatStoreState.setIsResponsePending(false);
 	};
 
 	return sendMessage;

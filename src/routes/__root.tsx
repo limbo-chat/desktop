@@ -1,5 +1,5 @@
 import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createRootRoute, createRootRouteWithContext, Link, Outlet } from "@tanstack/react-router";
+import { createRootRouteWithContext, Link, Outlet } from "@tanstack/react-router";
 import { MainRouterProvider } from "../lib/trpc";
 import { Suspense, useMemo, type PropsWithChildren } from "react";
 import { ipcLink } from "trpc-electron/renderer";
@@ -9,17 +9,15 @@ import type { MainRouter } from "../../electron/trpc/router";
 import { PluginController } from "../features/plugins/components/plugin-controller";
 import { PluginManagerProvider } from "../features/plugins/components/plugin-manager-provider";
 import { PluginManager } from "../features/plugins/core/plugin-manager";
-import { useLLMChunkSubscriber } from "../features/chat/hooks";
 import { SideDock } from "./-components/side-dock";
+import { Titlebar } from "./-components/titlebar";
+import { useIsAppFocused } from "../hooks/common";
+import clsx from "clsx";
 
 import "../styles/preflight.css";
 import "../styles/default-fonts.css";
 import "../styles/default-theme.css";
 import "./styles.scss";
-
-import { Titlebar } from "./-components/titlebar";
-import { useIsAppFocused } from "../hooks/common";
-import clsx from "clsx";
 
 export interface RouterContext {
 	queryClient: QueryClient;
@@ -39,8 +37,6 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 function RootLayoutProviders({ children }: PropsWithChildren) {
 	const ctx = Route.useRouteContext();
-
-	console.log("root layout providers");
 
 	const trpcClient = useMemo(() => {
 		return createTRPCClient<MainRouter>({
@@ -69,8 +65,6 @@ function RootLayoutProviders({ children }: PropsWithChildren) {
 
 function RootLayout() {
 	const appIsFocused = useIsAppFocused();
-
-	useLLMChunkSubscriber();
 
 	return (
 		<RootLayoutProviders>

@@ -15,12 +15,10 @@ export const chatsRouter = router({
 		return chats;
 	}),
 	create: publicProcedure.input(createChatInputSchema).mutation(async ({ input, ctx }) => {
-		const { title } = input;
-
 		const chat = await db
 			.insertInto("chat")
 			.values({
-				title,
+				title: input.title,
 				created_at: new Date().toISOString(),
 			})
 			.returningAll()

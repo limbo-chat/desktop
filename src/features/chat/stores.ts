@@ -7,7 +7,7 @@ export interface ChatStore {
 	messages: ChatMessageType[];
 	setIsResponsePending: (isResponsePending: boolean) => void;
 	addMessage: (message: ChatMessageType) => void;
-	addChunkToMessage: (chunk: string) => void;
+	addChunkToLastMessage: (chunk: string) => void;
 	reset: () => void;
 }
 
@@ -20,10 +20,9 @@ export const useChatStore = create(
 			set((state) => {
 				state.messages.push(message);
 			}),
-		addChunkToMessage: (chunk) =>
+		addChunkToLastMessage: (chunk) =>
 			set((state) => {
 				const lastMessage = state.messages[state.messages.length - 1];
-				// const message = state.messages.find((m) => m.id === messageId);
 
 				if (!lastMessage) {
 					return;

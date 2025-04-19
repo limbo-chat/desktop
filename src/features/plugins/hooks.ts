@@ -147,25 +147,3 @@ export const usePlugin = (pluginId: string) => {
 		return plugins.find((plugin) => plugin.manifest.id === pluginId);
 	}, [plugins, pluginId]);
 };
-
-export const useSelectedLLM = () => {
-	const plugins = usePlugins();
-	const selectedPlugin = useLocalStore((state) => state.selectedModel);
-
-	return useMemo<limbo.LLM | undefined>(() => {
-		if (!selectedPlugin) {
-			return undefined;
-		}
-
-		const plugin = plugins.find((plugin) => plugin.manifest.id === selectedPlugin.pluginId);
-
-		if (!plugin) {
-			return undefined;
-		}
-
-		const registeredLLMs = plugin.getRegisteredLLMs();
-		const llm = registeredLLMs.find((llm) => llm.id === selectedPlugin.modelId);
-
-		return llm;
-	}, [plugins, selectedPlugin]);
-};
