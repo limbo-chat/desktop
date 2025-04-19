@@ -52,35 +52,31 @@ export const useSendMessage = () => {
 
 		chatStoreState.setIsResponsePending(true);
 
-		const newAssistantMessage = await mainRouter.chats.messages.create.mutate({
-			chat_id: chatId,
-			role: "assistant",
-			content: "",
-			created_at: new Date().toISOString(),
-		});
-
-		let firstChunkReceived = false;
 		let responseText = "";
 
 		await llm.generateText({
 			onChunk: (chunk) => {
 				responseText += chunk;
 
-				if (firstChunkReceived) {
-					chatStoreState.addChunkToLastMessage(chunk);
-				} else {
-					firstChunkReceived = true;
-
-					chatStoreState.addMessage({
-						role: "assistant",
-						id: newAssistantMessage.id,
-						content: chunk,
-					});
-				}
+				chatStoreState.addChunkToAssistantResponse(chunk);
 			},
 		});
 
 		chatStoreState.setIsResponsePending(false);
+		chatStoreState.clearAssistantResponse();
+
+		const newAssistantMessage = await mainRouter.chats.messages.create.mutate({
+			chat_id: chatId,
+			role: "assistant",
+			content: responseText,
+			created_at: new Date().toISOString(),
+		});
+
+		chatStoreState.addMessage({
+			role: "assistant",
+			id: newAssistantMessage.id,
+			content: responseText,
+		});
 	};
 
 	return sendMessage;
