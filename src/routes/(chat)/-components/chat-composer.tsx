@@ -12,6 +12,7 @@ import { useSendMessage } from "../../../features/chat/hooks";
 import { useLocalStore } from "../../../features/storage/stores";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMainRouter } from "../../../lib/trpc";
+import { useChatStore } from "../../../features/chat/stores";
 import "./chat-composer.scss";
 
 export const ChatComposer = () => {
@@ -21,6 +22,13 @@ export const ChatComposer = () => {
 	const sendMessage = useSendMessage();
 	const mainRouter = useMainRouter();
 	const createChatMutation = useMutation(mainRouter.chats.create.mutationOptions());
+
+	// may need to read more from chat store here later, that's why I'm ising useShallow, even if it's unecessary for now
+	const chatStore = useChatStore(
+		useShallow((state) => ({
+			isAssistantResponsePending: state.isAssistantResponsePending,
+		}))
+	);
 
 	const localStore = useLocalStore(
 		useShallow((state) => ({
@@ -49,7 +57,7 @@ export const ChatComposer = () => {
 		let chatId;
 
 		if (typeof params.id === "string") {
-			chatId = parseInt(params.id);
+			chatId = params.id;
 		} else {
 			const newChat = await createChatMutation.mutateAsync({
 				title: "New chat",
@@ -67,18 +75,14 @@ export const ChatComposer = () => {
 			});
 		}
 
-		// something went wrong
-		if (isNaN(chatId)) {
-			return;
-		}
-
 		try {
 			await sendMessage({
 				chatId: chatId,
 				message: data.message,
 			});
 		} catch (err) {
-			console.error("Failed to send message", err);
+			// If sending message fails, we can add the message back to the form
+			form.setValue("message", data.message);
 		}
 	});
 
@@ -101,6 +105,9 @@ export const ChatComposer = () => {
 			itemToValue: (item) => `${item.value.pluginId}/${item.value.modelId}`,
 		});
 	}, [plugins]);
+
+	const message = form.watch("message");
+	const canSendMessage = message.length > 0 && !chatStore.isAssistantResponsePending;
 
 	return (
 		<div className="chat-composer">
@@ -128,8 +135,8 @@ export const ChatComposer = () => {
 						/>
 					)}
 				></Controller>
-				<IconButton color="secondary">
-					<ArrowUpIcon size={20} />
+				<IconButton type="submit" color="secondary" disabled={!canSendMessage}>
+					<ArrowUpIcon />
 				</IconButton>
 			</form>
 			<div className="chat-composer-accessories">

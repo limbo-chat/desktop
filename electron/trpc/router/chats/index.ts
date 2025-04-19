@@ -2,6 +2,7 @@ import { publicProcedure, router } from "../../trpc";
 import { chatMessagesRouter } from "./messages";
 import { db } from "../../../db/db";
 import { z } from "zod";
+import { ulid } from "ulid";
 
 const createChatInputSchema = z.object({
 	title: z.string(),
@@ -18,6 +19,7 @@ export const chatsRouter = router({
 		const chat = await db
 			.insertInto("chat")
 			.values({
+				id: ulid(),
 				title: input.title,
 				created_at: new Date().toISOString(),
 			})

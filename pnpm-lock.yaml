@@ -83,6 +83,9 @@ importers:
       trpc-electron:
         specifier: ^0.1.2
         version: 0.1.2(@trpc/client@11.0.0(@trpc/server@11.0.0(typescript@5.8.2))(typescript@5.8.2))(@trpc/server@11.0.0(typescript@5.8.2))(electron@35.0.3)
+      ulid:
+        specifier: ^3.0.0
+        version: 3.0.0
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -2695,6 +2698,10 @@ packages:
   typescript@5.8.2:
     resolution: {integrity: sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==}
     engines: {node: '>=14.17'}
+    hasBin: true
+
+  ulid@3.0.0:
+    resolution: {integrity: sha512-yvZYdXInnJve6LdlPIuYmURdS2NP41ZoF4QW7SXwbUKYt53+0eDAySO+rGSvM2O/ciuB/G+8N7GQrZ1mCJpuqw==}
     hasBin: true
 
   undici-types@5.26.5:
@@ -5956,6 +5963,8 @@ snapshots:
     optional: true
 
   typescript@5.8.2: {}
+
+  ulid@3.0.0: {}
 
   undici-types@5.26.5: {}
 

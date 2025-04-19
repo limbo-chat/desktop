@@ -19,6 +19,11 @@
 	&:active {
 		transform: translateY(1px);
 	}
+
+	&:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
 }
 
 // colors

@@ -1,18 +1,22 @@
 import { Kysely } from "kysely";
 
 export async function up(db: Kysely<any>): Promise<void> {
-	await db.schema
-		.createTable("chat")
-		.addColumn("id", "integer", (col) => col.primaryKey().autoIncrement())
-		.addColumn("title", "text", (col) => col.notNull())
-		.addColumn("created_at", "timestamp", (col) => col.notNull())
-		.ifNotExists()
-		.execute();
+	try {
+		await db.schema
+			.createTable("chat")
+			.addColumn("id", "text", (col) => col.primaryKey())
+			.addColumn("title", "text", (col) => col.notNull())
+			.addColumn("created_at", "timestamp", (col) => col.notNull())
+			.ifNotExists()
+			.execute();
+	} catch (err) {
+		console.log(err);
+	}
 
 	await db.schema
 		.createTable("chat_message")
-		.addColumn("id", "integer", (col) => col.primaryKey().autoIncrement())
-		.addColumn("chat_id", "integer", (col) =>
+		.addColumn("id", "text", (col) => col.primaryKey())
+		.addColumn("chat_id", "text", (col) =>
 			col.references("chat.id").onDelete("cascade").notNull()
 		)
 		.addColumn("role", "text", (col) => col.notNull()) // e.g., user, assistant

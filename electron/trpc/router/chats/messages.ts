@@ -4,11 +4,12 @@ import { db } from "../../../db/db";
 import { TRPCError } from "@trpc/server";
 
 const listChatMessagesInputSchema = z.object({
-	chat_id: z.number(),
+	chat_id: z.string(),
 });
 
 const createChatMessageInputSchema = z.object({
-	chat_id: z.number(),
+	id: z.string(),
+	chat_id: z.string(),
 	content: z.string(),
 	role: z.enum(["user", "assistant"]),
 	created_at: z.string().datetime(),

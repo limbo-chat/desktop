@@ -1,7 +1,7 @@
-import type { Generated, Insertable, Selectable } from "kysely";
+import type { Insertable, Selectable } from "kysely";
 
 export interface ChatTable {
-	id: Generated<number>;
+	id: string;
 	title: string;
 	created_at: string;
 }
@@ -10,8 +10,8 @@ export type Chat = Selectable<ChatTable>;
 export type NewChat = Insertable<ChatTable>;
 
 export interface ChatMessageTable {
-	id: Generated<number>;
-	chat_id: number;
+	id: string;
+	chat_id: string;
 	role: "user" | "assistant";
 	content: string;
 	created_at: string;

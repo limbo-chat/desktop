@@ -2,15 +2,14 @@ import { useChatStore } from "./stores";
 import { useMainRouterClient } from "../../lib/trpc";
 import { usePluginManager } from "../plugins/hooks";
 import { useLocalStore } from "../storage/stores";
-
-export const useChatMessages = () => {
-	return useChatStore((state) => state.messages);
-};
+import { ulid } from "ulid";
 
 export interface SendMessageOptions {
-	chatId: number;
+	chatId: string;
 	message: string;
 }
+
+// TODO, if an error occurs, the user message should be removed
 
 export const useSendMessage = () => {
 	const pluginManager = usePluginManager();
@@ -37,7 +36,10 @@ export const useSendMessage = () => {
 			return;
 		}
 
+		chatStoreState.setIsAssistantResponsePending(true);
+
 		const newUserMessage = await mainRouter.chats.messages.create.mutate({
+			id: ulid(),
 			role: "user",
 			content: message,
 			chat_id: chatId,
@@ -46,11 +48,20 @@ export const useSendMessage = () => {
 
 		chatStoreState.addMessage({
 			role: "user",
-			id: newUserMessage.id,
 			content: newUserMessage.content,
+			id: newUserMessage.id,
+			createdAt: newUserMessage.created_at,
 		});
 
-		chatStoreState.setIsResponsePending(true);
+		const assistantMessageId = ulid();
+
+		chatStoreState.addMessage({
+			id: assistantMessageId,
+			role: "assistant",
+			status: "pending",
+			content: "", // content will initially be empty
+			createdAt: new Date().toISOString(),
+		});
 
 		let responseText = "";
 
@@ -58,25 +69,29 @@ export const useSendMessage = () => {
 			onChunk: (chunk) => {
 				responseText += chunk;
 
-				chatStoreState.addChunkToAssistantResponse(chunk);
+				// this may cause issues if the user switches chats while the response is being generated
+				// may have to change to updating it by the ID
+				chatStoreState.addChunkToLastMessage(chunk);
 			},
 		});
 
-		chatStoreState.setIsResponsePending(false);
-		chatStoreState.clearAssistantResponse();
-
 		const newAssistantMessage = await mainRouter.chats.messages.create.mutate({
+			id: assistantMessageId,
 			chat_id: chatId,
 			role: "assistant",
 			content: responseText,
 			created_at: new Date().toISOString(),
 		});
 
-		chatStoreState.addMessage({
-			role: "assistant",
+		chatStoreState.updateLastMessage({
 			id: newAssistantMessage.id,
-			content: responseText,
+			role: "assistant",
+			status: "complete",
+			content: newAssistantMessage.content,
+			createdAt: newAssistantMessage.created_at,
 		});
+
+		chatStoreState.setIsAssistantResponsePending(false);
 	};
 
 	return sendMessage;

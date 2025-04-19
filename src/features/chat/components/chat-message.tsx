@@ -1,33 +1,32 @@
-import type { PropsWithChildren } from "react";
+import { memo, type HTMLAttributes, type PropsWithChildren } from "react";
 import MarkdownToJsx from "markdown-to-jsx";
 import { Markdown } from "../../markdown/components/markdown";
-import type { ChatMessageType } from "../types";
+import type { AssistantChatMessage, ChatMessageType, UserChatMessage } from "../types";
 import clsx from "clsx";
-import "./chat-message.scss";
 import { CodeBlock } from "../../markdown/components/code-block";
+import "./chat-message.scss";
 
-export interface ChatMessageProps {
+interface ChatMessageContainerProps extends HTMLAttributes<HTMLDivElement> {
 	message: ChatMessageType;
 	className?: string;
 }
 
-const ChatMessageContainer = ({
-	message,
-	className,
-	children,
-}: PropsWithChildren<ChatMessageProps>) => {
+const ChatMessageContainer = ({ message, className, ...props }: ChatMessageContainerProps) => {
 	return (
 		<div
 			className={clsx("chat-message", className)}
 			data-message-id={message.id}
 			data-message-role={message.role}
-		>
-			{children}
-		</div>
+			{...props}
+		/>
 	);
 };
 
-const UserChatMessage = ({ message }: ChatMessageProps) => {
+interface UserChatMessageProps {
+	message: UserChatMessage;
+}
+
+const UserChatMessage = ({ message }: UserChatMessageProps) => {
 	return (
 		<ChatMessageContainer message={message} className="user-message">
 			<p>{message.content}</p>
@@ -35,9 +34,17 @@ const UserChatMessage = ({ message }: ChatMessageProps) => {
 	);
 };
 
-const AssistantChatMessage = ({ message }: ChatMessageProps) => {
+interface AssistantChatMessageProps {
+	message: AssistantChatMessage;
+}
+
+const AssistantChatMessage = ({ message }: AssistantChatMessageProps) => {
 	return (
-		<ChatMessageContainer message={message} className={"assistant-message"}>
+		<ChatMessageContainer
+			message={message}
+			className={"assistant-message"}
+			data-status={message.status}
+		>
 			<Markdown>
 				<MarkdownToJsx
 					options={{
@@ -77,8 +84,13 @@ const chatMessageRoleComponents = {
 	assistant: AssistantChatMessage,
 } as const;
 
-export const ChatMessage = ({ message }: ChatMessageProps) => {
+export interface ChatMessageProps {
+	message: ChatMessageType;
+}
+
+export const ChatMessage = memo(({ message }: ChatMessageProps) => {
 	const Component = chatMessageRoleComponents[message.role];
 
+	// @ts-ignore
 	return <Component message={message} />;
-};
+});

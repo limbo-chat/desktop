@@ -4,40 +4,42 @@ import type { ChatMessageType } from "./types";
 
 export interface ChatStore {
 	isAssistantResponsePending: boolean;
-	assistantResponse: string | null;
 	messages: ChatMessageType[];
-	setIsResponsePending: (isResponsePending: boolean) => void;
+	setIsAssistantResponsePending: (isResponsePending: boolean) => void;
 	addMessage: (message: ChatMessageType) => void;
-	addChunkToAssistantResponse: (chunk: string) => void;
-	clearAssistantResponse: () => void;
+	addChunkToLastMessage: (chunk: string) => void;
+	updateLastMessage: (message: ChatMessageType) => void;
 	reset: () => void;
 }
 
 export const useChatStore = create(
 	immer<ChatStore>((set) => ({
 		isAssistantResponsePending: false,
-		assistantResponse: null,
 		messages: [],
-		setIsResponsePending: (isResponsePending) =>
+		setIsAssistantResponsePending: (isResponsePending) =>
 			set({ isAssistantResponsePending: isResponsePending }),
 		addMessage: (message) =>
 			set((state) => {
 				state.messages.push(message);
 			}),
-		addChunkToAssistantResponse: (chunk) =>
+		addChunkToLastMessage: (chunk) =>
 			set((state) => {
-				if (!state.assistantResponse) {
-					state.assistantResponse = chunk;
-				} else {
-					state.assistantResponse += chunk;
+				const lastMessage = state.messages[state.messages.length - 1];
+
+				if (!lastMessage) {
+					return;
 				}
+
+				lastMessage.content += chunk;
 			}),
-		clearAssistantResponse: () => set({ assistantResponse: null }),
+		updateLastMessage: (message) =>
+			set((state) => {
+				state.messages[state.messages.length - 1] = message;
+			}),
 		reset: () => {
 			set((state) => {
 				state.messages = [];
 				state.isAssistantResponsePending = false;
-				state.assistantResponse = null;
 			});
 		},
 	}))
