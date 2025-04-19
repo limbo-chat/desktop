@@ -21,7 +21,7 @@ const SettingsSidebar = () => {
 				</Link>
 				<Link to="/settings/appearance">
 					<SidebarItem isActive={location.pathname.endsWith("/appearance")}>
-						Apperance
+						Appearance
 					</SidebarItem>
 				</Link>
 				<Link to="/settings/developer">
