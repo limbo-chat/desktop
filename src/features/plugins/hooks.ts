@@ -4,8 +4,6 @@ import { useMainRouter, useMainRouterClient } from "../../lib/trpc";
 import { Plugin } from "./core/plugin";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import type { MainRouterOutputs } from "../../../electron/trpc/router";
-import { useLocalStore } from "../storage/stores";
-import type * as limbo from "limbo";
 
 export const usePluginManager = () => {
 	const pluginManager = useContext(PluginManagerContext);

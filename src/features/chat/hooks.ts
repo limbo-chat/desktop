@@ -1,8 +1,9 @@
+import { ulid } from "ulid";
 import { useChatStore } from "./stores";
 import { useMainRouterClient } from "../../lib/trpc";
 import { usePluginManager } from "../plugins/hooks";
 import { useLocalStore } from "../storage/stores";
-import { ulid } from "ulid";
+import { PromptBuilder } from "./core/prompt-builder";
 
 export interface SendMessageOptions {
 	chatId: string;
@@ -65,7 +66,15 @@ export const useSendMessage = () => {
 
 		let responseText = "";
 
+		// TODO: this is not a full implementation of how the prompt builder will be used
+
+		const promptBuilder = new PromptBuilder({
+			systemPrompt: "",
+			userPrompt: message,
+		});
+
 		await llm.generateText({
+			promptBuilder: promptBuilder,
 			onChunk: (chunk) => {
 				responseText += chunk;
 

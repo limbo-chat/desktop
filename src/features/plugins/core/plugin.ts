@@ -31,6 +31,11 @@ export class Plugin {
 	private registeredSettings: limbo.Setting[] = [];
 	private registeredLLMs: limbo.LLM[] = [];
 
+	// hook callbacks
+	private onBeforeGenerateTextCallbacks: ((
+		args: limbo.hooks.onBeforeGenerateText.Args
+	) => void | Promise<void>)[] = [];
+
 	constructor(opts: PluginOptions) {
 		this.manifest = opts.manifest;
 		this.js = opts.js;
@@ -144,6 +149,10 @@ export class Plugin {
 		return this.registeredLLMs;
 	}
 
+	public getOnBeforeGenerateTextCallbacks() {
+		return this.onBeforeGenerateTextCallbacks;
+	}
+
 	private createPluginAPI(): limbo.API {
 		return {
 			notifications: {
@@ -178,6 +187,11 @@ export class Plugin {
 					this.registeredLLMs = this.registeredLLMs.filter((llm) => llm.id !== llmId);
 
 					this.events.emit("stateChange");
+				},
+			},
+			hooks: {
+				onBeforeGenerateText: (cb) => {
+					this.onBeforeGenerateTextCallbacks.push(cb);
 				},
 			},
 		};
