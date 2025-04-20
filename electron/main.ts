@@ -17,6 +17,10 @@ function createWindow() {
 		...(process.platform !== "darwin" ? { titleBarOverlay: true } : {}),
 		webPreferences: {
 			preload: path.join(MAIN_DIST, "preload.mjs"),
+			// I am considering enabling nodeIntegration in the future so plugins can use Node.js APIs directly.
+			// but for now, I will keep it disabled
+			// nodeIntegration: true,
+			// contextIsolation: true,
 		},
 	});
 

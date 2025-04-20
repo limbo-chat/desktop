@@ -33,9 +33,9 @@ export const usePluginLoader = () => {
 
 		try {
 			plugin.loadModule();
-		} catch {
+		} catch (err) {
 			// todo, show notification
-			console.error(`failed to load plugin "${plugin.manifest.id}"`);
+			console.error(`failed to load plugin "${plugin.manifest.id}"`, err);
 		}
 
 		pluginManager.addPlugin(pluginData.manifest.id, plugin);

@@ -1,9 +1,9 @@
 import { ulid } from "ulid";
-import { useChatStore } from "./stores";
-import { useMainRouterClient } from "../../lib/trpc";
-import { usePluginManager } from "../plugins/hooks";
-import { useLocalStore } from "../storage/stores";
-import { PromptBuilder } from "./core/prompt-builder";
+import { useChatStore } from "../stores";
+import { useMainRouterClient } from "../../../lib/trpc";
+import { usePluginManager } from "../../plugins/hooks";
+import { useLocalStore } from "../../storage/stores";
+import { PromptBuilder } from "../core/prompt-builder";
 
 export interface SendMessageOptions {
 	chatId: string;

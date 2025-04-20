@@ -8,7 +8,7 @@ import { useShallow } from "zustand/shallow";
 import TextareaAutosize from "react-textarea-autosize";
 import { usePlugins } from "../../../features/plugins/hooks";
 import { IconButton } from "../../../components/icon-button";
-import { useSendMessage } from "../../../features/chat/hooks";
+import { useSendMessage } from "../../../features/chat/hooks/use-send-message";
 import { useLocalStore } from "../../../features/storage/stores";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMainRouter } from "../../../lib/trpc";
