@@ -6,7 +6,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense, useEffect } from "react";
 import { useShallow } from "zustand/shallow";
 
-export const Route = createFileRoute("/(chat)/$id/")({
+export const Route = createFileRoute("/chat/$id/")({
 	component: ChatPage,
 });
 

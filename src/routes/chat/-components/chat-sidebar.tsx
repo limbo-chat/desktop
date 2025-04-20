@@ -27,6 +27,7 @@ interface ChatItemProps {
 }
 
 // TODO, fix the issue of the chat link navigating when the menu trigger is clicked
+// TODO, when the current chat is deleted, the user should be redirected to the home page (the chat page)
 const ChatItem = ({ chat }: ChatItemProps) => {
 	const queryClient = useQueryClient();
 	const mainRouter = useMainRouter();
@@ -47,7 +48,7 @@ const ChatItem = ({ chat }: ChatItemProps) => {
 	};
 
 	return (
-		<Link to="/$id" params={{ id: chat.id }}>
+		<Link to="/chat/$id" params={{ id: chat.id }}>
 			{({ isActive }) => (
 				<SidebarItem isActive={isActive}>
 					{chat.title}
@@ -78,7 +79,7 @@ export const ChatSidebar = () => {
 		<Sidebar className="chat-sidebar">
 			<div className="chat-sidebar-actions">
 				<Link
-					to="/"
+					to="/chat"
 					className={iconButtonVariants({
 						color: "secondary",
 						variant: "ghost",

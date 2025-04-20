@@ -68,7 +68,7 @@ export const ChatComposer = () => {
 			chatId = newChat.id;
 
 			await router.navigate({
-				to: "/$id",
+				to: "/chat/$id",
 				params: {
 					id: newChat.id.toString(),
 				},

@@ -29,7 +29,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 		return (
 			<div>
 				<p>not found</p>
-				<Link to="/">home</Link>
+				<Link to="/chat">home</Link>
 			</div>
 		);
 	},
