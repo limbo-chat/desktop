@@ -1,35 +1,35 @@
 import clsx from "clsx";
-import type { HTMLAttributes, PropsWithChildren, ReactNode } from "react";
+import type { HTMLAttributes } from "react";
 import "./sidebar.scss";
-
-export interface SidebarGroupProps {
-	title: ReactNode;
-}
-
-// consider decomposing these components  into inidividual components that will be composed
-export const SidebarGroup = ({ title, children }: PropsWithChildren<SidebarGroupProps>) => {
-	return (
-		<div className="sidebar-group">
-			<span className="sidebar-group-title">{title}</span>
-			<div className="sidebar-group-content">{children}</div>
-		</div>
-	);
-};
-
-export interface SidebarItemProps {
-	isActive: boolean;
-}
-
-export const SidebarItem = ({ isActive, children }: PropsWithChildren<SidebarItemProps>) => {
-	return (
-		<div className="sidebar-item" data-active={isActive || undefined}>
-			{children}
-		</div>
-	);
-};
 
 export interface SidebarProps extends HTMLAttributes<HTMLDivElement> {}
 
-export const Sidebar = ({ className, children }: PropsWithChildren<SidebarProps>) => {
+export const Sidebar = ({ className, children }: SidebarProps) => {
 	return <div className={clsx("sidebar", className)}>{children}</div>;
+};
+
+export interface SidebarGroupProps extends HTMLAttributes<HTMLDivElement> {}
+
+export const SidebarGroup = ({ className, ...props }: SidebarGroupProps) => {
+	return <div className={clsx("sidebar-group", className)} {...props} />;
+};
+
+export interface SidebarGroupTitleProps extends HTMLAttributes<HTMLSpanElement> {}
+
+export const SidebarGroupTitle = ({ className, ...props }: SidebarGroupProps) => {
+	return <span className={clsx("sidebar-group-title", className)} {...props} />;
+};
+
+export interface SidebarGroupContentProps extends HTMLAttributes<HTMLDivElement> {}
+
+export const SidebarGroupContent = ({ className, ...props }: SidebarGroupContentProps) => {
+	return <div className={clsx("sidebar-group-content", className)} {...props} />;
+};
+
+export interface SidebarItemProps extends HTMLAttributes<HTMLDivElement> {
+	isActive?: boolean;
+}
+
+export const SidebarItem = ({ isActive, className, ...props }: SidebarItemProps) => {
+	return <div className="sidebar-item" data-active={isActive || undefined} {...props} />;
 };

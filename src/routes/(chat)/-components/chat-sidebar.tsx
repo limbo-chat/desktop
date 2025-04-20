@@ -1,10 +1,74 @@
 import { Link } from "@tanstack/react-router";
-import { MessageCirclePlusIcon } from "lucide-react";
-import { Sidebar, SidebarGroup, SidebarItem } from "../../../components/sidebar";
+import { EllipsisIcon, MessageCirclePlusIcon, Trash2Icon } from "lucide-react";
+import {
+	Sidebar,
+	SidebarGroup,
+	SidebarGroupContent,
+	SidebarGroupTitle,
+	SidebarItem,
+} from "../../../components/sidebar";
 import { iconButtonVariants } from "../../../components/icon-button";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useMainRouter } from "../../../lib/trpc";
+import {
+	MenuContent,
+	MenuItem,
+	MenuPositioner,
+	MenuRoot,
+	MenuTrigger,
+} from "../../../components/menu";
 import "./chat-sidebar.scss";
+
+interface ChatItemProps {
+	chat: {
+		id: string;
+		title: string;
+	};
+}
+
+// TODO, fix the issue of the chat link navigating when the menu trigger is clicked
+const ChatItem = ({ chat }: ChatItemProps) => {
+	const queryClient = useQueryClient();
+	const mainRouter = useMainRouter();
+	const deleteChatMutation = useMutation(mainRouter.chats.delete.mutationOptions());
+
+	const handleDelete = () => {
+		deleteChatMutation.mutate(
+			{ id: chat.id },
+			{
+				onSuccess: () => {
+					queryClient.invalidateQueries(mainRouter.chats.list.queryFilter());
+				},
+				onError: (err) => {
+					console.log("Failed to delete chat", err);
+				},
+			}
+		);
+	};
+
+	return (
+		<Link to="/$id" params={{ id: chat.id }}>
+			{({ isActive }) => (
+				<SidebarItem isActive={isActive}>
+					{chat.title}
+					<MenuRoot>
+						<MenuTrigger>
+							<EllipsisIcon />
+						</MenuTrigger>
+						<MenuPositioner>
+							<MenuContent>
+								<MenuItem value="delete" onClick={handleDelete}>
+									<Trash2Icon />
+									Delete
+								</MenuItem>
+							</MenuContent>
+						</MenuPositioner>
+					</MenuRoot>
+				</SidebarItem>
+			)}
+		</Link>
+	);
+};
 
 export const ChatSidebar = () => {
 	const mainRouter = useMainRouter();
@@ -24,14 +88,13 @@ export const ChatSidebar = () => {
 				</Link>
 			</div>
 			<div className="chat-sidebar-main">
-				<SidebarGroup title="All time">
-					{listChatsQuery.data.map((chat) => (
-						<Link to="/$id" params={{ id: chat.id.toString() }} key={chat.id}>
-							{({ isActive }) => (
-								<SidebarItem isActive={isActive}>{chat.title}</SidebarItem>
-							)}
-						</Link>
-					))}
+				<SidebarGroup>
+					<SidebarGroupTitle>All time</SidebarGroupTitle>
+					<SidebarGroupContent>
+						{listChatsQuery.data.map((chat) => (
+							<ChatItem chat={chat} />
+						))}
+					</SidebarGroupContent>
 				</SidebarGroup>
 			</div>
 		</Sidebar>

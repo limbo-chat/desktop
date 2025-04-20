@@ -1,5 +1,11 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { Sidebar, SidebarGroup, SidebarItem } from "../../components/sidebar";
+import {
+	Sidebar,
+	SidebarGroup,
+	SidebarGroupContent,
+	SidebarGroupTitle,
+	SidebarItem,
+} from "../../components/sidebar";
 import "./styles.scss";
 
 export const Route = createFileRoute("/design-playground")({
@@ -9,18 +15,24 @@ export const Route = createFileRoute("/design-playground")({
 const DesignPlaygroundSidebar = () => {
 	return (
 		<Sidebar className="design-playground-sidebar">
-			<SidebarGroup title="Design system">
-				<Link to="/design-playground/design-system/colors">
-					{({ isActive }) => <SidebarItem isActive={isActive}>Colors</SidebarItem>}
-				</Link>
+			<SidebarGroup>
+				<SidebarGroupTitle>Design system</SidebarGroupTitle>
+				<SidebarGroupContent>
+					<Link to="/design-playground/design-system/colors">
+						{({ isActive }) => <SidebarItem isActive={isActive}>Colors</SidebarItem>}
+					</Link>
+				</SidebarGroupContent>
 			</SidebarGroup>
-			<SidebarGroup title="Elements">
-				<Link to="/design-playground/elements/button">
-					{({ isActive }) => <SidebarItem isActive={isActive}>Button</SidebarItem>}
-				</Link>
-				<Link to="/design-playground/elements/markdown">
-					{({ isActive }) => <SidebarItem isActive={isActive}>Markdown</SidebarItem>}
-				</Link>
+			<SidebarGroup>
+				<SidebarGroupTitle>Elements</SidebarGroupTitle>
+				<SidebarGroupContent>
+					<Link to="/design-playground/elements/button">
+						{({ isActive }) => <SidebarItem isActive={isActive}>Button</SidebarItem>}
+					</Link>
+					<Link to="/design-playground/elements/markdown">
+						{({ isActive }) => <SidebarItem isActive={isActive}>Markdown</SidebarItem>}
+					</Link>
+				</SidebarGroupContent>
 			</SidebarGroup>
 		</Sidebar>
 	);

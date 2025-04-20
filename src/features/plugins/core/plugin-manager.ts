@@ -43,13 +43,21 @@ export class PluginManager {
 
 	public async activatePlugins() {
 		for (const plugin of this.plugins.values()) {
-			await plugin.activate();
+			try {
+				await plugin.activate();
+			} catch (err) {
+				console.error(`Failed to activate plugin: ${plugin.manifest.id}`, err);
+			}
 		}
 	}
 
 	public async deactivatePlugins() {
 		for (const plugin of this.plugins.values()) {
-			await plugin.deactivate();
+			try {
+				await plugin.deactivate();
+			} catch (err) {
+				console.error(`Failed to deactivate plugin: ${plugin.manifest.id}`, err);
+			}
 		}
 	}
 
