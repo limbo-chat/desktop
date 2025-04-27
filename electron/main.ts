@@ -7,6 +7,7 @@ import { createServer } from "./server";
 import getPort from "get-port";
 import { migrateToLatest } from "./db/migrate";
 import { readSettings } from "./settings/utils";
+import { ensurePluginsDir } from "./plugins/utils";
 import { ensureCustomStylesDirectory, readCustomStyle } from "./custom-styles/utils";
 import { CustomStylesWatcher } from "./custom-styles/watcher";
 
@@ -51,8 +52,12 @@ function createWindow() {
 }
 
 async function ensureFilesExist() {
-	// TODO, ensure plugin files and dir exists
-	await Promise.all([readSettings(), ensureCustomStylesDirectory(), migrateToLatest()]);
+	await Promise.all([
+		readSettings(),
+		ensurePluginsDir(),
+		ensureCustomStylesDirectory(),
+		migrateToLatest(),
+	]);
 }
 
 app.whenReady().then(async () => {
@@ -62,13 +67,19 @@ app.whenReady().then(async () => {
 		const url = new URL(req.url);
 
 		if (url.hostname === "style") {
-			const css = readCustomStyle(url.pathname);
+			try {
+				const css = readCustomStyle(url.pathname);
 
-			return new Response(css, {
-				headers: {
-					"content-type": "text/css",
-				},
-			});
+				return new Response(css, {
+					headers: {
+						"content-type": "text/css",
+					},
+				});
+			} catch {
+				return new Response(null, {
+					status: 404,
+				});
+			}
 		}
 
 		return new Response(null, {

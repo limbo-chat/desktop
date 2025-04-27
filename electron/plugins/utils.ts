@@ -17,12 +17,6 @@ function buildPluginDataPath(pluginId: string) {
 	return path.join(buildPluginPath(pluginId), PLUGIN_DATA_FILE);
 }
 
-function ensurePluginsDir() {
-	if (!fs.existsSync(PLUGINS_DIR)) {
-		fs.mkdirSync(PLUGINS_DIR, { recursive: true });
-	}
-}
-
 function ensurePluginDataFile(pluginId: string) {
 	const pluginDataPath = buildPluginDataPath(pluginId);
 
@@ -57,6 +51,12 @@ function getPluginData(pluginId: string) {
 	writePluginData(pluginId, defaultPluginData);
 
 	return defaultPluginData;
+}
+
+export function ensurePluginsDir() {
+	if (!fs.existsSync(PLUGINS_DIR)) {
+		fs.mkdirSync(PLUGINS_DIR, { recursive: true });
+	}
 }
 
 export function writePluginData(pluginId: string, data: PluginData) {
