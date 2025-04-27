@@ -125,6 +125,7 @@ export const ChatComposer = () => {
 					}}
 					render={({ field }) => (
 						<TextareaAutosize
+							autoFocus
 							className="chat-composer-input"
 							placeholder="Type your message here..."
 							value={field.value}
