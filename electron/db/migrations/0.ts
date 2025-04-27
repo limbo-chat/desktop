@@ -1,17 +1,13 @@
 import { Kysely } from "kysely";
 
 export async function up(db: Kysely<any>): Promise<void> {
-	try {
-		await db.schema
-			.createTable("chat")
-			.addColumn("id", "text", (col) => col.primaryKey())
-			.addColumn("name", "text", (col) => col.notNull())
-			.addColumn("createdAt", "timestamp", (col) => col.notNull())
-			.ifNotExists()
-			.execute();
-	} catch (err) {
-		console.log(err);
-	}
+	await db.schema
+		.createTable("chat")
+		.addColumn("id", "text", (col) => col.primaryKey())
+		.addColumn("name", "text", (col) => col.notNull())
+		.addColumn("createdAt", "timestamp", (col) => col.notNull())
+		.ifNotExists()
+		.execute();
 
 	await db.schema
 		.createTable("chatMessage")
