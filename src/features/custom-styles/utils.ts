@@ -1,19 +1,18 @@
-export function addCustomStyle(path: string) {
-	const link = document.createElement("link");
+export function addCustomStyle(path: string, content: string) {
+	const style = document.createElement("style");
 
-	link.id = `custom-style:${path}`;
-	link.rel = "stylesheet";
-	link.href = `custom://style/${path}?v=${Date.now()}`;
+	style.id = `custom-style:${path}`;
+	style.textContent = content;
 
-	document.head.appendChild(link);
+	document.head.appendChild(style);
 }
 
 export function removeCustomStyle(path: string) {
-	const link = document.getElementById(`custom-style:${path}`);
+	const style = document.getElementById(`custom-style:${path}`);
 
-	if (!link) {
+	if (!style) {
 		return;
 	}
 
-	link.parentNode!.removeChild(link);
+	style.parentNode!.removeChild(style);
 }

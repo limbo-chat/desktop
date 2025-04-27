@@ -1,19 +1,52 @@
 import { useEffect } from "react";
 import { addCustomStyle, removeCustomStyle } from "./utils";
+import { useMainRouterClient } from "../../lib/trpc";
+
+export const useCustomStylesLoader = () => {
+	const mainRouterClient = useMainRouterClient();
+
+	const loadCustomStyles = async () => {
+		const customStylePaths = await mainRouterClient.customStyles.getPaths.query();
+
+		await Promise.allSettled(
+			customStylePaths.map(async (path) => {
+				const customStyleContent = await mainRouterClient.customStyles.get.query({
+					path,
+				});
+
+				addCustomStyle(path, customStyleContent);
+			})
+		);
+	};
+
+	useEffect(() => {
+		loadCustomStyles();
+	}, []);
+};
 
 export const useCustomStylesSubscriber = () => {
+	const mainRouterClient = useMainRouterClient();
+
 	useEffect(() => {
-		const onCustomStylesAdd = (_: any, path: string) => {
-			addCustomStyle(path);
+		const onCustomStylesAdd = async (_: any, path: string) => {
+			const customStyleContent = await mainRouterClient.customStyles.get.query({
+				path,
+			});
+
+			addCustomStyle(path, customStyleContent);
 		};
 
-		const onCustomStylesRemove = (_: any, path: string) => {
+		const onCustomStylesRemove = async (_: any, path: string) => {
 			removeCustomStyle(path);
 		};
 
-		const onCustomStylesReload = (_: any, path: string) => {
+		const onCustomStylesReload = async (_: any, path: string) => {
+			const customStyleContent = await mainRouterClient.customStyles.get.query({
+				path,
+			});
+
 			removeCustomStyle(path);
-			addCustomStyle(path);
+			addCustomStyle(path, customStyleContent);
 		};
 
 		window.ipcRenderer.on("custom-style:add", onCustomStylesAdd);

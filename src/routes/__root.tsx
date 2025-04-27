@@ -12,7 +12,7 @@ import { SideDock } from "./-components/side-dock";
 import { Titlebar } from "./-components/titlebar";
 import { useIsAppFocused } from "../hooks/common";
 import { PluginManagerContext } from "../features/plugins/contexts";
-import { useCustomStylesSubscriber } from "../features/custom-styles/hooks";
+import { CustomStylesController } from "../features/custom-styles/components";
 import clsx from "clsx";
 
 export interface RouterContext {
@@ -112,13 +112,12 @@ function RootLayoutProviders({ children }: PropsWithChildren) {
 function RootLayout() {
 	const appIsFocused = useIsAppFocused();
 
-	useCustomStylesSubscriber();
-
 	return (
 		<RootLayoutProviders>
 			<div className={clsx("app", appIsFocused && "app-focused")}>
 				<Titlebar />
 				<Suspense fallback={"loading, todo replace"}>
+					<CustomStylesController />
 					<PluginController />
 					<div className="app-row">
 						<SideDock />

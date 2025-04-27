@@ -18,6 +18,7 @@ export class CustomStylesWatcher {
 	public start() {
 		this.watcher = watch(path.join(CUSTOM_STYLES_DIR), {
 			persistent: true,
+			ignoreInitial: true,
 			ignored: (path, stats) => (stats?.isFile() && !path.endsWith(".css")) ?? false,
 		});
 
