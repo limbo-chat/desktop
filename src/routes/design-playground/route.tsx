@@ -6,7 +6,6 @@ import {
 	SidebarGroupTitle,
 	SidebarItem,
 } from "../../components/sidebar";
-import "./styles.scss";
 
 export const Route = createFileRoute("/design-playground")({
 	component: DesignPlaygroundLayout,

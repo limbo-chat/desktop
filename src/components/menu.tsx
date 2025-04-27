@@ -1,6 +1,5 @@
 import { Menu as ArkMenu } from "@ark-ui/react";
 import clsx from "clsx";
-import "./menu.scss";
 
 export const MenuRoot = ArkMenu.Root;
 

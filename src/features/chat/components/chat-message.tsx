@@ -4,7 +4,6 @@ import { Markdown } from "../../markdown/components/markdown";
 import type { AssistantChatMessage, ChatMessageType, UserChatMessage } from "../types";
 import clsx from "clsx";
 import { CodeBlock } from "../../markdown/components/code-block";
-import "./chat-message.scss";
 
 interface ChatMessageContainerProps extends HTMLAttributes<HTMLDivElement> {
 	message: ChatMessageType;

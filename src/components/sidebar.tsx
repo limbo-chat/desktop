@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import type { HTMLAttributes } from "react";
-import "./sidebar.scss";
 
 export interface SidebarProps extends HTMLAttributes<HTMLDivElement> {}
 

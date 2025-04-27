@@ -17,7 +17,6 @@ import {
 	MenuRoot,
 	MenuTrigger,
 } from "../../../components/menu";
-import "./chat-sidebar.scss";
 
 interface ChatItemProps {
 	chat: {

@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import type { HTMLAttributes } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import "./field.scss";
 
 const fieldVariants = cva("field", {
 	variants: {

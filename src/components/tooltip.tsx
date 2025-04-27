@@ -1,6 +1,5 @@
 import { Tooltip as ArkTooltip } from "@ark-ui/react/tooltip";
 import type { PropsWithChildren } from "react";
-import "./tooltip.scss";
 
 export interface TooltipProps {
 	label: string;

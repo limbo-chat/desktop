@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import type { HTMLAttributes } from "react";
-import "./card.scss";
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {}
 

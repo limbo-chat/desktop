@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { MessageSquareIcon, SettingsIcon } from "lucide-react";
-import "./side-dock.scss";
 
 export const SideDock = () => {
 	return (

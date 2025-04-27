@@ -13,7 +13,6 @@ import { useLocalStore } from "../../../features/storage/stores";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMainRouter } from "../../../lib/trpc";
 import { useChatStore } from "../../../features/chat/stores";
-import "./chat-composer.scss";
 
 export const ChatComposer = () => {
 	const pluginManager = usePluginManager();

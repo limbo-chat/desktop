@@ -1,7 +1,5 @@
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { useState } from "react";
-import { Button } from "../../../components/button";
-import "./code-block.scss";
 import { IconButton } from "../../../components/icon-button";
 
 export interface CodeBlockProps {

@@ -13,12 +13,8 @@ import { Titlebar } from "./-components/titlebar";
 import { useIsAppFocused } from "../hooks/common";
 import { PluginManagerContext } from "../features/plugins/contexts";
 import clsx from "clsx";
-
-import "../styles/preflight.css";
-import "../styles/default-fonts.css";
-import "../styles/default-theme.css";
-import "./styles.scss";
 import { useCustomStylesSubscriber } from "../features/custom-styles/hooks";
+import "../styles/default-fonts.css";
 
 export interface RouterContext {
 	queryClient: QueryClient;

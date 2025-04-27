@@ -6,7 +6,6 @@ import {
 } from "@ark-ui/react";
 import { ChevronsUpDownIcon } from "lucide-react";
 import clsx from "clsx";
-import "./select.scss";
 
 export interface SelectRootProps extends ArkSelect.RootProps<any> {}
 

@@ -7,7 +7,6 @@ import {
 	SidebarItem,
 } from "../../components/sidebar";
 import { usePlugins } from "../../features/plugins/hooks";
-import "./styles.scss";
 
 export const Route = createFileRoute("/settings")({
 	component: SettingsLayout,
