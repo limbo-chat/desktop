@@ -15,14 +15,6 @@ const DesignPlaygroundSidebar = () => {
 	return (
 		<Sidebar className="design-playground-sidebar">
 			<SidebarGroup>
-				<SidebarGroupTitle>Design system</SidebarGroupTitle>
-				<SidebarGroupContent>
-					<Link to="/design-playground/design-system/colors">
-						{({ isActive }) => <SidebarItem isActive={isActive}>Colors</SidebarItem>}
-					</Link>
-				</SidebarGroupContent>
-			</SidebarGroup>
-			<SidebarGroup>
 				<SidebarGroupTitle>Elements</SidebarGroupTitle>
 				<SidebarGroupContent>
 					<Link to="/design-playground/elements/button">

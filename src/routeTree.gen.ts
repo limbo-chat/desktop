@@ -25,7 +25,6 @@ import { Route as ChatIdIndexImport } from './routes/chat/$id/index'
 import { Route as SettingsPluginsIdImport } from './routes/settings/plugins/$id'
 import { Route as DesignPlaygroundElementsMarkdownImport } from './routes/design-playground/elements/markdown'
 import { Route as DesignPlaygroundElementsButtonImport } from './routes/design-playground/elements/button'
-import { Route as DesignPlaygroundDesignSystemColorsImport } from './routes/design-playground/design-system/colors'
 
 // Create/Update Routes
 
@@ -115,13 +114,6 @@ const DesignPlaygroundElementsButtonRoute =
     getParentRoute: () => DesignPlaygroundRouteRoute,
   } as any)
 
-const DesignPlaygroundDesignSystemColorsRoute =
-  DesignPlaygroundDesignSystemColorsImport.update({
-    id: '/design-system/colors',
-    path: '/design-system/colors',
-    getParentRoute: () => DesignPlaygroundRouteRoute,
-  } as any)
-
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -189,13 +181,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsIndexImport
       parentRoute: typeof SettingsRouteImport
     }
-    '/design-playground/design-system/colors': {
-      id: '/design-playground/design-system/colors'
-      path: '/design-system/colors'
-      fullPath: '/design-playground/design-system/colors'
-      preLoaderRoute: typeof DesignPlaygroundDesignSystemColorsImport
-      parentRoute: typeof DesignPlaygroundRouteImport
-    }
     '/design-playground/elements/button': {
       id: '/design-playground/elements/button'
       path: '/elements/button'
@@ -252,15 +237,12 @@ const ChatRouteRouteWithChildren = ChatRouteRoute._addFileChildren(
 
 interface DesignPlaygroundRouteRouteChildren {
   DesignPlaygroundIndexRoute: typeof DesignPlaygroundIndexRoute
-  DesignPlaygroundDesignSystemColorsRoute: typeof DesignPlaygroundDesignSystemColorsRoute
   DesignPlaygroundElementsButtonRoute: typeof DesignPlaygroundElementsButtonRoute
   DesignPlaygroundElementsMarkdownRoute: typeof DesignPlaygroundElementsMarkdownRoute
 }
 
 const DesignPlaygroundRouteRouteChildren: DesignPlaygroundRouteRouteChildren = {
   DesignPlaygroundIndexRoute: DesignPlaygroundIndexRoute,
-  DesignPlaygroundDesignSystemColorsRoute:
-    DesignPlaygroundDesignSystemColorsRoute,
   DesignPlaygroundElementsButtonRoute: DesignPlaygroundElementsButtonRoute,
   DesignPlaygroundElementsMarkdownRoute: DesignPlaygroundElementsMarkdownRoute,
 }
@@ -300,7 +282,6 @@ export interface FileRoutesByFullPath {
   '/chat/': typeof ChatIndexRoute
   '/design-playground/': typeof DesignPlaygroundIndexRoute
   '/settings/': typeof SettingsIndexRoute
-  '/design-playground/design-system/colors': typeof DesignPlaygroundDesignSystemColorsRoute
   '/design-playground/elements/button': typeof DesignPlaygroundElementsButtonRoute
   '/design-playground/elements/markdown': typeof DesignPlaygroundElementsMarkdownRoute
   '/settings/plugins/$id': typeof SettingsPluginsIdRoute
@@ -315,7 +296,6 @@ export interface FileRoutesByTo {
   '/chat': typeof ChatIndexRoute
   '/design-playground': typeof DesignPlaygroundIndexRoute
   '/settings': typeof SettingsIndexRoute
-  '/design-playground/design-system/colors': typeof DesignPlaygroundDesignSystemColorsRoute
   '/design-playground/elements/button': typeof DesignPlaygroundElementsButtonRoute
   '/design-playground/elements/markdown': typeof DesignPlaygroundElementsMarkdownRoute
   '/settings/plugins/$id': typeof SettingsPluginsIdRoute
@@ -334,7 +314,6 @@ export interface FileRoutesById {
   '/chat/': typeof ChatIndexRoute
   '/design-playground/': typeof DesignPlaygroundIndexRoute
   '/settings/': typeof SettingsIndexRoute
-  '/design-playground/design-system/colors': typeof DesignPlaygroundDesignSystemColorsRoute
   '/design-playground/elements/button': typeof DesignPlaygroundElementsButtonRoute
   '/design-playground/elements/markdown': typeof DesignPlaygroundElementsMarkdownRoute
   '/settings/plugins/$id': typeof SettingsPluginsIdRoute
@@ -354,7 +333,6 @@ export interface FileRouteTypes {
     | '/chat/'
     | '/design-playground/'
     | '/settings/'
-    | '/design-playground/design-system/colors'
     | '/design-playground/elements/button'
     | '/design-playground/elements/markdown'
     | '/settings/plugins/$id'
@@ -368,7 +346,6 @@ export interface FileRouteTypes {
     | '/chat'
     | '/design-playground'
     | '/settings'
-    | '/design-playground/design-system/colors'
     | '/design-playground/elements/button'
     | '/design-playground/elements/markdown'
     | '/settings/plugins/$id'
@@ -385,7 +362,6 @@ export interface FileRouteTypes {
     | '/chat/'
     | '/design-playground/'
     | '/settings/'
-    | '/design-playground/design-system/colors'
     | '/design-playground/elements/button'
     | '/design-playground/elements/markdown'
     | '/settings/plugins/$id'
@@ -438,7 +414,6 @@ export const routeTree = rootRoute
       "filePath": "design-playground/route.tsx",
       "children": [
         "/design-playground/",
-        "/design-playground/design-system/colors",
         "/design-playground/elements/button",
         "/design-playground/elements/markdown"
       ]
@@ -472,10 +447,6 @@ export const routeTree = rootRoute
     "/settings/": {
       "filePath": "settings/index.tsx",
       "parent": "/settings"
-    },
-    "/design-playground/design-system/colors": {
-      "filePath": "design-playground/design-system/colors.tsx",
-      "parent": "/design-playground"
     },
     "/design-playground/elements/button": {
       "filePath": "design-playground/elements/button.tsx",
