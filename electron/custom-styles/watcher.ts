@@ -19,27 +19,22 @@ export class CustomStylesWatcher {
 		this.watcher = watch(path.join(CUSTOM_STYLES_DIR), {
 			persistent: true,
 			ignoreInitial: true,
-			ignored: (path, stats) => (stats?.isFile() && !path.endsWith(".css")) ?? false,
+			cwd: CUSTOM_STYLES_DIR,
+			// ignore files that aren't CSS files
+			ignored: (path, stats) =>
+				stats !== undefined && stats.isFile() && !path.endsWith(".css"),
 		});
 
 		this.watcher.on("add", (filePath) => {
-			const relativeCssPath = path.relative(CUSTOM_STYLES_DIR, filePath);
-
-			this.window.webContents.send("custom-style:add", relativeCssPath);
+			this.window.webContents.send("custom-style:add", filePath);
 		});
 
 		this.watcher.on("change", (filePath) => {
-			const relativeCssPath = path.relative(CUSTOM_STYLES_DIR, filePath);
-
-			console.log("Custom style changed:", relativeCssPath);
-
-			this.window.webContents.send("custom-style:reload", relativeCssPath);
+			this.window.webContents.send("custom-style:reload", filePath);
 		});
 
 		this.watcher.on("unlink", (filePath) => {
-			const relativeCssPath = path.relative(CUSTOM_STYLES_DIR, filePath);
-
-			this.window.webContents.send("custom-style:remove", relativeCssPath);
+			this.window.webContents.send("custom-style:remove", filePath);
 		});
 	}
 
