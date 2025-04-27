@@ -52,20 +52,10 @@ const PluginManagerProvider = ({ children }: PropsWithChildren) => {
 					console.log("showNotification called from plugin");
 				},
 				renameChat: async (chatId: string, newName: string) => {
-					let updatedChat;
-
-					try {
-						updatedChat = await mainRouterClient.chats.rename.mutate({
-							id: chatId,
-							title: newName,
-						});
-					} catch (err) {
-						if (err instanceof Error) {
-							throw new Error(err.message);
-						}
-
-						throw err;
-					}
+					const updatedChat = await mainRouterClient.chats.rename.mutate({
+						id: chatId,
+						title: newName,
+					});
 
 					queryClient.setQueryData(
 						mainRouter.chats.get.queryKey({

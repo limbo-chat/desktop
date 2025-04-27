@@ -185,9 +185,27 @@ export class PluginContext {
 				show: this.hostBridge.showNotification,
 			},
 			chats: {
-				get: this.hostBridge.getChat,
-				rename: this.hostBridge.renameChat,
-				getMessages: this.hostBridge.getChatMessages,
+				get: async (args) => {
+					try {
+						return await this.hostBridge.getChat(args);
+					} catch {
+						throw new Error("Failed to get chat");
+					}
+				},
+				rename: async (chatId, newName) => {
+					try {
+						return await this.hostBridge.renameChat(chatId, newName);
+					} catch {
+						throw new Error("Failed to rename chat");
+					}
+				},
+				getMessages: async (args) => {
+					try {
+						return await this.hostBridge.getChatMessages(args);
+					} catch {
+						throw new Error("Failed to get chat messages");
+					}
+				},
 			},
 		};
 	}
