@@ -12,9 +12,8 @@ import { SideDock } from "./-components/side-dock";
 import { Titlebar } from "./-components/titlebar";
 import { useIsAppFocused } from "../hooks/common";
 import { PluginManagerContext } from "../features/plugins/contexts";
-import clsx from "clsx";
 import { useCustomStylesSubscriber } from "../features/custom-styles/hooks";
-import "../styles/default-fonts.css";
+import clsx from "clsx";
 
 export interface RouterContext {
 	queryClient: QueryClient;
