@@ -4,30 +4,59 @@ import { db } from "../../../db/db";
 import { TRPCError } from "@trpc/server";
 
 const listChatMessagesInputSchema = z.object({
-	chat_id: z.string(),
+	chatId: z.string(),
 });
 
 const createChatMessageInputSchema = z.object({
 	id: z.string(),
-	chat_id: z.string(),
+	chatId: z.string(),
 	content: z.string(),
 	role: z.enum(["user", "assistant"]),
-	created_at: z.string().datetime(),
+	createdAt: z.string().datetime(),
+});
+
+const getManyChatMessagesInputSchema = z.object({
+	chatId: z.string(),
+	role: z.enum(["user", "assistant"]).optional(),
+	sort: z.enum(["newest", "oldest"]).optional(),
+	limit: z.number().optional(),
 });
 
 export const chatMessagesRouter = router({
 	list: publicProcedure.input(listChatMessagesInputSchema).query(async ({ input }) => {
 		const chatMessages = await db
-			.selectFrom("chat_message")
+			.selectFrom("chatMessage")
 			.selectAll()
-			.where("chat_id", "=", input.chat_id)
+			.where("chatId", "=", input.chatId)
 			.execute();
 
 		return chatMessages;
 	}),
+	getMany: publicProcedure.input(getManyChatMessagesInputSchema).query(({ input }) => {
+		const chatMessagesQuery = db
+			.selectFrom("chatMessage")
+			.selectAll()
+			.where("chatId", "=", input.chatId);
+
+		if (input.role) {
+			chatMessagesQuery.where("role", "=", input.role);
+		}
+
+		if (input.sort === "newest") {
+			chatMessagesQuery.orderBy("createdAt", "desc");
+		} else {
+			chatMessagesQuery.orderBy("createdAt", "asc");
+		}
+
+		if (input.limit) {
+			chatMessagesQuery.limit(input.limit);
+		}
+
+		return chatMessagesQuery.execute();
+	}),
 	create: publicProcedure.input(createChatMessageInputSchema).mutation(async ({ input }) => {
 		const chatMessage = await db
-			.insertInto("chat_message")
+			.insertInto("chatMessage")
 			.values(input)
 			.returningAll()
 			.executeTakeFirst();

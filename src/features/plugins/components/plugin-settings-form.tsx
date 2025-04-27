@@ -1,9 +1,10 @@
 import { Controller, FormProvider, useForm } from "react-hook-form";
-import type { Plugin } from "../core/plugin";
+import type { PluginContext } from "../core/plugin-context";
 import type * as limbo from "limbo";
 import { useEffect, type HTMLProps, type PropsWithChildren } from "react";
 import { TextInput } from "../../../components/text-input";
 import { Field, FieldDescription, FieldInfo, FieldLabel } from "../../../components/field";
+import { Checkbox } from "../../../components/checkbox";
 
 interface TextSettingRendererProps {
 	setting: limbo.TextSetting;
@@ -38,11 +39,32 @@ const BooleanSettingRenderer = ({ setting }: BooleanSettingRendererProps) => {
 		<Controller
 			name={setting.id}
 			render={({ field }) => (
-				// TODO, will replace with switch component
-				<input
-					type="checkbox"
+				<Checkbox
 					checked={field.value || false}
-					onChange={(e) => field.onChange(e.target.checked)}
+					onCheckedChange={(e) => field.onChange(e.checked)}
+					disabled={field.disabled}
+				/>
+			)}
+		/>
+	);
+};
+
+interface LLMSettingRendererProps {
+	setting: limbo.LLMSetting;
+}
+
+const LLMSettingRenderer = ({ setting }: LLMSettingRendererProps) => {
+	return (
+		<Controller
+			name={setting.id}
+			render={({ field }) => (
+				// temp text field
+				<TextInput
+					// @ts-expect-error, not exactly sure how to work with refs in react 19
+					ref={field.ref}
+					value={field.value || ""}
+					onBlur={field.onBlur}
+					onChange={field.onChange}
 					disabled={field.disabled}
 				/>
 			)}
@@ -53,6 +75,7 @@ const BooleanSettingRenderer = ({ setting }: BooleanSettingRendererProps) => {
 const settingRendererMap = {
 	text: TextSettingRenderer,
 	boolean: BooleanSettingRenderer,
+	llm: LLMSettingRenderer,
 } as const;
 
 interface SettingWrapperProps {
@@ -87,7 +110,7 @@ const SettingRenderer = ({ setting }: SettingRendererProps) => {
 };
 
 export interface PluginSettingsFormProps extends HTMLProps<HTMLFormElement> {
-	plugin: Plugin;
+	plugin: PluginContext;
 	onSubmit: (data: any) => void;
 }
 

@@ -24,7 +24,7 @@ const ChatPageContent = () => {
 
 	const listChatMessagesQuery = useSuspenseQuery(
 		mainRouter.chats.messages.list.queryOptions({
-			chat_id: params.id,
+			chatId: params.id,
 		})
 	);
 
@@ -41,7 +41,7 @@ const ChatPageContent = () => {
 				content: message.content,
 				role: message.role,
 				status: "complete",
-				createdAt: message.created_at,
+				createdAt: message.createdAt,
 			});
 		}
 	}, [listChatMessagesQuery.data]);

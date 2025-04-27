@@ -1,14 +1,9 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-interface SelectedModel {
-	pluginId: string;
-	modelId: string;
-}
-
 export interface LocalStore {
-	selectedModel: SelectedModel | null;
-	setSelectedModel: (model: SelectedModel | null) => void;
+	selectedModel: string | null;
+	setSelectedModel: (model: string | null) => void;
 }
 
 export const useLocalStore = create(

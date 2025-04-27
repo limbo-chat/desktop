@@ -23,12 +23,6 @@ function ensurePluginsDir() {
 	}
 }
 
-function readPlugins() {
-	ensurePluginsDir();
-
-	return fs.readdirSync(PLUGINS_DIR);
-}
-
 function ensurePluginDataFile(pluginId: string) {
 	const pluginDataPath = buildPluginDataPath(pluginId);
 
@@ -77,8 +71,18 @@ export function writePluginSettings(pluginId: string, settings: PluginData["sett
 	writePluginData(pluginId, { ...data, settings });
 }
 
+export function readPlugins() {
+	ensurePluginsDir();
+
+	return fs.readdirSync(PLUGINS_DIR);
+}
+
 export function getPlugin(pluginId: string) {
 	let manifest;
+
+	if (!fs.existsSync(buildPluginPath(pluginId))) {
+		throw new Error(`Plugin ${pluginId} not found`);
+	}
 
 	try {
 		manifest = getPluginManifest(pluginId);
@@ -107,22 +111,4 @@ export function getPlugin(pluginId: string) {
 		data,
 		js,
 	};
-}
-
-export function getPlugins() {
-	const pluginPaths = readPlugins();
-	const plugins = [];
-
-	for (const pluginPath of pluginPaths) {
-		try {
-			const plugin = getPlugin(pluginPath);
-
-			plugins.push(plugin);
-		} catch (err) {
-			console.log(err);
-			// noop for now
-		}
-	}
-
-	return plugins;
 }

@@ -24,14 +24,7 @@ export const useSendMessage = () => {
 			return;
 		}
 
-		const plugin = pluginManager.getPlugin(localStoreState.selectedModel.pluginId);
-
-		if (!plugin) {
-			return;
-		}
-
-		const pluginLLMs = plugin.getRegisteredLLMs();
-		const llm = pluginLLMs.find((llm) => llm.id === localStoreState.selectedModel!.modelId);
+		const llm = pluginManager.getLLM(localStoreState.selectedModel);
 
 		if (!llm) {
 			return;
@@ -43,15 +36,13 @@ export const useSendMessage = () => {
 			id: ulid(),
 			role: "user",
 			content: message,
-			chat_id: chatId,
-			created_at: new Date().toISOString(),
+			chatId: chatId,
+			createdAt: new Date().toISOString(),
 		});
 
 		chatStoreState.addMessage({
+			...newUserMessage,
 			role: "user",
-			content: newUserMessage.content,
-			id: newUserMessage.id,
-			createdAt: newUserMessage.created_at,
 		});
 
 		const assistantMessageId = ulid();
@@ -64,14 +55,14 @@ export const useSendMessage = () => {
 			createdAt: new Date().toISOString(),
 		});
 
-		let responseText = "";
+		const promptBuilder = new PromptBuilder();
 
-		// TODO: this is not a full implementation of how the prompt builder will be used
-
-		const promptBuilder = new PromptBuilder({
-			systemPrompt: "",
-			userPrompt: message,
+		await pluginManager.executeOnBeforeGenerateTextHooks({
+			chatId,
+			promptBuilder,
 		});
+
+		let responseText = "";
 
 		await llm.generateText({
 			promptBuilder: promptBuilder,
@@ -86,10 +77,10 @@ export const useSendMessage = () => {
 
 		const newAssistantMessage = await mainRouter.chats.messages.create.mutate({
 			id: assistantMessageId,
-			chat_id: chatId,
+			chatId: chatId,
 			role: "assistant",
 			content: responseText,
-			created_at: new Date().toISOString(),
+			createdAt: new Date().toISOString(),
 		});
 
 		chatStoreState.updateLastMessage({
@@ -97,7 +88,7 @@ export const useSendMessage = () => {
 			role: "assistant",
 			status: "complete",
 			content: newAssistantMessage.content,
-			createdAt: newAssistantMessage.created_at,
+			createdAt: newAssistantMessage.createdAt,
 		});
 
 		chatStoreState.setIsAssistantResponsePending(false);

@@ -22,7 +22,7 @@ import "./chat-sidebar.scss";
 interface ChatItemProps {
 	chat: {
 		id: string;
-		title: string;
+		name: string;
 	};
 }
 
@@ -38,7 +38,13 @@ const ChatItem = ({ chat }: ChatItemProps) => {
 			{ id: chat.id },
 			{
 				onSuccess: () => {
-					queryClient.invalidateQueries(mainRouter.chats.list.queryFilter());
+					queryClient.setQueryData(mainRouter.chats.list.queryKey(), (oldChats) => {
+						if (!oldChats) {
+							return;
+						}
+
+						return oldChats.filter((c) => c.id !== chat.id);
+					});
 				},
 				onError: (err) => {
 					console.log("Failed to delete chat", err);
@@ -51,7 +57,7 @@ const ChatItem = ({ chat }: ChatItemProps) => {
 		<Link to="/chat/$id" params={{ id: chat.id }}>
 			{({ isActive }) => (
 				<SidebarItem isActive={isActive}>
-					{chat.title}
+					{chat.name}
 					<MenuRoot>
 						<MenuTrigger>
 							<EllipsisIcon />
@@ -93,7 +99,7 @@ export const ChatSidebar = () => {
 					<SidebarGroupTitle>All time</SidebarGroupTitle>
 					<SidebarGroupContent>
 						{listChatsQuery.data.map((chat) => (
-							<ChatItem chat={chat} />
+							<ChatItem chat={chat} key={chat.id} />
 						))}
 					</SidebarGroupContent>
 				</SidebarGroup>

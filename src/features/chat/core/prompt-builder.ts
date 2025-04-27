@@ -6,29 +6,19 @@ export interface PromptBuilderOptions {
 }
 
 export class PromptBuilder implements limbo.PromptBuilder {
-	private systemPrompt: string;
-	private userPrompt: string;
+	private messages: limbo.PromptMessage[] = [];
 	private tools: limbo.Tool[] = [];
 
-	constructor(opts?: PromptBuilderOptions) {
-		this.systemPrompt = opts?.systemPrompt || "";
-		this.userPrompt = opts?.userPrompt || "";
+	public getMessages() {
+		return this.messages;
 	}
 
-	public getSystemPrompt() {
-		return this.systemPrompt;
+	public appendMessage(message: limbo.PromptMessage) {
+		this.messages.push(message);
 	}
 
-	public getUserPrompt() {
-		return this.userPrompt;
-	}
-
-	public prependToSystemPrompt(text: string) {
-		this.systemPrompt = text + this.systemPrompt;
-	}
-
-	public appendToSystemPrompt(text: string) {
-		this.systemPrompt = this.systemPrompt + text;
+	public prependMessage(message: limbo.PromptMessage): void {
+		this.messages.unshift(message);
 	}
 
 	public getTools() {

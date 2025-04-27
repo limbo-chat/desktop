@@ -5,8 +5,8 @@ export async function up(db: Kysely<any>): Promise<void> {
 		await db.schema
 			.createTable("chat")
 			.addColumn("id", "text", (col) => col.primaryKey())
-			.addColumn("title", "text", (col) => col.notNull())
-			.addColumn("created_at", "timestamp", (col) => col.notNull())
+			.addColumn("name", "text", (col) => col.notNull())
+			.addColumn("createdAt", "timestamp", (col) => col.notNull())
 			.ifNotExists()
 			.execute();
 	} catch (err) {
@@ -14,19 +14,19 @@ export async function up(db: Kysely<any>): Promise<void> {
 	}
 
 	await db.schema
-		.createTable("chat_message")
+		.createTable("chatMessage")
 		.addColumn("id", "text", (col) => col.primaryKey())
-		.addColumn("chat_id", "text", (col) =>
+		.addColumn("chatId", "text", (col) =>
 			col.references("chat.id").onDelete("cascade").notNull()
 		)
 		.addColumn("role", "text", (col) => col.notNull()) // e.g., user, assistant
 		.addColumn("content", "text", (col) => col.notNull()) // The actual message content
-		.addColumn("created_at", "timestamp", (col) => col.notNull())
+		.addColumn("createdAt", "timestamp", (col) => col.notNull())
 		.ifNotExists()
 		.execute();
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
-	await db.schema.dropTable("chat_message").ifExists();
+	await db.schema.dropTable("chatMessage").ifExists();
 	await db.schema.dropTable("chat").ifExists();
 }

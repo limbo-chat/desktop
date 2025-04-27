@@ -6,7 +6,7 @@ import { SimpleSelect, SimpleSelectItem } from "../../../components/select";
 import { createListCollection } from "@ark-ui/react";
 import { useShallow } from "zustand/shallow";
 import TextareaAutosize from "react-textarea-autosize";
-import { usePlugins } from "../../../features/plugins/hooks";
+import { usePluginManager, usePlugins } from "../../../features/plugins/hooks";
 import { IconButton } from "../../../components/icon-button";
 import { useSendMessage } from "../../../features/chat/hooks/use-send-message";
 import { useLocalStore } from "../../../features/storage/stores";
@@ -16,6 +16,7 @@ import { useChatStore } from "../../../features/chat/stores";
 import "./chat-composer.scss";
 
 export const ChatComposer = () => {
+	const pluginManager = usePluginManager();
 	const router = useRouter();
 	const plugins = usePlugins();
 	const queryClient = useQueryClient();
@@ -66,6 +67,10 @@ export const ChatComposer = () => {
 			queryClient.invalidateQueries(mainRouter.chats.list.queryFilter());
 
 			chatId = newChat.id;
+
+			await pluginManager.executeOnAfterChatCreatedHooks({
+				chatId: newChat.id,
+			});
 
 			await router.navigate({
 				to: "/chat/$id",
@@ -144,14 +149,8 @@ export const ChatComposer = () => {
 					className="chat-model-select"
 					placeholder="Select model"
 					collection={llmCollection}
-					value={
-						localStore.selectedModel
-							? [
-									`${localStore.selectedModel.pluginId}/${localStore.selectedModel.modelId}`,
-								]
-							: []
-					}
-					onValueChange={(e) => localStore.setSelectedModel(e.items[0].value)}
+					value={localStore.selectedModel ? [localStore.selectedModel] : []}
+					onValueChange={(e) => localStore.setSelectedModel(e.value[0])}
 				>
 					{llmCollection.items.map((item) => (
 						<SimpleSelectItem
