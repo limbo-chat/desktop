@@ -18,6 +18,7 @@ import "../styles/preflight.css";
 import "../styles/default-fonts.css";
 import "../styles/default-theme.css";
 import "./styles.scss";
+import { useCustomStylesSubscriber } from "../features/custom-styles/hooks";
 
 export interface RouterContext {
 	queryClient: QueryClient;
@@ -115,6 +116,8 @@ function RootLayoutProviders({ children }: PropsWithChildren) {
 
 function RootLayout() {
 	const appIsFocused = useIsAppFocused();
+
+	useCustomStylesSubscriber();
 
 	return (
 		<RootLayoutProviders>

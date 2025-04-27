@@ -2,6 +2,8 @@ import http from "node:http";
 import createRouter from "find-my-way";
 import type { BrowserWindow } from "electron";
 
+// TODO refactor to be OOP
+
 export function createServer(mainWindow: BrowserWindow) {
 	const router = createRouter();
 

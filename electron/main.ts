@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow } from "electron";
+import { app, shell, BrowserWindow, protocol } from "electron";
 import path from "node:path";
 import { createIPCHandler } from "trpc-electron/main";
 import { mainRouter } from "./trpc/router";
@@ -7,6 +7,8 @@ import { createServer } from "./server";
 import getPort from "get-port";
 import { migrateToLatest } from "./db/migrate";
 import { readSettings } from "./settings/utils";
+import { ensureCustomStylesDirectory, readCustomStyle } from "./custom-styles/utils";
+import { CustomStylesWatcher } from "./custom-styles/watcher";
 
 function createWindow() {
 	const window = new BrowserWindow({
@@ -50,11 +52,29 @@ function createWindow() {
 
 async function ensureFilesExist() {
 	// TODO, ensure plugin files and dir exists
-	await Promise.all([readSettings(), migrateToLatest()]);
+	await Promise.all([readSettings(), ensureCustomStylesDirectory(), migrateToLatest()]);
 }
 
 app.whenReady().then(async () => {
 	await ensureFilesExist();
+
+	protocol.handle("custom", (req) => {
+		const url = new URL(req.url);
+
+		if (url.hostname === "style") {
+			const css = readCustomStyle(url.pathname);
+
+			return new Response(css, {
+				headers: {
+					"content-type": "text/css",
+				},
+			});
+		}
+
+		return new Response(null, {
+			status: 404,
+		});
+	});
 
 	const window = createWindow();
 
@@ -67,6 +87,12 @@ app.whenReady().then(async () => {
 			};
 		},
 	});
+
+	const customStylesWatcher = new CustomStylesWatcher({
+		window,
+	});
+
+	customStylesWatcher.start();
 
 	const server = createServer(window);
 
