@@ -1,5 +1,8 @@
 import { Dialog as ArkDialog, Portal as ArkPortal } from "@ark-ui/react";
 import clsx from "clsx";
+import type { HTMLAttributes } from "react";
+import { XIcon } from "lucide-react";
+import { IconButton, type IconButtonProps } from "./icon-button";
 
 export const DialogRoot = ArkDialog.Root;
 
@@ -22,6 +25,12 @@ export const DialogContent = ({ className, ...props }: DialogContentProps) => {
 	);
 };
 
+export interface DialogHeaderProps extends HTMLAttributes<HTMLDivElement> {}
+
+export const DialogHeader = ({ className, ...props }: DialogHeaderProps) => {
+	return <div className={clsx("dialog-header", className)} {...props} />;
+};
+
 export interface DialogTitleProps extends ArkDialog.TitleProps {}
 
 export const DialogTitle = ({ className, ...props }: DialogTitleProps) => {
@@ -34,10 +43,33 @@ export const DialogDescription = ({ className, ...props }: DialogDescriptionProp
 	return <ArkDialog.Description className={clsx("dialog-description", className)} {...props} />;
 };
 
+export interface DialogFooterProps extends HTMLAttributes<HTMLDivElement> {}
+
+export const DialogFooter = ({ className, ...props }: DialogFooterProps) => {
+	return <div className={clsx("dialog-footer", className)} {...props} />;
+};
+
 export interface DialogCloseTriggerProps extends ArkDialog.CloseTriggerProps {}
 
 export const DialogCloseTrigger = ({ className, ...props }: DialogCloseTriggerProps) => {
 	return (
 		<ArkDialog.CloseTrigger className={clsx("dialog-close-trigger", className)} {...props} />
+	);
+};
+
+export interface DialogCloseButtonProps extends IconButtonProps {}
+
+export const DialogCloseButton = ({ className, ...props }: DialogCloseButtonProps) => {
+	return (
+		<DialogCloseTrigger asChild>
+			<IconButton
+				color="secondary"
+				variant="ghost"
+				className={clsx("dialog-close-button", className)}
+				{...props}
+			>
+				<XIcon />
+			</IconButton>
+		</DialogCloseTrigger>
 	);
 };
