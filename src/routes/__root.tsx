@@ -14,6 +14,7 @@ import { useIsAppFocused } from "../hooks/common";
 import { PluginManagerContext } from "../features/plugins/contexts";
 import { CustomStylesController } from "../features/custom-styles/components";
 import clsx from "clsx";
+import { updateChatInQueryCache } from "../features/chat/utils";
 
 export interface RouterContext {
 	queryClient: QueryClient;
@@ -53,26 +54,7 @@ const PluginManagerProvider = ({ children }: PropsWithChildren) => {
 						name: newName,
 					});
 
-					queryClient.setQueryData(
-						mainRouter.chats.get.queryKey({
-							id: chatId,
-						}),
-						updatedChat
-					);
-
-					queryClient.setQueryData(mainRouter.chats.list.queryKey(), (oldChats) => {
-						if (!oldChats) {
-							return;
-						}
-
-						return oldChats.map((chat) => {
-							if (chat.id === updatedChat.id) {
-								return updatedChat;
-							}
-
-							return chat;
-						});
-					});
+					updateChatInQueryCache(queryClient, mainRouter, updatedChat);
 				},
 				getChat: async (chatId: string) => {
 					return await mainRouterClient.chats.get.query({ id: chatId });

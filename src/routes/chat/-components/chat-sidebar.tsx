@@ -31,6 +31,7 @@ import { Button } from "../../../components/button";
 import { useForm } from "react-hook-form";
 import { TextInput } from "../../../components/text-input";
 import { useState } from "react";
+import { removeChatFromQueryCache, updateChatInQueryCache } from "../../../features/chat/utils";
 
 interface RenameChatDialogProps {
 	dialogProps: Omit<DialogRootProps, "children">;
@@ -46,7 +47,7 @@ const RenameChatDialog = ({ chat, dialogProps }: RenameChatDialogProps) => {
 	const renameChatMutation = useMutation(mainRouter.chats.rename.mutationOptions());
 
 	const form = useForm({
-		defaultValues: {
+		values: {
 			name: chat.name,
 		},
 	});
@@ -59,19 +60,8 @@ const RenameChatDialog = ({ chat, dialogProps }: RenameChatDialogProps) => {
 			},
 			{
 				onSuccess: (updatedChat) => {
-					queryClient.setQueryData(mainRouter.chats.list.queryKey(), (oldChats) => {
-						if (!oldChats) {
-							return;
-						}
+					updateChatInQueryCache(queryClient, mainRouter, updatedChat);
 
-						return oldChats.map((chat) => {
-							if (chat.id === updatedChat.id) {
-								return updatedChat;
-							}
-
-							return chat;
-						});
-					});
 					if (dialogProps.onOpenChange) {
 						dialogProps.onOpenChange({ open: false });
 					}
@@ -139,13 +129,7 @@ const ChatItem = ({ chat }: ChatItemProps) => {
 						router.navigate({ to: "/chat" });
 					}
 
-					queryClient.setQueryData(mainRouter.chats.list.queryKey(), (oldChats) => {
-						if (!oldChats) {
-							return;
-						}
-
-						return oldChats.filter((c) => c.id !== chat.id);
-					});
+					removeChatFromQueryCache(queryClient, mainRouter, chat.id);
 				},
 				onError: (err) => {
 					console.log("Failed to delete chat", err);
