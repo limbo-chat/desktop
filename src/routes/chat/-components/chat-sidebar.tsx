@@ -1,4 +1,7 @@
-import { Link, useMatch, useMatches, useRouter } from "@tanstack/react-router";
+import { useState } from "react";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { Link, useMatch, useRouter } from "@tanstack/react-router";
+import { useForm } from "react-hook-form";
 import { EllipsisIcon, MessageCirclePlusIcon, PencilIcon, Trash2Icon } from "lucide-react";
 import {
 	Sidebar,
@@ -8,7 +11,6 @@ import {
 	SidebarItem,
 } from "../../../components/sidebar";
 import { iconButtonVariants } from "../../../components/icon-button";
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useMainRouter } from "../../../lib/trpc";
 import {
 	MenuContent,
@@ -28,9 +30,7 @@ import {
 	type DialogRootProps,
 } from "../../../components/dialog";
 import { Button } from "../../../components/button";
-import { useForm } from "react-hook-form";
 import { TextInput } from "../../../components/text-input";
-import { useState } from "react";
 import { removeChatFromQueryCache, updateChatInQueryCache } from "../../../features/chat/utils";
 
 interface RenameChatDialogProps {

@@ -1,5 +1,5 @@
-import clsx from "clsx";
 import type { HTMLAttributes } from "react";
+import clsx from "clsx";
 
 export interface SettingsPageProps extends HTMLAttributes<HTMLDivElement> {}
 

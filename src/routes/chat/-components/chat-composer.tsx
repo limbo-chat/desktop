@@ -1,16 +1,16 @@
 import { useMemo } from "react";
+import { useShallow } from "zustand/shallow";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "@tanstack/react-router";
 import { Controller, useForm } from "react-hook-form";
-import { ArrowUpIcon } from "lucide-react";
-import { SimpleSelect, SimpleSelectItem } from "../../../components/select";
 import { createListCollection } from "@ark-ui/react";
-import { useShallow } from "zustand/shallow";
+import { ArrowUpIcon } from "lucide-react";
 import TextareaAutosize from "react-textarea-autosize";
+import { SimpleSelect, SimpleSelectItem } from "../../../components/select";
 import { usePluginManager, usePlugins } from "../../../features/plugins/hooks";
 import { IconButton } from "../../../components/icon-button";
 import { useSendMessage } from "../../../features/chat/hooks/use-send-message";
 import { useLocalStore } from "../../../features/storage/stores";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMainRouter } from "../../../lib/trpc";
 import { useChatStore } from "../../../features/chat/stores";
 

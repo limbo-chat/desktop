@@ -1,7 +1,7 @@
-import { Dialog as ArkDialog, Portal as ArkPortal } from "@ark-ui/react";
-import clsx from "clsx";
 import type { HTMLAttributes } from "react";
+import { Dialog as ArkDialog, Portal as ArkPortal } from "@ark-ui/react";
 import { XIcon } from "lucide-react";
+import clsx from "clsx";
 import { IconButton, type IconButtonProps } from "./icon-button";
 
 export interface DialogRootProps extends ArkDialog.RootProps {}

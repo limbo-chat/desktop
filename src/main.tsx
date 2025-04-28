@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
+import { QueryClient } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
-import { QueryClient } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
 

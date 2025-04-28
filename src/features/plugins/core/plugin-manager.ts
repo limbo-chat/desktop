@@ -1,8 +1,7 @@
 import EventEmitter from "eventemitter3";
-import { PluginContext } from "./plugin-context";
 import type * as limbo from "limbo";
+import { PluginContext } from "./plugin-context";
 import type { PluginData, PluginManifest } from "../../../../electron/plugins/schemas";
-import { PromptBuilder } from "../../chat/core/prompt-builder";
 
 export interface PluginManagerEvents {
 	"plugin:added": (pluginId: string) => void;

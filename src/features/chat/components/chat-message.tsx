@@ -1,9 +1,9 @@
-import { memo, type HTMLAttributes, type PropsWithChildren } from "react";
+import { memo, type HTMLAttributes } from "react";
 import MarkdownToJsx from "markdown-to-jsx";
-import { Markdown } from "../../markdown/components/markdown";
-import type { AssistantChatMessage, ChatMessageType, UserChatMessage } from "../types";
 import clsx from "clsx";
+import { Markdown } from "../../markdown/components/markdown";
 import { CodeBlock } from "../../markdown/components/code-block";
+import type { AssistantChatMessage, ChatMessageType, UserChatMessage } from "../types";
 
 interface ChatMessageContainerProps extends HTMLAttributes<HTMLDivElement> {
 	message: ChatMessageType;

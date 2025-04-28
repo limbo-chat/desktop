@@ -1,10 +1,10 @@
+import { Suspense, useEffect } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useShallow } from "zustand/shallow";
 import { ChatLog } from "../../../features/chat/components/chat-log";
 import { useChatStore } from "../../../features/chat/stores";
 import { useMainRouter } from "../../../lib/trpc";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { Suspense, useEffect } from "react";
-import { useShallow } from "zustand/shallow";
 
 export const Route = createFileRoute("/chat/$id/")({
 	component: ChatPage,

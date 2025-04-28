@@ -4,7 +4,6 @@ import { MainRouterProvider, useMainRouter, useMainRouterClient } from "../lib/t
 import { Suspense, useMemo, type PropsWithChildren } from "react";
 import { ipcLink } from "trpc-electron/renderer";
 import { createTRPCClient } from "@trpc/client";
-import superjson from "superjson";
 import type { MainRouter } from "../../electron/trpc/router";
 import { PluginController } from "../features/plugins/components/plugin-controller";
 import { PluginManager } from "../features/plugins/core/plugin-manager";
@@ -74,11 +73,7 @@ function RootLayoutProviders({ children }: PropsWithChildren) {
 
 	const mainRouterClient = useMemo(() => {
 		return createTRPCClient<MainRouter>({
-			links: [
-				ipcLink({
-					transformer: superjson,
-				}),
-			],
+			links: [ipcLink()],
 		});
 	}, []);
 

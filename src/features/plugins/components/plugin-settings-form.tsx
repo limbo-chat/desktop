@@ -1,7 +1,7 @@
-import { Controller, FormProvider, useForm } from "react-hook-form";
-import type { PluginContext } from "../core/plugin-context";
-import type * as limbo from "limbo";
 import { useEffect, type HTMLProps, type PropsWithChildren } from "react";
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import type * as limbo from "limbo";
+import type { PluginContext } from "../core/plugin-context";
 import { TextInput } from "../../../components/text-input";
 import { Field, FieldDescription, FieldInfo, FieldLabel } from "../../../components/field";
 import { Checkbox } from "../../../components/checkbox";
