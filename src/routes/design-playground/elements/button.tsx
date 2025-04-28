@@ -9,6 +9,7 @@ import {
 import { Field, FieldLabel } from "../../../components/field";
 import { SimpleSelect, SimpleSelectItem } from "../../../components/select";
 import { createListCollection } from "@ark-ui/react";
+import { Checkbox } from "../../../components/checkbox";
 
 export const Route = createFileRoute("/design-playground/elements/button")({
 	component: ButtonElementPage,
@@ -17,6 +18,8 @@ export const Route = createFileRoute("/design-playground/elements/button")({
 function ButtonElementPage() {
 	const [buttonColor, setButtonColor] = useState("primary");
 	const [buttonVariant, setButtonVariant] = useState("default");
+	const [isDisabled, setIsDisabled] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const buttonColorCollection = createListCollection({
 		items: [
@@ -41,7 +44,12 @@ function ButtonElementPage() {
 	return (
 		<ComponentPreview>
 			<ComponentPreviewContent>
-				<Button color={buttonColor as any} variant={buttonVariant as any}>
+				<Button
+					disabled={isDisabled}
+					isLoading={isLoading}
+					color={buttonColor as any}
+					variant={buttonVariant as any}
+				>
 					Click me
 				</Button>
 			</ComponentPreviewContent>
@@ -69,6 +77,20 @@ function ButtonElementPage() {
 							<SimpleSelectItem item={item} label={item.label} key={item.value} />
 						))}
 					</SimpleSelect>
+				</Field>
+				<Field>
+					<FieldLabel>Disabled?</FieldLabel>
+					<Checkbox
+						checked={isDisabled}
+						onCheckedChange={(e) => setIsDisabled(e.checked as boolean)}
+					/>
+				</Field>
+				<Field>
+					<FieldLabel>Loading?</FieldLabel>
+					<Checkbox
+						checked={isLoading}
+						onCheckedChange={(e) => setIsLoading(e.checked as boolean)}
+					/>
 				</Field>
 			</ComponentPreviewPanel>
 		</ComponentPreview>

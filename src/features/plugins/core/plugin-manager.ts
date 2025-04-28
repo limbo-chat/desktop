@@ -26,7 +26,6 @@ export interface PluginManagerOptions {
 	hostBridge: PluginManagerHostBridge;
 }
 
-// todo, forward events from the plugin contexts to the plugin manager
 export class PluginManager {
 	public events: EventEmitter<PluginManagerEvents> = new EventEmitter();
 	private plugins: Map<string, PluginContext> = new Map();

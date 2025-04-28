@@ -88,8 +88,12 @@ const RenameChatDialog = ({ chat, dialogProps }: RenameChatDialogProps) => {
 								Cancel
 							</Button>
 						</DialogCloseTrigger>
-						{/* TODO add loading indicator to buttons */}
-						<Button type="submit" color="primary">
+						<Button
+							type="submit"
+							color="primary"
+							disabled={!form.formState.isDirty}
+							isLoading={renameChatMutation.isPending}
+						>
 							Save
 						</Button>
 					</DialogFooter>
