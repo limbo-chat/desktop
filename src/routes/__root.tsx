@@ -50,7 +50,7 @@ const PluginManagerProvider = ({ children }: PropsWithChildren) => {
 				renameChat: async (chatId: string, newName: string) => {
 					const updatedChat = await mainRouterClient.chats.rename.mutate({
 						id: chatId,
-						title: newName,
+						name: newName,
 					});
 
 					queryClient.setQueryData(
@@ -66,7 +66,7 @@ const PluginManagerProvider = ({ children }: PropsWithChildren) => {
 						}
 
 						return oldChats.map((chat) => {
-							if (chat.id === chatId) {
+							if (chat.id === updatedChat.id) {
 								return updatedChat;
 							}
 

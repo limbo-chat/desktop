@@ -4,6 +4,8 @@ import type { HTMLAttributes } from "react";
 import { XIcon } from "lucide-react";
 import { IconButton, type IconButtonProps } from "./icon-button";
 
+export interface DialogRootProps extends ArkDialog.RootProps {}
+
 export const DialogRoot = ArkDialog.Root;
 
 export interface DialogTriggerProps extends ArkDialog.TriggerProps {}

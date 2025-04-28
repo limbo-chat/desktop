@@ -6,12 +6,12 @@ import { ulid } from "ulid";
 import { TRPCError } from "@trpc/server";
 
 const createChatInputSchema = z.object({
-	title: z.string(),
+	name: z.string(),
 });
 
 const renameChatInputSchema = z.object({
 	id: z.string(),
-	title: z.string(),
+	name: z.string(),
 });
 
 export const chatsRouter = router({
@@ -42,7 +42,7 @@ export const chatsRouter = router({
 			.insertInto("chat")
 			.values({
 				id: ulid(),
-				name: input.title,
+				name: input.name,
 				createdAt: new Date().toISOString(),
 			})
 			.returningAll()
@@ -68,7 +68,7 @@ export const chatsRouter = router({
 			.updateTable("chat")
 			.where("id", "=", input.id)
 			.set({
-				name: input.title,
+				name: input.name,
 			})
 			.returningAll()
 			.executeTakeFirst();

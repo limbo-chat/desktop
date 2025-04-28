@@ -60,7 +60,7 @@ export const ChatComposer = () => {
 			chatId = params.id;
 		} else {
 			const newChat = await createChatMutation.mutateAsync({
-				title: "New chat",
+				name: "New chat",
 			});
 
 			queryClient.invalidateQueries(mainRouter.chats.list.queryFilter());
