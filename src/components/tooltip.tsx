@@ -1,13 +1,13 @@
 import { Tooltip as ArkTooltip } from "@ark-ui/react/tooltip";
 import type { PropsWithChildren } from "react";
 
-export interface TooltipProps {
+export interface TooltipProps extends ArkTooltip.RootProps {
 	label: string;
 }
 
-export const Tooltip = ({ label, children }: PropsWithChildren<TooltipProps>) => {
+export const Tooltip = ({ label, children, ...props }: PropsWithChildren<TooltipProps>) => {
 	return (
-		<ArkTooltip.Root>
+		<ArkTooltip.Root {...props}>
 			<ArkTooltip.Trigger asChild>{children}</ArkTooltip.Trigger>
 			<ArkTooltip.Positioner>
 				<ArkTooltip.Content className="tooltip">{label}</ArkTooltip.Content>

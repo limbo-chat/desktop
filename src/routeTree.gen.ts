@@ -23,6 +23,7 @@ import { Route as SettingsAppearanceImport } from './routes/settings/appearance'
 import { Route as SettingsPluginsIndexImport } from './routes/settings/plugins/index'
 import { Route as ChatIdIndexImport } from './routes/chat/$id/index'
 import { Route as SettingsPluginsIdImport } from './routes/settings/plugins/$id'
+import { Route as DesignPlaygroundElementsTooltipImport } from './routes/design-playground/elements/tooltip'
 import { Route as DesignPlaygroundElementsMarkdownImport } from './routes/design-playground/elements/markdown'
 import { Route as DesignPlaygroundElementsDialogImport } from './routes/design-playground/elements/dialog'
 import { Route as DesignPlaygroundElementsButtonImport } from './routes/design-playground/elements/button'
@@ -100,6 +101,13 @@ const SettingsPluginsIdRoute = SettingsPluginsIdImport.update({
   path: '/plugins/$id',
   getParentRoute: () => SettingsRouteRoute,
 } as any)
+
+const DesignPlaygroundElementsTooltipRoute =
+  DesignPlaygroundElementsTooltipImport.update({
+    id: '/elements/tooltip',
+    path: '/elements/tooltip',
+    getParentRoute: () => DesignPlaygroundRouteRoute,
+  } as any)
 
 const DesignPlaygroundElementsMarkdownRoute =
   DesignPlaygroundElementsMarkdownImport.update({
@@ -210,6 +218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DesignPlaygroundElementsMarkdownImport
       parentRoute: typeof DesignPlaygroundRouteImport
     }
+    '/design-playground/elements/tooltip': {
+      id: '/design-playground/elements/tooltip'
+      path: '/elements/tooltip'
+      fullPath: '/design-playground/elements/tooltip'
+      preLoaderRoute: typeof DesignPlaygroundElementsTooltipImport
+      parentRoute: typeof DesignPlaygroundRouteImport
+    }
     '/settings/plugins/$id': {
       id: '/settings/plugins/$id'
       path: '/plugins/$id'
@@ -255,6 +270,7 @@ interface DesignPlaygroundRouteRouteChildren {
   DesignPlaygroundElementsButtonRoute: typeof DesignPlaygroundElementsButtonRoute
   DesignPlaygroundElementsDialogRoute: typeof DesignPlaygroundElementsDialogRoute
   DesignPlaygroundElementsMarkdownRoute: typeof DesignPlaygroundElementsMarkdownRoute
+  DesignPlaygroundElementsTooltipRoute: typeof DesignPlaygroundElementsTooltipRoute
 }
 
 const DesignPlaygroundRouteRouteChildren: DesignPlaygroundRouteRouteChildren = {
@@ -262,6 +278,7 @@ const DesignPlaygroundRouteRouteChildren: DesignPlaygroundRouteRouteChildren = {
   DesignPlaygroundElementsButtonRoute: DesignPlaygroundElementsButtonRoute,
   DesignPlaygroundElementsDialogRoute: DesignPlaygroundElementsDialogRoute,
   DesignPlaygroundElementsMarkdownRoute: DesignPlaygroundElementsMarkdownRoute,
+  DesignPlaygroundElementsTooltipRoute: DesignPlaygroundElementsTooltipRoute,
 }
 
 const DesignPlaygroundRouteRouteWithChildren =
@@ -302,6 +319,7 @@ export interface FileRoutesByFullPath {
   '/design-playground/elements/button': typeof DesignPlaygroundElementsButtonRoute
   '/design-playground/elements/dialog': typeof DesignPlaygroundElementsDialogRoute
   '/design-playground/elements/markdown': typeof DesignPlaygroundElementsMarkdownRoute
+  '/design-playground/elements/tooltip': typeof DesignPlaygroundElementsTooltipRoute
   '/settings/plugins/$id': typeof SettingsPluginsIdRoute
   '/chat/$id': typeof ChatIdIndexRoute
   '/settings/plugins': typeof SettingsPluginsIndexRoute
@@ -317,6 +335,7 @@ export interface FileRoutesByTo {
   '/design-playground/elements/button': typeof DesignPlaygroundElementsButtonRoute
   '/design-playground/elements/dialog': typeof DesignPlaygroundElementsDialogRoute
   '/design-playground/elements/markdown': typeof DesignPlaygroundElementsMarkdownRoute
+  '/design-playground/elements/tooltip': typeof DesignPlaygroundElementsTooltipRoute
   '/settings/plugins/$id': typeof SettingsPluginsIdRoute
   '/chat/$id': typeof ChatIdIndexRoute
   '/settings/plugins': typeof SettingsPluginsIndexRoute
@@ -336,6 +355,7 @@ export interface FileRoutesById {
   '/design-playground/elements/button': typeof DesignPlaygroundElementsButtonRoute
   '/design-playground/elements/dialog': typeof DesignPlaygroundElementsDialogRoute
   '/design-playground/elements/markdown': typeof DesignPlaygroundElementsMarkdownRoute
+  '/design-playground/elements/tooltip': typeof DesignPlaygroundElementsTooltipRoute
   '/settings/plugins/$id': typeof SettingsPluginsIdRoute
   '/chat/$id/': typeof ChatIdIndexRoute
   '/settings/plugins/': typeof SettingsPluginsIndexRoute
@@ -356,6 +376,7 @@ export interface FileRouteTypes {
     | '/design-playground/elements/button'
     | '/design-playground/elements/dialog'
     | '/design-playground/elements/markdown'
+    | '/design-playground/elements/tooltip'
     | '/settings/plugins/$id'
     | '/chat/$id'
     | '/settings/plugins'
@@ -370,6 +391,7 @@ export interface FileRouteTypes {
     | '/design-playground/elements/button'
     | '/design-playground/elements/dialog'
     | '/design-playground/elements/markdown'
+    | '/design-playground/elements/tooltip'
     | '/settings/plugins/$id'
     | '/chat/$id'
     | '/settings/plugins'
@@ -387,6 +409,7 @@ export interface FileRouteTypes {
     | '/design-playground/elements/button'
     | '/design-playground/elements/dialog'
     | '/design-playground/elements/markdown'
+    | '/design-playground/elements/tooltip'
     | '/settings/plugins/$id'
     | '/chat/$id/'
     | '/settings/plugins/'
@@ -439,7 +462,8 @@ export const routeTree = rootRoute
         "/design-playground/",
         "/design-playground/elements/button",
         "/design-playground/elements/dialog",
-        "/design-playground/elements/markdown"
+        "/design-playground/elements/markdown",
+        "/design-playground/elements/tooltip"
       ]
     },
     "/settings": {
@@ -482,6 +506,10 @@ export const routeTree = rootRoute
     },
     "/design-playground/elements/markdown": {
       "filePath": "design-playground/elements/markdown.tsx",
+      "parent": "/design-playground"
+    },
+    "/design-playground/elements/tooltip": {
+      "filePath": "design-playground/elements/tooltip.tsx",
       "parent": "/design-playground"
     },
     "/settings/plugins/$id": {
