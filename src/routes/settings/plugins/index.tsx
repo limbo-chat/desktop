@@ -1,29 +1,79 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { usePlugins } from "../../../features/plugins/hooks";
 import { SettingsPage } from "../-components/settings-page";
+import { Checkbox } from "../../../components/checkbox";
+import { IconButton, iconButtonVariants } from "../../../components/icon-button";
+import { AlertCircleIcon, RefreshCwIcon, SettingsIcon, Trash2Icon } from "lucide-react";
+import type { PluginManifest } from "../../../../electron/plugins/schemas";
+import { Tooltip } from "../../../components/tooltip";
 
 export const Route = createFileRoute("/settings/plugins/")({
 	component: RouteComponent,
 });
+
+interface PluginCardProps {
+	plugin: {
+		manifest: PluginManifest;
+	};
+}
+
+const PluginCard = ({ plugin }: PluginCardProps) => {
+	return (
+		<div className="plugin-card">
+			<div className="plugin-card-header">
+				<span className="plugin-card-title">{plugin.manifest.name}</span>
+				<Checkbox />
+			</div>
+			<div className="plugin-card-content">
+				<div className="plugin-card-info">
+					<span className="plugin-card-version">v{plugin.manifest.version}</span>
+					{(typeof plugin.manifest.author.name === "string" ||
+						typeof plugin.manifest.author.email === "string") && (
+						<span className="plugin-card-author">
+							By {plugin.manifest.author.name ?? plugin.manifest.author.email}
+						</span>
+					)}
+					<p className="plugin-card-description">{plugin.manifest.description}</p>
+				</div>
+				<div className="plugin-card-actions">
+					<Tooltip label="Errors">
+						<IconButton variant="ghost" color="secondary">
+							<AlertCircleIcon />
+						</IconButton>
+					</Tooltip>
+					<Tooltip label="Settings">
+						<Link
+							className={iconButtonVariants({ variant: "ghost", color: "secondary" })}
+							to="/settings/plugins/$id"
+							params={{ id: plugin.manifest.id }}
+						>
+							<SettingsIcon />
+						</Link>
+					</Tooltip>
+					<Tooltip label="Reload">
+						<IconButton variant="ghost" color="secondary">
+							<RefreshCwIcon />
+						</IconButton>
+					</Tooltip>
+					<Tooltip label="Uninstall">
+						<IconButton variant="ghost" color="secondary">
+							<Trash2Icon />
+						</IconButton>
+					</Tooltip>
+				</div>
+			</div>
+		</div>
+	);
+};
 
 function RouteComponent() {
 	const plugins = usePlugins();
 
 	return (
 		<SettingsPage className="settings-page--plugins">
-			<div>
-				<p>Installed plugins</p>
-			</div>
-			<div className="flex flex-col gap-sm">
-				{plugins.map((plugin) => (
-					<div key={plugin.manifest.id}>
-						<p>{plugin.manifest.name}</p>
-						<p>Version {plugin.manifest.version}</p>
-						<p>By {plugin.manifest.author.name}</p>
-						<p>{plugin.manifest.description}</p>
-					</div>
-				))}
-			</div>
+			{plugins.map((plugin) => (
+				<PluginCard plugin={plugin} key={plugin.manifest.id} />
+			))}
 		</SettingsPage>
 	);
 }
