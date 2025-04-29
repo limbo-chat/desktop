@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { usePlugins } from "../../../features/plugins/hooks";
 import { SettingsPage } from "../-components/settings-page";
-import { Checkbox } from "../../../components/checkbox";
 import { IconButton, iconButtonVariants } from "../../../components/icon-button";
 import { AlertCircleIcon, RefreshCwIcon, SettingsIcon, Trash2Icon } from "lucide-react";
 import type { PluginManifest } from "../../../../electron/plugins/schemas";
 import { Tooltip } from "../../../components/tooltip";
+import { Switch } from "../../../components/switch";
 
 export const Route = createFileRoute("/settings/plugins/")({
 	component: RouteComponent,
@@ -22,7 +22,7 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 		<div className="plugin-card">
 			<div className="plugin-card-header">
 				<span className="plugin-card-title">{plugin.manifest.name}</span>
-				<Checkbox />
+				<Switch />
 			</div>
 			<div className="plugin-card-content">
 				<div className="plugin-card-info">
