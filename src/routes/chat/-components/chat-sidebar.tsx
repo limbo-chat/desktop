@@ -34,14 +34,15 @@ import { TextInput } from "../../../components/text-input";
 import { removeChatFromQueryCache, updateChatInQueryCache } from "../../../features/chat/utils";
 
 interface RenameChatDialogProps {
-	dialogProps: Omit<DialogRootProps, "children">;
 	chat: {
 		id: string;
 		name: string;
 	};
+	onRenameComplete: () => void;
+	dialogProps: DialogRootProps;
 }
 
-const RenameChatDialog = ({ chat, dialogProps }: RenameChatDialogProps) => {
+const RenameChatDialog = ({ chat, onRenameComplete, dialogProps }: RenameChatDialogProps) => {
 	const mainRouter = useMainRouter();
 	const queryClient = useQueryClient();
 	const renameChatMutation = useMutation(mainRouter.chats.rename.mutationOptions());
@@ -61,10 +62,7 @@ const RenameChatDialog = ({ chat, dialogProps }: RenameChatDialogProps) => {
 			{
 				onSuccess: (updatedChat) => {
 					updateChatInQueryCache(queryClient, mainRouter, updatedChat);
-
-					if (dialogProps.onOpenChange) {
-						dialogProps.onOpenChange({ open: false });
-					}
+					onRenameComplete();
 				},
 				onError: () => {
 					// show toast
@@ -150,6 +148,7 @@ const ChatItem = ({ chat }: ChatItemProps) => {
 					open: isRenameDialogOpen,
 					onOpenChange: (e) => setIsRenameDialogOpen(e.open),
 				}}
+				onRenameComplete={() => setIsRenameDialogOpen(false)}
 			/>
 			<Link to="/chat/$id" params={{ id: chat.id }}>
 				{({ isActive }) => (

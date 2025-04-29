@@ -40,7 +40,7 @@ const PluginManagerProvider = ({ children }: PropsWithChildren) => {
 		return new PluginManager({
 			hostBridge: {
 				getPluginData: async (pluginId: string) => {
-					return await mainRouterClient.plugins.getPlugin.query({
+					return await mainRouterClient.plugins.get.query({
 						id: pluginId,
 					});
 				},

@@ -112,3 +112,7 @@ export function getPlugin(pluginId: string) {
 		js,
 	};
 }
+
+export function uninstallPlugin(pluginId: string) {
+	fs.rmSync(buildPluginPath(pluginId), { recursive: true, force: true });
+}
