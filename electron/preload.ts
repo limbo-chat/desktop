@@ -3,6 +3,10 @@ import { exposeElectronTRPC } from "trpc-electron/main";
 
 exposeElectronTRPC();
 
+contextBridge.exposeInMainWorld("env", {
+	LIMBO_API_VERSION: import.meta.env.VITE_LIMBO_API_VERSION,
+});
+
 contextBridge.exposeInMainWorld("ipcRenderer", {
 	on(...args: Parameters<typeof ipcRenderer.on>) {
 		const [channel, listener] = args;
