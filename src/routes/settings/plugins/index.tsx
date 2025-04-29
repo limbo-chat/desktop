@@ -19,7 +19,7 @@ interface PluginCardProps {
 
 const PluginCard = ({ plugin }: PluginCardProps) => {
 	return (
-		<div className="plugin-card">
+		<div className="plugin-card" data-enabled="true">
 			<div className="plugin-card-header">
 				<span className="plugin-card-title">{plugin.manifest.name}</span>
 				<Switch />
@@ -37,26 +37,46 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 				</div>
 				<div className="plugin-card-actions">
 					<Tooltip label="Errors">
-						<IconButton variant="ghost" color="secondary">
+						<IconButton
+							variant="ghost"
+							color="secondary"
+							className="plugin-card-action"
+							data-action="errors"
+						>
 							<AlertCircleIcon />
 						</IconButton>
 					</Tooltip>
 					<Tooltip label="Settings">
 						<Link
-							className={iconButtonVariants({ variant: "ghost", color: "secondary" })}
+							className={iconButtonVariants({
+								variant: "ghost",
+								color: "secondary",
+								className: "plugin-card-action",
+							})}
 							to="/settings/plugins/$id"
 							params={{ id: plugin.manifest.id }}
+							data-action="settings"
 						>
 							<SettingsIcon />
 						</Link>
 					</Tooltip>
 					<Tooltip label="Reload">
-						<IconButton variant="ghost" color="secondary">
+						<IconButton
+							className="plugin-card-action"
+							variant="ghost"
+							color="secondary"
+							data-action="reload"
+						>
 							<RefreshCwIcon />
 						</IconButton>
 					</Tooltip>
 					<Tooltip label="Uninstall">
-						<IconButton variant="ghost" color="secondary">
+						<IconButton
+							className="plugin-card-action"
+							variant="ghost"
+							color="secondary"
+							data-action="uninstall"
+						>
 							<Trash2Icon />
 						</IconButton>
 					</Tooltip>
