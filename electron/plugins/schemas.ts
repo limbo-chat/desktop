@@ -1,7 +1,7 @@
 import { z } from "zod";
 import semver from "semver";
 
-const semverSchema = z.string().refine((v) => semver.valid(v) !== null, {
+const semverSchema = z.string().refine((v) => semver.validRange(v) !== null, {
 	message: "Invalid semver version",
 });
 
@@ -10,10 +10,10 @@ export const pluginManifestSchema = z.object({
 	name: z.string(),
 	description: z.string(),
 	version: semverSchema,
-	minApiVersion: semverSchema.optional(),
+	apiVersion: semverSchema.optional(),
 	author: z.object({
-		name: z.string().optional(),
-		email: z.string().optional(),
+		name: z.string(),
+		email: z.string(),
 	}),
 	files: z.object({
 		js: z.string().default("plugin.js"),
