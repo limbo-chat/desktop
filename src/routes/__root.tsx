@@ -91,7 +91,7 @@ function RootLayout() {
 
 	return (
 		<RootLayoutProviders>
-			<div className={clsx("app", appIsFocused && "app-focused")}>
+			<div className="app" data-app-focused={appIsFocused}>
 				<Titlebar />
 				<Suspense fallback={"loading, todo replace"}>
 					<CustomStylesController />
