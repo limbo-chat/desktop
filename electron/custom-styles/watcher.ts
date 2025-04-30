@@ -16,7 +16,7 @@ export class CustomStylesWatcher {
 	}
 
 	public start() {
-		this.watcher = watch(path.join(CUSTOM_STYLES_DIR), {
+		this.watcher = watch(CUSTOM_STYLES_DIR, {
 			persistent: true,
 			ignoreInitial: true,
 			cwd: CUSTOM_STYLES_DIR,

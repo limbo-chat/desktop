@@ -3,13 +3,12 @@ import { app, shell, BrowserWindow } from "electron";
 import { createIPCHandler } from "trpc-electron/main";
 import { mainRouter } from "./trpc/router";
 import { MAIN_DIST, RENDERER_DIST, VITE_DEV_SERVER_URL, VITE_PUBLIC } from "./constants";
-import { createServer } from "./server";
-import getPort from "get-port";
 import { migrateToLatest } from "./db/migrate";
 import { readSettings } from "./settings/utils";
 import { ensurePluginsDir } from "./plugins/utils";
 import { ensureCustomStylesDirectory } from "./custom-styles/utils";
 import { CustomStylesWatcher } from "./custom-styles/watcher";
+import { PluginWatcher } from "./plugins/watcher";
 
 function createWindow() {
 	const window = new BrowserWindow({
@@ -75,20 +74,16 @@ app.whenReady().then(async () => {
 		},
 	});
 
+	const pluginWatcher = new PluginWatcher({
+		window,
+	});
+
 	const customStylesWatcher = new CustomStylesWatcher({
 		window,
 	});
 
+	pluginWatcher.start();
 	customStylesWatcher.start();
-
-	const server = createServer(window);
-
-	// this will try getting port 5151 first, if it's occupied it will find a free port and start the server on it
-	const port = await getPort({
-		port: 5151,
-	});
-
-	server.listen(port);
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

@@ -17,8 +17,7 @@ function DeveloperSettingsPage() {
 				<CardHeader>
 					<CardTitle>Developer mode</CardTitle>
 					<CardDescription>
-						Developer mode activates the development server which enables hot reloading
-						of plugins and custom styles
+						Developer mode enables hot reloading of plugins and custom styles
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
