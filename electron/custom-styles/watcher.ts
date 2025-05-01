@@ -20,9 +20,19 @@ export class CustomStylesWatcher {
 			persistent: true,
 			ignoreInitial: true,
 			cwd: CUSTOM_STYLES_DIR,
-			// ignore files that aren't CSS files
-			ignored: (path, stats) =>
-				stats !== undefined && stats.isFile() && !path.endsWith(".css"),
+			ignored: (curPath) => {
+				const extname = path.extname(curPath);
+
+				// don't ignore directories
+				if (extname === "") {
+					return false;
+				}
+
+				const isCssFile = extname === ".css";
+
+				// ignore files that aren't CSS files
+				return !isCssFile;
+			},
 		});
 
 		this.watcher.on("add", (filePath) => {
@@ -30,6 +40,8 @@ export class CustomStylesWatcher {
 		});
 
 		this.watcher.on("change", (filePath) => {
+			console.log(`Custom style changed: ${filePath}`);
+
 			this.window.webContents.send("custom-style:reload", filePath);
 		});
 

@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { PLUGINS_DIR, PLUGIN_DATA_FILE, PLUGIN_MANIFEST_FILE } from "./constants";
+import { PLUGINS_DIR, PLUGIN_DATA_FILE, PLUGIN_JS_FILE, PLUGIN_MANIFEST_FILE } from "./constants";
 import { pluginDataSchema, pluginManifestSchema, type PluginData } from "./schemas";
 
 const defaultPluginData: PluginData = { enabled: false, settings: {} };
@@ -11,6 +11,10 @@ function buildPluginPath(pluginId: string) {
 
 function buildPluginManifestPath(pluginId: string) {
 	return path.join(buildPluginPath(pluginId), PLUGIN_MANIFEST_FILE);
+}
+
+function buildPluginJsPath(pluginId: string) {
+	return path.join(buildPluginManifestPath(pluginId), PLUGIN_JS_FILE);
 }
 
 function buildPluginDataPath(pluginId: string) {
@@ -90,20 +94,20 @@ export function getPlugin(pluginId: string) {
 		throw new Error(`Failed to read manifest for plugin ${pluginId}`);
 	}
 
+	let js;
+
+	try {
+		js = fs.readFileSync(buildPluginJsPath(pluginId), "utf8");
+	} catch {
+		throw new Error(`Failed to read JS file for plugin ${pluginId}`);
+	}
+
 	let data;
 
 	try {
 		data = getPluginData(pluginId);
 	} catch {
 		throw new Error(`Failed to read plugin data for ${pluginId}`);
-	}
-
-	let js;
-
-	try {
-		js = fs.readFileSync(path.join(buildPluginPath(pluginId), manifest.files.js), "utf8");
-	} catch {
-		throw new Error(`Failed to read JS file for plugin ${pluginId}`);
 	}
 
 	return {
