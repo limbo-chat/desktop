@@ -16,11 +16,11 @@ export const usePluginManager = () => {
 
 export const usePluginLoader = () => {
 	const mainRouter = useMainRouter();
-	const getPluginsQuery = useSuspenseQuery(mainRouter.plugins.getPluginIds.queryOptions());
 	const pluginManager = usePluginManager();
+	const getPluginIdsQuery = useSuspenseQuery(mainRouter.plugins.getPluginIds.queryOptions());
 
 	const loadPlugins = useCallback(async () => {
-		for (const pluginId of getPluginsQuery.data) {
+		for (const pluginId of getPluginIdsQuery.data) {
 			await pluginManager.loadPlugin(pluginId);
 		}
 
@@ -37,21 +37,25 @@ export const usePluginHotReloader = () => {
 	const pluginManager = usePluginManager();
 
 	useEffect(() => {
-		const handler = async (_event: any, pluginId: string) => {
-			const plugin = pluginManager.getPlugin(pluginId);
-
-			await pluginManager.reloadPlugin(pluginId);
-
-			console.info(
-				`%c hot reloaded plugin: "${plugin.manifest.id}"`,
-				"color: cornflowerblue; font-weight: bold;"
-			);
+		const handleReloadManifest = (_event: any, pluginId: string) => {
+			console.log("reloading manifest for plugin:", pluginId);
 		};
 
-		window.ipcRenderer.on("plugin-reload", handler);
+		const handleReloadJs = (_event: any, pluginId: string) => {
+			console.log("reloading js for plugin:", pluginId);
+
+			// console.info(
+			// 	`%c hot reloaded plugin: "${plugin.manifest.id}"`,
+			// 	"color: cornflowerblue; font-weight: bold;"
+			// );
+		};
+
+		window.ipcRenderer.on("plugin:reload-manifest", handleReloadManifest);
+		window.ipcRenderer.on("plugin:reload-js", handleReloadJs);
 
 		return () => {
-			window.ipcRenderer.off("plugin-reload", handler);
+			window.ipcRenderer.off("plugin:reload-manifest", handleReloadManifest);
+			window.ipcRenderer.off("plugin:reload-js", handleReloadJs);
 		};
 	}, []);
 };

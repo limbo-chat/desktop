@@ -3,8 +3,6 @@ import path from "node:path";
 import { PLUGINS_DIR, PLUGIN_DATA_FILE, PLUGIN_JS_FILE, PLUGIN_MANIFEST_FILE } from "./constants";
 import { pluginDataSchema, pluginManifestSchema, type PluginData } from "./schemas";
 
-const defaultPluginData: PluginData = { enabled: false, settings: {} };
-
 function buildPluginPath(pluginId: string) {
 	return path.join(PLUGINS_DIR, pluginId);
 }
@@ -21,46 +19,27 @@ function buildPluginDataPath(pluginId: string) {
 	return path.join(buildPluginPath(pluginId), PLUGIN_DATA_FILE);
 }
 
-function ensurePluginDataFile(pluginId: string) {
-	const pluginDataPath = buildPluginDataPath(pluginId);
+export function readPluginManifest(pluginId: string) {
+	const manifestPath = buildPluginManifestPath(pluginId);
 
-	if (!fs.existsSync(pluginDataPath)) {
-		writePluginData(pluginId, defaultPluginData);
+	if (!fs.existsSync(manifestPath)) {
+		throw new Error(`Manifest file for ${pluginId} does not exist`);
 	}
-}
 
-function readPluginData(pluginId: string) {
-	ensurePluginDataFile(pluginId);
-
-	return fs.readFileSync(buildPluginDataPath(pluginId), "utf8");
-}
-
-function readPluginManifest(pluginId: string) {
-	const manifestStr = fs.readFileSync(buildPluginManifestPath(pluginId), "utf8");
+	const manifestStr = fs.readFileSync(manifestPath, "utf8");
 	const manifestObj = JSON.parse(manifestStr);
 
 	return pluginManifestSchema.parse(manifestObj);
 }
 
-function getPluginData(pluginId: string) {
-	const dataStr = readPluginData(pluginId);
-	const dataObj = JSON.parse(dataStr);
+export function readPluginJs(pluginId: string) {
+	const jsPath = buildPluginJsPath(pluginId);
 
-	const pluginDataParseResult = pluginDataSchema.safeParse(dataObj);
-
-	if (pluginDataParseResult.success) {
-		return pluginDataParseResult.data;
+	if (!fs.existsSync(jsPath)) {
+		throw new Error(`Javascript file for ${pluginId} does not exist`);
 	}
 
-	writePluginData(pluginId, defaultPluginData);
-
-	return defaultPluginData;
-}
-
-export function ensurePluginsDir() {
-	if (!fs.existsSync(PLUGINS_DIR)) {
-		fs.mkdirSync(PLUGINS_DIR, { recursive: true });
-	}
+	return fs.readFileSync(jsPath, "utf8");
 }
 
 export function writePluginData(pluginId: string, data: PluginData) {
@@ -69,52 +48,47 @@ export function writePluginData(pluginId: string, data: PluginData) {
 	fs.writeFileSync(pluginDataPath, JSON.stringify(data));
 }
 
-export function writePluginSettings(pluginId: string, settings: PluginData["settings"]) {
-	const data = getPluginData(pluginId);
+const defaultPluginData: PluginData = { enabled: false, settings: {} };
 
-	writePluginData(pluginId, { ...data, settings });
+export function readPluginData(pluginId: string) {
+	const dataPath = buildPluginDataPath(pluginId);
+
+	if (!fs.existsSync(dataPath)) {
+		writePluginData(pluginId, defaultPluginData);
+
+		return defaultPluginData;
+	}
+
+	const dataStr = fs.readFileSync(dataPath, "utf8");
+	const dataObj = JSON.parse(dataStr);
+
+	const pluginDataParseResult = pluginDataSchema.safeParse(dataObj);
+
+	if (!pluginDataParseResult.success) {
+		writePluginData(pluginId, defaultPluginData);
+
+		return defaultPluginData;
+	}
+
+	return pluginDataParseResult.data;
 }
 
-export function readPlugins() {
+export function updatePluginData(pluginId: string, updatedData: Partial<PluginData>) {
+	const data = readPluginData(pluginId);
+
+	writePluginData(pluginId, { ...data, ...updatedData });
+}
+
+export function ensurePluginsDir() {
+	if (!fs.existsSync(PLUGINS_DIR)) {
+		fs.mkdirSync(PLUGINS_DIR, { recursive: true });
+	}
+}
+
+export function readPluginIds() {
 	ensurePluginsDir();
 
 	return fs.readdirSync(PLUGINS_DIR);
-}
-
-export function getPlugin(pluginId: string) {
-	let manifest;
-
-	if (!fs.existsSync(buildPluginPath(pluginId))) {
-		throw new Error(`Plugin ${pluginId} not found`);
-	}
-
-	try {
-		manifest = readPluginManifest(pluginId);
-	} catch {
-		throw new Error(`Failed to read manifest for plugin ${pluginId}`);
-	}
-
-	let js;
-
-	try {
-		js = fs.readFileSync(buildPluginJsPath(pluginId), "utf8");
-	} catch {
-		throw new Error(`Failed to read js file for plugin ${pluginId}`);
-	}
-
-	let data;
-
-	try {
-		data = getPluginData(pluginId);
-	} catch {
-		throw new Error(`Failed to read plugin data for ${pluginId}`);
-	}
-
-	return {
-		manifest,
-		data,
-		js,
-	};
 }
 
 export function uninstallPlugin(pluginId: string) {

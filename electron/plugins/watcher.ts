@@ -49,8 +49,19 @@ export class PluginWatcher {
 
 		this.watcher.on("change", (filePath) => {
 			const pluginId = curPath.dirname(filePath);
+			const pluginFile = curPath.basename(filePath);
 
-			this.window.webContents.send("plugin:reload", pluginId);
+			let event: string | undefined;
+
+			if (pluginFile === "plugin.json") {
+				event = "reload-manifest";
+			} else if (pluginFile === "plugin.js") {
+				event = "reload-js";
+			}
+
+			if (event) {
+				this.window.webContents.send(`plugin:${event}`, pluginId);
+			}
 		});
 	}
 
