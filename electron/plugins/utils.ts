@@ -14,7 +14,7 @@ function buildPluginManifestPath(pluginId: string) {
 }
 
 function buildPluginJsPath(pluginId: string) {
-	return path.join(buildPluginManifestPath(pluginId), PLUGIN_JS_FILE);
+	return path.join(buildPluginPath(pluginId), PLUGIN_JS_FILE);
 }
 
 function buildPluginDataPath(pluginId: string) {
@@ -35,7 +35,7 @@ function readPluginData(pluginId: string) {
 	return fs.readFileSync(buildPluginDataPath(pluginId), "utf8");
 }
 
-function getPluginManifest(pluginId: string) {
+function readPluginManifest(pluginId: string) {
 	const manifestStr = fs.readFileSync(buildPluginManifestPath(pluginId), "utf8");
 	const manifestObj = JSON.parse(manifestStr);
 
@@ -89,7 +89,7 @@ export function getPlugin(pluginId: string) {
 	}
 
 	try {
-		manifest = getPluginManifest(pluginId);
+		manifest = readPluginManifest(pluginId);
 	} catch {
 		throw new Error(`Failed to read manifest for plugin ${pluginId}`);
 	}
@@ -99,7 +99,7 @@ export function getPlugin(pluginId: string) {
 	try {
 		js = fs.readFileSync(buildPluginJsPath(pluginId), "utf8");
 	} catch {
-		throw new Error(`Failed to read JS file for plugin ${pluginId}`);
+		throw new Error(`Failed to read js file for plugin ${pluginId}`);
 	}
 
 	let data;

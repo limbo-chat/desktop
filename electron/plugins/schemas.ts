@@ -15,9 +15,6 @@ export const pluginManifestSchema = z.object({
 		name: z.string(),
 		email: z.string(),
 	}),
-	files: z.object({
-		js: z.string().default("plugin.js"),
-	}),
 });
 
 export type PluginManifest = z.infer<typeof pluginManifestSchema>;
