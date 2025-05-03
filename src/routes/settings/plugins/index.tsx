@@ -1,9 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { SettingsPage } from "../-components/settings-page";
 import { IconButton, iconButtonVariants } from "../../../components/icon-button";
 import {
 	AlertCircleIcon,
-	DownloadIcon,
+	FolderIcon,
+	PlusIcon,
 	RefreshCwIcon,
 	SettingsIcon,
 	Trash2Icon,
@@ -25,10 +28,17 @@ import { Button } from "../../../components/button";
 import { useState } from "react";
 import { usePluginStore } from "../../../features/plugins/stores";
 import type { PluginManifest } from "../../../../electron/plugins/schemas";
-import { useUninstallPluginMutation } from "../../../features/plugins/hooks";
+import {
+	useInstallPluginMutation,
+	useUninstallPluginMutation,
+} from "../../../features/plugins/hooks";
+import { Controller, useForm } from "react-hook-form";
+import { TextInput } from "../../../components/text-input";
+import { useMainRouterClient } from "../../../lib/trpc";
+import { Field, FieldError } from "../../../components/field";
 
 export const Route = createFileRoute("/settings/plugins/")({
-	component: RouteComponent,
+	component: PluginsSettingsPage,
 });
 
 interface UninstallPluginDialogProps {
@@ -184,14 +194,141 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 	);
 };
 
-function RouteComponent() {
-	const plugins = usePluginStore((state) => state.plugins);
+interface InstallPluginDialogProps {
+	onInstallComplete: () => void;
+	dialogProps: DialogRootProps;
+}
+
+const installPluginFormSchema = z.object({
+	repoUrl: z.string().regex(/^https:\/\/github\.com\/[^/]+\/[^/]+$/, {
+		message: "Please enter a valid GitHub repo URL",
+	}),
+});
+
+const InstallPluginDialog = ({ onInstallComplete, dialogProps }: InstallPluginDialogProps) => {
+	const installPluginMutation = useInstallPluginMutation();
+
+	const form = useForm({
+		resolver: zodResolver(installPluginFormSchema),
+		values: {
+			repoUrl: "",
+		},
+	});
+
+	const onSubmit = form.handleSubmit((data) => {
+		const repoParts = data.repoUrl.split("/");
+		const repoOwner = repoParts[3];
+		const repoName = repoParts[4];
+
+		installPluginMutation.mutate(
+			{
+				owner: repoOwner,
+				repo: repoName,
+			},
+			{
+				onSuccess: () => {
+					form.reset();
+
+					onInstallComplete();
+				},
+			}
+		);
+	});
 
 	return (
-		<SettingsPage className="settings-page--plugins">
-			{Object.values(plugins).map((plugin) => (
-				<PluginCard plugin={plugin} key={plugin.manifest.id} />
-			))}
-		</SettingsPage>
+		<DialogRoot {...dialogProps}>
+			<DialogContent>
+				<DialogCloseButton />
+				<DialogHeader>
+					<DialogTitle>Install plugin</DialogTitle>
+					<DialogDescription>
+						Enter the GitHub repository URL of the plugin you want to install.
+					</DialogDescription>
+				</DialogHeader>
+				<form onSubmit={onSubmit}>
+					<Field>
+						<Controller
+							name="repoUrl"
+							control={form.control}
+							render={({ field, fieldState }) => (
+								<>
+									<TextInput
+										// @ts-expect-error
+										ref={field.ref}
+										placeholder="https://github.com/limbo-llm/plugin-ollama"
+										value={field.value}
+										onBlur={field.onBlur}
+										onChange={field.onChange}
+									/>
+
+									{fieldState.error?.message && (
+										<FieldError>{fieldState.error.message}</FieldError>
+									)}
+								</>
+							)}
+						/>
+					</Field>
+					<DialogFooter>
+						<DialogCloseTrigger asChild>
+							<Button variant="ghost" color="secondary">
+								Cancel
+							</Button>
+						</DialogCloseTrigger>
+						<Button
+							type="submit"
+							color="primary"
+							disabled={!form.formState.isDirty}
+							isLoading={installPluginMutation.isPending}
+						>
+							Install
+						</Button>
+					</DialogFooter>
+				</form>
+			</DialogContent>
+		</DialogRoot>
+	);
+};
+
+function PluginsSettingsPage() {
+	const mainRouterClient = useMainRouterClient();
+	const plugins = usePluginStore((state) => state.plugins);
+	const [isInstallPluginDialogOpen, setIsInstallPluginDialogOpen] = useState(false);
+
+	const openPluginsFolder = () => {
+		mainRouterClient.plugins.openFolder.mutate();
+	};
+
+	return (
+		<>
+			<InstallPluginDialog
+				onInstallComplete={() => setIsInstallPluginDialogOpen(false)}
+				dialogProps={{
+					open: isInstallPluginDialogOpen,
+					onOpenChange: (e) => setIsInstallPluginDialogOpen(e.open),
+				}}
+			/>
+			<SettingsPage className="settings-page--plugins">
+				<div className="plugins-page-header">
+					<h1 className="plugins-page-title">Plugins</h1>
+					<div className="plugins-page-actions">
+						<Tooltip label="Open plugins folder">
+							<IconButton color="secondary" onClick={openPluginsFolder}>
+								<FolderIcon />
+							</IconButton>
+						</Tooltip>
+						<Tooltip label="Install plugin">
+							<IconButton onClick={() => setIsInstallPluginDialogOpen(true)}>
+								<PlusIcon />
+							</IconButton>
+						</Tooltip>
+					</div>
+				</div>
+				<div className="plugin-list">
+					{Object.values(plugins).map((plugin) => (
+						<PluginCard plugin={plugin} key={plugin.manifest.id} />
+					))}
+				</div>
+			</SettingsPage>
+		</>
 	);
 }

@@ -208,6 +208,28 @@ export const usePlugins = () => {
 	return plugins;
 };
 
+export const useInstallPluginMutation = () => {
+	const mainRouter = useMainRouter();
+
+	return useMutation(
+		mainRouter.plugins.install.mutationOptions({
+			onSuccess: (manifest) => {
+				const pluginStore = usePluginStore.getState();
+
+				pluginStore.addPlugin(manifest.id, {
+					manifest,
+					enabled: false, // newly installed plugins are disabled by default
+				});
+
+				// TODO, show toast
+			},
+			onError: () => {
+				// TODO, show toast
+			},
+		})
+	);
+};
+
 export const useUninstallPluginMutation = () => {
 	const mainRouter = useMainRouter();
 	const pluginManager = usePluginManager();

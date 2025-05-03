@@ -1,7 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
+import { Octokit } from "@octokit/rest";
 import { PLUGINS_DIR, PLUGIN_DATA_FILE, PLUGIN_JS_FILE, PLUGIN_MANIFEST_FILE } from "./constants";
-import { pluginDataSchema, pluginManifestSchema, type PluginData } from "./schemas";
+import {
+	pluginDataSchema,
+	pluginManifestSchema,
+	type PluginData,
+	type PluginManifest,
+} from "./schemas";
+
+const octokit = new Octokit();
 
 function buildPluginPath(pluginId: string) {
 	return path.join(PLUGINS_DIR, pluginId);
@@ -89,6 +97,87 @@ export function readPluginIds() {
 	ensurePluginsDir();
 
 	return fs.readdirSync(PLUGINS_DIR);
+}
+
+export interface InstallPluginOptions {
+	manifest: PluginManifest;
+	js: string;
+}
+
+export function installPlugin({ manifest, js }: InstallPluginOptions) {
+	// create the plugin directory
+	fs.mkdirSync(buildPluginPath(manifest.id), { recursive: true });
+
+	// write manifest
+	fs.writeFileSync(buildPluginManifestPath(manifest.id), JSON.stringify(manifest));
+
+	// write js file
+	fs.writeFileSync(buildPluginJsPath(manifest.id), js);
+}
+
+export interface DownloadPluginFromGithubOptions {
+	owner: string;
+	repo: string;
+}
+
+export async function downloadPluginFromGithub(opts: DownloadPluginFromGithubOptions) {
+	let latestRelease;
+
+	try {
+		latestRelease = await octokit.repos.getLatestRelease({
+			owner: opts.owner,
+			repo: opts.repo,
+		});
+	} catch {
+		throw new Error("Failed to fetch latest release");
+	}
+
+	const manifestAsset = latestRelease.data.assets.find(
+		(asset) => asset.name === PLUGIN_MANIFEST_FILE
+	);
+
+	if (!manifestAsset) {
+		throw new Error("Manifest file not found in release");
+	}
+
+	const jsAsset = latestRelease.data.assets.find((asset) => asset.name === PLUGIN_JS_FILE);
+
+	if (!jsAsset) {
+		throw new Error("Javascript file not found in release");
+	}
+
+	// download plugin.json file
+	let manifestRaw;
+
+	try {
+		const manifestResponse = await fetch(manifestAsset.browser_download_url);
+		manifestRaw = await manifestResponse.json();
+	} catch {
+		throw new Error("Failed to download plugin manifest");
+	}
+
+	const manifestParseResult = pluginManifestSchema.safeParse(manifestRaw);
+
+	if (!manifestParseResult.success) {
+		throw new Error("Invalid plugin manifest");
+	}
+
+	const pluginManifest = manifestParseResult.data;
+
+	// download plugin.js file
+	let jsText;
+
+	try {
+		const jsResponse = await fetch(jsAsset.browser_download_url);
+		jsText = await jsResponse.text();
+	} catch {
+		throw new Error("Failed to download plugin javascript file");
+	}
+
+	return {
+		manifest: pluginManifest,
+		js: jsText,
+	};
 }
 
 export function uninstallPlugin(pluginId: string) {

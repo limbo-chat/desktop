@@ -1,11 +1,11 @@
 import path from "node:path";
-import { app, shell, BrowserWindow } from "electron";
+import { app, shell, BrowserWindow, ipcMain } from "electron";
 import { createIPCHandler } from "trpc-electron/main";
 import { mainRouter } from "./trpc/router";
 import { MAIN_DIST, RENDERER_DIST, VITE_DEV_SERVER_URL, VITE_PUBLIC } from "./constants";
 import { migrateToLatest } from "./db/migrate";
 import { readSettings } from "./settings/utils";
-import { ensurePluginsDir } from "./plugins/utils";
+import { ensurePluginsDir, downloadPluginFromGithub } from "./plugins/utils";
 import { ensureCustomStylesDirectory } from "./custom-styles/utils";
 import { CustomStylesWatcher } from "./custom-styles/watcher";
 import { PluginWatcher } from "./plugins/watcher";
