@@ -6,15 +6,16 @@ import {
 	SidebarGroupTitle,
 	SidebarItem,
 } from "../../components/sidebar";
-import { usePlugins } from "../../features/plugins/hooks";
+import { usePluginStore } from "../../features/plugins/stores";
 
 export const Route = createFileRoute("/settings")({
 	component: SettingsLayout,
 });
 
 const SettingsSidebar = () => {
-	const plugins = usePlugins();
 	const location = useLocation();
+	const plugins = usePluginStore((state) => state.plugins);
+	const enabledPlugins = Object.values(plugins).filter((plugin) => plugin.enabled);
 
 	return (
 		<Sidebar className="settings-sidebar">
@@ -32,7 +33,7 @@ const SettingsSidebar = () => {
 						</SidebarItem>
 					</Link>
 					<Link to="/settings/developer">
-						<SidebarItem isActive={location.pathname.endsWith("/settings/development")}>
+						<SidebarItem isActive={location.pathname.endsWith("/settings/developer")}>
 							Developer
 						</SidebarItem>
 					</Link>
@@ -43,26 +44,28 @@ const SettingsSidebar = () => {
 					</Link>
 				</SidebarGroupContent>
 			</SidebarGroup>
-			<SidebarGroup>
-				<SidebarGroupTitle>Plugins</SidebarGroupTitle>
-				<SidebarGroupContent>
-					{plugins.map((plugin) => (
-						<Link
-							to="/settings/plugins/$id"
-							params={{ id: plugin.manifest.id }}
-							key={plugin.manifest.id}
-						>
-							<SidebarItem
-								isActive={location.pathname.endsWith(
-									`/settings/plugins/${plugin.manifest.id}`
-								)}
+			{enabledPlugins.length > 0 && (
+				<SidebarGroup>
+					<SidebarGroupTitle>Plugins</SidebarGroupTitle>
+					<SidebarGroupContent>
+						{enabledPlugins.map((plugin) => (
+							<Link
+								to="/settings/plugins/$id"
+								params={{ id: plugin.manifest.id }}
+								key={plugin.manifest.id}
 							>
-								{plugin.manifest.name}
-							</SidebarItem>
-						</Link>
-					))}
-				</SidebarGroupContent>
-			</SidebarGroup>
+								<SidebarItem
+									isActive={location.pathname.endsWith(
+										`/settings/plugins/${plugin.manifest.id}`
+									)}
+								>
+									{plugin.manifest.name}
+								</SidebarItem>
+							</Link>
+						))}
+					</SidebarGroupContent>
+				</SidebarGroup>
+			)}
 		</Sidebar>
 	);
 };

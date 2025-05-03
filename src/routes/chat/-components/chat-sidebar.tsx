@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useMatch, useRouter } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { EllipsisIcon, MessageCirclePlusIcon, PencilIcon, Trash2Icon } from "lucide-react";
@@ -31,7 +31,7 @@ import {
 } from "../../../components/dialog";
 import { Button } from "../../../components/button";
 import { TextInput } from "../../../components/text-input";
-import { removeChatFromQueryCache, updateChatInQueryCache } from "../../../features/chat/utils";
+import { useDeleteChatMutation, useRenameChatMutation } from "../../../features/chat/hooks/queries";
 
 interface RenameChatDialogProps {
 	chat: {
@@ -43,9 +43,7 @@ interface RenameChatDialogProps {
 }
 
 const RenameChatDialog = ({ chat, onRenameComplete, dialogProps }: RenameChatDialogProps) => {
-	const mainRouter = useMainRouter();
-	const queryClient = useQueryClient();
-	const renameChatMutation = useMutation(mainRouter.chats.rename.mutationOptions());
+	const renameChatMutation = useRenameChatMutation();
 
 	const form = useForm({
 		values: {
@@ -60,12 +58,8 @@ const RenameChatDialog = ({ chat, onRenameComplete, dialogProps }: RenameChatDia
 				name: data.name,
 			},
 			{
-				onSuccess: (updatedChat) => {
-					updateChatInQueryCache(queryClient, mainRouter, updatedChat);
+				onSuccess: () => {
 					onRenameComplete();
-				},
-				onError: () => {
-					// show toast
 				},
 			}
 		);
@@ -111,9 +105,7 @@ interface ChatItemProps {
 // TODO, fix the issue of the chat link navigating when the menu trigger is clicked
 const ChatItem = ({ chat }: ChatItemProps) => {
 	const router = useRouter();
-	const queryClient = useQueryClient();
-	const mainRouter = useMainRouter();
-	const deleteChatMutation = useMutation(mainRouter.chats.delete.mutationOptions());
+	const deleteChatMutation = useDeleteChatMutation();
 	const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
 
 	const match = useMatch({
@@ -130,11 +122,6 @@ const ChatItem = ({ chat }: ChatItemProps) => {
 					if (match.id === "/chat" && match.params.id === chat.id) {
 						router.navigate({ to: "/chat" });
 					}
-
-					removeChatFromQueryCache(queryClient, mainRouter, chat.id);
-				},
-				onError: (err) => {
-					console.log("Failed to delete chat", err);
 				},
 			}
 		);

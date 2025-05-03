@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { usePlugin } from "../../../features/plugins/hooks";
 import { PluginSettingsForm } from "../../../features/plugins/components/plugin-settings-form";
 import { SettingsPage } from "../-components/settings-page";
+import { usePlugins } from "../../../features/plugins/hooks";
 
 export const Route = createFileRoute("/settings/plugins/$id")({
 	component: PluginSettingsPage,
@@ -9,10 +9,12 @@ export const Route = createFileRoute("/settings/plugins/$id")({
 
 function PluginSettingsPage() {
 	const params = Route.useParams();
-	const plugin = usePlugin(params.id);
+
+	const plugins = usePlugins();
+	const plugin = plugins.find((p) => p.manifest.id === params.id);
 
 	if (!plugin) {
-		return <div>Loading...</div>;
+		return <div>Plugin not found</div>;
 	}
 
 	return (

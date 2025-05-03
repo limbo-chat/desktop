@@ -1,8 +1,10 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { PluginManagerContext } from "./contexts";
-import { useMainRouter } from "../../lib/trpc";
-import { PluginContext } from "./core/plugin-context";
+import { useMainRouter, useMainRouterClient } from "../../lib/trpc";
+import { PluginContext, type PluginHostBridge } from "./core/plugin-context";
+import { updateChatInQueryCache } from "../chat/utils";
+import { usePluginStore } from "./stores";
 
 export const usePluginManager = () => {
 	const pluginManager = useContext(PluginManagerContext);
@@ -14,17 +16,89 @@ export const usePluginManager = () => {
 	return pluginManager;
 };
 
+export function usePluginBridgeFactory() {
+	const queryClient = useQueryClient();
+	const mainRouter = useMainRouter();
+	const mainRouterClient = useMainRouterClient();
+	const pluginManager = usePluginManager();
+
+	return useCallback((): PluginHostBridge => {
+		return {
+			getLLM: (llmId: string) => pluginManager.getLLM(llmId),
+			showNotification: (notification) => {
+				// TODO, actually show the notification
+				console.log("showNotification called from plugin");
+			},
+			renameChat: async (chatId: string, newName: string) => {
+				const updatedChat = await mainRouterClient.chats.rename.mutate({
+					id: chatId,
+					name: newName,
+				});
+
+				updateChatInQueryCache(queryClient, mainRouter, updatedChat);
+			},
+			getChat: async (chatId: string) => {
+				return await mainRouterClient.chats.get.query({ id: chatId });
+			},
+			getChatMessages: async (opts) => {
+				return await mainRouterClient.chats.messages.getMany.query(opts);
+			},
+		};
+	}, []);
+}
+
 export const usePluginLoader = () => {
 	const mainRouter = useMainRouter();
+	const mainRouterClient = useMainRouterClient();
 	const pluginManager = usePluginManager();
 	const getPluginIdsQuery = useSuspenseQuery(mainRouter.plugins.getPluginIds.queryOptions());
+	const pluginBridgeFactory = usePluginBridgeFactory();
 
-	const loadPlugins = useCallback(async () => {
-		for (const pluginId of getPluginIdsQuery.data) {
-			await pluginManager.loadPlugin(pluginId);
+	const loadPlugin = useCallback(async (pluginId: string) => {
+		const pluginStore = usePluginStore.getState();
+
+		const manifest = await mainRouterClient.plugins.getManifest.query({
+			id: pluginId,
+		});
+
+		const data = await mainRouterClient.plugins.getData.query({
+			id: pluginId,
+		});
+
+		pluginStore.addPlugin(manifest.id, {
+			manifest,
+			enabled: data.enabled,
+		});
+
+		if (!data.enabled) {
+			return;
 		}
 
-		// activate all plugins sequentially
+		const js = await mainRouterClient.plugins.getJs.query({
+			id: pluginId,
+		});
+
+		const pluginContext = new PluginContext({
+			manifest,
+			hostBridge: pluginBridgeFactory(),
+		});
+
+		// load the settings from disk into the plugin context
+		for (const [key, val] of Object.entries(data.settings)) {
+			pluginContext.setCachedSetting(key, val);
+		}
+
+		pluginContext.loadModule(js, manifest.id);
+
+		await pluginManager.addPlugin(pluginId, pluginContext);
+	}, []);
+
+	const loadPlugins = useCallback(async () => {
+		// load all of the plugins in parallel
+		await Promise.allSettled(getPluginIdsQuery.data.map((pluginId) => loadPlugin(pluginId)));
+
+		// activate all plugin contexts sequentially
+		// should this be parallel too?
 		await pluginManager.activatePlugins();
 	}, []);
 
@@ -34,20 +108,68 @@ export const usePluginLoader = () => {
 };
 
 export const usePluginHotReloader = () => {
+	const mainRouterClient = useMainRouterClient();
 	const pluginManager = usePluginManager();
+	const pluginBridgeFactory = usePluginBridgeFactory();
 
 	useEffect(() => {
-		const handleReloadManifest = (_event: any, pluginId: string) => {
-			console.log("reloading manifest for plugin:", pluginId);
+		const handleReloadManifest = async (_: any, pluginId: string) => {
+			const pluginStore = usePluginStore.getState();
+			const pluginData = pluginStore.getPlugin(pluginId);
+
+			if (!pluginData) {
+				return;
+			}
+
+			const newManifest = await mainRouterClient.plugins.getManifest.query({
+				id: pluginId,
+			});
+
+			pluginStore.updatePlugin(pluginId, {
+				...pluginData,
+				manifest: newManifest,
+			});
 		};
 
-		const handleReloadJs = (_event: any, pluginId: string) => {
-			console.log("reloading js for plugin:", pluginId);
+		const handleReloadJs = async (_: any, pluginId: string) => {
+			const oldPluginContext = pluginManager.getPlugin(pluginId);
 
-			// console.info(
-			// 	`%c hot reloaded plugin: "${plugin.manifest.id}"`,
-			// 	"color: cornflowerblue; font-weight: bold;"
-			// );
+			// plugins that have never been loaded cannot be hot reloaded
+			if (!oldPluginContext) {
+				return;
+			}
+
+			// remove the plugin from the manager (it will be replaced)
+			pluginManager.removePlugin(pluginId);
+
+			// deactivate the plugin context
+			await oldPluginContext.deactivate();
+
+			// destroy the plugin context
+			await oldPluginContext.destroy();
+
+			// fetch the js content for the plugin
+			const js = await mainRouterClient.plugins.getJs.query({
+				id: pluginId,
+			});
+
+			const newPluginContext = new PluginContext({
+				manifest: oldPluginContext.manifest,
+				hostBridge: pluginBridgeFactory(),
+			});
+
+			newPluginContext.loadModule(js, pluginId);
+
+			// add the new plugin context to the manager
+			pluginManager.addPlugin(pluginId, newPluginContext);
+
+			// activate the new plugin context
+			await newPluginContext.activate();
+
+			console.info(
+				`%c hot reloaded plugin: "${pluginId}"`,
+				"color: cornflowerblue; font-weight: bold;"
+			);
 		};
 
 		window.ipcRenderer.on("plugin:reload-manifest", handleReloadManifest);
@@ -65,7 +187,7 @@ export const usePlugins = () => {
 	const [plugins, setPlugins] = useState<PluginContext[]>(() => pluginManager.getPlugins());
 
 	useEffect(() => {
-		// also get the plugins on mount (they may have been empty when the component mounted)
+		// also get the plugins on mount (they may have been empty when the component first rendered)
 		setPlugins([...pluginManager.getPlugins()]);
 
 		const handler = () => {
@@ -86,10 +208,31 @@ export const usePlugins = () => {
 	return plugins;
 };
 
-export const usePlugin = (pluginId: string) => {
-	const plugins = usePlugins();
+export const useUninstallPluginMutation = () => {
+	const mainRouter = useMainRouter();
+	const pluginManager = usePluginManager();
 
-	return useMemo(() => {
-		return plugins.find((plugin) => plugin.manifest.id === pluginId);
-	}, [plugins, pluginId]);
+	return useMutation(
+		mainRouter.plugins.uninstall.mutationOptions({
+			onSuccess: async (_, variables) => {
+				const pluginStore = usePluginStore.getState();
+
+				pluginStore.removePlugin(variables.id);
+
+				const pluginContext = pluginManager.getPlugin(variables.id);
+
+				if (!pluginContext) {
+					return;
+				}
+
+				await pluginManager.removePlugin(variables.id);
+				await pluginContext.deactivate();
+				await pluginContext.destroy();
+			},
+			onError: () => {
+				// TODO, show toast
+				console.error("failed to uninstall plugin");
+			},
+		})
+	);
 };

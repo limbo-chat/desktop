@@ -1,8 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { usePlugins } from "../../../features/plugins/hooks";
 import { SettingsPage } from "../-components/settings-page";
 import { IconButton, iconButtonVariants } from "../../../components/icon-button";
-import { AlertCircleIcon, RefreshCwIcon, SettingsIcon, Trash2Icon } from "lucide-react";
+import {
+	AlertCircleIcon,
+	DownloadIcon,
+	RefreshCwIcon,
+	SettingsIcon,
+	Trash2Icon,
+} from "lucide-react";
 import { Tooltip } from "../../../components/tooltip";
 import { Switch } from "../../../components/switch";
 import {
@@ -17,9 +22,10 @@ import {
 	type DialogRootProps,
 } from "../../../components/dialog";
 import { Button } from "../../../components/button";
-import { useMutation } from "@tanstack/react-query";
-import { useMainRouter } from "../../../lib/trpc";
 import { useState } from "react";
+import { usePluginStore } from "../../../features/plugins/stores";
+import type { PluginManifest } from "../../../../electron/plugins/schemas";
+import { useUninstallPluginMutation } from "../../../features/plugins/hooks";
 
 export const Route = createFileRoute("/settings/plugins/")({
 	component: RouteComponent,
@@ -39,8 +45,7 @@ const UninstallPluginDialog = ({
 	onUninstallComplete,
 	dialogProps,
 }: UninstallPluginDialogProps) => {
-	const mainRouter = useMainRouter();
-	const uninstallPluginMutation = useMutation(mainRouter.plugins.uninstall.mutationOptions());
+	const uninstallPluginMutation = useUninstallPluginMutation();
 
 	const handleUninstall = () => {
 		uninstallPluginMutation.mutate(
@@ -50,11 +55,6 @@ const UninstallPluginDialog = ({
 			{
 				onSuccess: () => {
 					onUninstallComplete();
-
-					// TODO remove plugin from state
-				},
-				onError: () => {
-					// TODO show error toast
 				},
 			}
 		);
@@ -87,7 +87,7 @@ const UninstallPluginDialog = ({
 interface PluginCardProps {
 	plugin: {
 		enabled: boolean;
-		manifest: any;
+		manifest: PluginManifest;
 	};
 }
 
@@ -100,6 +100,8 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 	// 	() => semver.satisfies(window.env.LIMBO_API_VERSION, plugin.manifest.apiVersion),
 	// 	[window.env.LIMBO_API_VERSION, plugin.manifest.apiVersion]
 	// );
+
+	// TODO, handle enable/disable logic
 
 	return (
 		<>
@@ -121,7 +123,7 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 			>
 				<div className="plugin-card-header">
 					<span className="plugin-card-title">{plugin.manifest.name}</span>
-					<Switch />
+					<Switch checked={plugin.enabled} onCheckedChange={() => {}} />
 				</div>
 				<div className="plugin-card-content">
 					<div className="plugin-card-info">
@@ -183,11 +185,11 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 };
 
 function RouteComponent() {
-	const plugins = usePlugins();
+	const plugins = usePluginStore((state) => state.plugins);
 
 	return (
 		<SettingsPage className="settings-page--plugins">
-			{plugins.map((plugin) => (
+			{Object.values(plugins).map((plugin) => (
 				<PluginCard plugin={plugin} key={plugin.manifest.id} />
 			))}
 		</SettingsPage>

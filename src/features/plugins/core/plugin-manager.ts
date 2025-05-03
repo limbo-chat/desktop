@@ -1,7 +1,6 @@
 import EventEmitter from "eventemitter3";
 import type * as limbo from "limbo";
 import { PluginContext } from "./plugin-context";
-import type { PluginData, PluginManifest } from "../../../../electron/plugins/schemas";
 
 export interface PluginManagerEvents {
 	"plugin:added": (pluginId: string) => void;
@@ -9,30 +8,9 @@ export interface PluginManagerEvents {
 	"plugin:state-changed": (pluginId: string) => void;
 }
 
-export interface PluginManagerHostBridge {
-	getPluginData: (pluginId: string) => Promise<{
-		manifest: PluginManifest;
-		data: PluginData;
-		js: string;
-	}>;
-	showNotification: limbo.API["notifications"]["show"];
-	renameChat: limbo.API["chats"]["rename"];
-	getChat: limbo.API["chats"]["get"];
-	getChatMessages: limbo.API["chats"]["getMessages"];
-}
-
-export interface PluginManagerOptions {
-	hostBridge: PluginManagerHostBridge;
-}
-
 export class PluginManager {
 	public events: EventEmitter<PluginManagerEvents> = new EventEmitter();
 	private plugins: Map<string, PluginContext> = new Map();
-	private hostBridge: PluginManagerHostBridge;
-
-	constructor(opts: PluginManagerOptions) {
-		this.hostBridge = opts.hostBridge;
-	}
 
 	public getPlugin(pluginId: string) {
 		const plugin = this.plugins.get(pluginId);
@@ -46,10 +24,6 @@ export class PluginManager {
 
 	public getPlugins() {
 		return [...this.plugins.values()];
-	}
-
-	public getActivePlugins() {
-		return [...this.plugins.values()].filter((plugin) => plugin.status === "active");
 	}
 
 	public getLLM(llmPath: string) {
@@ -86,80 +60,47 @@ export class PluginManager {
 	}
 
 	public async activatePlugins() {
-		for (const plugin of this.plugins.values()) {
+		for (const [pluginId, pluginContext] of this.plugins) {
 			try {
-				await plugin.activate();
+				await pluginContext.activate();
 			} catch (err) {
-				console.error(`Failed to activate plugin: ${plugin.manifest.id}`, err);
+				console.error(`Failed to activate plugin ${pluginId}:`, err);
 			}
 		}
 	}
 
 	public async deactivatePlugins() {
-		for (const plugin of this.plugins.values()) {
+		for (const [pluginId, pluginContext] of this.plugins) {
 			try {
-				await plugin.deactivate();
+				await pluginContext.deactivate();
 			} catch (err) {
-				console.error(`Failed to deactivate plugin: ${plugin.manifest.id}`, err);
+				console.log(`Failed to deactivate plugin ${pluginId}:`, err);
 			}
 		}
 	}
 
-	public async loadPlugin(pluginId: string) {
-		const pluginData = await this.hostBridge.getPluginData(pluginId);
-
-		const plugin = new PluginContext({
-			manifest: pluginData.manifest,
-			hostBridge: {
-				getLLM: this.getLLM.bind(this),
-				getChat: this.hostBridge.getChat,
-				getChatMessages: this.hostBridge.getChatMessages,
-				renameChat: this.hostBridge.renameChat,
-				showNotification: this.hostBridge.showNotification,
-			},
-		});
-
-		plugin.events.on("state:changed", () => {
+	public async addPlugin(pluginId: string, pluginContext: PluginContext) {
+		pluginContext.events.on("state:changed", () => {
 			this.events.emit("plugin:state-changed", pluginId);
 		});
 
-		for (const [key, val] of Object.entries(pluginData.data.settings)) {
-			plugin.setCachedSetting(key, val);
-		}
-
-		await plugin.loadModule(pluginData.js);
-
-		this.plugins.set(pluginId, plugin);
+		this.plugins.set(pluginId, pluginContext);
 
 		this.events.emit("plugin:added", pluginId);
 	}
 
-	public async unloadPlugin(pluginId: string) {
-		const plugin = this.getPlugin(pluginId);
-
-		plugin.events.removeAllListeners();
-
+	public async removePlugin(pluginId: string) {
 		this.plugins.delete(pluginId);
 
 		this.events.emit("plugin:removed", pluginId);
 	}
 
-	public async reloadPlugin(pluginId: string) {
-		await this.deactivatePlugin(pluginId);
-		await this.unloadPlugin(pluginId);
-
-		await this.loadPlugin(pluginId);
-		await this.activatePlugin(pluginId);
-	}
-
 	// lifecycle methods
 
 	public async executeOnAfterChatCreatedHooks(args: limbo.OnAfterChatCreatedArgs) {
-		const activePlugins = this.getActivePlugins();
-
-		for (const plugin of activePlugins) {
+		for (const [pluginId, pluginContext] of this.plugins) {
 			try {
-				await plugin.executeOnAfterChatCreated(args);
+				await pluginContext.executeOnAfterChatCreated(args);
 			} catch {
 				// noop
 			}
@@ -167,11 +108,9 @@ export class PluginManager {
 	}
 
 	public async executeOnBeforeGenerateTextHooks(args: limbo.OnBeforeGenerateTextArgs) {
-		const activePlugins = this.getActivePlugins();
-
-		for (const plugin of activePlugins) {
+		for (const [pluginId, pluginContext] of this.plugins) {
 			try {
-				await plugin.executeOnBeforeGenerateText(args);
+				await pluginContext.executeOnBeforeGenerateText(args);
 			} catch {
 				// noop
 			}

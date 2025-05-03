@@ -24,11 +24,11 @@ export interface PluginContextOptions {
 }
 
 export class PluginContext {
-	public events: EventEmitter<PluginContextEvents> = new EventEmitter();
 	public manifest: PluginManifest;
+	public events: EventEmitter<PluginContextEvents> = new EventEmitter();
 	public status: PluginContextStatus = "inactive";
-	private pluginModule: limbo.Plugin | null = null;
 	private hostBridge: PluginHostBridge;
+	private pluginModule: limbo.Plugin | null = null;
 	private settingsCache: Map<string, any> = new Map();
 
 	// plugin state
@@ -38,6 +38,10 @@ export class PluginContext {
 	constructor(opts: PluginContextOptions) {
 		this.manifest = opts.manifest;
 		this.hostBridge = opts.hostBridge;
+	}
+
+	public destroy() {
+		this.events.removeAllListeners();
 	}
 
 	public getPluginModule() {
@@ -52,7 +56,7 @@ export class PluginContext {
 		this.settingsCache.set(settingId, value);
 	}
 
-	public loadModule(jsSrc: string) {
+	public loadModule(js: string, pluginId: string) {
 		const pluginAPI = this.createPluginAPI();
 
 		const sandboxedImports: Record<string, any> = {
@@ -63,9 +67,7 @@ export class PluginContext {
 			const resolvedModule = sandboxedImports[moduleId];
 
 			if (!resolvedModule) {
-				throw new Error(
-					`Plugin "${this.manifest.id}" attempted to import an unknown module "${moduleId}"`
-				);
+				throw new Error(`Plugin attempted to import an unknown module "${moduleId}"`);
 			}
 
 			return resolvedModule;
@@ -73,14 +75,12 @@ export class PluginContext {
 
 		const sandboxedModule: Record<string, any> = {};
 
-		const pluginFactory = eval(
-			`(require,module)=>{${jsSrc}}//# sourceURL=plugin:${this.manifest.id}`
-		);
+		const pluginFactory = eval(`(require,module)=>{${js}}//# sourceURL=plugin:${pluginId}`);
 
 		pluginFactory(sandboxedRequire, sandboxedModule);
 
 		if (typeof sandboxedModule.exports !== "object") {
-			throw new Error(`Plugin "${this.manifest.id}" did not export a valid plugin module.`);
+			throw new Error(`Plugin did not export a valid plugin module`);
 		}
 
 		this.pluginModule = sandboxedModule.exports;

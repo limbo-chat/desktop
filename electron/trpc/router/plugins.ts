@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../trpc";
 import {
+	readPluginData,
 	readPluginIds,
 	readPluginJs,
 	readPluginManifest,
@@ -27,5 +28,8 @@ export const pluginsRouter = router({
 	}),
 	getJs: publicProcedure.input(getPluginInputSchema).query(({ input }) => {
 		return readPluginJs(input.id);
+	}),
+	getData: publicProcedure.input(getPluginInputSchema).query(({ input }) => {
+		return readPluginData(input.id);
 	}),
 });

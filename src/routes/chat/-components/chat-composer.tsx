@@ -11,17 +11,15 @@ import { usePluginManager, usePlugins } from "../../../features/plugins/hooks";
 import { IconButton } from "../../../components/icon-button";
 import { useSendMessage } from "../../../features/chat/hooks/use-send-message";
 import { useLocalStore } from "../../../features/storage/stores";
-import { useMainRouter } from "../../../lib/trpc";
 import { useChatStore } from "../../../features/chat/stores";
+import { useCreateChatMutation } from "../../../features/chat/hooks/queries";
 
 export const ChatComposer = () => {
-	const pluginManager = usePluginManager();
 	const router = useRouter();
-	const plugins = usePlugins();
-	const queryClient = useQueryClient();
+	const pluginManager = usePluginManager();
 	const sendMessage = useSendMessage();
-	const mainRouter = useMainRouter();
-	const createChatMutation = useMutation(mainRouter.chats.create.mutationOptions());
+	const createChatMutation = useCreateChatMutation();
+	const plugins = usePlugins();
 
 	// may need to read more from chat store here later, that's why I'm ising useShallow, even if it's unecessary for now
 	const chatStore = useChatStore(
@@ -63,8 +61,6 @@ export const ChatComposer = () => {
 				name: "New chat",
 			});
 
-			queryClient.invalidateQueries(mainRouter.chats.list.queryFilter());
-
 			chatId = newChat.id;
 
 			await pluginManager.executeOnAfterChatCreatedHooks({
@@ -90,7 +86,6 @@ export const ChatComposer = () => {
 		}
 	});
 
-	// temp
 	const llmCollection = useMemo(() => {
 		const items = plugins.flatMap((plugin) => {
 			const pluginLLMs = plugin.getRegisteredLLMs();
