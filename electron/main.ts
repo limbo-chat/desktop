@@ -5,7 +5,7 @@ import { mainRouter } from "./trpc/router";
 import { MAIN_DIST, RENDERER_DIST, VITE_DEV_SERVER_URL, VITE_PUBLIC } from "./constants";
 import { migrateToLatest } from "./db/migrate";
 import { readSettings } from "./settings/utils";
-import { ensurePluginsDir, downloadPluginFromGithub } from "./plugins/utils";
+import { ensurePluginsDir } from "./plugins/utils";
 import { ensureCustomStylesDirectory } from "./custom-styles/utils";
 import { CustomStylesWatcher } from "./custom-styles/watcher";
 import { PluginWatcher } from "./plugins/watcher";
@@ -15,6 +15,7 @@ function createWindow() {
 		icon: path.join(VITE_PUBLIC, "electron-vite.svg"),
 		titleBarStyle: "hidden",
 		transparent: true,
+		show: false,
 		// expose window controls in Windows/Linux
 		...(process.platform !== "darwin" ? { titleBarOverlay: true } : {}),
 		webPreferences: {
@@ -62,24 +63,31 @@ async function ensureFilesExist() {
 app.whenReady().then(async () => {
 	await ensureFilesExist();
 
-	const window = createWindow();
+	const mainWindow = createWindow();
+
+	// the renderer has a loading process that will send a "ready" event when it is ready to show
+	ipcMain.once("renderer:ready", () => {
+		console.log("renderer is ready");
+
+		// mainWindow.show();
+	});
 
 	createIPCHandler({
 		router: mainRouter,
-		windows: [window],
+		windows: [mainWindow],
 		createContext: async () => {
 			return {
-				win: window,
+				win: mainWindow,
 			};
 		},
 	});
 
 	const pluginWatcher = new PluginWatcher({
-		window,
+		window: mainWindow,
 	});
 
 	const customStylesWatcher = new CustomStylesWatcher({
-		window,
+		window: mainWindow,
 	});
 
 	pluginWatcher.start();

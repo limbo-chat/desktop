@@ -2,21 +2,38 @@ import { useEffect } from "react";
 import { addCustomStyle, removeCustomStyle } from "./utils";
 import { useMainRouterClient } from "../../lib/trpc";
 
-export const useCustomStylesLoader = () => {
+export interface UseCustomStylesLoaderOptions {
+	onFinished?: () => void;
+}
+
+export const useCustomStylesLoader = (opts?: UseCustomStylesLoaderOptions) => {
 	const mainRouterClient = useMainRouterClient();
 
 	const loadCustomStyles = async () => {
 		const customStylePaths = await mainRouterClient.customStyles.getPaths.query();
 
-		await Promise.allSettled(
+		const customStyles = await Promise.allSettled(
 			customStylePaths.map(async (path) => {
-				const customStyleContent = await mainRouterClient.customStyles.get.query({
+				const styleContent = await mainRouterClient.customStyles.get.query({
 					path,
 				});
 
-				addCustomStyle(path, customStyleContent);
+				return {
+					path,
+					content: styleContent,
+				};
 			})
 		);
+
+		for (const customStyle of customStyles) {
+			if (customStyle.status === "fulfilled") {
+				addCustomStyle(customStyle.value.path, customStyle.value.content);
+			}
+		}
+
+		if (opts?.onFinished) {
+			opts.onFinished();
+		}
 	};
 
 	useEffect(() => {
