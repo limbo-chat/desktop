@@ -12,10 +12,10 @@ import { PluginWatcher } from "./plugins/watcher";
 
 function createWindow() {
 	const window = new BrowserWindow({
-		icon: path.join(VITE_PUBLIC, "electron-vite.svg"),
-		titleBarStyle: "hidden",
 		transparent: true,
 		show: false,
+		titleBarStyle: "hidden",
+		icon: path.join(VITE_PUBLIC, "electron-vite.svg"),
 		// expose window controls in Windows/Linux
 		...(process.platform !== "darwin" ? { titleBarOverlay: true } : {}),
 		webPreferences: {
@@ -66,10 +66,10 @@ app.whenReady().then(async () => {
 	const mainWindow = createWindow();
 
 	// the renderer has a loading process that will send a "ready" event when it is ready to show
-	ipcMain.once("renderer:ready", () => {
+	ipcMain.on("renderer:ready", () => {
 		console.log("renderer is ready");
 
-		// mainWindow.show();
+		mainWindow.show();
 	});
 
 	createIPCHandler({

@@ -5,13 +5,13 @@ import { Suspense, useMemo, useRef, type PropsWithChildren } from "react";
 import { ipcLink } from "trpc-electron/renderer";
 import { createTRPCClient } from "@trpc/client";
 import type { MainRouter } from "../../electron/trpc/router";
-import { PluginController } from "../features/plugins/components/plugin-controller";
 import { PluginManager } from "../features/plugins/core/plugin-manager";
 import { SideDock } from "./-components/side-dock";
 import { Titlebar } from "./-components/titlebar";
 import { useIsAppFocused } from "../hooks/common";
 import { PluginManagerContext } from "../features/plugins/contexts";
 import { useCustomStylesLoader, useCustomStylesSubscriber } from "../features/custom-styles/hooks";
+import { usePluginHotReloader, usePluginLoader } from "../features/plugins/hooks";
 
 export interface RouterContext {
 	queryClient: QueryClient;
@@ -51,7 +51,7 @@ function RootLayoutProviders({ children }: PropsWithChildren) {
 	);
 }
 
-const RendererLoader = () => {
+const useRendererLoader = () => {
 	const areCutomStylesLoaded = useRef(false);
 
 	const checkLoaded = () => {
@@ -70,29 +70,34 @@ const RendererLoader = () => {
 			checkLoaded();
 		},
 	});
+};
 
-	return null;
+const MainContent = () => {
+	useRendererLoader();
+	useCustomStylesSubscriber();
+
+	usePluginLoader();
+	usePluginHotReloader();
+
+	return (
+		<div className="app-row">
+			<SideDock />
+			<div className="app-content">
+				<Outlet />
+			</div>
+		</div>
+	);
 };
 
 function RootLayout() {
 	const appIsFocused = useIsAppFocused();
-
-	useCustomStylesSubscriber();
 
 	return (
 		<RootLayoutProviders>
 			<div className="app" data-app-focused={appIsFocused}>
 				<Titlebar />
 				<Suspense fallback={"loading, todo replace"}>
-					{/* loading processes in the RendererLoader use suspsense, so they will be in this boundary */}
-					<RendererLoader />
-					<PluginController />
-					<div className="app-row">
-						<SideDock />
-						<div className="app-content">
-							<Outlet />
-						</div>
-					</div>
+					<MainContent />
 				</Suspense>
 			</div>
 		</RootLayoutProviders>
