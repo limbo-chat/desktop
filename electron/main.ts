@@ -67,8 +67,6 @@ app.whenReady().then(async () => {
 
 	// the renderer has a loading process that will send a "ready" event when it is ready to show
 	ipcMain.on("renderer:ready", () => {
-		console.log("renderer is ready");
-
 		mainWindow.show();
 	});
 
