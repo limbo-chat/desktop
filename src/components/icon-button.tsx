@@ -6,6 +6,7 @@ export const iconButtonVariants = cva("icon-button", {
 		color: {
 			primary: "icon-button--primary",
 			secondary: "icon-button--secondary",
+			destructive: "icon-button--destructive",
 		},
 		variant: {
 			default: "",

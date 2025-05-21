@@ -85,7 +85,11 @@ const UninstallPluginDialog = ({
 					<DialogCloseTrigger asChild>
 						<Button color="secondary">Cancel</Button>
 					</DialogCloseTrigger>
-					<Button isLoading={uninstallPluginMutation.isPending} onClick={handleUninstall}>
+					<Button
+						color="destructive"
+						isLoading={uninstallPluginMutation.isPending}
+						onClick={handleUninstall}
+					>
 						Uninstall
 					</Button>
 				</DialogFooter>
@@ -171,7 +175,6 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 								className="plugin-card-action"
 								variant="ghost"
 								color="secondary"
-								data-action="reload"
 							>
 								<RefreshCwIcon />
 							</IconButton>
@@ -180,7 +183,7 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 							<IconButton
 								className="plugin-card-action"
 								variant="ghost"
-								color="secondary"
+								color="destructive"
 								data-action="uninstall"
 								onClick={() => setIsUninstallPluginDialogOpen(true)}
 							>

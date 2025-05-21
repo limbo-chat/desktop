@@ -11,6 +11,7 @@ export const buttonVariants = cva("button", {
 		color: {
 			primary: "button--primary",
 			secondary: "button--secondary",
+			destructive: "button--destructive",
 		},
 	},
 	defaultVariants: {

@@ -1,6 +1,8 @@
 import { Menu as ArkMenu } from "@ark-ui/react";
 import clsx from "clsx";
 
+export interface MenuRootProps extends ArkMenu.RootProps {}
+
 export const MenuRoot = ArkMenu.Root;
 
 export interface MenuTriggerProps extends ArkMenu.TriggerProps {}
