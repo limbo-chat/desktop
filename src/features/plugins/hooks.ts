@@ -5,6 +5,7 @@ import { useMainRouter, useMainRouterClient } from "../../lib/trpc";
 import { PluginContext, type PluginHostBridge } from "./core/plugin-context";
 import { updateChatInQueryCache } from "../chat/utils";
 import { usePluginStore } from "./stores";
+import type * as limbo from "limbo";
 
 export const usePluginManager = () => {
 	const pluginManager = useContext(PluginManagerContext);
@@ -206,6 +207,45 @@ export const usePlugins = () => {
 	}, []);
 
 	return plugins;
+};
+
+export const useRegisteredLLMs = () => {
+	const pluginManager = usePluginManager();
+
+	const getLLMs = useCallback(() => {
+		const plugins = pluginManager.getPlugins();
+
+		return plugins.flatMap((plugin) => {
+			const pluginLLMs = plugin.getRegisteredLLMs();
+
+			return pluginLLMs.map((llm) => {
+				return {
+					plugin,
+					llm,
+				};
+			});
+		});
+	}, [pluginManager]);
+
+	const [llms, setLLMs] = useState(() => getLLMs());
+
+	useEffect(() => {
+		const handleUpdate = () => {
+			setLLMs(getLLMs());
+		};
+
+		pluginManager.events.on("plugin:added", handleUpdate);
+		pluginManager.events.on("plugin:removed", handleUpdate);
+		pluginManager.events.on("plugin:state-changed", handleUpdate);
+
+		return () => {
+			pluginManager.events.off("plugin:added", handleUpdate);
+			pluginManager.events.off("plugin:removed", handleUpdate);
+			pluginManager.events.off("plugin:state-changed", handleUpdate);
+		};
+	}, []);
+
+	return llms;
 };
 
 export const useInstallPluginMutation = () => {

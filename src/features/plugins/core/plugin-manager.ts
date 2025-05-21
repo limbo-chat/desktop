@@ -1,6 +1,7 @@
 import EventEmitter from "eventemitter3";
 import type * as limbo from "limbo";
 import { PluginContext } from "./plugin-context";
+import { parseNamespacedResourceId } from "../../../lib/utils";
 
 export interface PluginManagerEvents {
 	"plugin:added": (pluginId: string) => void;
@@ -27,14 +28,14 @@ export class PluginManager {
 	}
 
 	public getLLM(llmPath: string) {
-		const parts = llmPath.split("/");
+		const resourceId = parseNamespacedResourceId(llmPath);
 
-		if (parts.length !== 2) {
+		if (!resourceId) {
 			throw new Error(`Invalid LLM id: ${llmPath}. Expected format: namespace/llm-id`);
 		}
 
-		const pluginId = parts[0];
-		const llmId = parts[1];
+		const pluginId = resourceId.namespace;
+		const llmId = resourceId.resource;
 
 		const plugin = this.getPlugin(pluginId);
 		const pluginLLMs = plugin.getRegisteredLLMs();

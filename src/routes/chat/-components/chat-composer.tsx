@@ -1,25 +1,110 @@
-import { useMemo } from "react";
 import { useShallow } from "zustand/shallow";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "@tanstack/react-router";
 import { Controller, useForm } from "react-hook-form";
-import { createListCollection } from "@ark-ui/react";
 import { ArrowUpIcon } from "lucide-react";
 import TextareaAutosize from "react-textarea-autosize";
-import { SimpleSelect, SimpleSelectItem } from "../../../components/select";
-import { usePluginManager, usePlugins } from "../../../features/plugins/hooks";
+import { usePluginManager, useRegisteredLLMs } from "../../../features/plugins/hooks";
 import { IconButton } from "../../../components/icon-button";
 import { useSendMessage } from "../../../features/chat/hooks/use-send-message";
 import { useLocalStore } from "../../../features/storage/stores";
 import { useChatStore } from "../../../features/chat/stores";
 import { useCreateChatMutation } from "../../../features/chat/hooks/queries";
+import { Button } from "../../../components/button";
+import { TextInput } from "../../../components/text-input";
+import { useMemo, useState } from "react";
+import Fuse from "fuse.js";
+import {
+	MenuContent,
+	MenuItem,
+	MenuPositioner,
+	MenuRoot,
+	MenuTrigger,
+} from "../../../components/menu";
+import { buildNamespacedResourceId } from "../../../lib/utils";
+
+// TODO, make sure this component has a clear structure in the styling system
+const LLMPicker = () => {
+	const pluginManager = usePluginManager();
+	const llms = useRegisteredLLMs();
+	const [search, setSearch] = useState("");
+
+	const fuse = useMemo(() => {
+		return new Fuse(llms, {
+			threshold: 0.3,
+			ignoreLocation: true,
+			keys: ["plugin.manifest.id", "plugin.manifest.name", "llm.id", "llm.name"],
+		});
+	}, [llms]);
+
+	const filteredLLMs = useMemo(() => {
+		if (!search) {
+			return llms;
+		}
+
+		console.log(llms);
+
+		return fuse.search(search).map((item) => item.item);
+	}, [fuse, search, llms]);
+
+	const localStore = useLocalStore(
+		useShallow((state) => ({
+			selectedModel: state.selectedModel,
+			setSelectedModel: state.setSelectedModel,
+		}))
+	);
+
+	// this is a little dirty as pluginManager is in itself not react state
+	// if there was a reactive hashmap storing the llms that would be better, but this is the most efficient way to get an llm quickly without searching the list in react state
+	const selectedLLM = useMemo(() => {
+		if (!localStore.selectedModel) {
+			return null;
+		}
+
+		return pluginManager.getLLM(localStore.selectedModel);
+	}, [pluginManager, localStore.selectedModel]);
+
+	return (
+		<MenuRoot>
+			<MenuTrigger asChild>
+				<Button variant="ghost" color="secondary">
+					{selectedLLM ? selectedLLM.name : "Select model"}
+				</Button>
+			</MenuTrigger>
+			<MenuPositioner>
+				<MenuContent>
+					<TextInput
+						placeholder="Search models..."
+						value={search}
+						onChange={(e) => setSearch(e.target.value)}
+					/>
+					<div>
+						{filteredLLMs.map((llm) => {
+							const namespacedId = buildNamespacedResourceId(
+								llm.plugin.manifest.id,
+								llm.llm.id
+							);
+
+							return (
+								<MenuItem
+									value={namespacedId}
+									onClick={() => localStore.setSelectedModel(namespacedId)}
+								>
+									{llm.llm.name}
+								</MenuItem>
+							);
+						})}
+					</div>
+				</MenuContent>
+			</MenuPositioner>
+		</MenuRoot>
+	);
+};
 
 export const ChatComposer = () => {
 	const router = useRouter();
 	const pluginManager = usePluginManager();
 	const sendMessage = useSendMessage();
 	const createChatMutation = useCreateChatMutation();
-	const plugins = usePlugins();
 
 	// may need to read more from chat store here later, that's why I'm ising useShallow, even if it's unecessary for now
 	const chatStore = useChatStore(
@@ -31,7 +116,6 @@ export const ChatComposer = () => {
 	const localStore = useLocalStore(
 		useShallow((state) => ({
 			selectedModel: state.selectedModel,
-			setSelectedModel: state.setSelectedModel,
 		}))
 	);
 
@@ -86,25 +170,6 @@ export const ChatComposer = () => {
 		}
 	});
 
-	const llmCollection = useMemo(() => {
-		const items = plugins.flatMap((plugin) => {
-			const pluginLLMs = plugin.getRegisteredLLMs();
-
-			return pluginLLMs.map((llm) => ({
-				label: llm.name,
-				value: {
-					pluginId: plugin.manifest.id,
-					modelId: llm.id,
-				},
-			}));
-		});
-
-		return createListCollection({
-			items,
-			itemToValue: (item) => `${item.value.pluginId}/${item.value.modelId}`,
-		});
-	}, [plugins]);
-
 	const message = form.watch("message");
 	const canSendMessage = message.length > 0 && !chatStore.isAssistantResponsePending;
 
@@ -140,7 +205,8 @@ export const ChatComposer = () => {
 				</IconButton>
 			</form>
 			<div className="chat-composer-accessories">
-				<SimpleSelect
+				<LLMPicker />
+				{/* <SimpleSelect
 					className="chat-model-select"
 					placeholder="Select model"
 					collection={llmCollection}
@@ -154,7 +220,7 @@ export const ChatComposer = () => {
 							key={`${item.value.pluginId}/${item.value.modelId}`}
 						/>
 					))}
-				</SimpleSelect>
+				</SimpleSelect> */}
 			</div>
 		</div>
 	);
