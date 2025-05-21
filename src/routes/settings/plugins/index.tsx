@@ -1,8 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { SettingsPage } from "../-components/settings-page";
-import { IconButton, iconButtonVariants } from "../../../components/icon-button";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
 	AlertCircleIcon,
 	FolderIcon,
@@ -11,8 +8,12 @@ import {
 	SettingsIcon,
 	Trash2Icon,
 } from "lucide-react";
-import { Tooltip } from "../../../components/tooltip";
-import { Switch } from "../../../components/switch";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
+import { SettingsPage } from "../-components/settings-page";
+import type { PluginManifest } from "../../../../electron/plugins/schemas";
+import { Button } from "../../../components/button";
 import {
 	DialogCloseButton,
 	DialogCloseTrigger,
@@ -24,18 +25,17 @@ import {
 	DialogTitle,
 	type DialogRootProps,
 } from "../../../components/dialog";
-import { Button } from "../../../components/button";
-import { useState } from "react";
-import { usePluginStore } from "../../../features/plugins/stores";
-import type { PluginManifest } from "../../../../electron/plugins/schemas";
+import { Field, FieldError } from "../../../components/field";
+import { IconButton, iconButtonVariants } from "../../../components/icon-button";
+import { Switch } from "../../../components/switch";
+import { TextInput } from "../../../components/text-input";
+import { Tooltip } from "../../../components/tooltip";
 import {
 	useInstallPluginMutation,
 	useUninstallPluginMutation,
 } from "../../../features/plugins/hooks";
-import { Controller, useForm } from "react-hook-form";
-import { TextInput } from "../../../components/text-input";
+import { usePluginStore } from "../../../features/plugins/stores";
 import { useMainRouterClient } from "../../../lib/trpc";
-import { Field, FieldError } from "../../../components/field";
 
 export const Route = createFileRoute("/settings/plugins/")({
 	component: PluginsSettingsPage,

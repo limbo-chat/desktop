@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { addCustomStyle, removeCustomStyle } from "./utils";
 import { useMainRouterClient } from "../../lib/trpc";
+import { addCustomStyle, removeCustomStyle } from "./utils";
 
 export interface UseCustomStylesLoaderOptions {
 	onFinished?: () => void;

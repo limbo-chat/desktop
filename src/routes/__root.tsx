@@ -1,17 +1,17 @@
 import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRootRouteWithContext, Link, Outlet } from "@tanstack/react-router";
-import { MainRouterProvider } from "../lib/trpc";
+import { createTRPCClient } from "@trpc/client";
 import { Suspense, useMemo, useRef, type PropsWithChildren } from "react";
 import { ipcLink } from "trpc-electron/renderer";
-import { createTRPCClient } from "@trpc/client";
 import type { MainRouter } from "../../electron/trpc/router";
+import { useCustomStylesLoader, useCustomStylesSubscriber } from "../features/custom-styles/hooks";
+import { PluginManagerContext } from "../features/plugins/contexts";
 import { PluginManager } from "../features/plugins/core/plugin-manager";
+import { usePluginHotReloader, usePluginLoader } from "../features/plugins/hooks";
+import { useIsAppFocused } from "../hooks/common";
+import { MainRouterProvider } from "../lib/trpc";
 import { SideDock } from "./-components/side-dock";
 import { Titlebar } from "./-components/titlebar";
-import { useIsAppFocused } from "../hooks/common";
-import { PluginManagerContext } from "../features/plugins/contexts";
-import { useCustomStylesLoader, useCustomStylesSubscriber } from "../features/custom-styles/hooks";
-import { usePluginHotReloader, usePluginLoader } from "../features/plugins/hooks";
 
 export interface RouterContext {
 	queryClient: QueryClient;

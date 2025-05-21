@@ -1,8 +1,8 @@
-import { memo, type HTMLAttributes } from "react";
-import MarkdownToJsx from "markdown-to-jsx";
 import clsx from "clsx";
-import { Markdown } from "../../markdown/components/markdown";
+import MarkdownToJsx from "markdown-to-jsx";
+import { memo, type HTMLAttributes } from "react";
 import { CodeBlock } from "../../markdown/components/code-block";
+import { Markdown } from "../../markdown/components/markdown";
 import type { AssistantChatMessage, ChatMessageType, UserChatMessage } from "../types";
 
 interface ChatMessageContainerProps extends HTMLAttributes<HTMLDivElement> {

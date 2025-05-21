@@ -1,6 +1,6 @@
-import curPath from "node:path";
 import { FSWatcher, watch } from "chokidar";
 import type { BrowserWindow } from "electron";
+import curPath from "node:path";
 import { PLUGINS_DIR } from "./constants";
 
 export interface PluginWatcherOptions {

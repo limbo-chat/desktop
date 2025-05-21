@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Markdown } from "../../../features/markdown/components/markdown";
 import { CodeBlock } from "../../../features/markdown/components/code-block";
+import { Markdown } from "../../../features/markdown/components/markdown";
 
 export const Route = createFileRoute("/design-playground/elements/markdown")({
 	component: MarkdownElementComponent,

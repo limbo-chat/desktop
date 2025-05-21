@@ -1,6 +1,6 @@
+import { Octokit } from "@octokit/rest";
 import fs from "node:fs";
 import path from "node:path";
-import { Octokit } from "@octokit/rest";
 import { PLUGINS_DIR, PLUGIN_DATA_FILE, PLUGIN_JS_FILE, PLUGIN_MANIFEST_FILE } from "./constants";
 import {
 	pluginDataSchema,

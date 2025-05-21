@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Checkbox } from "../../components/checkbox";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/card";
+import { Checkbox } from "../../components/checkbox";
 import { SettingsPage } from "./-components/settings-page";
 
 export const Route = createFileRoute("/settings/developer")({

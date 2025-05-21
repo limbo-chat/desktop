@@ -1,5 +1,5 @@
-import type { InputHTMLAttributes } from "react";
 import { clsx } from "clsx";
+import type { InputHTMLAttributes } from "react";
 
 export interface TextInputProps extends InputHTMLAttributes<HTMLInputElement> {}
 

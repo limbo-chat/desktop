@@ -1,6 +1,6 @@
 import { shell } from "electron";
 import { z } from "zod";
-import { publicProcedure, router } from "../trpc";
+import { PLUGINS_DIR } from "../../plugins/constants";
 import {
 	downloadPluginFromGithub,
 	installPlugin,
@@ -10,7 +10,7 @@ import {
 	readPluginManifest,
 	uninstallPlugin,
 } from "../../plugins/utils";
-import { PLUGINS_DIR } from "../../plugins/constants";
+import { publicProcedure, router } from "../trpc";
 
 const getPluginInputSchema = z.object({
 	id: z.string(),

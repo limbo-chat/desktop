@@ -1,5 +1,5 @@
-import { createRequire } from "node:module";
 import { Kysely, SqliteDialect } from "kysely";
+import { createRequire } from "node:module";
 import { DB_PATH } from "./constants";
 import type { Database } from "./types";
 

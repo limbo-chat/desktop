@@ -1,7 +1,7 @@
 import EventEmitter from "eventemitter3";
 import type * as limbo from "limbo";
-import { PluginContext } from "./plugin-context";
 import { parseNamespacedResourceId } from "../../../lib/utils";
+import { PluginContext } from "./plugin-context";
 
 export interface PluginManagerEvents {
 	"plugin:added": (pluginId: string) => void;

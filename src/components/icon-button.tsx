@@ -1,5 +1,5 @@
-import type { ButtonHTMLAttributes } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import type { ButtonHTMLAttributes } from "react";
 
 export const iconButtonVariants = cva("icon-button", {
 	variants: {

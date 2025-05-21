@@ -1,7 +1,7 @@
-import path from "node:path";
 import { watch, type FSWatcher } from "chokidar";
-import { CUSTOM_STYLES_DIR } from "./constants";
 import type { BrowserWindow } from "electron";
+import path from "node:path";
+import { CUSTOM_STYLES_DIR } from "./constants";
 
 export interface CustomStylesWatcherOptions {
 	window: BrowserWindow;

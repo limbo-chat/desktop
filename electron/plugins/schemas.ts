@@ -1,5 +1,5 @@
-import { z } from "zod";
 import semver from "semver";
+import { z } from "zod";
 
 const semverSchema = z.string().refine((v) => semver.validRange(v) !== null, {
 	message: "Invalid semver version",

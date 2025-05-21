@@ -1,14 +1,14 @@
-import path from "node:path";
 import { app, shell, BrowserWindow, ipcMain } from "electron";
+import path from "node:path";
 import { createIPCHandler } from "trpc-electron/main";
-import { mainRouter } from "./trpc/router";
 import { MAIN_DIST, RENDERER_DIST, VITE_DEV_SERVER_URL, VITE_PUBLIC } from "./constants";
-import { migrateToLatest } from "./db/migrate";
-import { readSettings } from "./settings/utils";
-import { ensurePluginsDir } from "./plugins/utils";
 import { ensureCustomStylesDirectory } from "./custom-styles/utils";
 import { CustomStylesWatcher } from "./custom-styles/watcher";
+import { migrateToLatest } from "./db/migrate";
+import { ensurePluginsDir } from "./plugins/utils";
 import { PluginWatcher } from "./plugins/watcher";
+import { readSettings } from "./settings/utils";
+import { mainRouter } from "./trpc/router";
 
 function createWindow() {
 	const window = new BrowserWindow({

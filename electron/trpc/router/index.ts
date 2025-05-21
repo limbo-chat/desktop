@@ -1,8 +1,8 @@
 import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 import { router } from "../trpc";
 import { chatsRouter } from "./chats";
-import { pluginsRouter } from "./plugins";
 import { customStylesRouter } from "./custom-styles";
+import { pluginsRouter } from "./plugins";
 
 export const mainRouter = router({
 	customStyles: customStylesRouter,

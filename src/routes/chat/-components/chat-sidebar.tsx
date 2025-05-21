@@ -1,24 +1,9 @@
-import { useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useMatch, useRouter } from "@tanstack/react-router";
-import { useForm } from "react-hook-form";
 import { EllipsisIcon, MessageCirclePlusIcon, PencilIcon, Trash2Icon } from "lucide-react";
-import {
-	Sidebar,
-	SidebarGroup,
-	SidebarGroupContent,
-	SidebarGroupTitle,
-	SidebarItem,
-} from "../../../components/sidebar";
-import { iconButtonVariants } from "../../../components/icon-button";
-import { useMainRouter } from "../../../lib/trpc";
-import {
-	MenuContent,
-	MenuItem,
-	MenuPositioner,
-	MenuRoot,
-	MenuTrigger,
-} from "../../../components/menu";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Button } from "../../../components/button";
 import {
 	DialogCloseButton,
 	DialogCloseTrigger,
@@ -29,9 +14,24 @@ import {
 	DialogTitle,
 	type DialogRootProps,
 } from "../../../components/dialog";
-import { Button } from "../../../components/button";
+import { iconButtonVariants } from "../../../components/icon-button";
+import {
+	MenuContent,
+	MenuItem,
+	MenuPositioner,
+	MenuRoot,
+	MenuTrigger,
+} from "../../../components/menu";
+import {
+	Sidebar,
+	SidebarGroup,
+	SidebarGroupContent,
+	SidebarGroupTitle,
+	SidebarItem,
+} from "../../../components/sidebar";
 import { TextInput } from "../../../components/text-input";
 import { useDeleteChatMutation, useRenameChatMutation } from "../../../features/chat/hooks/queries";
+import { useMainRouter } from "../../../lib/trpc";
 
 interface RenameChatDialogProps {
 	chat: {

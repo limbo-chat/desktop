@@ -1,5 +1,5 @@
-import type { HTMLAttributes } from "react";
 import clsx from "clsx";
+import type { HTMLAttributes } from "react";
 
 export interface ComponentPreviewProps extends HTMLAttributes<HTMLDivElement> {}
 

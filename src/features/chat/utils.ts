@@ -1,7 +1,7 @@
 import type { QueryClient } from "@tanstack/react-query";
 import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
-import type { MainRouter } from "../../../electron/trpc/router";
 import type { Chat } from "../../../electron/db/types";
+import type { MainRouter } from "../../../electron/trpc/router";
 
 export function removeChatFromQueryCache(
 	queryClient: QueryClient,

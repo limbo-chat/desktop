@@ -1,11 +1,11 @@
-import type { PropsWithChildren } from "react";
 import {
 	Select as ArkSelect,
 	Portal as ArkPortal,
 	type PortalProps as ArkPortalProps,
 } from "@ark-ui/react";
-import { ChevronsUpDownIcon } from "lucide-react";
 import clsx from "clsx";
+import { ChevronsUpDownIcon } from "lucide-react";
+import type { PropsWithChildren } from "react";
 
 export interface SelectRootProps extends ArkSelect.RootProps<any> {}
 

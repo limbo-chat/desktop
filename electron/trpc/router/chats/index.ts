@@ -1,9 +1,9 @@
+import { TRPCError } from "@trpc/server";
+import { ulid } from "ulid";
+import { z } from "zod";
+import { db } from "../../../db/db";
 import { publicProcedure, router } from "../../trpc";
 import { chatMessagesRouter } from "./messages";
-import { db } from "../../../db/db";
-import { z } from "zod";
-import { ulid } from "ulid";
-import { TRPCError } from "@trpc/server";
 
 const createChatInputSchema = z.object({
 	name: z.string(),

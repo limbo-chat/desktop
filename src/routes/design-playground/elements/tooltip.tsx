@@ -1,15 +1,15 @@
+import { createListCollection, FieldLabel } from "@ark-ui/react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { Button } from "../../../components/button";
+import { Field } from "../../../components/field";
+import { SimpleSelect, SimpleSelectItem } from "../../../components/select";
+import { Tooltip } from "../../../components/tooltip";
 import {
 	ComponentPreview,
 	ComponentPreviewContent,
 	ComponentPreviewPanel,
 } from "../../../features/design-playground/components/component-preview";
-import { Button } from "../../../components/button";
-import { Tooltip } from "../../../components/tooltip";
-import { SimpleSelect, SimpleSelectItem } from "../../../components/select";
-import { createListCollection, FieldLabel } from "@ark-ui/react";
-import { useState } from "react";
-import { Field } from "../../../components/field";
 
 export const Route = createFileRoute("/design-playground/elements/tooltip")({
 	component: TooltipElementPage,

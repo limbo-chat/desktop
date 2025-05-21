@@ -1,18 +1,12 @@
-import { useShallow } from "zustand/shallow";
 import { useParams, useRouter } from "@tanstack/react-router";
-import { Controller, useForm } from "react-hook-form";
-import { ArrowUpIcon } from "lucide-react";
-import TextareaAutosize from "react-textarea-autosize";
-import { usePluginManager, useRegisteredLLMs } from "../../../features/plugins/hooks";
-import { IconButton } from "../../../components/icon-button";
-import { useSendMessage } from "../../../features/chat/hooks/use-send-message";
-import { useLocalStore } from "../../../features/storage/stores";
-import { useChatStore } from "../../../features/chat/stores";
-import { useCreateChatMutation } from "../../../features/chat/hooks/queries";
-import { Button } from "../../../components/button";
-import { TextInput } from "../../../components/text-input";
-import { useMemo, useState } from "react";
 import Fuse from "fuse.js";
+import { ArrowUpIcon } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import TextareaAutosize from "react-textarea-autosize";
+import { useShallow } from "zustand/shallow";
+import { Button } from "../../../components/button";
+import { IconButton } from "../../../components/icon-button";
 import {
 	MenuContent,
 	MenuItem,
@@ -20,6 +14,12 @@ import {
 	MenuRoot,
 	MenuTrigger,
 } from "../../../components/menu";
+import { TextInput } from "../../../components/text-input";
+import { useCreateChatMutation } from "../../../features/chat/hooks/queries";
+import { useSendMessage } from "../../../features/chat/hooks/use-send-message";
+import { useChatStore } from "../../../features/chat/stores";
+import { usePluginManager, useRegisteredLLMs } from "../../../features/plugins/hooks";
+import { useLocalStore } from "../../../features/storage/stores";
 import { buildNamespacedResourceId } from "../../../lib/utils";
 
 // TODO, make sure this component has a clear structure in the styling system

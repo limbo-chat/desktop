@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { publicProcedure, router } from "../trpc";
 import { readCustomStyle, readCustomStylePaths } from "../../custom-styles/utils";
+import { publicProcedure, router } from "../trpc";
 
 const getCustomStyleInputSchema = z.object({
 	path: z.string(),

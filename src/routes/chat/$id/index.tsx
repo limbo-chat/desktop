@@ -1,6 +1,6 @@
-import { Suspense, useEffect } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { Suspense, useEffect } from "react";
 import { useShallow } from "zustand/shallow";
 import { ChatLog } from "../../../features/chat/components/chat-log";
 import { useChatStore } from "../../../features/chat/stores";

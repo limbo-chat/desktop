@@ -1,10 +1,10 @@
 import { useEffect, type HTMLProps, type PropsWithChildren } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import type * as limbo from "limbo";
-import type { PluginContext } from "../core/plugin-context";
-import { TextInput } from "../../../components/text-input";
-import { Field, FieldDescription, FieldInfo, FieldLabel } from "../../../components/field";
 import { Checkbox } from "../../../components/checkbox";
+import { Field, FieldDescription, FieldInfo, FieldLabel } from "../../../components/field";
+import { TextInput } from "../../../components/text-input";
+import type { PluginContext } from "../core/plugin-context";
 
 interface TextSettingRendererProps {
 	setting: limbo.TextSetting;
