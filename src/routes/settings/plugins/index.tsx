@@ -9,7 +9,7 @@ import {
 	Trash2Icon,
 } from "lucide-react";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { SettingsPage } from "../-components/settings-page";
 import type { PluginManifest } from "../../../../electron/plugins/schemas";
@@ -25,11 +25,10 @@ import {
 	DialogTitle,
 	type DialogRootProps,
 } from "../../../components/dialog";
-import { Field, FieldError } from "../../../components/field";
 import { IconButton, iconButtonVariants } from "../../../components/icon-button";
 import { Switch } from "../../../components/switch";
-import { TextInput } from "../../../components/text-input";
 import { Tooltip } from "../../../components/tooltip";
+import { TextInputFieldController } from "../../../features/forms/components";
 import {
 	useInstallPluginMutation,
 	useUninstallPluginMutation,
@@ -249,28 +248,14 @@ const InstallPluginDialog = ({ onInstallComplete, dialogProps }: InstallPluginDi
 					</DialogDescription>
 				</DialogHeader>
 				<form onSubmit={onSubmit}>
-					<Field>
-						<Controller
-							name="repoUrl"
-							control={form.control}
-							render={({ field, fieldState }) => (
-								<>
-									<TextInput
-										// @ts-expect-error
-										ref={field.ref}
-										placeholder="https://github.com/limbo-llm/plugin-ollama"
-										value={field.value}
-										onBlur={field.onBlur}
-										onChange={field.onChange}
-									/>
-
-									{fieldState.error?.message && (
-										<FieldError>{fieldState.error.message}</FieldError>
-									)}
-								</>
-							)}
-						/>
-					</Field>
+					<TextInputFieldController
+						name="repoUrl"
+						textFieldProps={{
+							textInputProps: {
+								placeholder: "https://github.com/limbo-llm/plugin-ollama",
+							},
+						}}
+					/>
 					<DialogFooter>
 						<DialogCloseTrigger asChild>
 							<Button variant="ghost" color="secondary">

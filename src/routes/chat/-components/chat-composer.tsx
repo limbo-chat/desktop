@@ -60,14 +60,18 @@ const LLMPicker = () => {
 			return null;
 		}
 
-		return pluginManager.getLLM(localStore.selectedModel);
+		// throws error if the model is not found
+		// return pluginManager.getLLM(localStore.selectedModel);
+
+		return null;
 	}, [pluginManager, localStore.selectedModel]);
 
 	return (
 		<MenuRoot>
 			<MenuTrigger asChild>
 				<Button variant="ghost" color="secondary">
-					{selectedLLM ? selectedLLM.name : "Select model"}
+					Select model
+					{/* {selectedLLM ? selectedLLM.name : "Select model"} */}
 				</Button>
 			</MenuTrigger>
 			<MenuPositioner>

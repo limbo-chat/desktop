@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "../../../components/button";
 import { Checkbox } from "../../../components/checkbox";
-import { Field, FieldLabel } from "../../../components/field";
+import { Field, FieldLabel, InlineField } from "../../../components/field";
 import { SimpleSelect, SimpleSelectItem } from "../../../components/select";
 import {
 	ComponentPreview,
@@ -54,44 +54,52 @@ function ButtonElementPage() {
 				</Button>
 			</ComponentPreviewContent>
 			<ComponentPreviewPanel>
-				<Field>
-					<FieldLabel>Color</FieldLabel>
-					<SimpleSelect
-						collection={buttonColorCollection}
-						value={[buttonColor]}
-						onValueChange={(e) => setButtonColor(e.value[0])}
-					>
-						{buttonColorCollection.items.map((item) => (
-							<SimpleSelectItem item={item} label={item.label} key={item.value} />
-						))}
-					</SimpleSelect>
-				</Field>
-				<Field>
-					<FieldLabel>Variant</FieldLabel>
-					<SimpleSelect
-						value={[buttonVariant]}
-						collection={buttonVariantCollection}
-						onValueChange={(e) => setButtonVariant(e.value[0])}
-					>
-						{buttonVariantCollection.items.map((item) => (
-							<SimpleSelectItem item={item} label={item.label} key={item.value} />
-						))}
-					</SimpleSelect>
-				</Field>
-				<Field>
-					<FieldLabel>Disabled?</FieldLabel>
-					<Checkbox
-						checked={isDisabled}
-						onCheckedChange={(e) => setIsDisabled(e.checked as boolean)}
-					/>
-				</Field>
-				<Field>
-					<FieldLabel>Loading?</FieldLabel>
-					<Checkbox
-						checked={isLoading}
-						onCheckedChange={(e) => setIsLoading(e.checked as boolean)}
-					/>
-				</Field>
+				<Field
+					label="Color"
+					control={
+						<SimpleSelect
+							collection={buttonColorCollection}
+							value={[buttonColor]}
+							onValueChange={(e) => setButtonColor(e.value[0])}
+						>
+							{buttonColorCollection.items.map((item) => (
+								<SimpleSelectItem item={item} label={item.label} key={item.value} />
+							))}
+						</SimpleSelect>
+					}
+				/>
+				<Field
+					label="Variant"
+					control={
+						<SimpleSelect
+							value={[buttonVariant]}
+							collection={buttonVariantCollection}
+							onValueChange={(e) => setButtonVariant(e.value[0])}
+						>
+							{buttonVariantCollection.items.map((item) => (
+								<SimpleSelectItem item={item} label={item.label} key={item.value} />
+							))}
+						</SimpleSelect>
+					}
+				/>
+				<InlineField
+					label="Disabled?"
+					control={
+						<Checkbox
+							checked={isDisabled}
+							onCheckedChange={(e) => setIsDisabled(e.checked as boolean)}
+						/>
+					}
+				/>
+				<InlineField
+					label="Loading?"
+					control={
+						<Checkbox
+							checked={isLoading}
+							onCheckedChange={(e) => setIsLoading(e.checked as boolean)}
+						/>
+					}
+				/>
 			</ComponentPreviewPanel>
 		</ComponentPreview>
 	);

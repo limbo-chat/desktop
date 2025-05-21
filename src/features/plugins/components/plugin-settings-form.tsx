@@ -1,10 +1,12 @@
-import { useEffect, type HTMLProps, type PropsWithChildren } from "react";
+import { useEffect, type HTMLProps } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import type * as limbo from "limbo";
 import { Checkbox } from "../../../components/checkbox";
-import { Field, FieldDescription, FieldInfo, FieldLabel } from "../../../components/field";
 import { TextInput } from "../../../components/text-input";
+import { TextInputFieldController } from "../../forms/components";
 import type { PluginContext } from "../core/plugin-context";
+
+// TODO, some of the settings renderers are incomplete
 
 interface TextSettingRendererProps {
 	setting: limbo.TextSetting;
@@ -12,20 +14,16 @@ interface TextSettingRendererProps {
 
 const TextSettingRenderer = ({ setting }: TextSettingRendererProps) => {
 	return (
-		<Controller
+		<TextInputFieldController
 			name={setting.id}
-			render={({ field }) => (
-				<TextInput
-					// @ts-expect-error, not exactly sure how to work with refs in react 19
-					ref={field.ref}
-					value={field.value || ""}
-					onBlur={field.onBlur}
-					onChange={field.onChange}
-					disabled={field.disabled}
-					placeholder={setting.placeholder}
-					type={setting.variant === "password" ? "password" : undefined}
-				/>
-			)}
+			textFieldProps={{
+				label: setting.label,
+				description: setting.description,
+				textInputProps: {
+					placeholder: setting.placeholder,
+					type: setting.variant === "password" ? "password" : "text",
+				},
+			}}
 		/>
 	);
 };
@@ -60,7 +58,6 @@ const LLMSettingRenderer = ({ setting }: LLMSettingRendererProps) => {
 			render={({ field }) => (
 				// temp text field
 				<TextInput
-					// @ts-expect-error, not exactly sure how to work with refs in react 19
 					ref={field.ref}
 					value={field.value || ""}
 					onBlur={field.onBlur}
@@ -78,22 +75,6 @@ const settingRendererMap = {
 	llm: LLMSettingRenderer,
 } as const;
 
-interface SettingWrapperProps {
-	setting: limbo.Setting;
-}
-
-const SettingField = ({ setting, children }: PropsWithChildren<SettingWrapperProps>) => {
-	return (
-		<Field variant="horizontal">
-			<FieldInfo>
-				<FieldLabel>{setting.label}</FieldLabel>
-				<FieldDescription>{setting.description}</FieldDescription>
-			</FieldInfo>
-			{children}
-		</Field>
-	);
-};
-
 interface SettingRendererProps {
 	setting: limbo.Setting;
 }
@@ -101,12 +82,8 @@ interface SettingRendererProps {
 const SettingRenderer = ({ setting }: SettingRendererProps) => {
 	const Renderer = settingRendererMap[setting.type];
 
-	return (
-		<SettingField setting={setting}>
-			{/* @ts-expect-error */}
-			<Renderer setting={setting} />
-		</SettingField>
-	);
+	// @ts-expect-error
+	return <Renderer setting={setting} />;
 };
 
 export interface PluginSettingsFormProps extends HTMLProps<HTMLFormElement> {

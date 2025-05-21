@@ -43,18 +43,20 @@ function TooltipElementPage() {
 				</Tooltip>
 			</ComponentPreviewContent>
 			<ComponentPreviewPanel>
-				<Field>
-					<FieldLabel>Placement</FieldLabel>
-					<SimpleSelect
-						value={[placement]}
-						collection={placementCollection}
-						onValueChange={(e) => setPlacement(e.value[0])}
-					>
-						{placementCollection.items.map((item) => (
-							<SimpleSelectItem item={item} label={item.label} key={item.value} />
-						))}
-					</SimpleSelect>
-				</Field>
+				<Field
+					label="Placement"
+					control={
+						<SimpleSelect
+							value={[placement]}
+							collection={placementCollection}
+							onValueChange={(e) => setPlacement(e.value[0])}
+						>
+							{placementCollection.items.map((item) => (
+								<SimpleSelectItem item={item} label={item.label} key={item.value} />
+							))}
+						</SimpleSelect>
+					}
+				/>
 			</ComponentPreviewPanel>
 		</ComponentPreview>
 	);
