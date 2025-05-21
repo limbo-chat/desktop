@@ -183,32 +183,6 @@ export const usePluginHotReloader = () => {
 	}, []);
 };
 
-export const usePlugins = () => {
-	const pluginManager = usePluginManager();
-	const [plugins, setPlugins] = useState<PluginContext[]>(() => pluginManager.getPlugins());
-
-	useEffect(() => {
-		// also get the plugins on mount (they may have been empty when the component first rendered)
-		setPlugins([...pluginManager.getPlugins()]);
-
-		const handler = () => {
-			setPlugins([...pluginManager.getPlugins()]);
-		};
-
-		pluginManager.events.on("plugin:added", handler);
-		pluginManager.events.on("plugin:removed", handler);
-		pluginManager.events.on("plugin:state-changed", handler);
-
-		return () => {
-			pluginManager.events.off("plugin:added", handler);
-			pluginManager.events.off("plugin:removed", handler);
-			pluginManager.events.off("plugin:state-changed", handler);
-		};
-	}, []);
-
-	return plugins;
-};
-
 export const useRegisteredLLMs = () => {
 	const pluginManager = usePluginManager();
 
