@@ -1,14 +1,13 @@
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useCallback, useContext, useEffect, useState } from "react";
-import type * as limbo from "limbo";
 import { useMainRouter, useMainRouterClient } from "../../lib/trpc";
 import { updateChatInQueryCache } from "../chat/utils";
-import { PluginManagerContext } from "./contexts";
+import { pluginManagerContext } from "./contexts";
 import { PluginContext, type PluginHostBridge } from "./core/plugin-context";
 import { usePluginStore } from "./stores";
 
 export const usePluginManager = () => {
-	const pluginManager = useContext(PluginManagerContext);
+	const pluginManager = useContext(pluginManagerContext);
 
 	if (!pluginManager) {
 		throw new Error("usePluginManager must be used within a PluginManagerProvider");

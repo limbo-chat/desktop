@@ -5,7 +5,7 @@ import { Suspense, useMemo, useRef, type PropsWithChildren } from "react";
 import { ipcLink } from "trpc-electron/renderer";
 import type { MainRouter } from "../../electron/trpc/router";
 import { useCustomStylesLoader, useCustomStylesSubscriber } from "../features/custom-styles/hooks";
-import { PluginManagerContext } from "../features/plugins/contexts";
+import { pluginManagerContext } from "../features/plugins/contexts";
 import { PluginManager } from "../features/plugins/core/plugin-manager";
 import { usePluginHotReloader, usePluginLoader } from "../features/plugins/hooks";
 import { useIsAppFocused } from "../hooks/common";
@@ -45,7 +45,9 @@ function RootLayoutProviders({ children }: PropsWithChildren) {
 	return (
 		<QueryClientProvider client={ctx.queryClient}>
 			<MainRouterProvider trpcClient={mainRouterClient} queryClient={ctx.queryClient}>
-				<PluginManagerContext value={pluginManager}>{children}</PluginManagerContext>
+				<pluginManagerContext.Provider value={pluginManager}>
+					{children}
+				</pluginManagerContext.Provider>
 			</MainRouterProvider>
 		</QueryClientProvider>
 	);
