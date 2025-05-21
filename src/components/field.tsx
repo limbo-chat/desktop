@@ -121,14 +121,16 @@ export const InlineField = ({ label, description, error, control, ...rootProps }
 	);
 };
 
+export const FieldTextInput = (props: TextInputProps) => {
+	const accessbilityProps = useFieldControlAccessibilityProps();
+
+	return <TextInput {...accessbilityProps} {...props} />;
+};
+
 export interface TextInputFieldProps extends FieldProps, FieldRootProps {
 	textInputProps?: TextInputProps;
 }
 
 export const TextInputField = ({ textInputProps, ...fieldProps }: TextInputFieldProps) => {
-	const accessbilityProps = useFieldControlAccessibilityProps();
-
-	return (
-		<Field control={<TextInput {...accessbilityProps} {...textInputProps} />} {...fieldProps} />
-	);
+	return <Field control={<FieldTextInput {...textInputProps} />} {...fieldProps} />;
 };

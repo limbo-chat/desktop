@@ -250,6 +250,7 @@ const InstallPluginDialog = ({ onInstallComplete, dialogProps }: InstallPluginDi
 				<form onSubmit={onSubmit}>
 					<TextInputFieldController
 						name="repoUrl"
+						control={form.control}
 						textFieldProps={{
 							textInputProps: {
 								placeholder: "https://github.com/limbo-llm/plugin-ollama",

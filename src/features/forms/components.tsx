@@ -2,6 +2,8 @@ import { Controller, type ControllerProps } from "react-hook-form";
 import { TextInputField, type TextInputFieldProps } from "../../components/field";
 
 export interface TextInputFieldControllerProps extends Omit<ControllerProps, "render"> {
+	// not sure why the normal control prop is causing frequent type errors
+	control?: any;
 	textFieldProps: TextInputFieldProps;
 }
 
