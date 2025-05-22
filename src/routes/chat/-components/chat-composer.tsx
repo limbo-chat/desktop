@@ -1,7 +1,7 @@
 import { useParams, useRouter } from "@tanstack/react-router";
 import Fuse from "fuse.js";
 import { ArrowUpIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type Ref } from "react";
 import { Controller, useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import { useShallow } from "zustand/shallow";
@@ -104,7 +104,11 @@ const LLMPicker = () => {
 	);
 };
 
-export const ChatComposer = () => {
+export interface ChatComposerProps {
+	ref?: Ref<HTMLDivElement>;
+}
+
+export const ChatComposer = ({ ref }: ChatComposerProps) => {
 	const router = useRouter();
 	const pluginManager = usePluginManager();
 	const sendMessage = useSendMessage();
@@ -178,7 +182,7 @@ export const ChatComposer = () => {
 	const canSendMessage = message.length > 0 && !chatStore.isAssistantResponsePending;
 
 	return (
-		<div className="chat-composer">
+		<div className="chat-composer" ref={ref}>
 			<form className="chat-composer-form" onSubmit={onSubmit}>
 				<Controller
 					name="message"
@@ -210,21 +214,6 @@ export const ChatComposer = () => {
 			</form>
 			<div className="chat-composer-accessories">
 				<LLMPicker />
-				{/* <SimpleSelect
-					className="chat-model-select"
-					placeholder="Select model"
-					collection={llmCollection}
-					value={localStore.selectedModel ? [localStore.selectedModel] : []}
-					onValueChange={(e) => localStore.setSelectedModel(e.value[0])}
-				>
-					{llmCollection.items.map((item) => (
-						<SimpleSelectItem
-							item={item}
-							label={item.label}
-							key={`${item.value.pluginId}/${item.value.modelId}`}
-						/>
-					))}
-				</SimpleSelect> */}
 			</div>
 		</div>
 	);
