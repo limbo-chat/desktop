@@ -87,16 +87,16 @@ const SettingRenderer = ({ setting }: SettingRendererProps) => {
 };
 
 export interface PluginSettingsFormProps extends HTMLProps<HTMLFormElement> {
-	plugin: PluginContext;
+	pluginContext: PluginContext;
 	onSubmit: (data: any) => void;
 }
 
 export const PluginSettingsForm = ({
-	plugin,
+	pluginContext,
 	onSubmit,
 	...htmlFormProps
 }: PluginSettingsFormProps) => {
-	const registeredSettings = plugin.getRegisteredSettings();
+	const registeredSettings = pluginContext.getSettings();
 
 	const form = useForm({
 		mode: "onBlur",
@@ -108,7 +108,7 @@ export const PluginSettingsForm = ({
 
 	useEffect(() => {
 		for (const setting of registeredSettings) {
-			const settingValue = plugin.getCachedSetting(setting.id);
+			const settingValue = pluginContext.getCachedSettingValue(setting.id);
 
 			form.setValue(setting.id, settingValue);
 		}

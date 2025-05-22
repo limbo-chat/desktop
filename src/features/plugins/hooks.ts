@@ -1,14 +1,13 @@
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useCallback, useContext, useEffect, useState } from "react";
 import type * as limbo from "limbo";
-import { useMainRouter, useMainRouterClient } from "../../lib/trpc";
-import { updateChatInQueryCache } from "../chat/utils";
-import { PluginManagerContext } from "./contexts";
-import { PluginContext, type PluginHostBridge } from "./core/plugin-context";
+import { useMainRouter } from "../../lib/trpc";
+import { buildNamespacedResourceId } from "../../lib/utils";
+import { pluginBackendContext, pluginManagerContext, pluginSystemContext } from "./contexts";
 import { usePluginStore } from "./stores";
 
 export const usePluginManager = () => {
-	const pluginManager = useContext(PluginManagerContext);
+	const pluginManager = useContext(pluginManagerContext);
 
 	if (!pluginManager) {
 		throw new Error("usePluginManager must be used within a PluginManagerProvider");
@@ -17,206 +16,145 @@ export const usePluginManager = () => {
 	return pluginManager;
 };
 
-export function usePluginBridgeFactory() {
-	const queryClient = useQueryClient();
-	const mainRouter = useMainRouter();
-	const mainRouterClient = useMainRouterClient();
-	const pluginManager = usePluginManager();
+export const usePluginSystem = () => {
+	const pluginSystem = useContext(pluginSystemContext);
 
-	return useCallback((): PluginHostBridge => {
-		return {
-			getLLM: (llmId: string) => pluginManager.getLLM(llmId),
-			showNotification: (notification) => {
-				// TODO, actually show the notification
-				console.log("showNotification called from plugin");
-			},
-			renameChat: async (chatId: string, newName: string) => {
-				const updatedChat = await mainRouterClient.chats.rename.mutate({
-					id: chatId,
-					name: newName,
-				});
+	if (!pluginSystem) {
+		throw new Error("usePluginSystem must be used within a PluginSystemProvider");
+	}
 
-				updateChatInQueryCache(queryClient, mainRouter, updatedChat);
-			},
-			getChat: async (chatId: string) => {
-				return await mainRouterClient.chats.get.query({ id: chatId });
-			},
-			getChatMessages: async (opts) => {
-				return await mainRouterClient.chats.messages.getMany.query(opts);
-			},
-		};
-	}, []);
-}
+	return pluginSystem;
+};
+
+export const usePluginBackend = () => {
+	const pluginBackend = useContext(pluginBackendContext);
+
+	if (!pluginBackend) {
+		throw new Error("usePluginBackend must be used within a PluginBackendProvider");
+	}
+
+	return pluginBackend;
+};
+
+export const usePluginList = () => {
+	const pluginMap = usePluginStore((state) => state.plugins);
+
+	return [...pluginMap.values()];
+};
 
 export const usePluginLoader = () => {
-	const mainRouter = useMainRouter();
-	const mainRouterClient = useMainRouterClient();
-	const pluginManager = usePluginManager();
-	const getPluginIdsQuery = useSuspenseQuery(mainRouter.plugins.getPluginIds.queryOptions());
-	const pluginBridgeFactory = usePluginBridgeFactory();
-
-	const loadPlugin = useCallback(async (pluginId: string) => {
-		const pluginStore = usePluginStore.getState();
-
-		const manifest = await mainRouterClient.plugins.getManifest.query({
-			id: pluginId,
-		});
-
-		const data = await mainRouterClient.plugins.getData.query({
-			id: pluginId,
-		});
-
-		pluginStore.addPlugin(manifest.id, {
-			manifest,
-			enabled: data.enabled,
-		});
-
-		if (!data.enabled) {
-			return;
-		}
-
-		const js = await mainRouterClient.plugins.getJs.query({
-			id: pluginId,
-		});
-
-		const pluginContext = new PluginContext({
-			manifest,
-			hostBridge: pluginBridgeFactory(),
-		});
-
-		// load the settings from disk into the plugin context
-		for (const [key, val] of Object.entries(data.settings)) {
-			pluginContext.setCachedSetting(key, val);
-		}
-
-		pluginContext.loadModule(js, manifest.id);
-
-		await pluginManager.addPlugin(pluginId, pluginContext);
-	}, []);
-
-	const loadPlugins = useCallback(async () => {
-		// load all of the plugins in parallel
-		await Promise.allSettled(getPluginIdsQuery.data.map((pluginId) => loadPlugin(pluginId)));
-
-		// activate all plugin contexts sequentially
-		// should this be parallel too?
-		await pluginManager.activatePlugins();
-	}, []);
+	const pluginSystem = usePluginSystem();
+	const pluginBackend = usePluginBackend();
 
 	useEffect(() => {
+		const pluginStore = usePluginStore.getState();
+
+		async function loadPlugins() {
+			const allPlugins = await pluginBackend.getAllPlugins();
+
+			for (const plugin of allPlugins) {
+				pluginStore.setPlugin(plugin.manifest.id, {
+					enabled: plugin.data.enabled,
+					manifest: plugin.manifest,
+				});
+			}
+
+			await Promise.allSettled(
+				allPlugins.map(async (plugin) => {
+					try {
+						await pluginSystem.loadPlugin(plugin);
+					} catch {
+						pluginStore.setPlugin(plugin.manifest.id, {
+							manifest: plugin.manifest,
+							enabled: false,
+						});
+					}
+				})
+			);
+		}
+
 		loadPlugins();
 	}, []);
 };
 
 export const usePluginHotReloader = () => {
-	const mainRouterClient = useMainRouterClient();
-	const pluginManager = usePluginManager();
-	const pluginBridgeFactory = usePluginBridgeFactory();
+	const pluginSystem = usePluginSystem();
+	const pluginBackend = usePluginBackend();
 
 	useEffect(() => {
-		const handleReloadManifest = async (_: any, pluginId: string) => {
+		const handleReloadPlugin = async (_: any, pluginId: string) => {
 			const pluginStore = usePluginStore.getState();
-			const pluginData = pluginStore.getPlugin(pluginId);
+			const freshPluginData = await pluginBackend.getPlugin(pluginId);
 
-			if (!pluginData) {
-				return;
-			}
-
-			const newManifest = await mainRouterClient.plugins.getManifest.query({
-				id: pluginId,
+			pluginStore.setPlugin(pluginId, {
+				manifest: freshPluginData.manifest,
+				enabled: freshPluginData.data.enabled,
 			});
 
-			pluginStore.updatePlugin(pluginId, {
-				...pluginData,
-				manifest: newManifest,
-			});
+			await pluginSystem.unloadPlugin(pluginId);
+			await pluginSystem.loadPlugin(freshPluginData);
 		};
 
-		const handleReloadJs = async (_: any, pluginId: string) => {
-			const oldPluginContext = pluginManager.getPlugin(pluginId);
-
-			// plugins that have never been loaded cannot be hot reloaded
-			if (!oldPluginContext) {
-				return;
-			}
-
-			// remove the plugin from the manager (it will be replaced)
-			pluginManager.removePlugin(pluginId);
-
-			// deactivate the plugin context
-			await oldPluginContext.deactivate();
-
-			// destroy the plugin context
-			await oldPluginContext.destroy();
-
-			// fetch the js content for the plugin
-			const js = await mainRouterClient.plugins.getJs.query({
-				id: pluginId,
-			});
-
-			const newPluginContext = new PluginContext({
-				manifest: oldPluginContext.manifest,
-				hostBridge: pluginBridgeFactory(),
-			});
-
-			newPluginContext.loadModule(js, pluginId);
-
-			// add the new plugin context to the manager
-			pluginManager.addPlugin(pluginId, newPluginContext);
-
-			// activate the new plugin context
-			await newPluginContext.activate();
-
-			console.info(
-				`%c hot reloaded plugin: "${pluginId}"`,
-				"color: cornflowerblue; font-weight: bold;"
-			);
-		};
-
-		window.ipcRenderer.on("plugin:reload-manifest", handleReloadManifest);
-		window.ipcRenderer.on("plugin:reload-js", handleReloadJs);
+		window.ipcRenderer.on("plugin:reload", handleReloadPlugin);
 
 		return () => {
-			window.ipcRenderer.off("plugin:reload-manifest", handleReloadManifest);
-			window.ipcRenderer.off("plugin:reload-js", handleReloadJs);
+			window.ipcRenderer.off("plugin:reload", handleReloadPlugin);
 		};
 	}, []);
-};
-
-export const usePlugins = () => {
-	const pluginManager = usePluginManager();
-	const [plugins, setPlugins] = useState<PluginContext[]>(() => pluginManager.getPlugins());
-
-	useEffect(() => {
-		// also get the plugins on mount (they may have been empty when the component first rendered)
-		setPlugins([...pluginManager.getPlugins()]);
-
-		const handler = () => {
-			setPlugins([...pluginManager.getPlugins()]);
-		};
-
-		pluginManager.events.on("plugin:added", handler);
-		pluginManager.events.on("plugin:removed", handler);
-		pluginManager.events.on("plugin:state-changed", handler);
-
-		return () => {
-			pluginManager.events.off("plugin:added", handler);
-			pluginManager.events.off("plugin:removed", handler);
-			pluginManager.events.off("plugin:state-changed", handler);
-		};
-	}, []);
-
-	return plugins;
 };
 
 export const useRegisteredLLMs = () => {
+	const pluginManager = usePluginManager();
+
+	const getRegisteredLLMs = useCallback(() => {
+		const registeredLLMs = new Map<string, limbo.LLM>();
+		const allPlugins = pluginManager.getPlugins();
+
+		for (const plugin of allPlugins) {
+			const pluginLLMs = plugin.context.getLLMs();
+
+			for (const llm of pluginLLMs) {
+				registeredLLMs.set(buildNamespacedResourceId(plugin.manifest.id, llm.id), llm);
+			}
+		}
+
+		return registeredLLMs;
+	}, []);
+
+	const [registeredLLMs, setRegisteredLLMs] = useState<Map<string, limbo.LLM>>(() =>
+		getRegisteredLLMs()
+	);
+
+	useEffect(() => {
+		// run on first render to get the initial state (may have been empty in the use state init fn)
+		setRegisteredLLMs(getRegisteredLLMs());
+
+		const handleChange = () => {
+			setRegisteredLLMs(getRegisteredLLMs());
+		};
+
+		pluginManager.events.on("plugin:added", handleChange);
+		pluginManager.events.on("plugin:removed", handleChange);
+		pluginManager.events.on("plugin:state-changed", handleChange);
+
+		return () => {
+			pluginManager.events.off("plugin:added", handleChange);
+			pluginManager.events.off("plugin:removed", handleChange);
+			pluginManager.events.off("plugin:state-changed", handleChange);
+		};
+	}, []);
+
+	return registeredLLMs;
+};
+
+export const useRegisteredLLMsList = () => {
 	const pluginManager = usePluginManager();
 
 	const getLLMs = useCallback(() => {
 		const plugins = pluginManager.getPlugins();
 
 		return plugins.flatMap((plugin) => {
-			const pluginLLMs = plugin.getRegisteredLLMs();
+			const pluginLLMs = plugin.context.getLLMs();
 
 			return pluginLLMs.map((llm) => {
 				return {
@@ -248,6 +186,60 @@ export const useRegisteredLLMs = () => {
 	return llms;
 };
 
+export interface UninstallPluginMutationFnOpts {
+	id: string;
+}
+
+export const useEnablePluginMutation = () => {
+	const pluginSystem = usePluginSystem();
+	const pluginBackend = usePluginBackend();
+
+	return useMutation({
+		mutationFn: async (opts: UninstallPluginMutationFnOpts) => {
+			await pluginBackend.enablePlugin(opts.id);
+
+			const plugin = await pluginBackend.getPlugin(opts.id);
+
+			await pluginSystem.loadPlugin(plugin);
+
+			return plugin;
+		},
+		onSuccess: (plugin) => {
+			const pluginStore = usePluginStore.getState();
+
+			pluginStore.setPlugin(plugin.manifest.id, {
+				...plugin,
+				enabled: true,
+			});
+		},
+	});
+};
+
+export const useDisablePluginMutation = () => {
+	const pluginSystem = usePluginSystem();
+	const pluginBackend = usePluginBackend();
+
+	return useMutation({
+		mutationFn: async (opts: UninstallPluginMutationFnOpts) => {
+			await pluginSystem.unloadPlugin(opts.id);
+			await pluginBackend.disablePlugin(opts.id);
+		},
+		onSettled: (_data, _err, opts) => {
+			const pluginStore = usePluginStore.getState();
+			const plugin = pluginStore.getPlugin(opts.id);
+
+			if (!plugin) {
+				return;
+			}
+
+			pluginStore.setPlugin(opts.id, {
+				...plugin,
+				enabled: false,
+			});
+		},
+	});
+};
+
 export const useInstallPluginMutation = () => {
 	const mainRouter = useMainRouter();
 
@@ -256,45 +248,27 @@ export const useInstallPluginMutation = () => {
 			onSuccess: (manifest) => {
 				const pluginStore = usePluginStore.getState();
 
-				pluginStore.addPlugin(manifest.id, {
+				pluginStore.setPlugin(manifest.id, {
 					manifest,
 					enabled: false, // newly installed plugins are disabled by default
 				});
-
-				// TODO, show toast
-			},
-			onError: () => {
-				// TODO, show toast
 			},
 		})
 	);
 };
 
 export const useUninstallPluginMutation = () => {
-	const mainRouter = useMainRouter();
-	const pluginManager = usePluginManager();
+	const pluginSystem = usePluginSystem();
+	const pluginBackend = usePluginBackend();
 
-	return useMutation(
-		mainRouter.plugins.uninstall.mutationOptions({
-			onSuccess: async (_, variables) => {
-				const pluginStore = usePluginStore.getState();
+	return useMutation({
+		mutationFn: async (opts: UninstallPluginMutationFnOpts) => {
+			await pluginBackend.uninstallPlugin(opts.id);
+		},
+		onSuccess: async (_, opts) => {
+			const pluginStore = usePluginStore.getState();
 
-				pluginStore.removePlugin(variables.id);
-
-				const pluginContext = pluginManager.getPlugin(variables.id);
-
-				if (!pluginContext) {
-					return;
-				}
-
-				await pluginManager.removePlugin(variables.id);
-				await pluginContext.deactivate();
-				await pluginContext.destroy();
-			},
-			onError: () => {
-				// TODO, show toast
-				console.error("failed to uninstall plugin");
-			},
-		})
-	);
+			pluginStore.removePlugin(opts.id);
+		},
+	});
 };

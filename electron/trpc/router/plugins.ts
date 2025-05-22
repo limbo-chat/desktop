@@ -4,16 +4,21 @@ import { PLUGINS_DIR } from "../../plugins/constants";
 import {
 	downloadPluginFromGithub,
 	installPlugin,
+	readPlugin,
 	readPluginData,
-	readPluginIds,
-	readPluginJs,
-	readPluginManifest,
+	readPlugins,
 	uninstallPlugin,
+	writePluginData,
 } from "../../plugins/utils";
 import { publicProcedure, router } from "../trpc";
 
 const getPluginInputSchema = z.object({
 	id: z.string(),
+});
+
+const updatePluginEnabledInputSchema = z.object({
+	id: z.string(),
+	enabled: z.boolean(),
 });
 
 const installPluginInputSchema = z.object({
@@ -26,6 +31,23 @@ const uninstallPluginInputSchema = z.object({
 });
 
 export const pluginsRouter = router({
+	openFolder: publicProcedure.mutation(() => {
+		shell.openPath(PLUGINS_DIR);
+	}),
+	get: publicProcedure.input(getPluginInputSchema).query(({ input }) => {
+		return readPlugin(input.id);
+	}),
+	getAll: publicProcedure.query(() => {
+		return readPlugins();
+	}),
+	updateEnabled: publicProcedure.input(updatePluginEnabledInputSchema).mutation(({ input }) => {
+		const prevData = readPluginData(input.id);
+
+		writePluginData(input.id, {
+			...prevData,
+			enabled: input.enabled,
+		});
+	}),
 	install: publicProcedure.input(installPluginInputSchema).mutation(async ({ input }) => {
 		const downloadResult = await downloadPluginFromGithub(input);
 
@@ -35,20 +57,5 @@ export const pluginsRouter = router({
 	}),
 	uninstall: publicProcedure.input(uninstallPluginInputSchema).mutation(({ input }) => {
 		uninstallPlugin(input.id);
-	}),
-	openFolder: publicProcedure.mutation(() => {
-		shell.openPath(PLUGINS_DIR);
-	}),
-	getPluginIds: publicProcedure.query(() => {
-		return readPluginIds();
-	}),
-	getManifest: publicProcedure.input(getPluginInputSchema).query(({ input }) => {
-		return readPluginManifest(input.id);
-	}),
-	getJs: publicProcedure.input(getPluginInputSchema).query(({ input }) => {
-		return readPluginJs(input.id);
-	}),
-	getData: publicProcedure.input(getPluginInputSchema).query(({ input }) => {
-		return readPluginData(input.id);
 	}),
 });

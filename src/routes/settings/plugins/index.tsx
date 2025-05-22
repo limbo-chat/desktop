@@ -30,7 +30,10 @@ import { Switch } from "../../../components/switch";
 import { Tooltip } from "../../../components/tooltip";
 import { TextInputFieldController } from "../../../features/forms/components";
 import {
+	useDisablePluginMutation,
+	useEnablePluginMutation,
 	useInstallPluginMutation,
+	usePluginList,
 	useUninstallPluginMutation,
 } from "../../../features/plugins/hooks";
 import { usePluginStore } from "../../../features/plugins/stores";
@@ -105,6 +108,9 @@ interface PluginCardProps {
 }
 
 const PluginCard = ({ plugin }: PluginCardProps) => {
+	const enablePluginMutaton = useEnablePluginMutation();
+	const disablePluginMutation = useDisablePluginMutation();
+
 	const [isUninstallPluginDialogOpen, setIsUninstallPluginDialogOpen] = useState(false);
 
 	const authorName = plugin.manifest.author.name ?? plugin.manifest.author.email;
@@ -114,7 +120,17 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 	// 	[window.env.LIMBO_API_VERSION, plugin.manifest.apiVersion]
 	// );
 
-	// TODO, handle enable/disable logic
+	const toggleEnabled = () => {
+		if (plugin.enabled) {
+			disablePluginMutation.mutate({
+				id: plugin.manifest.id,
+			});
+		} else {
+			enablePluginMutaton.mutate({
+				id: plugin.manifest.id,
+			});
+		}
+	};
 
 	return (
 		<>
@@ -136,7 +152,7 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 			>
 				<div className="plugin-card-header">
 					<span className="plugin-card-title">{plugin.manifest.name}</span>
-					<Switch checked={plugin.enabled} onCheckedChange={() => {}} />
+					<Switch checked={plugin.enabled} onCheckedChange={toggleEnabled} />
 				</div>
 				<div className="plugin-card-content">
 					<div className="plugin-card-info">
@@ -279,8 +295,8 @@ const InstallPluginDialog = ({ onInstallComplete, dialogProps }: InstallPluginDi
 };
 
 function PluginsSettingsPage() {
+	const plugins = usePluginList();
 	const mainRouterClient = useMainRouterClient();
-	const plugins = usePluginStore((state) => state.plugins);
 	const [isInstallPluginDialogOpen, setIsInstallPluginDialogOpen] = useState(false);
 
 	const openPluginsFolder = () => {
