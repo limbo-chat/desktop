@@ -6,7 +6,7 @@ import {
 	SidebarGroupTitle,
 	SidebarItem,
 } from "../../components/sidebar";
-import { usePluginStore } from "../../features/plugins/stores";
+import { usePluginList } from "../../features/plugins/hooks";
 
 export const Route = createFileRoute("/settings")({
 	component: SettingsLayout,
@@ -14,8 +14,8 @@ export const Route = createFileRoute("/settings")({
 
 const SettingsSidebar = () => {
 	const location = useLocation();
-	const plugins = usePluginStore((state) => state.plugins);
-	const enabledPlugins = Object.values(plugins).filter((plugin) => plugin.enabled);
+	const pluginList = usePluginList();
+	const enabledPlugins = pluginList.filter((plugin) => plugin.enabled);
 
 	return (
 		<Sidebar className="settings-sidebar">

@@ -81,6 +81,18 @@ export function readPluginData(pluginId: string) {
 	return pluginDataParseResult.data;
 }
 
+export function readPlugin(pluginId: string) {
+	const manifest = readPluginManifest(pluginId);
+	const js = readPluginJs(pluginId);
+	const data = readPluginData(pluginId);
+
+	return {
+		manifest,
+		js,
+		data,
+	};
+}
+
 export function updatePluginData(pluginId: string, updatedData: Partial<PluginData>) {
 	const data = readPluginData(pluginId);
 
@@ -94,9 +106,17 @@ export function ensurePluginsDir() {
 }
 
 export function readPluginIds() {
-	ensurePluginsDir();
+	const childEntities = fs.readdirSync(PLUGINS_DIR, {
+		withFileTypes: true,
+	});
 
-	return fs.readdirSync(PLUGINS_DIR);
+	return childEntities.filter((entity) => entity.isDirectory()).map((entity) => entity.name);
+}
+
+export function readPlugins() {
+	const pluginIds = readPluginIds();
+
+	return pluginIds.map((pluginId) => readPlugin(pluginId));
 }
 
 export interface InstallPluginOptions {
@@ -113,6 +133,9 @@ export function installPlugin({ manifest, js }: InstallPluginOptions) {
 
 	// write js file
 	fs.writeFileSync(buildPluginJsPath(manifest.id), js);
+
+	// write the default data file
+	fs.writeFileSync(buildPluginDataPath(manifest.id), JSON.stringify(defaultPluginData));
 }
 
 export interface DownloadPluginFromGithubOptions {

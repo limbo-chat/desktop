@@ -18,14 +18,17 @@ import { TextInput } from "../../../components/text-input";
 import { useCreateChatMutation } from "../../../features/chat/hooks/queries";
 import { useSendMessage } from "../../../features/chat/hooks/use-send-message";
 import { useChatStore } from "../../../features/chat/stores";
-import { usePluginManager, useRegisteredLLMs } from "../../../features/plugins/hooks";
+import {
+	usePluginManager,
+	useRegisteredLLMs,
+	useRegisteredLLMsList,
+} from "../../../features/plugins/hooks";
 import { useLocalStore } from "../../../features/storage/stores";
 import { buildNamespacedResourceId } from "../../../lib/utils";
 
 // TODO, make sure this component has a clear structure in the styling system
 const LLMPicker = () => {
-	const pluginManager = usePluginManager();
-	const llms = useRegisteredLLMs();
+	const llms = useRegisteredLLMsList();
 	const [search, setSearch] = useState("");
 
 	const fuse = useMemo(() => {
@@ -41,8 +44,6 @@ const LLMPicker = () => {
 			return llms;
 		}
 
-		console.log(llms);
-
 		return fuse.search(search).map((item) => item.item);
 	}, [fuse, search, llms]);
 
@@ -53,25 +54,21 @@ const LLMPicker = () => {
 		}))
 	);
 
-	// this is a little dirty as pluginManager is in itself not react state
-	// if there was a reactive hashmap storing the llms that would be better, but this is the most efficient way to get an llm quickly without searching the list in react state
+	const registeredLLMs = useRegisteredLLMs();
+
 	const selectedLLM = useMemo(() => {
 		if (!localStore.selectedModel) {
 			return null;
 		}
 
-		// throws error if the model is not found
-		// return pluginManager.getLLM(localStore.selectedModel);
-
-		return null;
-	}, [pluginManager, localStore.selectedModel]);
+		return registeredLLMs.get(localStore.selectedModel) ?? null;
+	}, [registeredLLMs, localStore.selectedModel]);
 
 	return (
 		<MenuRoot>
 			<MenuTrigger asChild>
 				<Button variant="ghost" color="secondary">
-					Select model
-					{/* {selectedLLM ? selectedLLM.name : "Select model"} */}
+					{selectedLLM ? selectedLLM.name : "Select model"}
 				</Button>
 			</MenuTrigger>
 			<MenuPositioner>
@@ -92,6 +89,7 @@ const LLMPicker = () => {
 								<MenuItem
 									value={namespacedId}
 									onClick={() => localStore.setSelectedModel(namespacedId)}
+									key={namespacedId}
 								>
 									{llm.llm.name}
 								</MenuItem>

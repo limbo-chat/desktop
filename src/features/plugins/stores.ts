@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
 import type { PluginManifest } from "../../../electron/plugins/schemas";
 
 export interface PluginStoreData {
@@ -8,40 +7,39 @@ export interface PluginStoreData {
 }
 
 export interface PluginStore {
-	plugins: Record<string, PluginStoreData>;
-	addPlugin: (pluginId: string, data: PluginStoreData) => void;
+	plugins: Map<string, PluginStoreData>;
+	setPlugin: (pluginId: string, data: PluginStoreData) => void;
 	getPlugin: (pluginId: string) => PluginStoreData | undefined;
-	updatePlugin: (pluginId: string, data: Partial<PluginStoreData>) => void;
 	removePlugin: (pluginId: string) => void;
 }
 
-export const usePluginStore = create(
-	immer<PluginStore>((set, get) => ({
-		plugins: {},
-		addPlugin: (id: string, pluginData) => {
-			set((state) => {
-				state.plugins[id] = pluginData;
-			});
-		},
-		getPlugin: (pluginId: string) => {
-			const plugins = get().plugins;
+export const usePluginStore = create<PluginStore>((set, get) => ({
+	plugins: new Map(),
+	getPlugin: (pluginId: string) => {
+		const plugins = get().plugins;
 
-			return plugins[pluginId];
-		},
-		updatePlugin: (pluginId: string, pluginData) => {
-			set((state) => {
-				if (state.plugins[pluginId]) {
-					state.plugins[pluginId] = {
-						...state.plugins[pluginId],
-						...pluginData,
-					};
-				}
-			});
-		},
-		removePlugin: (pluginId: string) => {
-			set((state) => {
-				delete state.plugins[pluginId];
-			});
-		},
-	}))
-);
+		return plugins.get(pluginId);
+	},
+	setPlugin: (id: string, pluginData) => {
+		set((state) => {
+			const newMap = new Map(state.plugins);
+
+			newMap.set(id, pluginData);
+
+			return {
+				plugins: newMap,
+			};
+		});
+	},
+	removePlugin: (pluginId: string) => {
+		set((state) => {
+			const newMap = new Map(state.plugins);
+
+			newMap.delete(pluginId);
+
+			return {
+				plugins: newMap,
+			};
+		});
+	},
+}));

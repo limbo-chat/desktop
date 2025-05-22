@@ -5,9 +5,17 @@ import { Suspense, useMemo, useRef, type PropsWithChildren } from "react";
 import { ipcLink } from "trpc-electron/renderer";
 import type { MainRouter } from "../../electron/trpc/router";
 import { useCustomStylesLoader, useCustomStylesSubscriber } from "../features/custom-styles/hooks";
-import { pluginManagerContext } from "../features/plugins/contexts";
+import {
+	PluginBackendProvider,
+	PluginManagerProvider,
+	PluginSystemProvider,
+} from "../features/plugins/components/providers";
+import type { PluginBackend } from "../features/plugins/core/plugin-backend";
 import { PluginManager } from "../features/plugins/core/plugin-manager";
+import { EvalPluginModuleLoader } from "../features/plugins/core/plugin-module-loader";
+import { PluginSystem } from "../features/plugins/core/plugin-system";
 import { usePluginHotReloader, usePluginLoader } from "../features/plugins/hooks";
+import { usePluginStore } from "../features/plugins/stores";
 import { useIsAppFocused } from "../hooks/common";
 import { MainRouterProvider } from "../lib/trpc";
 import { SideDock } from "./-components/side-dock";
@@ -42,12 +50,77 @@ function RootLayoutProviders({ children }: PropsWithChildren) {
 		return new PluginManager();
 	}, []);
 
+	const pluginBackend = useMemo<PluginBackend>(() => {
+		return {
+			getPlugin: async (pluginId) => {
+				return await mainRouterClient.plugins.get.query({
+					id: pluginId,
+				});
+			},
+			getAllPlugins: async () => {
+				return await mainRouterClient.plugins.getAll.query();
+			},
+			enablePlugin: async (pluginId) => {
+				return await mainRouterClient.plugins.updateEnabled.mutate({
+					id: pluginId,
+					enabled: true,
+				});
+			},
+			disablePlugin: async (pluginId) => {
+				return await mainRouterClient.plugins.updateEnabled.mutate({
+					id: pluginId,
+					enabled: false,
+				});
+			},
+			uninstallPlugin: async (pluginId) => {
+				return await mainRouterClient.plugins.uninstall.mutate({
+					id: pluginId,
+				});
+			},
+		};
+	}, []);
+
+	const pluginSystem = useMemo(() => {
+		return new PluginSystem({
+			pluginManager,
+			pluginModuleLoader: new EvalPluginModuleLoader(),
+			hostBridge: {
+				onActivatePluginError: (pluginId, errorMsg) => {
+					console.error(`Failed to activate plugin ${pluginId}: Error: ${errorMsg}`);
+				},
+			},
+			pluginAPIBridge: {
+				getChat: async (chatId) => {
+					return await mainRouterClient.chats.get.query({
+						id: chatId,
+					});
+				},
+				getChatMessages: async (opts) => {
+					return await mainRouterClient.chats.messages.getMany.query(opts);
+				},
+				renameChat: async (chatId, newName) => {
+					await mainRouterClient.chats.rename.mutate({
+						id: chatId,
+						name: newName,
+					});
+				},
+				showNotification: async (notification) => {
+					// todo show notification for real
+				},
+			},
+		});
+	}, []);
+
 	return (
 		<QueryClientProvider client={ctx.queryClient}>
 			<MainRouterProvider trpcClient={mainRouterClient} queryClient={ctx.queryClient}>
-				<pluginManagerContext.Provider value={pluginManager}>
-					{children}
-				</pluginManagerContext.Provider>
+				<PluginBackendProvider pluginBackend={pluginBackend}>
+					<PluginSystemProvider pluginSystem={pluginSystem}>
+						<PluginManagerProvider pluginManager={pluginManager}>
+							{children}
+						</PluginManagerProvider>
+					</PluginSystemProvider>
+				</PluginBackendProvider>
 			</MainRouterProvider>
 		</QueryClientProvider>
 	);

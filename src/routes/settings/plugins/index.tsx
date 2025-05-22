@@ -31,6 +31,7 @@ import { Tooltip } from "../../../components/tooltip";
 import { TextInputFieldController } from "../../../features/forms/components";
 import {
 	useInstallPluginMutation,
+	usePluginList,
 	useUninstallPluginMutation,
 } from "../../../features/plugins/hooks";
 import { usePluginStore } from "../../../features/plugins/stores";
@@ -279,8 +280,8 @@ const InstallPluginDialog = ({ onInstallComplete, dialogProps }: InstallPluginDi
 };
 
 function PluginsSettingsPage() {
+	const plugins = usePluginList();
 	const mainRouterClient = useMainRouterClient();
-	const plugins = usePluginStore((state) => state.plugins);
 	const [isInstallPluginDialogOpen, setIsInstallPluginDialogOpen] = useState(false);
 
 	const openPluginsFolder = () => {
