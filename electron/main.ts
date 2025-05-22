@@ -6,7 +6,6 @@ import { ensureCustomStylesDirectory } from "./custom-styles/utils";
 import { CustomStylesWatcher } from "./custom-styles/watcher";
 import { migrateToLatest } from "./db/migrate";
 import { ensurePluginsDir } from "./plugins/utils";
-import { PluginWatcher } from "./plugins/watcher";
 import { readSettings } from "./settings/utils";
 import { mainRouter } from "./trpc/router";
 
@@ -80,15 +79,10 @@ app.whenReady().then(async () => {
 		},
 	});
 
-	const pluginWatcher = new PluginWatcher({
-		window: mainWindow,
-	});
-
 	const customStylesWatcher = new CustomStylesWatcher({
 		window: mainWindow,
 	});
 
-	pluginWatcher.start();
 	customStylesWatcher.start();
 });
 
