@@ -84,6 +84,8 @@ export class PluginSystem {
 				}
 
 				await this.hostBridge.onActivatePluginError(plugin.manifest.id, errMessage);
+
+				throw err;
 			}
 		}
 

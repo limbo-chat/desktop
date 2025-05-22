@@ -1,6 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { useShallow } from "zustand/shallow";
 import type * as limbo from "limbo";
 import { useMainRouter } from "../../lib/trpc";
 import { buildNamespacedResourceId } from "../../lib/utils";
@@ -60,7 +59,18 @@ export const usePluginLoader = () => {
 				});
 			}
 
-			await Promise.allSettled(allPlugins.map((plugin) => pluginSystem.loadPlugin(plugin)));
+			await Promise.allSettled(
+				allPlugins.map(async (plugin) => {
+					try {
+						await pluginSystem.loadPlugin(plugin);
+					} catch {
+						pluginStore.setPlugin(plugin.manifest.id, {
+							manifest: plugin.manifest,
+							enabled: false,
+						});
+					}
+				})
+			);
 		}
 
 		loadPlugins();
@@ -181,21 +191,23 @@ export interface UninstallPluginMutationFnOpts {
 }
 
 export const useEnablePluginMutation = () => {
+	const pluginSystem = usePluginSystem();
 	const pluginBackend = usePluginBackend();
 
 	return useMutation({
 		mutationFn: async (opts: UninstallPluginMutationFnOpts) => {
 			await pluginBackend.enablePlugin(opts.id);
+
+			const plugin = await pluginBackend.getPlugin(opts.id);
+
+			await pluginSystem.loadPlugin(plugin);
+
+			return plugin;
 		},
-		onSuccess: async (_, opts) => {
+		onSuccess: (plugin) => {
 			const pluginStore = usePluginStore.getState();
-			const plugin = pluginStore.getPlugin(opts.id);
 
-			if (!plugin) {
-				return;
-			}
-
-			pluginStore.setPlugin(opts.id, {
+			pluginStore.setPlugin(plugin.manifest.id, {
 				...plugin,
 				enabled: true,
 			});
@@ -212,7 +224,7 @@ export const useDisablePluginMutation = () => {
 			await pluginSystem.unloadPlugin(opts.id);
 			await pluginBackend.disablePlugin(opts.id);
 		},
-		onSuccess: async (_, opts) => {
+		onSettled: (_data, _err, opts) => {
 			const pluginStore = usePluginStore.getState();
 			const plugin = pluginStore.getPlugin(opts.id);
 
@@ -222,7 +234,7 @@ export const useDisablePluginMutation = () => {
 
 			pluginStore.setPlugin(opts.id, {
 				...plugin,
-				enabled: true,
+				enabled: false,
 			});
 		},
 	});
