@@ -1,8 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SettingsPage } from "../-components/settings-page";
 import { PluginSettingsForm } from "../../../features/plugins/components/plugin-settings-form";
-
-// TODO, get this actually working again
+import { useActivePlugin, useUpdatePluginSettingsMutation } from "../../../features/plugins/hooks";
 
 export const Route = createFileRoute("/settings/plugins/$id")({
 	component: PluginSettingsPage,
@@ -10,16 +9,26 @@ export const Route = createFileRoute("/settings/plugins/$id")({
 
 function PluginSettingsPage() {
 	const params = Route.useParams();
+	const plugin = useActivePlugin(params.id);
+	const updatePluginSettingsMutation = useUpdatePluginSettingsMutation();
 
-	// return (
-	// 	<SettingsPage className="settings-page--plugin">
-	// 		<PluginSettingsForm
-	// 			className="flex flex-col gap-lg"
-	// 			onSubmit={console.log}
-	// 			plugin={plugin}
-	// 		/>
-	// 	</SettingsPage>
-	// );
+	if (!plugin) {
+		return <div>plugin not found</div>;
+	}
 
-	return null;
+	return (
+		<SettingsPage className="settings-page--plugin">
+			<PluginSettingsForm
+				plugin={plugin}
+				onSubmit={(settingsValues) => {
+					console.log("settingsValues", settingsValues);
+
+					updatePluginSettingsMutation.mutate({
+						id: plugin.manifest.id,
+						settings: settingsValues,
+					});
+				}}
+			/>
+		</SettingsPage>
+	);
 }

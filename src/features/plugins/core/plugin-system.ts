@@ -44,6 +44,12 @@ export class PluginSystem {
 
 		const pluginContext = new PluginContext();
 
+		// load settings into the settings cache
+
+		for (const [settingId, settingValue] of Object.entries(plugin.data.settings)) {
+			pluginContext.setCachedSettingValue(settingId, settingValue);
+		}
+
 		const pluginAPIBuilder = new PluginAPIBuilder({
 			pluginContext,
 			hostBridge: {

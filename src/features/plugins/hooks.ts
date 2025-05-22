@@ -1,9 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type * as limbo from "limbo";
 import { useMainRouter } from "../../lib/trpc";
 import { buildNamespacedResourceId } from "../../lib/utils";
 import { pluginBackendContext, pluginManagerContext, pluginSystemContext } from "./contexts";
+import type { PluginContext } from "./core/plugin-context";
+import type { ActivePlugin } from "./core/plugin-manager";
 import { usePluginStore } from "./stores";
 
 export const usePluginManager = () => {
@@ -34,6 +36,29 @@ export const usePluginBackend = () => {
 	}
 
 	return pluginBackend;
+};
+
+export const useActivePlugin = (pluginId: string) => {
+	const pluginManager = usePluginManager();
+	const [plugin, setPlugin] = useState<ActivePlugin | null>(null);
+
+	useEffect(() => {
+		setPlugin(pluginManager.getPlugin(pluginId) ?? null);
+
+		const handleChange = () => {
+			setPlugin(pluginManager.getPlugin(pluginId) ?? null);
+		};
+
+		pluginManager.events.on("plugin:added", handleChange);
+		pluginManager.events.on("plugin:removed", handleChange);
+
+		return () => {
+			pluginManager.events.off("plugin:added", handleChange);
+			pluginManager.events.off("plugin:removed", handleChange);
+		};
+	}, []);
+
+	return plugin;
 };
 
 export const usePluginList = () => {
@@ -101,6 +126,26 @@ export const usePluginHotReloader = () => {
 			window.ipcRenderer.off("plugin:reload", handleReloadPlugin);
 		};
 	}, []);
+};
+
+export const usePluginContextSettings = (pluginContext: PluginContext) => {
+	const [pluginSettings, setPluginSettings] = useState<limbo.Setting[]>([]);
+
+	useEffect(() => {
+		setPluginSettings(pluginContext.getSettings());
+
+		const handleChange = () => {
+			setPluginSettings(pluginContext.getSettings());
+		};
+
+		pluginContext.events.on("state:changed", handleChange);
+
+		return () => {
+			pluginContext.events.off("state:changed", handleChange);
+		};
+	}, [pluginContext]);
+
+	return pluginSettings;
 };
 
 export const useRegisteredLLMs = () => {
@@ -186,7 +231,7 @@ export const useRegisteredLLMsList = () => {
 	return llms;
 };
 
-export interface UninstallPluginMutationFnOpts {
+export interface EnablePluginMutationFnOpts {
 	id: string;
 }
 
@@ -195,7 +240,7 @@ export const useEnablePluginMutation = () => {
 	const pluginBackend = usePluginBackend();
 
 	return useMutation({
-		mutationFn: async (opts: UninstallPluginMutationFnOpts) => {
+		mutationFn: async (opts: EnablePluginMutationFnOpts) => {
 			await pluginBackend.enablePlugin(opts.id);
 
 			const plugin = await pluginBackend.getPlugin(opts.id);
@@ -215,12 +260,16 @@ export const useEnablePluginMutation = () => {
 	});
 };
 
+export interface DisablePluginMutationFnOpts {
+	id: string;
+}
+
 export const useDisablePluginMutation = () => {
 	const pluginSystem = usePluginSystem();
 	const pluginBackend = usePluginBackend();
 
 	return useMutation({
-		mutationFn: async (opts: UninstallPluginMutationFnOpts) => {
+		mutationFn: async (opts: DisablePluginMutationFnOpts) => {
 			await pluginSystem.unloadPlugin(opts.id);
 			await pluginBackend.disablePlugin(opts.id);
 		},
@@ -236,6 +285,33 @@ export const useDisablePluginMutation = () => {
 				...plugin,
 				enabled: false,
 			});
+		},
+	});
+};
+
+export interface UpdatePluginSettingsMutationFnOpts {
+	id: string;
+	settings: Record<string, any>;
+}
+
+export const useUpdatePluginSettingsMutation = () => {
+	const pluginBackend = usePluginBackend();
+	const pluginManager = usePluginManager();
+
+	return useMutation({
+		mutationFn: async (opts: UpdatePluginSettingsMutationFnOpts) => {
+			await pluginBackend.updatePluginSettings(opts.id, opts.settings);
+		},
+		onSuccess: (_, opts) => {
+			const plugin = pluginManager.getPlugin(opts.id);
+
+			if (!plugin) {
+				return;
+			}
+
+			for (const [key, value] of Object.entries(opts.settings)) {
+				plugin.context.setCachedSettingValue(key, value);
+			}
 		},
 	});
 };
@@ -257,12 +333,17 @@ export const useInstallPluginMutation = () => {
 	);
 };
 
+export interface UninstallPluginMutationFnOpts {
+	id: string;
+}
+
 export const useUninstallPluginMutation = () => {
 	const pluginSystem = usePluginSystem();
 	const pluginBackend = usePluginBackend();
 
 	return useMutation({
 		mutationFn: async (opts: UninstallPluginMutationFnOpts) => {
+			await pluginSystem.unloadPlugin(opts.id);
 			await pluginBackend.uninstallPlugin(opts.id);
 		},
 		onSuccess: async (_, opts) => {

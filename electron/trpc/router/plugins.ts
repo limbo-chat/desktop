@@ -1,5 +1,5 @@
 import { shell } from "electron";
-import { z } from "zod";
+import { set, z } from "zod";
 import { PLUGINS_DIR } from "../../plugins/constants";
 import {
 	downloadPluginFromGithub,
@@ -8,6 +8,7 @@ import {
 	readPluginData,
 	readPlugins,
 	uninstallPlugin,
+	updatePluginData,
 	writePluginData,
 } from "../../plugins/utils";
 import { publicProcedure, router } from "../trpc";
@@ -19,6 +20,11 @@ const getPluginInputSchema = z.object({
 const updatePluginEnabledInputSchema = z.object({
 	id: z.string(),
 	enabled: z.boolean(),
+});
+
+const updatePluginSettingsInputSchema = z.object({
+	id: z.string(),
+	settings: z.record(z.string(), z.unknown()),
 });
 
 const installPluginInputSchema = z.object({
@@ -46,6 +52,11 @@ export const pluginsRouter = router({
 		writePluginData(input.id, {
 			...prevData,
 			enabled: input.enabled,
+		});
+	}),
+	updateSettings: publicProcedure.input(updatePluginSettingsInputSchema).mutation(({ input }) => {
+		updatePluginData(input.id, {
+			settings: input.settings,
 		});
 	}),
 	install: publicProcedure.input(installPluginInputSchema).mutation(async ({ input }) => {

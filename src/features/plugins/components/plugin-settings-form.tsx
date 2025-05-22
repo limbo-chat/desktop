@@ -4,7 +4,8 @@ import type * as limbo from "limbo";
 import { Checkbox } from "../../../components/checkbox";
 import { TextInput } from "../../../components/text-input";
 import { TextInputFieldController } from "../../forms/components";
-import type { PluginContext } from "../core/plugin-context";
+import type { ActivePlugin } from "../core/plugin-manager";
+import { usePluginContextSettings } from "../hooks";
 
 // TODO, some of the settings renderers are incomplete
 
@@ -87,16 +88,16 @@ const SettingRenderer = ({ setting }: SettingRendererProps) => {
 };
 
 export interface PluginSettingsFormProps extends HTMLProps<HTMLFormElement> {
-	pluginContext: PluginContext;
+	plugin: ActivePlugin;
 	onSubmit: (data: any) => void;
 }
 
 export const PluginSettingsForm = ({
-	pluginContext,
+	plugin,
 	onSubmit,
 	...htmlFormProps
 }: PluginSettingsFormProps) => {
-	const registeredSettings = pluginContext.getSettings();
+	const settings = usePluginContextSettings(plugin.context);
 
 	const form = useForm({
 		mode: "onBlur",
@@ -107,8 +108,8 @@ export const PluginSettingsForm = ({
 	});
 
 	useEffect(() => {
-		for (const setting of registeredSettings) {
-			const settingValue = pluginContext.getCachedSettingValue(setting.id);
+		for (const setting of settings) {
+			const settingValue = plugin.context.getCachedSettingValue(setting.id);
 
 			form.setValue(setting.id, settingValue);
 		}
@@ -116,12 +117,12 @@ export const PluginSettingsForm = ({
 		return () => {
 			form.reset();
 		};
-	}, []);
+	}, [settings]);
 
 	return (
 		<FormProvider {...form}>
 			<form onSubmit={handleSubmit} onBlur={handleSubmit} {...htmlFormProps}>
-				{registeredSettings.map((setting) => (
+				{settings.map((setting) => (
 					<SettingRenderer setting={setting} key={setting.id} />
 				))}
 			</form>

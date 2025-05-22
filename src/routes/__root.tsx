@@ -72,6 +72,12 @@ function RootLayoutProviders({ children }: PropsWithChildren) {
 					enabled: false,
 				});
 			},
+			updatePluginSettings: async (pluginId, settings) => {
+				return await mainRouterClient.plugins.updateSettings.mutate({
+					id: pluginId,
+					settings,
+				});
+			},
 			uninstallPlugin: async (pluginId) => {
 				return await mainRouterClient.plugins.uninstall.mutate({
 					id: pluginId,
