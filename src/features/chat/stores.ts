@@ -7,35 +7,48 @@ export interface ChatStore {
 	messages: ChatMessageType[];
 	setIsAssistantResponsePending: (isResponsePending: boolean) => void;
 	addMessage: (message: ChatMessageType) => void;
-	addChunkToLastMessage: (chunk: string) => void;
-	updateLastMessage: (message: ChatMessageType) => void;
+	updateMessage: (messageId: string, partialMessage: Partial<ChatMessageType>) => void;
+	removeMessage: (messageId: string) => void;
 	reset: () => void;
 }
 
 export const useChatStore = create(
 	immer<ChatStore>((set) => ({
-		isAssistantResponsePending: false,
 		messages: [],
-		setIsAssistantResponsePending: (isResponsePending) =>
-			set({ isAssistantResponsePending: isResponsePending }),
-		addMessage: (message) =>
+		isAssistantResponsePending: false,
+		setIsAssistantResponsePending: (isResponsePending) => {
+			set({ isAssistantResponsePending: isResponsePending });
+		},
+		addMessage: (message) => {
 			set((state) => {
 				state.messages.push(message);
-			}),
-		addChunkToLastMessage: (chunk) =>
+			});
+		},
+		removeMessage: (messageId) => {
 			set((state) => {
-				const lastMessage = state.messages[state.messages.length - 1];
+				state.messages = state.messages.filter((state) => state.id !== messageId);
+			});
+		},
+		// it sucks to have to find the index of the message to update
+		updateMessage: (messageId, partialMessage) => {
+			set((state) => {
+				const messageIndex = state.messages.findIndex(
+					(message) => message.id === messageId
+				);
 
-				if (!lastMessage) {
+				if (messageIndex === -1) {
 					return;
 				}
 
-				lastMessage.content += chunk;
-			}),
-		updateLastMessage: (message) =>
-			set((state) => {
-				state.messages[state.messages.length - 1] = message;
-			}),
+				const prevMessage = state.messages[messageIndex];
+
+				// @ts-expect-error
+				state.messages[messageIndex] = {
+					...prevMessage,
+					...partialMessage,
+				};
+			});
+		},
 		reset: () => {
 			set((state) => {
 				state.messages = [];

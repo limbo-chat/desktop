@@ -87,12 +87,12 @@ export class PluginManager {
 
 	public async executeOnBeforeGenerateTextHooks(args: limbo.OnBeforeGenerateTextArgs) {
 		for (const plugin of this.plugins.values()) {
-			if (typeof plugin.module.onAfterChatCreated !== "function") {
+			if (typeof plugin.module.onBeforeGenerateText !== "function") {
 				continue;
 			}
 
 			try {
-				await plugin.module.onAfterChatCreated(args);
+				await plugin.module.onBeforeGenerateText(args);
 			} catch {
 				// noop
 			}

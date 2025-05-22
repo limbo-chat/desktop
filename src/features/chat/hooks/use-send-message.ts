@@ -10,44 +10,40 @@ export interface SendMessageOptions {
 	message: string;
 }
 
-// TODO, if an error occurs, the user message should be removed
-
 export const useSendMessage = () => {
 	const pluginManager = usePluginManager();
 	const mainRouter = useMainRouterClient();
 
 	const sendMessage = async ({ chatId, message }: SendMessageOptions) => {
-		const localStoreState = useLocalStore.getState();
-		const chatStoreState = useChatStore.getState();
+		const localStore = useLocalStore.getState();
+		const chatStore = useChatStore.getState();
 
-		if (!localStoreState.selectedModel) {
+		if (!localStore.selectedModel) {
 			return;
 		}
 
-		const llm = pluginManager.getLLM(localStoreState.selectedModel);
+		const llm = pluginManager.getLLM(localStore.selectedModel);
 
 		if (!llm) {
+			// TODO, indicate some error
 			return;
 		}
 
-		chatStoreState.setIsAssistantResponsePending(true);
+		chatStore.setIsAssistantResponsePending(true);
 
-		const newUserMessage = await mainRouter.chats.messages.create.mutate({
-			id: ulid(),
+		const userMessageId = ulid();
+		const userMessageCreatedAt = new Date().toISOString();
+
+		chatStore.addMessage({
 			role: "user",
+			id: userMessageId,
 			content: message,
-			chatId: chatId,
-			createdAt: new Date().toISOString(),
-		});
-
-		chatStoreState.addMessage({
-			...newUserMessage,
-			role: "user",
+			createdAt: userMessageCreatedAt,
 		});
 
 		const assistantMessageId = ulid();
 
-		chatStoreState.addMessage({
+		chatStore.addMessage({
 			id: assistantMessageId,
 			role: "assistant",
 			status: "pending",
@@ -57,6 +53,11 @@ export const useSendMessage = () => {
 
 		const promptBuilder = new PromptBuilder();
 
+		promptBuilder.appendMessage({
+			role: "user",
+			content: message,
+		});
+
 		await pluginManager.executeOnBeforeGenerateTextHooks({
 			chatId,
 			promptBuilder,
@@ -64,18 +65,41 @@ export const useSendMessage = () => {
 
 		let responseText = "";
 
-		await llm.generateText({
-			promptBuilder: promptBuilder,
-			onChunk: (chunk) => {
-				responseText += chunk;
+		try {
+			await llm.generateText({
+				promptBuilder: promptBuilder,
+				onChunk: (chunk) => {
+					responseText += chunk;
 
-				// this may cause issues if the user switches chats while the response is being generated
-				// may have to change to updating it by the ID
-				chatStoreState.addChunkToLastMessage(chunk);
-			},
+					chatStore.updateMessage(assistantMessageId, {
+						content: responseText,
+					});
+				},
+			});
+		} catch (error) {
+			chatStore.removeMessage(userMessageId);
+			chatStore.removeMessage(assistantMessageId);
+
+			chatStore.setIsAssistantResponsePending(false);
+
+			throw error;
+		}
+
+		chatStore.updateMessage(assistantMessageId, {
+			role: "assistant",
+			status: "complete",
+			createdAt: new Date().toISOString(),
 		});
 
-		const newAssistantMessage = await mainRouter.chats.messages.create.mutate({
+		await mainRouter.chats.messages.create.mutate({
+			id: userMessageId,
+			role: "user",
+			content: message,
+			chatId: chatId,
+			createdAt: userMessageCreatedAt,
+		});
+
+		await mainRouter.chats.messages.create.mutate({
 			id: assistantMessageId,
 			chatId: chatId,
 			role: "assistant",
@@ -83,15 +107,7 @@ export const useSendMessage = () => {
 			createdAt: new Date().toISOString(),
 		});
 
-		chatStoreState.updateLastMessage({
-			id: newAssistantMessage.id,
-			role: "assistant",
-			status: "complete",
-			content: newAssistantMessage.content,
-			createdAt: newAssistantMessage.createdAt,
-		});
-
-		chatStoreState.setIsAssistantResponsePending(false);
+		chatStore.setIsAssistantResponsePending(false);
 	};
 
 	return sendMessage;
