@@ -73,11 +73,25 @@ export class PluginSystem {
 
 		const pluginAPI = pluginAPIBuilder.build();
 
-		const pluginModule = this.pluginModuleLoader.loadModule({
-			pluginAPI,
-			js: plugin.js,
-			pluginManifest: plugin.manifest,
-		});
+		let pluginModule;
+
+		try {
+			pluginModule = this.pluginModuleLoader.loadModule({
+				pluginAPI,
+				js: plugin.js,
+				pluginManifest: plugin.manifest,
+			});
+		} catch (err) {
+			let errMessage = null;
+
+			if (err instanceof Error) {
+				errMessage = err.message;
+			}
+
+			await this.hostBridge.onActivatePluginError(plugin.manifest.id, errMessage);
+
+			throw err;
+		}
 
 		if (typeof pluginModule.onActivate === "function") {
 			try {
