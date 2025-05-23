@@ -15,7 +15,6 @@ import { PluginManager } from "../features/plugins/core/plugin-manager";
 import { EvalPluginModuleLoader } from "../features/plugins/core/plugin-module-loader";
 import { PluginSystem } from "../features/plugins/core/plugin-system";
 import { usePluginHotReloader, usePluginLoader } from "../features/plugins/hooks";
-import { usePluginStore } from "../features/plugins/stores";
 import { useIsAppFocused } from "../hooks/common";
 import { MainRouterProvider } from "../lib/trpc";
 import { SideDock } from "./-components/side-dock";

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import type { HTMLAttributes, Ref } from "react";
+import type { HTMLAttributes } from "react";
 import type { ChatMessageType } from "../types";
 import { ChatMessage } from "./chat-message";
 

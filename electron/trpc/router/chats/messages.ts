@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import type { ChatNode } from "../../../chats/types";
 import { db } from "../../../db/db";
 import { publicProcedure, router } from "../../trpc";
 
@@ -10,7 +11,8 @@ const listChatMessagesInputSchema = z.object({
 const createChatMessageInputSchema = z.object({
 	id: z.string(),
 	chatId: z.string(),
-	content: z.string(),
+	// due to a diffuculity modeling the schemas with zod (nested disriminated unions, i'm just going to use any here)
+	content: z.array<z.ZodType<ChatNode>>(z.any()),
 	role: z.enum(["user", "assistant"]),
 	createdAt: z.string().datetime(),
 });
@@ -30,9 +32,18 @@ export const chatMessagesRouter = router({
 			.where("chatId", "=", input.chatId)
 			.execute();
 
-		return chatMessages;
+		const chatMessagesWithParsedContent = chatMessages.map((chatMessage) => {
+			const parsedContent = JSON.parse(chatMessage.content) as ChatNode[];
+
+			return {
+				...chatMessage,
+				content: parsedContent,
+			};
+		});
+
+		return chatMessagesWithParsedContent;
 	}),
-	getMany: publicProcedure.input(getManyChatMessagesInputSchema).query(({ input }) => {
+	getMany: publicProcedure.input(getManyChatMessagesInputSchema).query(async ({ input }) => {
 		const chatMessagesQuery = db
 			.selectFrom("chatMessage")
 			.selectAll()
@@ -52,12 +63,26 @@ export const chatMessagesRouter = router({
 			chatMessagesQuery.limit(input.limit);
 		}
 
-		return chatMessagesQuery.execute();
+		const chatMessages = await chatMessagesQuery.execute();
+
+		const chatMessagesWithParsedContent = chatMessages.map((chatMessage) => {
+			const parsedContent = JSON.parse(chatMessage.content) as ChatNode[];
+
+			return {
+				...chatMessage,
+				content: parsedContent,
+			};
+		});
+
+		return chatMessagesWithParsedContent;
 	}),
 	create: publicProcedure.input(createChatMessageInputSchema).mutation(async ({ input }) => {
 		const chatMessage = await db
 			.insertInto("chatMessage")
-			.values(input)
+			.values({
+				...input,
+				content: JSON.stringify(input.content),
+			})
 			.returningAll()
 			.executeTakeFirst();
 

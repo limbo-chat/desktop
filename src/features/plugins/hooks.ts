@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { use, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type * as limbo from "limbo";
 import { useMainRouter } from "../../lib/trpc";
 import { buildNamespacedResourceId } from "../../lib/utils";
@@ -65,6 +65,54 @@ export const usePluginList = () => {
 	const pluginMap = usePluginStore((state) => state.plugins);
 
 	return [...pluginMap.values()];
+};
+
+export const useRegisteredTools = () => {
+	const pluginManager = usePluginManager();
+	const [registeredTools, setRegisteredTools] = useState<Map<string, limbo.Tool>>(new Map());
+
+	const getRegisteredTools = () => {
+		const registeredLLMs = new Map<string, limbo.Tool>();
+		const allPlugins = pluginManager.getPlugins();
+
+		for (const plugin of allPlugins) {
+			const pluginTools = plugin.context.getTools();
+
+			for (const tool of pluginTools) {
+				registeredLLMs.set(buildNamespacedResourceId(plugin.manifest.id, tool.id), tool);
+			}
+		}
+
+		return registeredLLMs;
+	};
+
+	useEffect(() => {
+		setRegisteredTools(getRegisteredTools());
+
+		const handleChange = () => {
+			setRegisteredTools(getRegisteredTools());
+		};
+
+		pluginManager.events.on("plugin:added", handleChange);
+		pluginManager.events.on("plugin:removed", handleChange);
+		pluginManager.events.on("plugin:state-changed", handleChange);
+
+		return () => {
+			pluginManager.events.off("plugin:added", handleChange);
+			pluginManager.events.off("plugin:removed", handleChange);
+			pluginManager.events.off("plugin:state-changed", handleChange);
+		};
+	}, []);
+
+	return registeredTools;
+};
+
+export const useRegisteredTool = (toolId: string) => {
+	const registeredTools = useRegisteredTools();
+
+	return useMemo(() => {
+		return registeredTools.get(toolId) ?? null;
+	}, [registeredTools, toolId]);
 };
 
 export const usePluginLoader = () => {

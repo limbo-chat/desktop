@@ -19,6 +19,7 @@ export class PluginContext {
 	// registered state
 	private settings = new Map<string, limbo.Setting>();
 	private llms = new Map<string, limbo.LLM>();
+	private tools = new Map<string, limbo.Tool>();
 
 	private settingsCache = new Map<string, any>();
 
@@ -68,5 +69,23 @@ export class PluginContext {
 
 	public unregisterLLM(llmId: string) {
 		this.llms.delete(llmId);
+	}
+
+	// tools
+
+	public getTool(toolId: string) {
+		return this.tools.get(toolId);
+	}
+
+	public getTools() {
+		return [...this.tools.values()];
+	}
+
+	public registerTool(tool: limbo.Tool) {
+		this.tools.set(tool.id, tool);
+	}
+
+	public unregisterTool(toolId: string) {
+		this.tools.delete(toolId);
 	}
 }

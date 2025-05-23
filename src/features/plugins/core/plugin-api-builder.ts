@@ -62,6 +62,14 @@ export class PluginAPIBuilder {
 					}
 				},
 			},
+			tools: {
+				register: (tool) => {
+					this.pluginContext.registerTool(tool);
+				},
+				unregister: (toolId) => {
+					this.pluginContext.unregisterTool(toolId);
+				},
+			},
 			chats: {
 				get: async (args) => {
 					try {

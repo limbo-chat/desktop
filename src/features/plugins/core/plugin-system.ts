@@ -76,7 +76,7 @@ export class PluginSystem {
 		let pluginModule;
 
 		try {
-			pluginModule = this.pluginModuleLoader.loadModule({
+			pluginModule = await this.pluginModuleLoader.loadModule({
 				pluginAPI,
 				js: plugin.js,
 				pluginManifest: plugin.manifest,

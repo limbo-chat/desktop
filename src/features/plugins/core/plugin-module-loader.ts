@@ -8,13 +8,15 @@ export interface LoadModuleOptions {
 }
 
 export interface PluginModuleLoader {
-	loadModule: (opts: LoadModuleOptions) => limbo.Plugin;
+	loadModule: (opts: LoadModuleOptions) => limbo.Plugin | Promise<limbo.Plugin>;
 }
 
 export class EvalPluginModuleLoader implements PluginModuleLoader {
-	loadModule(opts: LoadModuleOptions) {
+	async loadModule(opts: LoadModuleOptions) {
 		const sandboxedImports: Record<string, any> = {
-			limbo: opts.pluginAPI,
+			"limbo": opts.pluginAPI,
+			"react": await import("react"),
+			"react/jsx-runtime": await import("react/jsx-runtime"),
 		};
 
 		const sandboxedRequire = (moduleId: string) => {

@@ -13,6 +13,7 @@ export interface ChatMessageTable {
 	id: string;
 	chatId: string;
 	role: "user" | "assistant";
+	// cant store JSON in sqlite directly, so we store it as a string
 	content: string;
 	createdAt: string;
 }

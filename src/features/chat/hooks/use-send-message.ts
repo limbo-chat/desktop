@@ -37,7 +37,12 @@ export const useSendMessage = () => {
 		chatStore.addMessage({
 			role: "user",
 			id: userMessageId,
-			content: message,
+			content: [
+				{
+					type: "text",
+					text: message,
+				},
+			],
 			createdAt: userMessageCreatedAt,
 		});
 
@@ -47,7 +52,7 @@ export const useSendMessage = () => {
 			id: assistantMessageId,
 			role: "assistant",
 			status: "pending",
-			content: "", // content will initially be empty
+			content: [],
 			createdAt: new Date().toISOString(),
 		});
 
@@ -71,9 +76,7 @@ export const useSendMessage = () => {
 				onChunk: (chunk) => {
 					responseText += chunk;
 
-					chatStore.updateMessage(assistantMessageId, {
-						content: responseText,
-					});
+					chatStore.addTextToMessage(assistantMessageId, chunk);
 				},
 			});
 		} catch (error) {
@@ -94,7 +97,12 @@ export const useSendMessage = () => {
 		await mainRouter.chats.messages.create.mutate({
 			id: userMessageId,
 			role: "user",
-			content: message,
+			content: [
+				{
+					type: "text",
+					text: message,
+				},
+			],
 			chatId: chatId,
 			createdAt: userMessageCreatedAt,
 		});
@@ -103,7 +111,12 @@ export const useSendMessage = () => {
 			id: assistantMessageId,
 			chatId: chatId,
 			role: "assistant",
-			content: responseText,
+			content: [
+				{
+					type: "text",
+					text: responseText,
+				},
+			],
 			createdAt: new Date().toISOString(),
 		});
 

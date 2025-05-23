@@ -4,6 +4,7 @@ import { ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useRef, type ButtonHTMLAttributes } from "react";
 import { useShallow } from "zustand/shallow";
 import { ChatLog } from "../../../features/chat/components/chat-log";
+import { useMessageList } from "../../../features/chat/hooks/use-message-list";
 import { useChatStore } from "../../../features/chat/stores";
 import { useIsAtBottom } from "../../../hooks/common";
 import { useMainRouter } from "../../../lib/trpc";
@@ -29,7 +30,15 @@ const ScrollToBottomButton = ({ state, ...props }: ScrollToBottomButtonProps) =>
 function ChatPage() {
 	const params = Route.useParams();
 	const mainRouter = useMainRouter();
+	const messages = useMessageList();
 	const scrollableRef = useRef<HTMLDivElement>(null);
+
+	const chatStore = useChatStore(
+		useShallow((state) => ({
+			addMessage: state.addMessage,
+			reset: state.reset,
+		}))
+	);
 
 	const scrollToBottom = useCallback(() => {
 		if (!scrollableRef.current) {
@@ -46,25 +55,11 @@ function ChatPage() {
 		threshold: 25,
 	});
 
-	const chatStore = useChatStore(
-		useShallow((state) => ({
-			messages: state.messages,
-			addMessage: state.addMessage,
-			reset: state.reset,
-		}))
-	);
-
 	const listChatMessagesQuery = useSuspenseQuery(
 		mainRouter.chats.messages.list.queryOptions({
 			chatId: params.id,
 		})
 	);
-
-	useEffect(() => {
-		return () => {
-			chatStore.reset();
-		};
-	}, [params.id]);
 
 	useEffect(() => {
 		for (const message of listChatMessagesQuery.data) {
@@ -84,10 +79,16 @@ function ChatPage() {
 		}, 100);
 	}, [listChatMessagesQuery.data]);
 
+	useEffect(() => {
+		return () => {
+			chatStore.reset();
+		};
+	}, [params.id]);
+
 	return (
 		<>
 			<div className="chat-log-container" ref={scrollableRef}>
-				<ChatLog messages={chatStore.messages} />
+				<ChatLog messages={messages} />
 			</div>
 			<ScrollToBottomButton
 				state={isAtBottom ? "hidden" : "visible"}

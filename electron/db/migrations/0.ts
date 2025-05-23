@@ -16,7 +16,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 			col.references("chat.id").onDelete("cascade").notNull()
 		)
 		.addColumn("role", "text", (col) => col.notNull()) // e.g., user, assistant
-		.addColumn("content", "text", (col) => col.notNull()) // The actual message content
+		.addColumn("content", "text", (col) => col.notNull())
 		.addColumn("createdAt", "timestamp", (col) => col.notNull())
 		.ifNotExists()
 		.execute();
