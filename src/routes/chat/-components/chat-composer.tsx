@@ -165,8 +165,16 @@ export const ChatComposer = ({ ref }: ChatComposerProps) => {
 			});
 		}
 
+		const llm = pluginManager.getLLM(localStore.selectedModel);
+
+		if (!llm) {
+			// todo indicate error
+			return;
+		}
+
 		try {
 			await sendMessage({
+				llm,
 				chatId: chatId,
 				message: data.message,
 			});
