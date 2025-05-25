@@ -153,7 +153,7 @@ export const ChatComposer = ({ ref }: ChatComposerProps) => {
 
 			chatId = newChat.id;
 
-			await pluginManager.executeOnAfterChatCreatedHooks({
+			await pluginManager.executeOnChatCreatedHooks({
 				chatId: newChat.id,
 			});
 

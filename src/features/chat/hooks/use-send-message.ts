@@ -69,13 +69,11 @@ export const useSendMessage = () => {
 			content: message,
 		});
 
-		// run the plugins on the onBeforeGenerateText lifecycle hook
-
-		// temp disabled, rethink hook
-		// await pluginManager.executeOnBeforeGenerateTextHooks({
-		// 	chatId,
-		// 	promptBuilder,
-		// });
+		// run the plugins on the executeOnBeforeAssistantResponseHooks lifecycle hook
+		await pluginManager.executeOnBeforeAssistantResponseHooks({
+			chatId,
+			promptBuilder,
+		});
 
 		const plugins = pluginManager.getPlugins();
 
@@ -246,8 +244,6 @@ export const useSendMessage = () => {
 
 				iterations++;
 			}
-
-			console.log(promptBuilder.toPromptMessages());
 		} catch (error) {
 			// if there was an error during generation, remove the user's message and the assistant message
 			chatStore.removeMessage(userMessageId);
@@ -256,13 +252,11 @@ export const useSendMessage = () => {
 			// remove the pending state
 			chatStore.setIsAssistantResponsePending(false);
 
-			console.error("Error during message generation:", error);
-
 			// rethrow the error
 			throw error;
 		}
 
-		// update the assistant message in the store with the final response
+		// mark the assistant message as complete
 		chatStore.updateMessage(assistantMessageId, {
 			role: "assistant",
 			status: "complete",

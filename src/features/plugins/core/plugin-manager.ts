@@ -71,28 +71,28 @@ export class PluginManager {
 
 	// lifecycle helpers
 
-	public async executeOnAfterChatCreatedHooks(args: limbo.OnAfterChatCreatedArgs) {
+	public async executeOnChatCreatedHooks(args: limbo.OnChatCreatedArgs) {
 		for (const plugin of this.plugins.values()) {
-			if (typeof plugin.module.onAfterChatCreated !== "function") {
+			if (typeof plugin.module.onChatCreated !== "function") {
 				continue;
 			}
 
 			try {
-				await plugin.module.onAfterChatCreated(args);
+				await plugin.module.onChatCreated(args);
 			} catch {
 				// noop
 			}
 		}
 	}
 
-	public async executeOnBeforeGenerateTextHooks(args: limbo.OnBeforeGenerateTextArgs) {
+	public async executeOnBeforeAssistantResponseHooks(args: limbo.OnBeforeAssistantResponseArgs) {
 		for (const plugin of this.plugins.values()) {
-			if (typeof plugin.module.onBeforeGenerateText !== "function") {
+			if (typeof plugin.module.onBeforeAssistantResponse !== "function") {
 				continue;
 			}
 
 			try {
-				await plugin.module.onBeforeGenerateText(args);
+				await plugin.module.onBeforeAssistantResponse(args);
 			} catch {
 				// noop
 			}
