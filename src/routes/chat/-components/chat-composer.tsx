@@ -140,6 +140,13 @@ export const ChatComposer = ({ ref }: ChatComposerProps) => {
 			return;
 		}
 
+		const llm = pluginManager.getLLM(localStore.selectedModel);
+
+		if (!llm) {
+			// todo indicate error
+			return;
+		}
+
 		form.reset();
 
 		let chatId;
@@ -163,13 +170,6 @@ export const ChatComposer = ({ ref }: ChatComposerProps) => {
 					id: newChat.id.toString(),
 				},
 			});
-		}
-
-		const llm = pluginManager.getLLM(localStore.selectedModel);
-
-		if (!llm) {
-			// todo indicate error
-			return;
 		}
 
 		try {
