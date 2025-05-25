@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SettingsPage } from "../-components/settings-page";
 import { PluginSettingsForm } from "../../../features/plugins/components/plugin-settings-form";
-import { useActivePlugin, useUpdatePluginSettingsMutation } from "../../../features/plugins/hooks";
+import { useActivePlugin } from "../../../features/plugins/hooks/core";
+import { useUpdatePluginSettingsMutation } from "../../../features/plugins/hooks/queries";
 
 export const Route = createFileRoute("/settings/plugins/$id")({
 	component: PluginSettingsPage,

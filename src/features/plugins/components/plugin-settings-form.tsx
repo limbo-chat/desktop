@@ -4,8 +4,8 @@ import type * as limbo from "limbo";
 import { Checkbox } from "../../../components/checkbox";
 import { TextInput } from "../../../components/text-input";
 import { TextInputFieldController } from "../../forms/components";
+import { usePluginContextSettings } from "../../plugins/hooks/use-plugin-context-settings";
 import type { ActivePlugin } from "../core/plugin-manager";
-import { usePluginContextSettings } from "../hooks";
 
 // TODO, some of the settings renderers are incomplete
 

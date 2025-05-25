@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import MarkdownToJsx from "markdown-to-jsx";
 import { memo, type HTMLAttributes } from "react";
+import { useTool } from "../../entities/tools/hooks";
 import { CodeBlock } from "../../markdown/components/code-block";
 import { Markdown } from "../../markdown/components/markdown";
-import { useRegisteredTool } from "../../plugins/hooks";
 import type {
 	AssistantChatMessage,
 	ChatMessageType,
@@ -106,7 +106,7 @@ interface AssistantChatMessageToolCallRendererProps {
 const AssistantChatMessageToolCallRenderer = ({
 	node,
 }: AssistantChatMessageToolCallRendererProps) => {
-	const tool = useRegisteredTool(node.toolId);
+	const tool = useTool(node.toolId);
 	const Renderer = tool?.renderer ?? DefaultToolCallRenderer;
 
 	return (

@@ -14,7 +14,8 @@ import type { PluginBackend } from "../features/plugins/core/plugin-backend";
 import { PluginManager } from "../features/plugins/core/plugin-manager";
 import { EvalPluginModuleLoader } from "../features/plugins/core/plugin-module-loader";
 import { PluginSystem } from "../features/plugins/core/plugin-system";
-import { usePluginHotReloader, usePluginLoader } from "../features/plugins/hooks";
+import { usePluginHotReloader, usePluginLoader } from "../features/plugins/hooks/core";
+import { usePluginSyncLayer } from "../features/plugins/hooks/use-plugin-sync-layer";
 import { useIsAppFocused } from "../hooks/common";
 import { MainRouterProvider } from "../lib/trpc";
 import { SideDock } from "./-components/side-dock";
@@ -156,6 +157,7 @@ const MainContent = () => {
 	useRendererLoader();
 	useCustomStylesSubscriber();
 
+	usePluginSyncLayer();
 	usePluginLoader();
 	usePluginHotReloader();
 

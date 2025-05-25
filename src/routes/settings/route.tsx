@@ -6,7 +6,7 @@ import {
 	SidebarGroupTitle,
 	SidebarItem,
 } from "../../components/sidebar";
-import { usePluginList } from "../../features/plugins/hooks";
+import { usePluginList } from "../../features/plugins/hooks/core";
 
 export const Route = createFileRoute("/settings")({
 	component: SettingsLayout,

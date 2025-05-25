@@ -18,17 +18,15 @@ import { TextInput } from "../../../components/text-input";
 import { useCreateChatMutation } from "../../../features/chat/hooks/queries";
 import { useSendMessage } from "../../../features/chat/hooks/use-send-message";
 import { useChatStore } from "../../../features/chat/stores";
-import {
-	usePluginManager,
-	useRegisteredLLMs,
-	useRegisteredLLMsList,
-} from "../../../features/plugins/hooks";
+import { useLLMList, useLLMs } from "../../../features/entities/llms/hooks";
+import { usePluginManager } from "../../../features/plugins/hooks/core";
 import { useLocalStore } from "../../../features/storage/stores";
 import { buildNamespacedResourceId } from "../../../lib/utils";
 
 // TODO, make sure this component has a clear structure in the styling system
 const LLMPicker = () => {
-	const llms = useRegisteredLLMsList();
+	const llms = useLLMList();
+	const llmMap = useLLMs();
 	const [search, setSearch] = useState("");
 
 	const fuse = useMemo(() => {
@@ -54,15 +52,13 @@ const LLMPicker = () => {
 		}))
 	);
 
-	const registeredLLMs = useRegisteredLLMs();
-
 	const selectedLLM = useMemo(() => {
 		if (!localStore.selectedModel) {
 			return null;
 		}
 
-		return registeredLLMs.get(localStore.selectedModel) ?? null;
-	}, [registeredLLMs, localStore.selectedModel]);
+		return llmMap.get(localStore.selectedModel);
+	}, [localStore.selectedModel, llmMap]);
 
 	return (
 		<MenuRoot>
@@ -80,18 +76,13 @@ const LLMPicker = () => {
 					/>
 					<div>
 						{filteredLLMs.map((llm) => {
-							const namespacedId = buildNamespacedResourceId(
-								llm.plugin.manifest.id,
-								llm.llm.id
-							);
-
 							return (
 								<MenuItem
-									value={namespacedId}
-									onClick={() => localStore.setSelectedModel(namespacedId)}
-									key={namespacedId}
+									key={llm.id}
+									value={llm.id}
+									onClick={() => localStore.setSelectedModel(llm.id)}
 								>
-									{llm.llm.name}
+									{llm.name}
 								</MenuItem>
 							);
 						})}

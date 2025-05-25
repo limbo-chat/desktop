@@ -4,7 +4,7 @@ import type * as limbo from "limbo";
 import type { ChatNode, ToolCallChatNode } from "../../../../electron/chats/types";
 import { useMainRouterClient } from "../../../lib/trpc";
 import { buildNamespacedResourceId } from "../../../lib/utils";
-import { usePluginManager } from "../../plugins/hooks";
+import { usePluginManager } from "../../plugins/hooks/core";
 import { ChatPromptBuilder } from "../core/chat-prompt-builder";
 import { useChatStore } from "../stores";
 

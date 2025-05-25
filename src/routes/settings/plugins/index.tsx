@@ -29,13 +29,13 @@ import { IconButton, iconButtonVariants } from "../../../components/icon-button"
 import { Switch } from "../../../components/switch";
 import { Tooltip } from "../../../components/tooltip";
 import { TextInputFieldController } from "../../../features/forms/components";
+import { usePluginList } from "../../../features/plugins/hooks/core";
 import {
 	useDisablePluginMutation,
 	useEnablePluginMutation,
 	useInstallPluginMutation,
-	usePluginList,
 	useUninstallPluginMutation,
-} from "../../../features/plugins/hooks";
+} from "../../../features/plugins/hooks/queries";
 import { usePluginStore } from "../../../features/plugins/stores";
 import { useMainRouterClient } from "../../../lib/trpc";
 
