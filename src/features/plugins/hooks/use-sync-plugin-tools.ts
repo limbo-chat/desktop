@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { buildNamespacedResourceId } from "../../../lib/utils";
-import { useToolStore } from "../../entities/tools/stores";
+import { useToolStore } from "../../tools/stores";
 import { usePluginManager } from "./core";
 
 export const useSyncPluginTools = () => {

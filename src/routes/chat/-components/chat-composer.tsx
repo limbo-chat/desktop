@@ -18,7 +18,7 @@ import { TextInput } from "../../../components/text-input";
 import { useCreateChatMutation } from "../../../features/chat/hooks/queries";
 import { useSendMessage } from "../../../features/chat/hooks/use-send-message";
 import { useChatStore } from "../../../features/chat/stores";
-import { useLLMList, useLLMs } from "../../../features/entities/llms/hooks";
+import { useLLMList, useLLMs } from "../../../features/llms/hooks";
 import { usePluginManager } from "../../../features/plugins/hooks/core";
 import { useLocalStore } from "../../../features/storage/stores";
 import { buildNamespacedResourceId } from "../../../lib/utils";

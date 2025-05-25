@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { buildNamespacedResourceId } from "../../../lib/utils";
-import { useLLMStore } from "../../entities/llms/stores";
+import { useLLMStore } from "../../llms/stores";
 import { usePluginManager } from "./core";
 
 export const useSyncPluginLLMs = () => {

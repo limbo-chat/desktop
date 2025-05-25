@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import MarkdownToJsx from "markdown-to-jsx";
 import { memo, type HTMLAttributes } from "react";
-import { useTool } from "../../entities/tools/hooks";
 import { CodeBlock } from "../../markdown/components/code-block";
 import { Markdown } from "../../markdown/components/markdown";
+import { useTool } from "../../tools/hooks";
 import type {
 	AssistantChatMessage,
 	ChatMessageType,
