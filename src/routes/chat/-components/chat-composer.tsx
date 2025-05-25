@@ -21,7 +21,6 @@ import { useChatStore } from "../../../features/chat/stores";
 import { useLLMList, useLLMs } from "../../../features/llms/hooks";
 import { usePluginManager } from "../../../features/plugins/hooks/core";
 import { useLocalStore } from "../../../features/storage/stores";
-import { buildNamespacedResourceId } from "../../../lib/utils";
 
 // TODO, make sure this component has a clear structure in the styling system
 const LLMPicker = () => {
@@ -33,7 +32,7 @@ const LLMPicker = () => {
 		return new Fuse(llms, {
 			threshold: 0.3,
 			ignoreLocation: true,
-			keys: ["plugin.manifest.id", "plugin.manifest.name", "llm.id", "llm.name"],
+			keys: ["llm.id", "llm.name"],
 		});
 	}, [llms]);
 

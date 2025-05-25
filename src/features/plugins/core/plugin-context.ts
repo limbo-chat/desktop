@@ -39,10 +39,14 @@ export class PluginContext {
 
 	public registerSetting(setting: limbo.Setting) {
 		this.settings.set(setting.id, setting);
+
+		this.notifyStateChanged();
 	}
 
 	public unregisterSetting(settingId: string) {
 		this.settings.delete(settingId);
+
+		this.notifyStateChanged();
 	}
 
 	public setCachedSettingValue(settingId: string, value: any) {
@@ -65,10 +69,14 @@ export class PluginContext {
 
 	public registerLLM(llm: limbo.LLM) {
 		this.llms.set(llm.id, llm);
+
+		this.notifyStateChanged();
 	}
 
 	public unregisterLLM(llmId: string) {
 		this.llms.delete(llmId);
+
+		this.notifyStateChanged();
 	}
 
 	// tools
@@ -83,9 +91,19 @@ export class PluginContext {
 
 	public registerTool(tool: limbo.Tool) {
 		this.tools.set(tool.id, tool);
+
+		this.notifyStateChanged();
 	}
 
 	public unregisterTool(toolId: string) {
 		this.tools.delete(toolId);
+
+		this.notifyStateChanged();
+	}
+
+	// helpers
+
+	private notifyStateChanged() {
+		this.events.emit("state:changed");
 	}
 }
