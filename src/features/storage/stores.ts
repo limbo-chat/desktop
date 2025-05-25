@@ -2,15 +2,19 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
 export interface LocalStore {
-	selectedModel: string | null;
-	setSelectedModel: (model: string | null) => void;
+	selectedChatLLMId: string | null;
+	enabledToolIds: string[];
+	setSelectedChatLLMId: (llmId: string | null) => void;
+	setEnabledToolIds: (toolIds: string[]) => void;
 }
 
 export const useLocalStore = create(
 	persist<LocalStore>(
 		(set) => ({
-			selectedModel: null,
-			setSelectedModel: (model) => set({ selectedModel: model }),
+			selectedChatLLMId: null,
+			enabledToolIds: [],
+			setEnabledToolIds: (tools) => set({ enabledToolIds: tools }),
+			setSelectedChatLLMId: (llmId) => set({ selectedChatLLMId: llmId }),
 		}),
 		{
 			name: "local-storage",

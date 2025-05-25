@@ -20,12 +20,15 @@ import { useSendMessage } from "../../../features/chat/hooks/use-send-message";
 import { useChatStore } from "../../../features/chat/stores";
 import { useLLMList, useLLMs } from "../../../features/llms/hooks";
 import { usePluginManager } from "../../../features/plugins/hooks/core";
+import { useSelectedChatLLMId } from "../../../features/storage/hooks";
 import { useLocalStore } from "../../../features/storage/stores";
+import { setSelectedChatLLMId } from "../../../features/storage/utils";
 
 // TODO, make sure this component has a clear structure in the styling system
 const LLMPicker = () => {
 	const llms = useLLMList();
 	const llmMap = useLLMs();
+	const selectedChatLLMId = useSelectedChatLLMId();
 	const [search, setSearch] = useState("");
 
 	const fuse = useMemo(() => {
@@ -44,20 +47,13 @@ const LLMPicker = () => {
 		return fuse.search(search).map((item) => item.item);
 	}, [fuse, search, llms]);
 
-	const localStore = useLocalStore(
-		useShallow((state) => ({
-			selectedModel: state.selectedModel,
-			setSelectedModel: state.setSelectedModel,
-		}))
-	);
-
 	const selectedLLM = useMemo(() => {
-		if (!localStore.selectedModel) {
+		if (!selectedChatLLMId) {
 			return null;
 		}
 
-		return llmMap.get(localStore.selectedModel);
-	}, [localStore.selectedModel, llmMap]);
+		return llmMap.get(selectedChatLLMId);
+	}, [selectedChatLLMId, llmMap]);
 
 	return (
 		<MenuRoot>
@@ -79,7 +75,7 @@ const LLMPicker = () => {
 								<MenuItem
 									key={llm.id}
 									value={llm.id}
-									onClick={() => localStore.setSelectedModel(llm.id)}
+									onClick={() => setSelectedChatLLMId(llm.id)}
 								>
 									{llm.name}
 								</MenuItem>
@@ -111,7 +107,7 @@ export const ChatComposer = ({ ref }: ChatComposerProps) => {
 
 	const localStore = useLocalStore(
 		useShallow((state) => ({
-			selectedModel: state.selectedModel,
+			selectedModel: state.selectedChatLLMId,
 		}))
 	);
 
