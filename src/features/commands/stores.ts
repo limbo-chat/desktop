@@ -28,3 +28,15 @@ export const useCommandStore = create<CommandStore>((set) => ({
 		});
 	},
 }));
+
+export interface CommandPaletteStore {
+	isOpen: boolean;
+	setIsOpen: (isOpen: boolean) => void;
+}
+
+export const useCommandPaletteStore = create<CommandPaletteStore>((set) => ({
+	isOpen: false,
+	setIsOpen: (isOpen) => {
+		set({ isOpen });
+	},
+}));

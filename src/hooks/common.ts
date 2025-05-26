@@ -56,3 +56,31 @@ export const useIsAtBottom = ({ ref, threshold = 0 }: UseIsAtBottomOptions) => {
 
 	return isAtBottom;
 };
+
+export interface UseHotkeyOptions {
+	key: string;
+	metakey?: boolean;
+	execute: () => void;
+}
+
+export const useHotkey = ({ key, metakey, execute }: UseHotkeyOptions) => {
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === key) {
+				if (metakey && !event.metaKey) {
+					return;
+				}
+
+				event.preventDefault();
+
+				execute();
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+
+		return () => {
+			window.removeEventListener("keydown", handleKeyDown);
+		};
+	}, [key, metakey, execute]);
+};
