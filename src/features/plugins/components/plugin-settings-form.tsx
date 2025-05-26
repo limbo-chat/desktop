@@ -1,9 +1,9 @@
-import { useEffect, type HTMLProps } from "react";
+import { useEffect, useMemo, type HTMLProps } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import type * as limbo from "limbo";
 import { Checkbox } from "../../../components/checkbox";
-import { TextInput } from "../../../components/text-input";
 import { TextInputFieldController } from "../../forms/components";
+import { useLLMList } from "../../llms/hooks";
 import { usePluginContextSettings } from "../../plugins/hooks/use-plugin-context-settings";
 import type { ActivePlugin } from "../core/plugin-manager";
 
@@ -53,18 +53,36 @@ interface LLMSettingRendererProps {
 }
 
 const LLMSettingRenderer = ({ setting }: LLMSettingRendererProps) => {
+	const llms = useLLMList();
+
+	const filteredLLMs = useMemo(() => {
+		if (!setting.capabilities || setting.capabilities.length === 0) {
+			return llms;
+		}
+
+		return llms.filter((llm) => {
+			for (const capability of setting.capabilities!) {
+				if (!llm.capabilities.includes(capability)) {
+					return false;
+				}
+			}
+
+			return true;
+		});
+	}, [llms, setting.capabilities]);
+
 	return (
 		<Controller
 			name={setting.id}
 			render={({ field }) => (
-				// temp text field
-				<TextInput
-					ref={field.ref}
-					value={field.value || ""}
-					onBlur={field.onBlur}
-					onChange={field.onChange}
-					disabled={field.disabled}
-				/>
+				// placeholder until a better llm selector is implemented for plugin settings
+				<select onChange={(e) => field.onChange(e.target.value)} value={field.value || ""}>
+					{filteredLLMs.map((llm) => (
+						<option value={llm.id} key={llm.id}>
+							{llm.name}
+						</option>
+					))}
+				</select>
 			)}
 		/>
 	);
