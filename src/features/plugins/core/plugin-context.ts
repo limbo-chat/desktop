@@ -18,6 +18,7 @@ export class PluginContext {
 
 	// registered state
 	private settings = new Map<string, limbo.Setting>();
+	private commands = new Map<string, limbo.Command>();
 	private llms = new Map<string, limbo.LLM>();
 	private tools = new Map<string, limbo.Tool>();
 
@@ -55,6 +56,28 @@ export class PluginContext {
 
 	public getCachedSettingValue(settingId: string) {
 		return this.settingsCache.get(settingId);
+	}
+
+	// commands
+
+	public getCommand(commandId: string) {
+		return this.settings.get(commandId);
+	}
+
+	public getCommands() {
+		return [...this.commands.values()];
+	}
+
+	public registerCommand(command: limbo.Command) {
+		this.commands.set(command.id, command);
+
+		this.notifyStateChanged();
+	}
+
+	public unregisterCommand(commandId: string) {
+		this.commands.delete(commandId);
+
+		this.notifyStateChanged();
 	}
 
 	// llms

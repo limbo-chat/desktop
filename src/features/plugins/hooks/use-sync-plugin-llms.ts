@@ -14,24 +14,24 @@ export const useSyncPluginLLMs = () => {
 			const plugins = pluginManager.getPlugins();
 
 			for (const plugin of plugins) {
-				const tools = plugin.context.getLLMs();
+				const llms = plugin.context.getLLMs();
 
-				for (const tool of tools) {
-					const namespacedToolId = buildNamespacedResourceId(plugin.manifest.id, tool.id);
+				for (const llm of llms) {
+					const namespacedLLMId = buildNamespacedResourceId(plugin.manifest.id, llm.id);
 
-					addedLLMIds.add(namespacedToolId);
+					addedLLMIds.add(namespacedLLMId);
 
 					llmStore.addLLM({
-						...tool,
-						id: namespacedToolId,
+						...llm,
+						id: namespacedLLMId,
 					});
 				}
 			}
 		};
 
 		const removeRegistedLLMs = () => {
-			for (const addedToolId of addedLLMIds) {
-				llmStore.removeLLM(addedToolId);
+			for (const addedLLMId of addedLLMIds) {
+				llmStore.removeLLM(addedLLMId);
 			}
 
 			addedLLMIds.clear();

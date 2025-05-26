@@ -36,6 +36,14 @@ export class PluginAPIBuilder {
 					return this.pluginContext.getCachedSettingValue(settingId);
 				},
 			},
+			commands: {
+				register: (command) => {
+					this.pluginContext.registerCommand(command);
+				},
+				unregister: (commandId) => {
+					this.pluginContext.unregisterCommand(commandId);
+				},
+			},
 			models: {
 				// operations like this shouldn't ever throw or be expected to by plugin devs
 				// still wrapping in case the host bridge does throw (it shouldn't!)
