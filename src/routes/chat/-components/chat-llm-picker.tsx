@@ -1,4 +1,5 @@
 import Fuse from "fuse.js";
+import { InfoIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "../../../components/button";
 import {
@@ -9,6 +10,7 @@ import {
 	MenuItem,
 } from "../../../components/menu";
 import { TextInput } from "../../../components/text-input";
+import { Tooltip } from "../../../components/tooltip";
 import { useLLMList, useLLMs } from "../../../features/llms/hooks";
 import { useSelectedChatLLMId } from "../../../features/storage/hooks";
 import { setSelectedChatLLMId } from "../../../features/storage/utils";
@@ -66,7 +68,13 @@ export const ChatLLMPicker = () => {
 									value={llm.id}
 									onClick={() => setSelectedChatLLMId(llm.id)}
 								>
-									{llm.name}
+									<span>{llm.name}</span>
+									<Tooltip
+										label={llm.description}
+										positioning={{ placement: "top" }}
+									>
+										<InfoIcon />
+									</Tooltip>
 								</MenuItem>
 							);
 						})}

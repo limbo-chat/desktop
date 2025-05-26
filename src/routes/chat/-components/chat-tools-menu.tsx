@@ -1,4 +1,4 @@
-import { HammerIcon } from "lucide-react";
+import { HammerIcon, InfoIcon } from "lucide-react";
 import { IconButton } from "../../../components/icon-button";
 import {
 	MenuRoot,
@@ -8,6 +8,7 @@ import {
 	MenuItem,
 } from "../../../components/menu";
 import { Switch } from "../../../components/switch";
+import { Tooltip } from "../../../components/tooltip";
 import { useEnabledToolIds } from "../../../features/storage/hooks";
 import { setEnabledToolIds } from "../../../features/storage/utils";
 import { useToolList } from "../../../features/tools/hooks";
@@ -27,7 +28,15 @@ export const ChatToolsMenu = () => {
 				<MenuContent>
 					{tools.map((tool) => (
 						<MenuItem value={tool.id} key={tool.id}>
-							{tool.id}
+							<div>
+								<span>{tool.id}</span>
+								<Tooltip
+									label={tool.description}
+									positioning={{ placement: "top" }}
+								>
+									<InfoIcon />
+								</Tooltip>
+							</div>
 							<Switch
 								checked={enabledToolIds.includes(tool.id)}
 								onCheckedChange={({ checked }) => {
