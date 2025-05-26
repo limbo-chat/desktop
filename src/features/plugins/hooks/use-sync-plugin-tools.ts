@@ -1,13 +1,12 @@
 import { useEffect } from "react";
 import { buildNamespacedResourceId } from "../../../lib/utils";
-import { useToolStore } from "../../tools/stores";
+import { addTool, removeTool } from "../../tools/utils";
 import { usePluginManager } from "./core";
 
 export const useSyncPluginTools = () => {
 	const pluginManager = usePluginManager();
 
 	useEffect(() => {
-		const toolStore = useToolStore.getState();
 		const addedToolIds = new Set<string>();
 
 		const syncTools = () => {
@@ -21,7 +20,7 @@ export const useSyncPluginTools = () => {
 
 					addedToolIds.add(namespacedToolId);
 
-					toolStore.addTool({
+					addTool({
 						...tool,
 						id: namespacedToolId,
 					});
@@ -31,7 +30,7 @@ export const useSyncPluginTools = () => {
 
 		const removeRegistedTools = () => {
 			for (const addedToolId of addedToolIds) {
-				toolStore.removeTool(addedToolId);
+				removeTool(addedToolId);
 			}
 
 			addedToolIds.clear();

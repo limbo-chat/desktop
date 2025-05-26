@@ -1,13 +1,12 @@
 import { useEffect } from "react";
 import { buildNamespacedResourceId } from "../../../lib/utils";
-import { useLLMStore } from "../../llms/stores";
+import { addLLM, removeLLM } from "../../llms/utils";
 import { usePluginManager } from "./core";
 
 export const useSyncPluginLLMs = () => {
 	const pluginManager = usePluginManager();
 
 	useEffect(() => {
-		const llmStore = useLLMStore.getState();
 		const addedLLMIds = new Set<string>();
 
 		const syncLLMs = () => {
@@ -21,7 +20,7 @@ export const useSyncPluginLLMs = () => {
 
 					addedLLMIds.add(namespacedLLMId);
 
-					llmStore.addLLM({
+					addLLM({
 						...llm,
 						id: namespacedLLMId,
 					});
@@ -31,7 +30,7 @@ export const useSyncPluginLLMs = () => {
 
 		const removeRegistedLLMs = () => {
 			for (const addedLLMId of addedLLMIds) {
-				llmStore.removeLLM(addedLLMId);
+				removeLLM(addedLLMId);
 			}
 
 			addedLLMIds.clear();
