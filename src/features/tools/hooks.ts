@@ -6,13 +6,13 @@ export const useTools = () => {
 };
 
 export const useTool = (toolId: string) => {
-	const tools = useToolStore((state) => state.tools);
+	const tools = useTools();
 
 	return tools.get(toolId);
 };
 
 export const useToolList = () => {
-	const tools = useToolStore((state) => state.tools);
+	const tools = useTools();
 
 	return useMemo(() => {
 		return [...tools.values()];
