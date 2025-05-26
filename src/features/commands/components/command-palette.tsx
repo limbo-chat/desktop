@@ -1,6 +1,6 @@
 import { DialogContent, DialogRoot } from "../../../components/dialog";
 import { useCommandList, useIsCommandPaletteOpen } from "../hooks";
-import { useCommandPaletteStore } from "../stores";
+import { setIsCommandPaletteOpen } from "../utils";
 
 export const CommandPalette = () => {
 	const commands = useCommandList();
@@ -10,7 +10,7 @@ export const CommandPalette = () => {
 		<DialogRoot
 			open={isCommandPaletteOpen}
 			onOpenChange={({ open }) => {
-				useCommandPaletteStore.getState().setIsOpen(open);
+				setIsCommandPaletteOpen(open);
 			}}
 		>
 			<DialogContent>

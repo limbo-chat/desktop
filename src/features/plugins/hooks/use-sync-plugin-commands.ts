@@ -1,13 +1,12 @@
 import { useEffect } from "react";
 import { buildNamespacedResourceId } from "../../../lib/utils";
-import { useCommandStore } from "../../commands/stores";
+import { addCommand, removeCommand } from "../../commands/utils";
 import { usePluginManager } from "./core";
 
 export const useSyncPluginCommands = () => {
 	const pluginManager = usePluginManager();
 
 	useEffect(() => {
-		const commandStore = useCommandStore.getState();
 		const addedCommandIds = new Set<string>();
 
 		const syncCommands = () => {
@@ -24,7 +23,7 @@ export const useSyncPluginCommands = () => {
 
 					addedCommandIds.add(namespacedCommandId);
 
-					commandStore.addCommand({
+					addCommand({
 						...command,
 						id: namespacedCommandId,
 					});
@@ -34,7 +33,7 @@ export const useSyncPluginCommands = () => {
 
 		const removeRegistedCommands = () => {
 			for (const addedCommandId of addedCommandIds) {
-				commandStore.removeCommand(addedCommandId);
+				removeCommand(addedCommandId);
 			}
 
 			addedCommandIds.clear();

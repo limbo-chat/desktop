@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { useHotkey } from "../../hooks/common";
 import { useCommandPaletteStore, useCommandStore } from "./stores";
+import { addCommand, setIsCommandPaletteOpen } from "./utils";
 
 export const useCommands = () => {
 	return useCommandStore((state) => state.commands);
@@ -16,7 +17,7 @@ export const useCommandList = () => {
 
 export const useOpenCommandPaletteHotkey = () => {
 	const executeHotkey = useCallback(() => {
-		useCommandPaletteStore.getState().setIsOpen(true);
+		setIsCommandPaletteOpen(true);
 	}, []);
 
 	useHotkey({
@@ -32,13 +33,11 @@ export const useIsCommandPaletteOpen = () => {
 
 export const useRegisterCoreCommands = () => {
 	useEffect(() => {
-		const commandStore = useCommandStore.getState();
-
-		commandStore.addCommand({
+		addCommand({
 			id: "reload-plugins",
 			name: "Reload Plugins",
 			execute: () => {
-				console.log("Reloading plugins...");
+				// todo just a stub command for now
 			},
 		});
 	}, []);
