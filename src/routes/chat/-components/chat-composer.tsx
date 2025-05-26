@@ -1,92 +1,18 @@
 import { useParams, useRouter } from "@tanstack/react-router";
-import Fuse from "fuse.js";
 import { ArrowUpIcon } from "lucide-react";
-import { useMemo, useState, type Ref } from "react";
+import type { Ref } from "react";
 import { Controller, useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import { useShallow } from "zustand/shallow";
-import { Button } from "../../../components/button";
 import { IconButton } from "../../../components/icon-button";
-import {
-	MenuContent,
-	MenuItem,
-	MenuPositioner,
-	MenuRoot,
-	MenuTrigger,
-} from "../../../components/menu";
-import { TextInput } from "../../../components/text-input";
 import { useCreateChatMutation } from "../../../features/chat/hooks/queries";
 import { useSendMessage } from "../../../features/chat/hooks/use-send-message";
 import { useChatStore } from "../../../features/chat/stores";
-import { useLLMList, useLLMs } from "../../../features/llms/hooks";
 import { usePluginManager } from "../../../features/plugins/hooks/core";
-import { useSelectedChatLLMId } from "../../../features/storage/hooks";
 import { useLocalStore } from "../../../features/storage/stores";
-import { setSelectedChatLLMId } from "../../../features/storage/utils";
-
-// TODO, make sure this component has a clear structure in the styling system
-const LLMPicker = () => {
-	const llms = useLLMList();
-	const llmMap = useLLMs();
-	const selectedChatLLMId = useSelectedChatLLMId();
-	const [search, setSearch] = useState("");
-
-	const fuse = useMemo(() => {
-		return new Fuse(llms, {
-			threshold: 0.3,
-			ignoreLocation: true,
-			keys: ["llm.id", "llm.name"],
-		});
-	}, [llms]);
-
-	const filteredLLMs = useMemo(() => {
-		if (!search) {
-			return llms;
-		}
-
-		return fuse.search(search).map((item) => item.item);
-	}, [fuse, search, llms]);
-
-	const selectedLLM = useMemo(() => {
-		if (!selectedChatLLMId) {
-			return null;
-		}
-
-		return llmMap.get(selectedChatLLMId);
-	}, [selectedChatLLMId, llmMap]);
-
-	return (
-		<MenuRoot>
-			<MenuTrigger asChild>
-				<Button variant="ghost" color="secondary">
-					{selectedLLM ? selectedLLM.name : "Select model"}
-				</Button>
-			</MenuTrigger>
-			<MenuPositioner>
-				<MenuContent>
-					<TextInput
-						placeholder="Search models..."
-						value={search}
-						onChange={(e) => setSearch(e.target.value)}
-					/>
-					<div>
-						{filteredLLMs.map((llm) => {
-							return (
-								<MenuItem
-									key={llm.id}
-									value={llm.id}
-									onClick={() => setSelectedChatLLMId(llm.id)}
-								>
-									{llm.name}
-								</MenuItem>
-							);
-						})}
-					</div>
-				</MenuContent>
-			</MenuPositioner>
-		</MenuRoot>
-	);
-};
+import { getEnabledToolIds } from "../../../features/storage/utils";
+import { ChatLLMPicker } from "./chat-llm-picker";
+import { ChatToolsMenu } from "./chat-tools-menu";
 
 export interface ChatComposerProps {
 	ref?: Ref<HTMLDivElement>;
@@ -163,6 +89,7 @@ export const ChatComposer = ({ ref }: ChatComposerProps) => {
 				llm,
 				chatId: chatId,
 				message: data.message,
+				enabledToolIds: getEnabledToolIds(),
 			});
 		} catch (err) {
 			// If sending message fails, we can add the message back to the form
@@ -205,7 +132,8 @@ export const ChatComposer = ({ ref }: ChatComposerProps) => {
 				</IconButton>
 			</form>
 			<div className="chat-composer-accessories">
-				<LLMPicker />
+				<ChatLLMPicker />
+				<ChatToolsMenu />
 			</div>
 		</div>
 	);

@@ -5,6 +5,7 @@ import type { ChatNode, ToolCallChatNode } from "../../../../electron/chats/type
 import { useMainRouterClient } from "../../../lib/trpc";
 import { buildNamespacedResourceId } from "../../../lib/utils";
 import { usePluginManager } from "../../plugins/hooks/core";
+import { getEnabledToolIds } from "../../storage/utils";
 import { ChatPromptBuilder } from "../core/chat-prompt-builder";
 import { useChatStore } from "../stores";
 
@@ -12,6 +13,7 @@ export interface SendMessageOptions {
 	llm: limbo.LLM;
 	chatId: string;
 	message: string;
+	enabledToolIds: string[];
 }
 
 const ajv = new Ajv();
@@ -20,7 +22,7 @@ export const useSendMessage = () => {
 	const pluginManager = usePluginManager();
 	const mainRouter = useMainRouterClient();
 
-	const sendMessage = async ({ llm, chatId, message }: SendMessageOptions) => {
+	const sendMessage = async ({ llm, chatId, message, enabledToolIds }: SendMessageOptions) => {
 		const chatStore = useChatStore.getState();
 
 		// trigger the loading state
@@ -86,13 +88,15 @@ export const useSendMessage = () => {
 			for (const tool of tools) {
 				const namespacedToolId = buildNamespacedResourceId(plugin.manifest.id, tool.id);
 
-				toolMap.set(namespacedToolId, tool);
+				if (enabledToolIds.includes(namespacedToolId)) {
+					toolMap.set(namespacedToolId, tool);
 
-				toolDefinitions.push({
-					id: namespacedToolId,
-					description: tool.description,
-					schema: tool.schema,
-				});
+					toolDefinitions.push({
+						id: namespacedToolId,
+						description: tool.description,
+						schema: tool.schema,
+					});
+				}
 			}
 		}
 

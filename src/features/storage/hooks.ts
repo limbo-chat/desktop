@@ -4,6 +4,6 @@ export const useSelectedChatLLMId = () => {
 	return useLocalStore((state) => state.selectedChatLLMId);
 };
 
-export const useEnabledTools = () => {
+export const useEnabledToolIds = () => {
 	return useLocalStore((state) => state.enabledToolIds);
 };
