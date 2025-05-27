@@ -36,7 +36,6 @@ import {
 	useInstallPluginMutation,
 	useUninstallPluginMutation,
 } from "../../../features/plugins/hooks/queries";
-import { usePluginStore } from "../../../features/plugins/stores";
 import { useMainRouterClient } from "../../../lib/trpc";
 
 export const Route = createFileRoute("/settings/plugins/")({
@@ -110,15 +109,8 @@ interface PluginCardProps {
 const PluginCard = ({ plugin }: PluginCardProps) => {
 	const enablePluginMutaton = useEnablePluginMutation();
 	const disablePluginMutation = useDisablePluginMutation();
-
 	const [isUninstallPluginDialogOpen, setIsUninstallPluginDialogOpen] = useState(false);
-
 	const authorName = plugin.manifest.author.name ?? plugin.manifest.author.email;
-
-	// const isCompatibleWithApiVersion = useMemo(
-	// 	() => semver.satisfies(window.env.LIMBO_API_VERSION, plugin.manifest.apiVersion),
-	// 	[window.env.LIMBO_API_VERSION, plugin.manifest.apiVersion]
-	// );
 
 	const toggleEnabled = () => {
 		if (plugin.enabled) {

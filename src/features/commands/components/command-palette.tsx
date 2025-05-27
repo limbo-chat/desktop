@@ -1,14 +1,31 @@
 import Fuse from "fuse.js";
 import { useMemo, useState } from "react";
 import { DialogContent, DialogRoot } from "../../../components/dialog";
+import {
+	EmptyResult,
+	SearchPrompt,
+	SearchPromptInput,
+	SearchPromptInputContainer,
+	SearchPromptInstructionCommand,
+	SearchPromptInstructionItem,
+	SearchPromptInstructions,
+	SearchPromptInstructionText,
+	SearchPromptResults,
+	ResultContent,
+	ResultItem,
+	ResultTitle,
+} from "../../../components/search-prompt";
 import { useCommandList, useCommands, useIsCommandPaletteOpen } from "../hooks";
 import { setIsCommandPaletteOpen } from "../utils";
 
-export const CommandPalette = () => {
+interface CommandPaletteProps {
+	search: string;
+	onSearchChange: (search: string) => void;
+	onExecuteCommand: (commandId: string) => void;
+}
+
+const CommandPalette = ({ search, onSearchChange, onExecuteCommand }: CommandPaletteProps) => {
 	const commands = useCommandList();
-	const commandMap = useCommands();
-	const isCommandPaletteOpen = useIsCommandPaletteOpen();
-	const [search, setSearch] = useState("");
 
 	const fuse = useMemo(() => {
 		return new Fuse(commands, {
@@ -25,6 +42,48 @@ export const CommandPalette = () => {
 
 		return fuse.search(search).map((item) => item.item);
 	}, [fuse, search, commands]);
+
+	return (
+		<SearchPrompt>
+			<SearchPromptInputContainer>
+				<SearchPromptInput
+					placeholder="Search commands..."
+					value={search}
+					onChange={(e) => onSearchChange(e.target.value)}
+				/>
+			</SearchPromptInputContainer>
+			<SearchPromptResults>
+				{filteredCommands.length === 0 && <EmptyResult>No commands found</EmptyResult>}
+				{filteredCommands.map((command) => (
+					<ResultItem key={command.id} onClick={() => onExecuteCommand(command.id)}>
+						<ResultContent>
+							<ResultTitle>{command.name}</ResultTitle>
+						</ResultContent>
+					</ResultItem>
+				))}
+			</SearchPromptResults>
+			<SearchPromptInstructions>
+				<SearchPromptInstructionItem>
+					<SearchPromptInstructionCommand>↑↓</SearchPromptInstructionCommand>
+					<SearchPromptInstructionText>to navigate</SearchPromptInstructionText>
+				</SearchPromptInstructionItem>
+				<SearchPromptInstructionItem>
+					<SearchPromptInstructionCommand>↵</SearchPromptInstructionCommand>
+					<SearchPromptInstructionText>to use</SearchPromptInstructionText>
+				</SearchPromptInstructionItem>
+				<SearchPromptInstructionItem>
+					<SearchPromptInstructionCommand>esc</SearchPromptInstructionCommand>
+					<SearchPromptInstructionText>to dismiss</SearchPromptInstructionText>
+				</SearchPromptInstructionItem>
+			</SearchPromptInstructions>
+		</SearchPrompt>
+	);
+};
+
+export const CommandPaletteModal = () => {
+	const commandMap = useCommands();
+	const isCommandPaletteOpen = useIsCommandPaletteOpen();
+	const [search, setSearch] = useState("");
 
 	const executeCommand = async (commandId: string) => {
 		const command = commandMap.get(commandId);
@@ -61,19 +120,11 @@ export const CommandPalette = () => {
 			}}
 		>
 			<DialogContent>
-				<input
-					placeholder="Search commands"
-					value={search}
-					onChange={(e) => setSearch(e.target.value)}
+				<CommandPalette
+					search={search}
+					onSearchChange={setSearch}
+					onExecuteCommand={(commandId) => executeCommand(commandId)}
 				/>
-				<div>
-					{filteredCommands.length === 0 && <p>No commands found</p>}
-					{filteredCommands.map((command) => (
-						<button key={command.id} onClick={() => executeCommand(command.id)}>
-							{command.name}
-						</button>
-					))}
-				</div>
 			</DialogContent>
 		</DialogRoot>
 	);

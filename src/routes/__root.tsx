@@ -4,7 +4,7 @@ import { createTRPCClient } from "@trpc/client";
 import { Suspense, useMemo, useRef, type PropsWithChildren } from "react";
 import { ipcLink } from "trpc-electron/renderer";
 import type { MainRouter } from "../../electron/trpc/router";
-import { CommandPalette } from "../features/commands/components/command-palette";
+import { CommandPaletteModal } from "../features/commands/components/command-palette";
 import { useOpenCommandPaletteHotkey, useRegisterCoreCommands } from "../features/commands/hooks";
 import { useCustomStylesLoader, useCustomStylesSubscriber } from "../features/custom-styles/hooks";
 import {
@@ -169,7 +169,7 @@ const MainContent = () => {
 	return (
 		<div className="app-row">
 			<SideDock />
-			<CommandPalette />
+			<CommandPaletteModal />
 			<div className="app-content">
 				<Outlet />
 			</div>
