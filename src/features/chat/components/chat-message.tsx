@@ -79,16 +79,16 @@ const AssistantChatMessageMarkdownRenderer = ({
 									disabled: true,
 								},
 							},
-							code: (props) => (
-								<CodeBlock
-									lang={
-										props.className
-											? props.className.split("lang-")[1]
-											: undefined
-									}
-									content={props.children}
-								/>
-							),
+							code: (props) => {
+								// inline code
+								if (!props.className) {
+									return <code {...props} />;
+								}
+
+								const lang = props.className.split("lang-")[1];
+
+								return <CodeBlock lang={lang} content={props.children} />;
+							},
 						},
 					}}
 				>
