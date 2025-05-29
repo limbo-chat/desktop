@@ -72,6 +72,17 @@ export const DefaultToolCallRenderer = ({ toolCall }: limbo.ToolRendererProps) =
 	);
 };
 
+interface ToolCallRendererProps {
+	toolCall: limbo.ToolCall;
+}
+
+const ToolCallRenderer = ({ toolCall }: ToolCallRendererProps) => {
+	const tool = useTool(toolCall.toolId);
+	const Renderer = tool?.renderer ?? DefaultToolCallRenderer;
+
+	return <Renderer toolCall={toolCall} />;
+};
+
 export const ToolCallNodeRenderer = ({ node }: ToolCallNodeRendererProps) => {
 	const mainRouter = useMainRouter();
 	const toolCallState = useToolCall(node.data.tool_call_id);
@@ -122,7 +133,7 @@ export const ToolCallNodeRenderer = ({ node }: ToolCallNodeRendererProps) => {
 			data-tool-id={toolCallState.toolId}
 			data-status={toolCallState.status}
 		>
-			{toolCallState && <DefaultToolCallRenderer toolCall={toolCallState} />}
+			<ToolCallRenderer toolCall={toolCallState} />
 		</div>
 	);
 };
