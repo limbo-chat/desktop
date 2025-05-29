@@ -67,7 +67,7 @@ importers:
         version: 0.28.2
       limbo:
         specifier: file:../limbo-api
-        version: file:../limbo-api(@sinclair/typebox@0.34.33)(@types/react@19.1.6)
+        version: file:../limbo-api
       lowlight:
         specifier: ^3.3.0
         version: 3.3.0
@@ -2107,9 +2107,6 @@ packages:
 
   limbo@file:../limbo-api:
     resolution: {directory: ../limbo-api, type: directory}
-    peerDependencies:
-      '@sinclair/typebox': ^0.34.33
-      '@types/react': ^19.0.12
 
   lodash.defaults@4.2.0:
     resolution: {integrity: sha512-qjxPLHd3r5DnsdGacqOMU6pb/avJzdh9tFX2ymgoZE27BmjXrNy/y4LoaiTeAb+O3gL8AfpJGtqfX/ae2leYYQ==}
@@ -3807,7 +3804,8 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.41.1':
     optional: true
 
-  '@sinclair/typebox@0.34.33': {}
+  '@sinclair/typebox@0.34.33':
+    optional: true
 
   '@sindresorhus/is@4.6.0': {}
 
@@ -5691,10 +5689,11 @@ snapshots:
       lightningcss-win32-x64-msvc: 1.29.3
     optional: true
 
-  limbo@file:../limbo-api(@sinclair/typebox@0.34.33)(@types/react@19.1.6):
-    dependencies:
+  limbo@file:../limbo-api:
+    optionalDependencies:
       '@sinclair/typebox': 0.34.33
       '@types/react': 19.1.6
+      react: 19.1.0
 
   lodash.defaults@4.2.0: {}
 

@@ -13,6 +13,7 @@ export class PluginContext {
 	private commands = new Map<string, limbo.Command>();
 	private llms = new Map<string, limbo.LLM>();
 	private tools = new Map<string, limbo.Tool>();
+	private markdownElements = new Map<string, limbo.ui.MarkdownElement>();
 
 	private settingsCache = new Map<string, any>();
 
@@ -112,6 +113,28 @@ export class PluginContext {
 
 	public unregisterTool(toolId: string) {
 		this.tools.delete(toolId);
+
+		this.notifyStateChanged();
+	}
+
+	// markdown elements
+
+	public getMarkdownElement(elementId: string) {
+		return this.markdownElements.get(elementId);
+	}
+
+	public getMarkdownElements() {
+		return [...this.markdownElements.values()];
+	}
+
+	public registerMarkdownElement(markdownElement: limbo.ui.MarkdownElement) {
+		this.markdownElements.set(markdownElement.element, markdownElement);
+
+		this.notifyStateChanged();
+	}
+
+	public unregisterMarkdownElement(elementId: string) {
+		this.markdownElements.delete(elementId);
 
 		this.notifyStateChanged();
 	}

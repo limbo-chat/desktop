@@ -101,6 +101,14 @@ export class PluginAPIBuilder {
 					}
 				},
 			},
+			ui: {
+				registerMarkdownElement: (element) => {
+					this.pluginContext.registerMarkdownElement(element);
+				},
+				unregisterMarkdownElement: (elementId) => {
+					this.pluginContext.unregisterMarkdownElement(elementId);
+				},
+			},
 		};
 	}
 }

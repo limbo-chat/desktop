@@ -1,5 +1,7 @@
 import Markdown, { type MarkdownToJSX } from "markdown-to-jsx";
+import { useMemo } from "react";
 import { CodeBlock } from "../../markdown/components/code-block";
+import { useCollatedMarkdownComponents } from "../hooks";
 
 const coreOverrides: MarkdownToJSX.Overrides = {
 	a: {
@@ -29,10 +31,19 @@ export interface MarkdownRendererProps {
 }
 
 export const MarkdownRenderer = ({ content }: MarkdownRendererProps) => {
+	const collatedMarkdownComponents = useCollatedMarkdownComponents();
+
+	const overrides = useMemo(() => {
+		return {
+			...coreOverrides,
+			...Object.fromEntries(collatedMarkdownComponents),
+		};
+	}, [collatedMarkdownComponents]);
+
 	return (
 		<Markdown
 			options={{
-				overrides: coreOverrides,
+				overrides,
 			}}
 		>
 			{content}
