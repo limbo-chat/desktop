@@ -17,7 +17,11 @@ const renameChatInputSchema = z.object({
 export const chatsRouter = router({
 	messages: chatMessagesRouter,
 	list: publicProcedure.query(async () => {
-		const chats = await db.selectFrom("chat").selectAll().execute();
+		const chats = await db
+			.selectFrom("chat")
+			.selectAll()
+			.orderBy("createdAt", "desc")
+			.execute();
 
 		return chats;
 	}),
