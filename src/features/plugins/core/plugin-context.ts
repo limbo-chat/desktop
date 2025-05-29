@@ -5,14 +5,6 @@ export interface PluginContextEvents {
 	"state:changed": () => void;
 }
 
-export interface PluginHostBridge {
-	getLLM: limbo.API["models"]["getLLM"];
-	showNotification: limbo.API["notifications"]["show"];
-	renameChat: limbo.API["chats"]["rename"];
-	getChat: limbo.API["chats"]["get"];
-	getChatMessages: limbo.API["chats"]["getMessages"];
-}
-
 export class PluginContext {
 	public events: EventEmitter<PluginContextEvents> = new EventEmitter();
 
