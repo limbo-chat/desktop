@@ -28,3 +28,33 @@ export const useToolStore = create<ToolStore>((set) => ({
 		});
 	},
 }));
+
+export interface ToolCallStore {
+	toolCalls: Map<string, limbo.ToolCall>;
+	addToolCall: (toolCall: limbo.ToolCall) => void;
+	removeToolCall: (toolCallId: string) => void;
+	reset: () => void;
+}
+
+export const useToolCallStore = create<ToolCallStore>((set) => ({
+	toolCalls: new Map(),
+	addToolCall: (toolCall) => {
+		set((state) => {
+			const newToolCalls = new Map(state.toolCalls);
+
+			newToolCalls.set(toolCall.id, toolCall);
+
+			return { toolCalls: newToolCalls };
+		});
+	},
+	removeToolCall: (toolCallId) => {
+		set((state) => {
+			const newToolCalls = new Map(state.toolCalls);
+
+			newToolCalls.delete(toolCallId);
+
+			return { toolCalls: newToolCalls };
+		});
+	},
+	reset: () => set({ toolCalls: new Map() }),
+}));
