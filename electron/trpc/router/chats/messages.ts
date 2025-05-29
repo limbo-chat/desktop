@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { chatNodeSchema } from "../../../chats/schemas";
 import type { ChatNode } from "../../../chats/types";
 import { db } from "../../../db/db";
 import { publicProcedure, router } from "../../trpc";
@@ -12,7 +13,7 @@ const createChatMessageInputSchema = z.object({
 	id: z.string(),
 	chatId: z.string(),
 	// due to a diffuculity modeling the schemas with zod (nested disriminated unions, i'm just going to use any here)
-	content: z.array<z.ZodType<ChatNode>>(z.any()),
+	content: z.array<z.ZodType<ChatNode>>(chatNodeSchema),
 	role: z.enum(["user", "assistant"]),
 	createdAt: z.string().datetime(),
 });

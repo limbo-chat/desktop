@@ -20,6 +20,15 @@ export async function up(db: Kysely<any>): Promise<void> {
 		.addColumn("createdAt", "timestamp", (col) => col.notNull())
 		.ifNotExists()
 		.execute();
+
+	await db.schema
+		.createTable("toolCall")
+		.addColumn("id", "text", (col) => col.primaryKey())
+		.addColumn("toolId", "text", (col) => col.notNull())
+		.addColumn("status", "text", (col) => col.notNull())
+		.addColumn("arguments", "text", (col) => col.notNull())
+		.addColumn("result", "text")
+		.addColumn("error", "text");
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
