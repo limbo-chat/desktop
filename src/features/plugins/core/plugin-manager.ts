@@ -98,4 +98,18 @@ export class PluginManager {
 			}
 		}
 	}
+
+	public async executeOnAfterChatDeletedHooks(chatId: string) {
+		for (const plugin of this.plugins.values()) {
+			if (typeof plugin.module.onChatDeleted !== "function") {
+				continue;
+			}
+
+			try {
+				await plugin.module.onChatDeleted(chatId);
+			} catch {
+				// noop
+			}
+		}
+	}
 }
