@@ -92,6 +92,8 @@ export const ChatComposer = ({ ref }: ChatComposerProps) => {
 				enabledToolIds: getEnabledToolIds(),
 			});
 		} catch (err) {
+			console.error("Failed to send message:", err);
+
 			// If sending message fails, we can add the message back to the form
 			form.setValue("message", data.message);
 		}

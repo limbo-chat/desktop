@@ -28,7 +28,9 @@ export async function up(db: Kysely<any>): Promise<void> {
 		.addColumn("status", "text", (col) => col.notNull())
 		.addColumn("arguments", "text", (col) => col.notNull())
 		.addColumn("result", "text")
-		.addColumn("error", "text");
+		.addColumn("error", "text")
+		.ifNotExists()
+		.execute();
 }
 
 export async function down(db: Kysely<any>): Promise<void> {

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import type { ChatMessageType, ChatNode, ToolCallNode } from "./types";
+import type * as limbo from "limbo";
+import type { ChatMessageType } from "./types";
 
 export interface ChatStore {
 	messages: ChatMessageType[];
@@ -8,13 +9,12 @@ export interface ChatStore {
 	setIsAssistantResponsePending: (isResponsePending: boolean) => void;
 	getMessage: (messageId: string) => ChatMessageType | undefined;
 	addMessage: (message: ChatMessageType) => void;
-	addNodeToMessage: (messageId: string, node: ChatNode) => void;
 	updateMessage: (messageId: string, partialMessage: Partial<ChatMessageType>) => void;
-	addTextToMessage: (messageId: string, chunk: string) => void;
-	updateToolCallNode: (
+	addNodeToMessage: (messageId: string, node: limbo.CoreChatMessageNode) => void;
+	updateMessageNode: (
 		messageId: string,
-		toolCallId: string,
-		partialToolCallNode: Partial<ToolCallNode>
+		nodeIdx: number,
+		partialNode: Partial<limbo.CoreChatMessageNode>
 	) => void;
 	removeMessage: (messageId: string) => void;
 	reset: () => void;
@@ -42,7 +42,6 @@ export const useChatStore = create(
 				state.messages = state.messages.filter((message) => message.id !== messageId);
 			});
 		},
-		// it sucks to have to find the index of the message to update
 		updateMessage: (messageId, partialMessage) => {
 			set((state) => {
 				const messageIdx = state.messages.findIndex((message) => message.id === messageId);
@@ -71,32 +70,7 @@ export const useChatStore = create(
 				message.content.push(node);
 			});
 		},
-		addTextToMessage: (messageId, chunk) => {
-			set((state) => {
-				const messageIndex = state.messages.findIndex(
-					(message) => message.id === messageId
-				);
-
-				if (messageIndex === -1) {
-					return;
-				}
-
-				const prevMessage = state.messages[messageIndex];
-				const lastContent = prevMessage.content[prevMessage.content.length - 1];
-
-				if (!lastContent || lastContent.type !== "text") {
-					// create a new text node
-					prevMessage.content.push({
-						type: "text",
-						text: chunk,
-					});
-				} else {
-					// add to the existing text node
-					lastContent.text += chunk;
-				}
-			});
-		},
-		updateToolCallNode: (messageId, toolCallId, partialToolCallNode) => {
+		updateMessageNode: (messageId, nodeIdx, partialNode) => {
 			set((state) => {
 				const message = state.messages.find((message) => message.id === messageId);
 
@@ -104,20 +78,15 @@ export const useChatStore = create(
 					return;
 				}
 
-				const toolCallNodeIdx = message.content.findIndex(
-					(node) => node.type === "tool_call" && node.callId === toolCallId
-				);
+				const oldNode = message.content[nodeIdx];
 
-				if (toolCallNodeIdx === -1) {
+				if (!oldNode) {
 					return;
 				}
 
-				const prevToolCallNode = message.content[toolCallNodeIdx] as ToolCallNode;
-
-				// @ts-expect-error
-				message.content[toolCallNodeIdx] = {
-					...prevToolCallNode,
-					...partialToolCallNode,
+				message.content[nodeIdx] = {
+					...oldNode,
+					...partialNode,
 				};
 			});
 		},

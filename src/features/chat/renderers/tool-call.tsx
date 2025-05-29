@@ -5,6 +5,10 @@ import type * as limbo from "limbo";
 import { IconButton } from "../../../components/icon-button";
 import { parseNamespacedResourceId } from "../../../lib/utils";
 
+export interface ToolCallNodeRendererProps {
+	node: limbo.ToolCallChatMessageNode;
+}
+
 interface ToolCallDataContainerProps {
 	title: string;
 	content: string;
@@ -58,5 +62,18 @@ export const DefaultToolCallRenderer = ({ toolCall }: limbo.ToolRendererProps) =
 				)}
 			</ArkCollapsible.Content>
 		</ArkCollapsible.Root>
+	);
+};
+
+export const ToolCallNodeRenderer = ({ node }: ToolCallNodeRendererProps) => {
+	// const toolCall = useToolCall(node.data.tool_call_id);
+
+	// todo, load the tool
+	// const Renderer = tool?.renderer ?? DefaultToolCallRenderer;
+
+	return (
+		<div className="node" data-type={node.type}>
+			{/* {toolCall && <DefaultToolCallRenderer toolCall={toolCall} />} */}
+		</div>
 	);
 };

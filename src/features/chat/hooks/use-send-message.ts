@@ -1,11 +1,10 @@
 import Ajv from "ajv";
 import { ulid } from "ulid";
 import type * as limbo from "limbo";
-import type { ChatNode, ToolCallChatNode } from "../../../../electron/chats/types";
 import { useMainRouterClient } from "../../../lib/trpc";
 import { buildNamespacedResourceId } from "../../../lib/utils";
 import { usePluginManager } from "../../plugins/hooks/core";
-import { getEnabledToolIds } from "../../storage/utils";
+import { useToolCallStore } from "../../tools/stores";
 import { ChatPromptBuilder } from "../core/chat-prompt-builder";
 import { useChatStore } from "../stores";
 
@@ -24,12 +23,12 @@ export const useSendMessage = () => {
 
 	const sendMessage = async ({ llm, chatId, message, enabledToolIds }: SendMessageOptions) => {
 		const chatStore = useChatStore.getState();
+		const toolCallStore = useToolCallStore.getState();
 
 		// trigger the loading state
 		chatStore.setIsAssistantResponsePending(true);
 
 		// add user message to store
-
 		const userMessageId = ulid();
 		const userMessageCreatedAt = new Date().toISOString();
 
@@ -39,7 +38,9 @@ export const useSendMessage = () => {
 			content: [
 				{
 					type: "text",
-					text: message,
+					data: {
+						content: message,
+					},
 				},
 			],
 			createdAt: userMessageCreatedAt,
@@ -100,7 +101,7 @@ export const useSendMessage = () => {
 			}
 		}
 
-		const assistantMessageChatNodes: ChatNode[] = [];
+		const assistantMessageChatNodes: limbo.CoreChatMessageNode[] = [];
 
 		try {
 			// generate the assistant's response
@@ -122,8 +123,34 @@ export const useSendMessage = () => {
 					onText: (text) => {
 						completeResponseText += text;
 
-						// add the chunk to the assistant message in the store
-						chatStore.addTextToMessage(assistantMessageId, text);
+						const assistantMessage = chatStore.getMessage(assistantMessageId);
+
+						// it should always be there, but just in case
+						if (!assistantMessage) {
+							return;
+						}
+
+						const lastNode =
+							assistantMessage.content[assistantMessage.content.length - 1];
+
+						if (lastNode && lastNode.type === "markdown") {
+							chatStore.updateMessageNode(
+								assistantMessageId,
+								assistantMessage.content.length - 1,
+								{
+									data: {
+										content: completeResponseText,
+									},
+								}
+							);
+						} else {
+							chatStore.addNodeToMessage(assistantMessageId, {
+								type: "markdown",
+								data: {
+									content: completeResponseText,
+								},
+							});
+						}
 					},
 					onToolCall: (toolCall) => {
 						toolCalls.push(toolCall);
@@ -132,8 +159,10 @@ export const useSendMessage = () => {
 
 				if (completeResponseText.length > 0) {
 					assistantMessageChatNodes.push({
-						type: "text",
-						text: completeResponseText,
+						type: "markdown",
+						data: {
+							content: completeResponseText,
+						},
 					});
 				}
 
@@ -152,30 +181,35 @@ export const useSendMessage = () => {
 							// generarte a unique call ID for the tool call
 							const callId = ulid();
 
-							// add the tool call in the pending state to the assistant message
-							chatStore.addNodeToMessage(assistantMessageId, {
-								type: "tool_call",
+							// add the tool call to the store in the pending state
+							toolCallStore.addToolCall({
+								id: callId,
 								status: "pending",
 								arguments: toolCall.arguments,
 								toolId: toolCall.toolId,
-								callId,
+							});
+
+							// add the tool call reference to the assistant message
+							chatStore.addNodeToMessage(assistantMessageId, {
+								type: "tool_call",
+								data: {
+									tool_call_id: callId,
+								},
 							});
 
 							// validate the tool call arguments
-
 							const validateArguments = ajv.compile(tool.schema);
 							const areArgumentsValid = validateArguments(toolCall.arguments);
 
-							let finalToolCallNode: ToolCallChatNode;
+							let finalToolCall: limbo.ToolCall;
 
 							if (areArgumentsValid) {
 								try {
 									const result = await tool.execute(toolCall.arguments);
 
-									finalToolCallNode = {
-										type: "tool_call",
+									finalToolCall = {
+										id: callId,
 										toolId: toolCall.toolId,
-										callId,
 										arguments: toolCall.arguments,
 										status: "success",
 										result,
@@ -187,59 +221,51 @@ export const useSendMessage = () => {
 										errorMessage = error.message;
 									}
 
-									finalToolCallNode = {
-										type: "tool_call",
+									finalToolCall = {
+										id: callId,
 										toolId: toolCall.toolId,
-										callId,
 										arguments: toolCall.arguments,
 										status: "error",
 										error: errorMessage,
 									};
 								}
 							} else {
-								chatStore.updateToolCallNode(assistantMessageId, callId, {
-									status: "error",
-									error: "Invalid arguments",
-								});
-
-								finalToolCallNode = {
-									type: "tool_call",
+								finalToolCall = {
+									id: callId,
 									toolId: toolCall.toolId,
-									callId,
 									arguments: toolCall.arguments,
 									status: "error",
 									error: "Invalid arguments",
 								};
 							}
 
-							// 1) add the tool call node to the assistant message
-							assistantMessageChatNodes.push(finalToolCallNode);
+							// 1) Update the tool call node in the store with the final result
+							toolCallStore.addToolCall(finalToolCall);
+
+							// 2) add the tool call node to the assistant message
+
+							assistantMessageChatNodes.push({
+								type: "tool_call",
+								data: {
+									tool_call_id: finalToolCall.id,
+								},
+							});
+
+							// 3) Add the tool call to the prompt builder for subsequent generations
 
 							let resultStr;
 
-							// 2) Update the tool call node in the store with the final result
-							if (finalToolCallNode.status === "success") {
-								resultStr = finalToolCallNode.result;
-
-								chatStore.updateToolCallNode(assistantMessageId, callId, {
-									status: finalToolCallNode.status,
-									result: finalToolCallNode.result,
-								});
+							if (finalToolCall.status === "success") {
+								resultStr = finalToolCall.result;
 							} else {
-								resultStr = `Error: ${finalToolCallNode.error ?? "Unknown error"}`;
-
-								chatStore.updateToolCallNode(assistantMessageId, callId, {
-									status: finalToolCallNode.status,
-									error: finalToolCallNode.error,
-								});
+								resultStr = `Error: ${finalToolCall.error ?? "Unknown error"}`;
 							}
 
-							// 3) Add the tool call to the prompt builder for subsequent generations
 							promptBuilder.appendMessage({
 								role: "tool",
-								toolId: finalToolCallNode.toolId,
+								toolId: finalToolCall.toolId,
 								callId,
-								arguments: finalToolCallNode.arguments,
+								arguments: finalToolCall.arguments,
 								result: resultStr,
 							});
 						})
@@ -268,15 +294,17 @@ export const useSendMessage = () => {
 		});
 
 		// save the user message and final assistant message to the database
-		// we wait to do this until the end to avoid saving incomplete messages
 
+		// we wait to do this until the end to avoid saving incomplete messages
 		await mainRouter.chats.messages.create.mutate({
 			id: userMessageId,
 			role: "user",
 			content: [
 				{
 					type: "text",
-					text: message,
+					data: {
+						content: message,
+					},
 				},
 			],
 			chatId: chatId,
