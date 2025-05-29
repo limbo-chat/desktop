@@ -102,6 +102,7 @@ export const useSendMessage = () => {
 		}
 
 		const assistantMessageChatNodes: limbo.CoreChatMessageNode[] = [];
+		const finalToolCalls: limbo.LLM.ToolCall[] = [];
 
 		try {
 			// generate the assistant's response
@@ -242,6 +243,9 @@ export const useSendMessage = () => {
 							// 1) Update the tool call node in the store with the final result
 							toolCallStore.addToolCall(finalToolCall);
 
+							// add the final tool call to the list of final tool calls
+							finalToolCalls.push(finalToolCall);
+
 							// 2) add the tool call node to the assistant message
 
 							assistantMessageChatNodes.push({
@@ -293,9 +297,16 @@ export const useSendMessage = () => {
 			createdAt: new Date().toISOString(),
 		});
 
-		// save the user message and final assistant message to the database
+		// save the final tool calls to the database
+		await Promise.all(
+			finalToolCalls.map(async (finalToolCall) => {
+				// @ts-ignore TEMP IGNORE
+				await mainRouter.toolCalls.create.mutate(finalToolCall);
+			})
+		);
 
-		// we wait to do this until the end to avoid saving incomplete messages
+		// save the user message and final assistant message to the database
+		// note: we wait to do this until the end to avoid saving incomplete messages
 		await mainRouter.chats.messages.create.mutate({
 			id: userMessageId,
 			role: "user",
@@ -311,6 +322,7 @@ export const useSendMessage = () => {
 			createdAt: userMessageCreatedAt,
 		});
 
+		// save the assistant message
 		await mainRouter.chats.messages.create.mutate({
 			id: assistantMessageId,
 			chatId: chatId,
@@ -320,7 +332,6 @@ export const useSendMessage = () => {
 		});
 
 		// remove the pending state
-
 		chatStore.setIsAssistantResponsePending(false);
 	};
 

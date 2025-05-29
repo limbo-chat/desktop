@@ -3,6 +3,15 @@ import { z } from "zod";
 import { db } from "../../db/db";
 import { publicProcedure, router } from "../trpc";
 
+const createToolCallSchema = z.object({
+	id: z.string(),
+	toolId: z.string(),
+	status: z.enum(["success", "error"]),
+	arguments: z.record(z.any()),
+	result: z.string().nullish(),
+	error: z.string().nullish(),
+});
+
 export const toolCallsRouter = router({
 	get: publicProcedure
 		.input(
@@ -26,4 +35,23 @@ export const toolCallsRouter = router({
 
 			return toolCall;
 		}),
+	create: publicProcedure.input(createToolCallSchema).mutation(async ({ input }) => {
+		const chatMessage = await db
+			.insertInto("toolCall")
+			.values({
+				...input,
+				arguments: JSON.stringify(input.arguments),
+			})
+			.returningAll()
+			.executeTakeFirst();
+
+		if (!chatMessage) {
+			throw new TRPCError({
+				code: "INTERNAL_SERVER_ERROR",
+				message: "Failed to create chat message",
+			});
+		}
+
+		return chatMessage;
+	}),
 });

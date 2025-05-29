@@ -1,9 +1,13 @@
 import { Collapsible as ArkCollapsible } from "@ark-ui/react";
+import { useQuery } from "@tanstack/react-query";
 import { ChevronDown, ClipboardIcon } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import type * as limbo from "limbo";
 import { IconButton } from "../../../components/icon-button";
+import { useMainRouter } from "../../../lib/trpc";
 import { parseNamespacedResourceId } from "../../../lib/utils";
+import { useTool, useToolCall } from "../../tools/hooks";
+import { useToolCallStore } from "../../tools/stores";
 
 export interface ToolCallNodeRendererProps {
 	node: limbo.ToolCallChatMessageNode;
@@ -29,11 +33,14 @@ const ToolCallDataContainer = ({ title, content }: ToolCallDataContainerProps) =
 };
 
 export const DefaultToolCallRenderer = ({ toolCall }: limbo.ToolRendererProps) => {
+	const tool = useTool(toolCall.toolId);
+
 	const icon = useMemo(() => {
+		// TODO handle tool icons
 		const toolName = parseNamespacedResourceId(toolCall.toolId)?.resource ?? toolCall.toolId;
 
 		return toolName.charAt(0).toUpperCase();
-	}, [toolCall.toolId]);
+	}, [tool, toolCall.toolId]);
 
 	return (
 		<ArkCollapsible.Root className="tool-call">
@@ -66,14 +73,56 @@ export const DefaultToolCallRenderer = ({ toolCall }: limbo.ToolRendererProps) =
 };
 
 export const ToolCallNodeRenderer = ({ node }: ToolCallNodeRendererProps) => {
-	// const toolCall = useToolCall(node.data.tool_call_id);
+	const mainRouter = useMainRouter();
+	const toolCallState = useToolCall(node.data.tool_call_id);
 
-	// todo, load the tool
-	// const Renderer = tool?.renderer ?? DefaultToolCallRenderer;
+	const getToolCallQuery = useQuery(
+		mainRouter.toolCalls.get.queryOptions(
+			{
+				id: node.data.tool_call_id,
+			},
+			{
+				// if the tool call is not loaded, we fetch it
+				enabled: toolCallState === undefined,
+			}
+		)
+	);
+
+	useEffect(() => {
+		if (!getToolCallQuery.data) {
+			return;
+		}
+
+		const toolCallStore = useToolCallStore.getState();
+
+		// @ts-ignore TEMP IGNORE
+		toolCallStore.addToolCall(getToolCallQuery.data);
+	}, [getToolCallQuery.data]);
+
+	if (!toolCallState) {
+		if (getToolCallQuery.isError) {
+			return (
+				<div className="node" data-type={node.type} data-status="error">
+					Failed to load tool call: {node.data.tool_call_id}
+				</div>
+			);
+		}
+
+		return (
+			<div className="node" data-type={node.type} data-status="loading">
+				Loading tool call: {node.data.tool_call_id}
+			</div>
+		);
+	}
 
 	return (
-		<div className="node" data-type={node.type}>
-			{/* {toolCall && <DefaultToolCallRenderer toolCall={toolCall} />} */}
+		<div
+			className="node"
+			data-type={node.type}
+			data-tool-id={toolCallState.toolId}
+			data-status={toolCallState.status}
+		>
+			{toolCallState && <DefaultToolCallRenderer toolCall={toolCallState} />}
 		</div>
 	);
 };
