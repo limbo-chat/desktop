@@ -26,7 +26,7 @@ export const ChatLLMPicker = () => {
 		return new Fuse(llms, {
 			threshold: 0.3,
 			ignoreLocation: true,
-			keys: ["llm.id", "llm.name"],
+			keys: ["id", "name"],
 		});
 	}, [llms]);
 
