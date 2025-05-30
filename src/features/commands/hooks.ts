@@ -1,7 +1,8 @@
+import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo } from "react";
 import { useHotkey } from "../../hooks/common";
 import { useCommandPaletteStore, useCommandStore } from "./stores";
-import { addCommand, setIsCommandPaletteOpen } from "./utils";
+import { addCommand, removeCommand, setIsCommandPaletteOpen } from "./utils";
 
 export const useCommands = () => {
 	return useCommandStore((state) => state.commands);
@@ -32,13 +33,21 @@ export const useIsCommandPaletteOpen = () => {
 };
 
 export const useRegisterCoreCommands = () => {
+	const navigate = useNavigate();
+
 	useEffect(() => {
 		addCommand({
-			id: "reload-plugins",
-			name: "Reload Plugins",
+			id: "open-design-playground",
+			name: "Open design playground",
 			execute: () => {
-				// todo just a stub command for now
+				navigate({
+					to: "/design-playground",
+				});
 			},
 		});
+
+		return () => {
+			removeCommand("open-design-playground");
+		};
 	}, []);
 };
