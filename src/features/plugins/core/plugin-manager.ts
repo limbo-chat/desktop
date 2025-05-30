@@ -72,44 +72,44 @@ export class PluginManager {
 	// lifecycle helpers
 
 	public async executeOnChatCreatedHooks(args: limbo.OnChatCreatedArgs) {
-		for (const plugin of this.plugins.values()) {
-			if (typeof plugin.module.onChatCreated !== "function") {
-				continue;
-			}
+		const plugins = [...this.plugins.values()];
 
-			try {
+		await Promise.allSettled(
+			plugins.map(async (plugin) => {
+				if (typeof plugin.module.onChatCreated !== "function") {
+					return;
+				}
+
 				await plugin.module.onChatCreated(args);
-			} catch {
-				// noop
-			}
-		}
+			})
+		);
 	}
 
 	public async executeOnBeforeAssistantResponseHooks(args: limbo.OnBeforeAssistantResponseArgs) {
-		for (const plugin of this.plugins.values()) {
-			if (typeof plugin.module.onBeforeAssistantResponse !== "function") {
-				continue;
-			}
+		const plugins = [...this.plugins.values()];
 
-			try {
+		await Promise.allSettled(
+			plugins.map(async (plugin) => {
+				if (typeof plugin.module.onBeforeAssistantResponse !== "function") {
+					return;
+				}
+
 				await plugin.module.onBeforeAssistantResponse(args);
-			} catch {
-				// noop
-			}
-		}
+			})
+		);
 	}
 
 	public async executeOnAfterChatDeletedHooks(chatId: string) {
-		for (const plugin of this.plugins.values()) {
-			if (typeof plugin.module.onChatDeleted !== "function") {
-				continue;
-			}
+		const plugins = [...this.plugins.values()];
 
-			try {
+		await Promise.allSettled(
+			plugins.map(async (plugin) => {
+				if (typeof plugin.module.onChatDeleted !== "function") {
+					return;
+				}
+
 				await plugin.module.onChatDeleted(chatId);
-			} catch {
-				// noop
-			}
-		}
+			})
+		);
 	}
 }
