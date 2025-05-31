@@ -10,6 +10,10 @@ export const Route = createFileRoute("/chat")({
 function ChatLayout() {
 	const [chatComposerRef, chatComposerDimensions] = useMeasure();
 
+	const areChatComposerDimensionsAvailable =
+		typeof chatComposerDimensions.width === "number" &&
+		typeof chatComposerDimensions.height === "number";
+
 	return (
 		<div className="chat-layout">
 			<ChatSidebar />
@@ -21,7 +25,7 @@ function ChatLayout() {
 					"--chat-composer-width": chatComposerDimensions.width + "px",
 				}}
 			>
-				<Outlet />
+				{areChatComposerDimensionsAvailable && <Outlet />}
 				<ChatComposer ref={chatComposerRef} />
 			</div>
 		</div>

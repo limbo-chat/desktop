@@ -128,7 +128,7 @@ export const ChatComposer = ({ ref }: ChatComposerProps) => {
 							}}
 						/>
 					)}
-				></Controller>
+				/>
 				<IconButton type="submit" color="secondary" disabled={!canSendMessage}>
 					<ArrowUpIcon />
 				</IconButton>

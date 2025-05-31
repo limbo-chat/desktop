@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
-import { useCallback, useEffect, useRef, type ButtonHTMLAttributes } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, type ButtonHTMLAttributes } from "react";
 import { useShallow } from "zustand/shallow";
 import { ChatLog } from "../../../features/chat/components/chat-log";
 import { useMessageList } from "../../../features/chat/hooks/use-message-list";
@@ -32,6 +32,13 @@ function ChatPage() {
 	const mainRouter = useMainRouter();
 	const messages = useMessageList();
 	const scrollableRef = useRef<HTMLDivElement>(null);
+	const bottomRef = useRef<HTMLDivElement>(null);
+	const hasScrolledToBottomOnLoad = useRef(false);
+
+	const isAtBottom = useIsAtBottom({
+		ref: scrollableRef,
+		threshold: 25,
+	});
 
 	const chatStore = useChatStore(
 		useShallow((state) => ({
@@ -50,11 +57,6 @@ function ChatPage() {
 		});
 	}, []);
 
-	const isAtBottom = useIsAtBottom({
-		ref: scrollableRef,
-		threshold: 25,
-	});
-
 	const listChatMessagesQuery = useSuspenseQuery(
 		mainRouter.chats.messages.list.queryOptions({
 			chatId: params.id,
@@ -71,13 +73,15 @@ function ChatPage() {
 				createdAt: message.createdAt,
 			});
 		}
-
-		// this is very hacky and must be fixed, but I literally have tried everything else
-		// problem: The chat-log-container must be scrolled to the bottom of after the messages are rendered
-		setTimeout(() => {
-			scrollToBottom();
-		}, 100);
 	}, [listChatMessagesQuery.data]);
+
+	useEffect(() => {
+		if (messages.length > 0 && hasScrolledToBottomOnLoad.current === false) {
+			scrollToBottom();
+
+			hasScrolledToBottomOnLoad.current = true;
+		}
+	}, [messages]);
 
 	useEffect(() => {
 		return () => {
@@ -86,7 +90,7 @@ function ChatPage() {
 	}, [params.id]);
 
 	return (
-		<>
+		<div className="chat-page" data-is-at-bottom={isAtBottom}>
 			<div className="chat-log-container" ref={scrollableRef}>
 				<ChatLog messages={messages} />
 			</div>
@@ -94,6 +98,6 @@ function ChatPage() {
 				state={isAtBottom ? "hidden" : "visible"}
 				onClick={scrollToBottom}
 			/>
-		</>
+		</div>
 	);
 }

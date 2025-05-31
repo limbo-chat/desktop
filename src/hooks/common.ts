@@ -39,18 +39,18 @@ export const useIsAtBottom = ({ ref, threshold = 0 }: UseIsAtBottomOptions) => {
 			return;
 		}
 
-		const handleScroll = () => {
+		const checkIsAtBottom = () => {
 			const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
 
 			setIsAtBottom(distanceFromBottom <= threshold);
 		};
 
-		handleScroll(); // Initial check
+		checkIsAtBottom(); // Initial check
 
-		el.addEventListener("scroll", handleScroll);
+		el.addEventListener("scroll", checkIsAtBottom);
 
 		return () => {
-			el.removeEventListener("scroll", handleScroll);
+			el.removeEventListener("scroll", checkIsAtBottom);
 		};
 	}, [ref, threshold]);
 
