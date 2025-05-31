@@ -39,13 +39,9 @@ export const CodeBlock = ({ lang, content }: CodeBlockProps) => {
 		let tree;
 
 		try {
-			tree = lowlight.highlight(lang, content, {
-				prefix: "token-",
-			});
+			tree = lowlight.highlight(lang, content);
 		} catch {
-			tree = lowlight.highlight("plaintext", content, {
-				prefix: "token-",
-			});
+			tree = lowlight.highlight("plaintext", content);
 		}
 
 		return toJsxRuntime(tree, { Fragment, jsx, jsxs });
