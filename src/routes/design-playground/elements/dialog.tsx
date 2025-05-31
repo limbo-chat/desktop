@@ -30,7 +30,7 @@ function DialogElementPage() {
 				</DialogHeader>
 				<DialogFooter>
 					<DialogCloseTrigger asChild>
-						<Button color="secondary">Close dialog</Button>
+						<Button>Close dialog</Button>
 					</DialogCloseTrigger>
 				</DialogFooter>
 			</DialogContent>

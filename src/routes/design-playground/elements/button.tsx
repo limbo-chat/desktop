@@ -1,10 +1,8 @@
-import { createListCollection } from "@ark-ui/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "../../../components/button";
 import { Checkbox } from "../../../components/checkbox";
-import { Field, InlineField } from "../../../components/field";
-import { SimpleSelect, SimpleSelectItem } from "../../../components/select";
+import { InlineField } from "../../../components/field";
 import {
 	ComponentPreview,
 	ComponentPreviewContent,
@@ -16,72 +14,17 @@ export const Route = createFileRoute("/design-playground/elements/button")({
 });
 
 function ButtonElementPage() {
-	const [buttonColor, setButtonColor] = useState("primary");
-	const [buttonVariant, setButtonVariant] = useState("default");
 	const [isDisabled, setIsDisabled] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
-
-	const buttonColorCollection = createListCollection({
-		items: [
-			{ value: "primary", label: "Primary" },
-			{ value: "secondary", label: "Secondary" },
-		],
-	});
-
-	const buttonVariantCollection = createListCollection({
-		items: [
-			{
-				value: "default",
-				label: "Default",
-			},
-			{
-				value: "ghost",
-				label: "Ghost",
-			},
-		],
-	});
 
 	return (
 		<ComponentPreview>
 			<ComponentPreviewContent>
-				<Button
-					disabled={isDisabled}
-					isLoading={isLoading}
-					color={buttonColor as any}
-					variant={buttonVariant as any}
-				>
+				<Button disabled={isDisabled} isLoading={isLoading}>
 					Click me
 				</Button>
 			</ComponentPreviewContent>
 			<ComponentPreviewPanel>
-				<Field
-					label="Color"
-					control={
-						<SimpleSelect
-							collection={buttonColorCollection}
-							value={[buttonColor]}
-							onValueChange={(e) => setButtonColor(e.value[0])}
-						>
-							{buttonColorCollection.items.map((item) => (
-								<SimpleSelectItem item={item} label={item.label} key={item.value} />
-							))}
-						</SimpleSelect>
-					}
-				/>
-				<Field
-					label="Variant"
-					control={
-						<SimpleSelect
-							value={[buttonVariant]}
-							collection={buttonVariantCollection}
-							onValueChange={(e) => setButtonVariant(e.value[0])}
-						>
-							{buttonVariantCollection.items.map((item) => (
-								<SimpleSelectItem item={item} label={item.label} key={item.value} />
-							))}
-						</SimpleSelect>
-					}
-				/>
 				<InlineField
 					label="Disabled?"
 					control={

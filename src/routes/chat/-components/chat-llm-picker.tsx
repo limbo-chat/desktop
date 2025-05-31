@@ -49,9 +49,7 @@ export const ChatLLMPicker = () => {
 	return (
 		<MenuRoot>
 			<MenuTrigger asChild>
-				<Button variant="ghost" color="secondary">
-					{selectedLLM ? selectedLLM.name : "Select model"}
-				</Button>
+				<Button>{selectedLLM ? selectedLLM.name : "Select model"}</Button>
 			</MenuTrigger>
 			<MenuPositioner>
 				<MenuContent className="llm-picker">

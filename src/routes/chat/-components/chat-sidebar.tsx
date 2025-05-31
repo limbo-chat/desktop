@@ -14,7 +14,6 @@ import {
 	DialogTitle,
 	type DialogRootProps,
 } from "../../../components/dialog";
-import { iconButtonVariants } from "../../../components/icon-button";
 import { TextInput } from "../../../components/inputs/text-input";
 import {
 	MenuContent,
@@ -76,13 +75,10 @@ const RenameChatDialog = ({ chat, onRenameComplete, dialogProps }: RenameChatDia
 					<TextInput placeholder="Enter a name" {...form.register("name")} />
 					<DialogFooter>
 						<DialogCloseTrigger asChild>
-							<Button variant="ghost" color="secondary">
-								Cancel
-							</Button>
+							<Button>Cancel</Button>
 						</DialogCloseTrigger>
 						<Button
 							type="submit"
-							color="primary"
 							disabled={!form.formState.isDirty}
 							isLoading={renameChatMutation.isPending}
 						>
@@ -175,13 +171,7 @@ export const ChatSidebar = () => {
 	return (
 		<Sidebar className="chat-sidebar">
 			<div className="chat-sidebar-actions">
-				<Link
-					to="/chat"
-					className={iconButtonVariants({
-						color: "secondary",
-						variant: "ghost",
-					})}
-				>
+				<Link to="/chat" className="icon-button">
 					<MessageCirclePlusIcon />
 				</Link>
 			</div>

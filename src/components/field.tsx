@@ -1,5 +1,4 @@
 import type { FieldRootProps } from "@ark-ui/react";
-import { cva, type VariantProps } from "class-variance-authority";
 import clsx from "clsx";
 import { createContext, useContext, useId, type HTMLAttributes, type ReactNode } from "react";
 import { PasswordInput, type PasswordInputProps } from "./inputs/password-input";
@@ -35,27 +34,17 @@ export const useFieldControlAccessibilityProps = () => {
 	};
 };
 
-const fieldVariants = cva("field", {
-	variants: {
-		variant: {
-			horizontal: "field--horizontal",
-		},
-	},
-});
-
-export interface FieldProps
-	extends HTMLAttributes<HTMLDivElement>,
-		VariantProps<typeof fieldVariants> {
+export interface FieldProps extends HTMLAttributes<HTMLDivElement> {
 	hasError?: boolean;
 }
 
-export const FieldRoot = ({ hasError = false, variant, className, ...props }: FieldProps) => {
+export const FieldRoot = ({ hasError = false, className, ...props }: FieldProps) => {
 	const id = useId();
 
 	return (
 		<fieldContext.Provider value={{ id, hasError }}>
 			<div
-				className={fieldVariants({ className, variant })}
+				className={clsx("field", className)}
 				{...props}
 				data-invalid={hasError ?? undefined}
 			/>

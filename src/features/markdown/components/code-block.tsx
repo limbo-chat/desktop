@@ -27,11 +27,7 @@ const CopyButton = ({ content }: CopyButtonProps) => {
 		}, 1000);
 	};
 
-	return (
-		<IconButton color="secondary" variant="ghost" onClick={handleClick}>
-			{copied ? <CheckIcon /> : <CopyIcon />}
-		</IconButton>
-	);
+	return <IconButton onClick={handleClick}>{copied ? <CheckIcon /> : <CopyIcon />}</IconButton>;
 };
 
 export const CodeBlock = ({ lang, content }: CodeBlockProps) => {

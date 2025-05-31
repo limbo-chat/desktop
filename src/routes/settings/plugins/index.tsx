@@ -1,13 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-	AlertCircleIcon,
-	FolderIcon,
-	PlusIcon,
-	RefreshCwIcon,
-	SettingsIcon,
-	Trash2Icon,
-} from "lucide-react";
+import { FolderIcon, PlusIcon, RefreshCwIcon, SettingsIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -25,7 +18,7 @@ import {
 	DialogTitle,
 	type DialogRootProps,
 } from "../../../components/dialog";
-import { IconButton, iconButtonVariants } from "../../../components/icon-button";
+import { IconButton } from "../../../components/icon-button";
 import { Switch } from "../../../components/switch";
 import { Tooltip } from "../../../components/tooltip";
 import { TextInputFieldController } from "../../../features/forms/components";
@@ -84,13 +77,9 @@ const UninstallPluginDialog = ({
 				</DialogHeader>
 				<DialogFooter>
 					<DialogCloseTrigger asChild>
-						<Button color="secondary">Cancel</Button>
+						<Button>Cancel</Button>
 					</DialogCloseTrigger>
-					<Button
-						color="destructive"
-						isLoading={uninstallPluginMutation.isPending}
-						onClick={handleUninstall}
-					>
+					<Button isLoading={uninstallPluginMutation.isPending} onClick={handleUninstall}>
 						Uninstall
 					</Button>
 				</DialogFooter>
@@ -153,44 +142,24 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 						<p className="plugin-card-description">{plugin.manifest.description}</p>
 					</div>
 					<div className="plugin-card-actions">
-						<Tooltip label="Errors">
-							<IconButton
-								variant="ghost"
-								color="secondary"
-								className="plugin-card-action"
-								data-action="errors"
-							>
-								<AlertCircleIcon />
-							</IconButton>
-						</Tooltip>
 						<Tooltip label="Settings">
 							<Link
-								className={iconButtonVariants({
-									variant: "ghost",
-									color: "secondary",
-									className: "plugin-card-action",
-								})}
+								className="icon-button plugin-card-action"
 								to="/settings/plugins/$id"
 								params={{ id: plugin.manifest.id }}
-								data-action="settings"
+								data-action="open-settings"
 							>
 								<SettingsIcon />
 							</Link>
 						</Tooltip>
 						<Tooltip label="Reload">
-							<IconButton
-								className="plugin-card-action"
-								variant="ghost"
-								color="secondary"
-							>
+							<IconButton className="plugin-card-action" data-action="reload">
 								<RefreshCwIcon />
 							</IconButton>
 						</Tooltip>
 						<Tooltip label="Uninstall">
 							<IconButton
 								className="plugin-card-action"
-								variant="ghost"
-								color="destructive"
 								data-action="uninstall"
 								onClick={() => setIsUninstallPluginDialogOpen(true)}
 							>
@@ -267,13 +236,10 @@ const InstallPluginDialog = ({ onInstallComplete, dialogProps }: InstallPluginDi
 					/>
 					<DialogFooter>
 						<DialogCloseTrigger asChild>
-							<Button variant="ghost" color="secondary">
-								Cancel
-							</Button>
+							<Button>Cancel</Button>
 						</DialogCloseTrigger>
 						<Button
 							type="submit"
-							color="primary"
 							disabled={!form.formState.isDirty}
 							isLoading={installPluginMutation.isPending}
 						>

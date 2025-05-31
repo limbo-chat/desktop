@@ -64,12 +64,7 @@ export interface DialogCloseButtonProps extends IconButtonProps {}
 export const DialogCloseButton = ({ className, ...props }: DialogCloseButtonProps) => {
 	return (
 		<DialogCloseTrigger asChild>
-			<IconButton
-				color="secondary"
-				variant="ghost"
-				className={clsx("dialog-close-button", className)}
-				{...props}
-			>
+			<IconButton className={clsx("dialog-close-button", className)} {...props}>
 				<XIcon />
 			</IconButton>
 		</DialogCloseTrigger>

@@ -20,7 +20,7 @@ export const ChatToolsMenu = () => {
 	return (
 		<MenuRoot>
 			<MenuTrigger asChild>
-				<IconButton variant="ghost" color="secondary">
+				<IconButton>
 					<HammerIcon />
 				</IconButton>
 			</MenuTrigger>
