@@ -1,4 +1,4 @@
-import { useEffect, useState, type Ref, type RefObject } from "react";
+import { useEffect, useMemo, useState, type Ref, type RefObject } from "react";
 
 export const useIsAppFocused = () => {
 	const [isAppFocused, setIsAppFocused] = useState(true);
@@ -83,4 +83,26 @@ export const useHotkey = ({ key, metakey, execute }: UseHotkeyOptions) => {
 			window.removeEventListener("keydown", handleKeyDown);
 		};
 	}, [key, metakey, execute]);
+};
+
+export const useAnimationUnmount = (isVisible: boolean) => {
+	const [shouldMount, setShouldMount] = useState(isVisible);
+
+	useEffect(() => {
+		if (isVisible) {
+			setShouldMount(true);
+		}
+	}, [isVisible]);
+
+	const componentProps = useMemo(() => {
+		return {
+			onAnimationEnd: () => {
+				if (!isVisible) {
+					setShouldMount(false);
+				}
+			},
+		};
+	}, [isVisible]);
+
+	return { shouldMount, props: componentProps };
 };

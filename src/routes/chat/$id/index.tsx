@@ -1,12 +1,12 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
-import { useCallback, useEffect, useLayoutEffect, useRef, type ButtonHTMLAttributes } from "react";
+import { useCallback, useEffect, useRef, useState, type ButtonHTMLAttributes } from "react";
 import { useShallow } from "zustand/shallow";
 import { ChatLog } from "../../../features/chat/components/chat-log";
 import { useMessageList } from "../../../features/chat/hooks/use-message-list";
 import { useChatStore } from "../../../features/chat/stores";
-import { useIsAtBottom } from "../../../hooks/common";
+import { useAnimationUnmount, useIsAtBottom } from "../../../hooks/common";
 import { useMainRouter } from "../../../lib/trpc";
 
 export const Route = createFileRoute("/chat/$id/")({
@@ -19,8 +19,19 @@ interface ScrollToBottomButtonProps extends ButtonHTMLAttributes<HTMLButtonEleme
 }
 
 const ScrollToBottomButton = ({ state, ...props }: ScrollToBottomButtonProps) => {
+	const animationUnmount = useAnimationUnmount(state === "visible");
+
+	if (!animationUnmount.shouldMount) {
+		return null;
+	}
+
 	return (
-		<button className="scroll-to-bottom-button" data-state={state} {...props}>
+		<button
+			className="scroll-to-bottom-button"
+			data-state={state}
+			{...animationUnmount.props}
+			{...props}
+		>
 			<span className="scroll-to-bottom-button-text">Scroll to bottom</span>
 			<ChevronDown className="scroll-to-bottom-button-icon" />
 		</button>
