@@ -18,7 +18,7 @@ function PluginSettingsPage() {
 	}
 
 	return (
-		<SettingsPage className="settings-page--plugin">
+		<SettingsPage className="plugin-settings-page">
 			<PluginSettingsForm
 				plugin={plugin}
 				onSubmit={(settingsValues) => {

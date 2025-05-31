@@ -270,7 +270,7 @@ function PluginsSettingsPage() {
 					onOpenChange: (e) => setIsInstallPluginDialogOpen(e.open),
 				}}
 			/>
-			<SettingsPage className="settings-page--plugins">
+			<SettingsPage className="plugins-page">
 				<div className="plugins-page-header">
 					<h1 className="plugins-page-title">Plugins</h1>
 					<div className="plugins-page-actions">

@@ -7,7 +7,7 @@ export const Route = createFileRoute("/settings/appearance")({
 
 function AppearanceSettingsPage() {
 	return (
-		<SettingsPage className="settings-page--appearance">
+		<SettingsPage className="appearance-settings-page">
 			<Link className="button" to="/design-playground">
 				Open design playground
 			</Link>

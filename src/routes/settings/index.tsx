@@ -6,5 +6,5 @@ export const Route = createFileRoute("/settings/")({
 });
 
 function GeneralSettingsPage() {
-	return <SettingsPage className="settings-page--general">general settings</SettingsPage>;
+	return <SettingsPage className="general-settings-page">general settings</SettingsPage>;
 }

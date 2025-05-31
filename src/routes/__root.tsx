@@ -167,10 +167,10 @@ const MainContent = () => {
 	useOpenCommandPaletteHotkey();
 
 	return (
-		<div className="app-row">
+		<div className="app-content">
 			<SideDock />
 			<CommandPaletteModal />
-			<div className="app-content">
+			<div className="root-page">
 				<Outlet />
 			</div>
 		</div>

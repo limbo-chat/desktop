@@ -12,7 +12,7 @@ function DeveloperSettingsPage() {
 	const [isDevMode, setIsDevMode] = useState<boolean>(false);
 
 	return (
-		<SettingsPage className="settings-page--developer">
+		<SettingsPage className="developer-settings-page">
 			<Card>
 				<CardHeader>
 					<CardTitle>Developer mode</CardTitle>
