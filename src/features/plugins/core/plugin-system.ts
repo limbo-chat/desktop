@@ -1,5 +1,5 @@
 import type * as limbo from "limbo";
-import { PluginAPIBuilder } from "./plugin-api-builder";
+import { createPluginAPI } from "./create-plugin-api";
 import type { GetPluginResult } from "./plugin-backend";
 import { PluginContext } from "./plugin-context";
 import type { PluginManager } from "./plugin-manager";
@@ -50,7 +50,7 @@ export class PluginSystem {
 			pluginContext.setCachedSettingValue(settingId, settingValue);
 		}
 
-		const pluginAPIBuilder = new PluginAPIBuilder({
+		const pluginAPI = createPluginAPI({
 			pluginContext,
 			hostBridge: {
 				getLLM: (llmId) => {
@@ -70,8 +70,6 @@ export class PluginSystem {
 				},
 			},
 		});
-
-		const pluginAPI = pluginAPIBuilder.build();
 
 		let pluginModule;
 
