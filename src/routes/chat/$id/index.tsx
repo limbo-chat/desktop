@@ -103,6 +103,8 @@ function ChatPage() {
 
 	useEffect(() => {
 		return () => {
+			hasScrolledToBottomOnLoad.current = false;
+
 			chatStore.reset();
 		};
 	}, [params.id]);
