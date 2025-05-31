@@ -25,6 +25,10 @@ export const useSendMessage = () => {
 		const chatStore = useChatStore.getState();
 		const toolCallStore = useToolCallStore.getState();
 
+		if (!chatStore.userHasSentMessage) {
+			chatStore.setUserHasSentMessage(true);
+		}
+
 		// trigger the loading state
 		chatStore.setIsAssistantResponsePending(true);
 

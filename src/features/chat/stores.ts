@@ -5,7 +5,9 @@ import type { ChatMessageType } from "./types";
 
 export interface ChatStore {
 	messages: ChatMessageType[];
+	userHasSentMessage: boolean;
 	isAssistantResponsePending: boolean;
+	setUserHasSentMessage: (userHasSentMessage: boolean) => void;
 	setIsAssistantResponsePending: (isResponsePending: boolean) => void;
 	getMessage: (messageId: string) => ChatMessageType | undefined;
 	addMessage: (message: ChatMessageType) => void;
@@ -23,7 +25,11 @@ export interface ChatStore {
 export const useChatStore = create(
 	immer<ChatStore>((set, get) => ({
 		messages: [],
+		userHasSentMessage: false,
 		isAssistantResponsePending: false,
+		setUserHasSentMessage: (userHasSentMessage) => {
+			set({ userHasSentMessage });
+		},
 		setIsAssistantResponsePending: (isResponsePending) => {
 			set({ isAssistantResponsePending: isResponsePending });
 		},
@@ -93,6 +99,7 @@ export const useChatStore = create(
 		reset: () => {
 			set((state) => {
 				state.messages = [];
+				state.userHasSentMessage = false;
 				state.isAssistantResponsePending = false;
 			});
 		},

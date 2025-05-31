@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, type ButtonHTMLAttributes } from "react";
+import { useCallback, useEffect, useRef, type ButtonHTMLAttributes } from "react";
 import { useShallow } from "zustand/shallow";
 import { ChatLog } from "../../../features/chat/components/chat-log";
 import { useMessageList } from "../../../features/chat/hooks/use-message-list";
@@ -43,7 +43,6 @@ function ChatPage() {
 	const mainRouter = useMainRouter();
 	const messages = useMessageList();
 	const scrollableRef = useRef<HTMLDivElement>(null);
-	const bottomRef = useRef<HTMLDivElement>(null);
 	const hasScrolledToBottomOnLoad = useRef(false);
 
 	const isAtBottom = useIsAtBottom({
@@ -53,18 +52,20 @@ function ChatPage() {
 
 	const chatStore = useChatStore(
 		useShallow((state) => ({
+			userHasSentMessage: state.userHasSentMessage,
 			addMessage: state.addMessage,
 			reset: state.reset,
 		}))
 	);
 
-	const scrollToBottom = useCallback(() => {
+	const scrollToBottom = useCallback((behavior: ScrollBehavior = "auto") => {
 		if (!scrollableRef.current) {
 			return;
 		}
 
 		scrollableRef.current.scrollTo({
 			top: scrollableRef.current.scrollHeight,
+			behavior,
 		});
 	}, []);
 
@@ -87,12 +88,18 @@ function ChatPage() {
 	}, [listChatMessagesQuery.data]);
 
 	useEffect(() => {
-		if (messages.length > 0 && hasScrolledToBottomOnLoad.current === false) {
+		if (messages.length === 0) {
+			return;
+		}
+
+		if (hasScrolledToBottomOnLoad.current) {
 			scrollToBottom();
+		} else {
+			scrollToBottom("instant");
 
 			hasScrolledToBottomOnLoad.current = true;
 		}
-	}, [messages]);
+	}, [messages.length]);
 
 	useEffect(() => {
 		return () => {
@@ -100,14 +107,17 @@ function ChatPage() {
 		};
 	}, [params.id]);
 
+	const shouldShowSpacer = chatStore.userHasSentMessage && messages.length > 2;
+
 	return (
 		<div className="chat-page" data-is-at-bottom={isAtBottom}>
 			<div className="chat-log-container" ref={scrollableRef}>
 				<ChatLog messages={messages} />
+				{shouldShowSpacer && <div className="chat-scroll-spacer" />}
 			</div>
 			<ScrollToBottomButton
 				state={isAtBottom ? "hidden" : "visible"}
-				onClick={scrollToBottom}
+				onClick={() => scrollToBottom()}
 			/>
 		</div>
 	);
