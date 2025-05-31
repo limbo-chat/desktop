@@ -15,6 +15,7 @@ import {
 	type DialogRootProps,
 } from "../../../components/dialog";
 import { iconButtonVariants } from "../../../components/icon-button";
+import { TextInput } from "../../../components/inputs/text-input";
 import {
 	MenuContent,
 	MenuItem,
@@ -29,7 +30,6 @@ import {
 	SidebarGroupTitle,
 	SidebarItem,
 } from "../../../components/sidebar";
-import { TextInput } from "../../../components/text-input";
 import { useDeleteChatMutation, useRenameChatMutation } from "../../../features/chat/hooks/queries";
 import { useMainRouter } from "../../../lib/trpc";
 

@@ -25,6 +25,7 @@ import { Route as ChatIdIndexImport } from './routes/chat/$id/index'
 import { Route as SettingsPluginsIdImport } from './routes/settings/plugins/$id'
 import { Route as DesignPlaygroundElementsTooltipImport } from './routes/design-playground/elements/tooltip'
 import { Route as DesignPlaygroundElementsMarkdownImport } from './routes/design-playground/elements/markdown'
+import { Route as DesignPlaygroundElementsInputsImport } from './routes/design-playground/elements/inputs'
 import { Route as DesignPlaygroundElementsDialogImport } from './routes/design-playground/elements/dialog'
 import { Route as DesignPlaygroundElementsButtonImport } from './routes/design-playground/elements/button'
 
@@ -113,6 +114,13 @@ const DesignPlaygroundElementsMarkdownRoute =
   DesignPlaygroundElementsMarkdownImport.update({
     id: '/elements/markdown',
     path: '/elements/markdown',
+    getParentRoute: () => DesignPlaygroundRouteRoute,
+  } as any)
+
+const DesignPlaygroundElementsInputsRoute =
+  DesignPlaygroundElementsInputsImport.update({
+    id: '/elements/inputs',
+    path: '/elements/inputs',
     getParentRoute: () => DesignPlaygroundRouteRoute,
   } as any)
 
@@ -211,6 +219,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DesignPlaygroundElementsDialogImport
       parentRoute: typeof DesignPlaygroundRouteImport
     }
+    '/design-playground/elements/inputs': {
+      id: '/design-playground/elements/inputs'
+      path: '/elements/inputs'
+      fullPath: '/design-playground/elements/inputs'
+      preLoaderRoute: typeof DesignPlaygroundElementsInputsImport
+      parentRoute: typeof DesignPlaygroundRouteImport
+    }
     '/design-playground/elements/markdown': {
       id: '/design-playground/elements/markdown'
       path: '/elements/markdown'
@@ -269,6 +284,7 @@ interface DesignPlaygroundRouteRouteChildren {
   DesignPlaygroundIndexRoute: typeof DesignPlaygroundIndexRoute
   DesignPlaygroundElementsButtonRoute: typeof DesignPlaygroundElementsButtonRoute
   DesignPlaygroundElementsDialogRoute: typeof DesignPlaygroundElementsDialogRoute
+  DesignPlaygroundElementsInputsRoute: typeof DesignPlaygroundElementsInputsRoute
   DesignPlaygroundElementsMarkdownRoute: typeof DesignPlaygroundElementsMarkdownRoute
   DesignPlaygroundElementsTooltipRoute: typeof DesignPlaygroundElementsTooltipRoute
 }
@@ -277,6 +293,7 @@ const DesignPlaygroundRouteRouteChildren: DesignPlaygroundRouteRouteChildren = {
   DesignPlaygroundIndexRoute: DesignPlaygroundIndexRoute,
   DesignPlaygroundElementsButtonRoute: DesignPlaygroundElementsButtonRoute,
   DesignPlaygroundElementsDialogRoute: DesignPlaygroundElementsDialogRoute,
+  DesignPlaygroundElementsInputsRoute: DesignPlaygroundElementsInputsRoute,
   DesignPlaygroundElementsMarkdownRoute: DesignPlaygroundElementsMarkdownRoute,
   DesignPlaygroundElementsTooltipRoute: DesignPlaygroundElementsTooltipRoute,
 }
@@ -318,6 +335,7 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof SettingsIndexRoute
   '/design-playground/elements/button': typeof DesignPlaygroundElementsButtonRoute
   '/design-playground/elements/dialog': typeof DesignPlaygroundElementsDialogRoute
+  '/design-playground/elements/inputs': typeof DesignPlaygroundElementsInputsRoute
   '/design-playground/elements/markdown': typeof DesignPlaygroundElementsMarkdownRoute
   '/design-playground/elements/tooltip': typeof DesignPlaygroundElementsTooltipRoute
   '/settings/plugins/$id': typeof SettingsPluginsIdRoute
@@ -334,6 +352,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsIndexRoute
   '/design-playground/elements/button': typeof DesignPlaygroundElementsButtonRoute
   '/design-playground/elements/dialog': typeof DesignPlaygroundElementsDialogRoute
+  '/design-playground/elements/inputs': typeof DesignPlaygroundElementsInputsRoute
   '/design-playground/elements/markdown': typeof DesignPlaygroundElementsMarkdownRoute
   '/design-playground/elements/tooltip': typeof DesignPlaygroundElementsTooltipRoute
   '/settings/plugins/$id': typeof SettingsPluginsIdRoute
@@ -354,6 +373,7 @@ export interface FileRoutesById {
   '/settings/': typeof SettingsIndexRoute
   '/design-playground/elements/button': typeof DesignPlaygroundElementsButtonRoute
   '/design-playground/elements/dialog': typeof DesignPlaygroundElementsDialogRoute
+  '/design-playground/elements/inputs': typeof DesignPlaygroundElementsInputsRoute
   '/design-playground/elements/markdown': typeof DesignPlaygroundElementsMarkdownRoute
   '/design-playground/elements/tooltip': typeof DesignPlaygroundElementsTooltipRoute
   '/settings/plugins/$id': typeof SettingsPluginsIdRoute
@@ -375,6 +395,7 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/design-playground/elements/button'
     | '/design-playground/elements/dialog'
+    | '/design-playground/elements/inputs'
     | '/design-playground/elements/markdown'
     | '/design-playground/elements/tooltip'
     | '/settings/plugins/$id'
@@ -390,6 +411,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/design-playground/elements/button'
     | '/design-playground/elements/dialog'
+    | '/design-playground/elements/inputs'
     | '/design-playground/elements/markdown'
     | '/design-playground/elements/tooltip'
     | '/settings/plugins/$id'
@@ -408,6 +430,7 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/design-playground/elements/button'
     | '/design-playground/elements/dialog'
+    | '/design-playground/elements/inputs'
     | '/design-playground/elements/markdown'
     | '/design-playground/elements/tooltip'
     | '/settings/plugins/$id'
@@ -462,6 +485,7 @@ export const routeTree = rootRoute
         "/design-playground/",
         "/design-playground/elements/button",
         "/design-playground/elements/dialog",
+        "/design-playground/elements/inputs",
         "/design-playground/elements/markdown",
         "/design-playground/elements/tooltip"
       ]
@@ -502,6 +526,10 @@ export const routeTree = rootRoute
     },
     "/design-playground/elements/dialog": {
       "filePath": "design-playground/elements/dialog.tsx",
+      "parent": "/design-playground"
+    },
+    "/design-playground/elements/inputs": {
+      "filePath": "design-playground/elements/inputs.tsx",
       "parent": "/design-playground"
     },
     "/design-playground/elements/markdown": {

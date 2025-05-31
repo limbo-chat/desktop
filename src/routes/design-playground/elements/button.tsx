@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "../../../components/button";
 import { Checkbox } from "../../../components/checkbox";
-import { Field, FieldLabel, InlineField } from "../../../components/field";
+import { Field, InlineField } from "../../../components/field";
 import { SimpleSelect, SimpleSelectItem } from "../../../components/select";
 import {
 	ComponentPreview,

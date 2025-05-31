@@ -1,7 +1,8 @@
 import Fuse from "fuse.js";
-import { InfoIcon } from "lucide-react";
+import { InfoIcon, SearchIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "../../../components/button";
+import { TextInput } from "../../../components/inputs/text-input";
 import {
 	MenuRoot,
 	MenuTrigger,
@@ -9,7 +10,6 @@ import {
 	MenuContent,
 	MenuItem,
 } from "../../../components/menu";
-import { TextInput } from "../../../components/text-input";
 import { Tooltip } from "../../../components/tooltip";
 import { useLLMList, useLLMs } from "../../../features/llms/hooks";
 import { useSelectedChatLLMId } from "../../../features/storage/hooks";
@@ -54,16 +54,18 @@ export const ChatLLMPicker = () => {
 				</Button>
 			</MenuTrigger>
 			<MenuPositioner>
-				<MenuContent>
-					<TextInput
-						placeholder="Search models..."
-						value={search}
-						onChange={(e) => setSearch(e.target.value)}
-					/>
-					<div>
+				<MenuContent className="llm-picker">
+					<div className="llm-picker-header">
+						<TextInput
+							placeholder="Search models..."
+							leftSection={<SearchIcon />}
+						></TextInput>
+					</div>
+					<div className="llm-picker-results">
 						{filteredLLMs.map((llm) => {
 							return (
 								<MenuItem
+									className="llm-picker-item"
 									key={llm.id}
 									value={llm.id}
 									onClick={() => setSelectedChatLLMId(llm.id)}

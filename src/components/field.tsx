@@ -2,7 +2,8 @@ import type { FieldRootProps } from "@ark-ui/react";
 import { cva, type VariantProps } from "class-variance-authority";
 import clsx from "clsx";
 import { createContext, useContext, useId, type HTMLAttributes, type ReactNode } from "react";
-import { TextInput, type TextInputProps } from "./text-input";
+import { PasswordInput, type PasswordInputProps } from "./inputs/password-input";
+import { TextInput, type TextInputProps } from "./inputs/text-input";
 
 // TODO, there is more work to be done in making the form interactions accessible and semantic.
 // selects, checkboxes, textarea, ... custom controls
@@ -133,4 +134,21 @@ export interface TextInputFieldProps extends FieldProps, FieldRootProps {
 
 export const TextInputField = ({ textInputProps, ...fieldProps }: TextInputFieldProps) => {
 	return <Field control={<FieldTextInput {...textInputProps} />} {...fieldProps} />;
+};
+
+export const FieldPasswordInput = (props: PasswordInputProps) => {
+	const accessbilityProps = useFieldControlAccessibilityProps();
+
+	return <PasswordInput {...accessbilityProps} {...props} />;
+};
+
+export interface PasswordInputFieldProps extends FieldProps, FieldRootProps {
+	passwordInputProps?: PasswordInputProps;
+}
+
+export const PasswordInputField = ({
+	passwordInputProps,
+	...fieldProps
+}: PasswordInputFieldProps) => {
+	return <Field control={<FieldPasswordInput {...passwordInputProps} />} {...fieldProps} />;
 };

@@ -2,7 +2,7 @@ import { useEffect, useMemo, type HTMLProps } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import type * as limbo from "limbo";
 import { Checkbox } from "../../../components/checkbox";
-import { TextInputFieldController } from "../../forms/components";
+import { PasswordInputFieldController, TextInputFieldController } from "../../forms/components";
 import { useLLMList } from "../../llms/hooks";
 import { usePluginContextSettings } from "../../plugins/hooks/use-plugin-context-settings";
 import type { ActivePlugin } from "../core/plugin-manager";
@@ -14,6 +14,21 @@ interface TextSettingRendererProps {
 }
 
 const TextSettingRenderer = ({ setting }: TextSettingRendererProps) => {
+	if (setting.variant === "password") {
+		return (
+			<PasswordInputFieldController
+				name={setting.id}
+				passwordFieldProps={{
+					label: setting.label,
+					description: setting.description,
+					passwordInputProps: {
+						placeholder: setting.placeholder,
+					},
+				}}
+			/>
+		);
+	}
+
 	return (
 		<TextInputFieldController
 			name={setting.id}
@@ -22,7 +37,6 @@ const TextSettingRenderer = ({ setting }: TextSettingRendererProps) => {
 				description: setting.description,
 				textInputProps: {
 					placeholder: setting.placeholder,
-					type: setting.variant === "password" ? "password" : "text",
 				},
 			}}
 		/>
