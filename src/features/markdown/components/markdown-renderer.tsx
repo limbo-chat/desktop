@@ -1,5 +1,5 @@
 import Markdown, { type MarkdownToJSX } from "markdown-to-jsx";
-import { useMemo } from "react";
+import { Fragment, useMemo } from "react";
 import { CodeBlock } from "../../markdown/components/code-block";
 import { useCollatedMarkdownComponents } from "../hooks";
 
@@ -44,6 +44,7 @@ export const MarkdownRenderer = ({ content }: MarkdownRendererProps) => {
 		<Markdown
 			options={{
 				overrides,
+				wrapper: Fragment,
 			}}
 		>
 			{content}

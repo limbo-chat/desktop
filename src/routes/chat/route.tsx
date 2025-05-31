@@ -11,7 +11,7 @@ function ChatLayout() {
 	const [chatComposerRef, chatComposerDimensions] = useMeasure();
 
 	return (
-		<div className="chat-page">
+		<div className="chat-layout">
 			<ChatSidebar />
 			<div
 				className="chat-content"

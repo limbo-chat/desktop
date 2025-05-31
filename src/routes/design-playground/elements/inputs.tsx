@@ -12,11 +12,13 @@ export const Route = createFileRoute("/design-playground/elements/inputs")({
 
 function InputElementsPage() {
 	return (
-		<ComponentPreview>
-			<ComponentPreviewContent>
-				<PasswordInput placeholder="Enter password" />
-			</ComponentPreviewContent>
-			<ComponentPreviewPanel></ComponentPreviewPanel>
-		</ComponentPreview>
+		<div className="input-elements-page">
+			<ComponentPreview>
+				<ComponentPreviewContent>
+					<PasswordInput placeholder="Enter password" />
+				</ComponentPreviewContent>
+				<ComponentPreviewPanel></ComponentPreviewPanel>
+			</ComponentPreview>
+		</div>
 	);
 }

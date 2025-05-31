@@ -36,28 +36,38 @@ function TooltipElementPage() {
 	});
 
 	return (
-		<ComponentPreview>
-			<ComponentPreviewContent>
-				<Tooltip open label="Tooltip label" positioning={{ placement: placement as any }}>
-					<Button>Trigger</Button>
-				</Tooltip>
-			</ComponentPreviewContent>
-			<ComponentPreviewPanel>
-				<Field
-					label="Placement"
-					control={
-						<SimpleSelect
-							value={[placement]}
-							collection={placementCollection}
-							onValueChange={(e) => setPlacement(e.value[0])}
-						>
-							{placementCollection.items.map((item) => (
-								<SimpleSelectItem item={item} label={item.label} key={item.value} />
-							))}
-						</SimpleSelect>
-					}
-				/>
-			</ComponentPreviewPanel>
-		</ComponentPreview>
+		<div className="tooltip-element-page">
+			<ComponentPreview>
+				<ComponentPreviewContent>
+					<Tooltip
+						open
+						label="Tooltip label"
+						positioning={{ placement: placement as any }}
+					>
+						<Button>Trigger</Button>
+					</Tooltip>
+				</ComponentPreviewContent>
+				<ComponentPreviewPanel>
+					<Field
+						label="Placement"
+						control={
+							<SimpleSelect
+								value={[placement]}
+								collection={placementCollection}
+								onValueChange={(e) => setPlacement(e.value[0])}
+							>
+								{placementCollection.items.map((item) => (
+									<SimpleSelectItem
+										item={item}
+										label={item.label}
+										key={item.value}
+									/>
+								))}
+							</SimpleSelect>
+						}
+					/>
+				</ComponentPreviewPanel>
+			</ComponentPreview>
+		</div>
 	);
 }

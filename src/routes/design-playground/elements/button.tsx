@@ -18,32 +18,34 @@ function ButtonElementPage() {
 	const [isLoading, setIsLoading] = useState(false);
 
 	return (
-		<ComponentPreview>
-			<ComponentPreviewContent>
-				<Button disabled={isDisabled} isLoading={isLoading}>
-					Click me
-				</Button>
-			</ComponentPreviewContent>
-			<ComponentPreviewPanel>
-				<InlineField
-					label="Disabled?"
-					control={
-						<Checkbox
-							checked={isDisabled}
-							onCheckedChange={(e) => setIsDisabled(e.checked as boolean)}
-						/>
-					}
-				/>
-				<InlineField
-					label="Loading?"
-					control={
-						<Checkbox
-							checked={isLoading}
-							onCheckedChange={(e) => setIsLoading(e.checked as boolean)}
-						/>
-					}
-				/>
-			</ComponentPreviewPanel>
-		</ComponentPreview>
+		<div className="button-element-page">
+			<ComponentPreview>
+				<ComponentPreviewContent>
+					<Button disabled={isDisabled} isLoading={isLoading}>
+						Click me
+					</Button>
+				</ComponentPreviewContent>
+				<ComponentPreviewPanel>
+					<InlineField
+						label="Disabled?"
+						control={
+							<Checkbox
+								checked={isDisabled}
+								onCheckedChange={(e) => setIsDisabled(e.checked as boolean)}
+							/>
+						}
+					/>
+					<InlineField
+						label="Loading?"
+						control={
+							<Checkbox
+								checked={isLoading}
+								onCheckedChange={(e) => setIsLoading(e.checked as boolean)}
+							/>
+						}
+					/>
+				</ComponentPreviewPanel>
+			</ComponentPreview>
+		</div>
 	);
 }

@@ -3,7 +3,7 @@ import { MarkdownContainer } from "../../../features/markdown/components/markdow
 import { MarkdownRenderer } from "../../../features/markdown/components/markdown-renderer";
 
 export const Route = createFileRoute("/design-playground/elements/markdown")({
-	component: MarkdownElementComponent,
+	component: MarkdownElementPage,
 });
 
 const markdownContent = `
@@ -143,14 +143,14 @@ fn main() {
 def hello_world():
 	print("Hello World!")
 \`\`\`
-
-
 `;
 
-function MarkdownElementComponent() {
+function MarkdownElementPage() {
 	return (
-		<MarkdownContainer>
-			<MarkdownRenderer content={markdownContent} />
-		</MarkdownContainer>
+		<div className="markdown-element-page">
+			<MarkdownContainer>
+				<MarkdownRenderer content={markdownContent} />
+			</MarkdownContainer>
+		</div>
 	);
 }

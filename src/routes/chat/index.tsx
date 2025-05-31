@@ -5,5 +5,5 @@ export const Route = createFileRoute("/chat/")({
 });
 
 function NewChatPage() {
-	return <div className="chat-launcher">new chat</div>;
+	return <div className="new-chat-page">new chat</div>;
 }

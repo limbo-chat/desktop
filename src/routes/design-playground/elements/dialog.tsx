@@ -18,22 +18,24 @@ export const Route = createFileRoute("/design-playground/elements/dialog")({
 
 function DialogElementPage() {
 	return (
-		<DialogRoot>
-			<DialogTrigger asChild>
-				<Button>Open dialog</Button>
-			</DialogTrigger>
-			<DialogContent>
-				<DialogCloseButton />
-				<DialogHeader>
-					<DialogTitle>Hello world!</DialogTitle>
-					<DialogDescription>This is a dialog</DialogDescription>
-				</DialogHeader>
-				<DialogFooter>
-					<DialogCloseTrigger asChild>
-						<Button>Close dialog</Button>
-					</DialogCloseTrigger>
-				</DialogFooter>
-			</DialogContent>
-		</DialogRoot>
+		<div className="dialog-element-page">
+			<DialogRoot>
+				<DialogTrigger asChild>
+					<Button>Open dialog</Button>
+				</DialogTrigger>
+				<DialogContent>
+					<DialogCloseButton />
+					<DialogHeader>
+						<DialogTitle>Hello world!</DialogTitle>
+						<DialogDescription>This is a dialog</DialogDescription>
+					</DialogHeader>
+					<DialogFooter>
+						<DialogCloseTrigger asChild>
+							<Button>Close dialog</Button>
+						</DialogCloseTrigger>
+					</DialogFooter>
+				</DialogContent>
+			</DialogRoot>
+		</div>
 	);
 }
