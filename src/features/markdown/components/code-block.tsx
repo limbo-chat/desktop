@@ -1,8 +1,9 @@
 import { toJsxRuntime } from "hast-util-to-jsx-runtime";
-import { CheckIcon, CopyIcon } from "lucide-react";
+import { CheckIcon, CopyIcon, TextIcon, WrapTextIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
-import { IconButton } from "../../../components/icon-button";
+import { IconButton, type IconButtonProps } from "../../../components/icon-button";
+import { Tooltip } from "../../../components/tooltip";
 import { lowlight } from "../lib";
 
 export interface CodeBlockProps {
@@ -10,11 +11,11 @@ export interface CodeBlockProps {
 	content: string;
 }
 
-interface CopyButtonProps {
+interface CopyButtonProps extends Omit<IconButtonProps, "children"> {
 	content: string;
 }
 
-const CopyButton = ({ content }: CopyButtonProps) => {
+const CopyButton = ({ content, ...props }: CopyButtonProps) => {
 	const [copied, setCopied] = useState(false);
 
 	const handleClick = () => {
@@ -27,10 +28,21 @@ const CopyButton = ({ content }: CopyButtonProps) => {
 		}, 1000);
 	};
 
-	return <IconButton onClick={handleClick}>{copied ? <CheckIcon /> : <CopyIcon />}</IconButton>;
+	return (
+		<IconButton
+			className="copy-button"
+			data-is-copied={copied ?? undefined}
+			onClick={handleClick}
+			{...props}
+		>
+			{copied ? <CheckIcon /> : <CopyIcon />}
+		</IconButton>
+	);
 };
 
 export const CodeBlock = ({ lang, content }: CodeBlockProps) => {
+	const [isTextWrapEnabled, setIsTextWrapEnabled] = useState(false);
+
 	const lines = useMemo(() => {
 		let tree;
 
@@ -48,13 +60,29 @@ export const CodeBlock = ({ lang, content }: CodeBlockProps) => {
 	}, [content]);
 
 	return (
-		<div className="code-block">
+		<div className="code-block" data-lang={lang} data-is-text-wrap-enabled={isTextWrapEnabled}>
 			<div className="code-block-header">
-				<span>{lang}</span>
-				<CopyButton content={content} />
+				<span className="code-block-language">{lang}</span>
+				<div className="code-block-actions">
+					<Tooltip
+						label={isTextWrapEnabled ? "Disable text wrapping" : "Enable text wrapping"}
+					>
+						<IconButton
+							data-action="toggle-text-wrap"
+							onClick={() => setIsTextWrapEnabled((prev) => !prev)}
+						>
+							{isTextWrapEnabled ? (
+								<TextIcon className="text-icon" />
+							) : (
+								<WrapTextIcon className="wrap-text-icon" />
+							)}
+						</IconButton>
+					</Tooltip>
+					<CopyButton data-action="copy" content={content} />
+				</div>
 			</div>
 			<div className="code-block-body">
-				<pre>
+				<pre className="code-block-pre">
 					<code className="code-block-code">{lines}</code>
 				</pre>
 			</div>
