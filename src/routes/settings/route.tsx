@@ -27,6 +27,11 @@ const SettingsSidebar = () => {
 							General
 						</SidebarItem>
 					</Link>
+					<Link to="/settings/chats">
+						<SidebarItem isActive={location.pathname.endsWith("/chats")}>
+							Chats
+						</SidebarItem>
+					</Link>
 					<Link to="/settings/appearance">
 						<SidebarItem isActive={location.pathname.endsWith("/appearance")}>
 							Appearance

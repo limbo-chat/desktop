@@ -12,9 +12,6 @@ export const useCreateChatMutation = () => {
 			onSuccess: () => {
 				queryClient.invalidateQueries(mainRouter.chats.list.queryFilter());
 			},
-			onError: () => {
-				// TODO, show error toast
-			},
 		})
 	);
 };
@@ -27,9 +24,6 @@ export const useRenameChatMutation = () => {
 		mainRouter.chats.rename.mutationOptions({
 			onSuccess: (updatedChat) => {
 				updateChatInQueryCache(queryClient, mainRouter, updatedChat);
-			},
-			onError: () => {
-				// TODO, show error toast
 			},
 		})
 	);
@@ -45,10 +39,23 @@ export const useDeleteChatMutation = () => {
 			onSuccess: async (_, variables) => {
 				removeChatFromQueryCache(queryClient, mainRouter, variables.id);
 
-				await pluginManager.executeOnAfterChatDeletedHooks(variables.id);
+				await pluginManager.executeOnChatDeletedHooks(variables.id);
 			},
-			onError: () => {
-				// TODO, show error toast
+		})
+	);
+};
+
+export const useDeleteAllChatsMutation = () => {
+	const mainRouter = useMainRouter();
+	const queryClient = useQueryClient();
+	const pluginManager = usePluginManager();
+
+	return useMutation(
+		mainRouter.chats.deleteAll.mutationOptions({
+			onSuccess: async (deletedChatIds) => {
+				queryClient.invalidateQueries(mainRouter.chats.list.queryFilter());
+
+				await pluginManager.executeOnChatsDeletedHooks(deletedChatIds);
 			},
 		})
 	);

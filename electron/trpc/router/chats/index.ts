@@ -90,4 +90,9 @@ export const chatsRouter = router({
 	delete: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
 		await db.deleteFrom("chat").where("id", "=", input.id).execute();
 	}),
+	deleteAll: publicProcedure.mutation(async () => {
+		const deletedChatResults = await db.deleteFrom("chat").returning("id").execute();
+
+		return deletedChatResults.map((result) => result.id);
+	}),
 });

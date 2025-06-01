@@ -19,6 +19,7 @@ import { Route as SettingsIndexImport } from './routes/settings/index'
 import { Route as DesignPlaygroundIndexImport } from './routes/design-playground/index'
 import { Route as ChatIndexImport } from './routes/chat/index'
 import { Route as SettingsDeveloperImport } from './routes/settings/developer'
+import { Route as SettingsChatsImport } from './routes/settings/chats'
 import { Route as SettingsAppearanceImport } from './routes/settings/appearance'
 import { Route as SettingsPluginsIndexImport } from './routes/settings/plugins/index'
 import { Route as ChatIdIndexImport } from './routes/chat/$id/index'
@@ -76,6 +77,12 @@ const ChatIndexRoute = ChatIndexImport.update({
 const SettingsDeveloperRoute = SettingsDeveloperImport.update({
   id: '/developer',
   path: '/developer',
+  getParentRoute: () => SettingsRouteRoute,
+} as any)
+
+const SettingsChatsRoute = SettingsChatsImport.update({
+  id: '/chats',
+  path: '/chats',
   getParentRoute: () => SettingsRouteRoute,
 } as any)
 
@@ -175,6 +182,13 @@ declare module '@tanstack/react-router' {
       path: '/appearance'
       fullPath: '/settings/appearance'
       preLoaderRoute: typeof SettingsAppearanceImport
+      parentRoute: typeof SettingsRouteImport
+    }
+    '/settings/chats': {
+      id: '/settings/chats'
+      path: '/chats'
+      fullPath: '/settings/chats'
+      preLoaderRoute: typeof SettingsChatsImport
       parentRoute: typeof SettingsRouteImport
     }
     '/settings/developer': {
@@ -305,6 +319,7 @@ const DesignPlaygroundRouteRouteWithChildren =
 
 interface SettingsRouteRouteChildren {
   SettingsAppearanceRoute: typeof SettingsAppearanceRoute
+  SettingsChatsRoute: typeof SettingsChatsRoute
   SettingsDeveloperRoute: typeof SettingsDeveloperRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   SettingsPluginsIdRoute: typeof SettingsPluginsIdRoute
@@ -313,6 +328,7 @@ interface SettingsRouteRouteChildren {
 
 const SettingsRouteRouteChildren: SettingsRouteRouteChildren = {
   SettingsAppearanceRoute: SettingsAppearanceRoute,
+  SettingsChatsRoute: SettingsChatsRoute,
   SettingsDeveloperRoute: SettingsDeveloperRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   SettingsPluginsIdRoute: SettingsPluginsIdRoute,
@@ -329,6 +345,7 @@ export interface FileRoutesByFullPath {
   '/design-playground': typeof DesignPlaygroundRouteRouteWithChildren
   '/settings': typeof SettingsRouteRouteWithChildren
   '/settings/appearance': typeof SettingsAppearanceRoute
+  '/settings/chats': typeof SettingsChatsRoute
   '/settings/developer': typeof SettingsDeveloperRoute
   '/chat/': typeof ChatIndexRoute
   '/design-playground/': typeof DesignPlaygroundIndexRoute
@@ -346,6 +363,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/settings/appearance': typeof SettingsAppearanceRoute
+  '/settings/chats': typeof SettingsChatsRoute
   '/settings/developer': typeof SettingsDeveloperRoute
   '/chat': typeof ChatIndexRoute
   '/design-playground': typeof DesignPlaygroundIndexRoute
@@ -367,6 +385,7 @@ export interface FileRoutesById {
   '/design-playground': typeof DesignPlaygroundRouteRouteWithChildren
   '/settings': typeof SettingsRouteRouteWithChildren
   '/settings/appearance': typeof SettingsAppearanceRoute
+  '/settings/chats': typeof SettingsChatsRoute
   '/settings/developer': typeof SettingsDeveloperRoute
   '/chat/': typeof ChatIndexRoute
   '/design-playground/': typeof DesignPlaygroundIndexRoute
@@ -389,6 +408,7 @@ export interface FileRouteTypes {
     | '/design-playground'
     | '/settings'
     | '/settings/appearance'
+    | '/settings/chats'
     | '/settings/developer'
     | '/chat/'
     | '/design-playground/'
@@ -405,6 +425,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/settings/appearance'
+    | '/settings/chats'
     | '/settings/developer'
     | '/chat'
     | '/design-playground'
@@ -424,6 +445,7 @@ export interface FileRouteTypes {
     | '/design-playground'
     | '/settings'
     | '/settings/appearance'
+    | '/settings/chats'
     | '/settings/developer'
     | '/chat/'
     | '/design-playground/'
@@ -494,6 +516,7 @@ export const routeTree = rootRoute
       "filePath": "settings/route.tsx",
       "children": [
         "/settings/appearance",
+        "/settings/chats",
         "/settings/developer",
         "/settings/",
         "/settings/plugins/$id",
@@ -502,6 +525,10 @@ export const routeTree = rootRoute
     },
     "/settings/appearance": {
       "filePath": "settings/appearance.tsx",
+      "parent": "/settings"
+    },
+    "/settings/chats": {
+      "filePath": "settings/chats.tsx",
       "parent": "/settings"
     },
     "/settings/developer": {

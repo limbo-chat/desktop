@@ -99,7 +99,7 @@ export class PluginManager {
 		);
 	}
 
-	public async executeOnAfterChatDeletedHooks(chatId: string) {
+	public async executeOnChatDeletedHooks(chatId: string) {
 		const plugins = [...this.plugins.values()];
 
 		await Promise.allSettled(
@@ -109,6 +109,20 @@ export class PluginManager {
 				}
 
 				await plugin.module.onChatDeleted(chatId);
+			})
+		);
+	}
+
+	public async executeOnChatsDeletedHooks(chatIds: string[]) {
+		const plugins = [...this.plugins.values()];
+
+		await Promise.allSettled(
+			plugins.map(async (plugin) => {
+				if (typeof plugin.module.onChatsDeleted !== "function") {
+					return;
+				}
+
+				await plugin.module.onChatsDeleted(chatIds);
 			})
 		);
 	}
