@@ -31,7 +31,7 @@ function ButtonElementPage() {
 						control={
 							<Checkbox
 								checked={isDisabled}
-								onCheckedChange={(e) => setIsDisabled(e.checked as boolean)}
+								onCheckedChange={(isChecked) => setIsDisabled(isChecked as boolean)}
 							/>
 						}
 					/>
@@ -40,7 +40,7 @@ function ButtonElementPage() {
 						control={
 							<Checkbox
 								checked={isLoading}
-								onCheckedChange={(e) => setIsLoading(e.checked as boolean)}
+								onCheckedChange={(isChecked) => setIsLoading(isChecked as boolean)}
 							/>
 						}
 					/>

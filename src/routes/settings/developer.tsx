@@ -23,7 +23,7 @@ function DeveloperSettingsPage() {
 				<CardContent>
 					<Checkbox
 						checked={isDevMode}
-						onCheckedChange={(e) => setIsDevMode(e.checked as boolean)}
+						onCheckedChange={(isChecked) => setIsDevMode(isChecked as boolean)}
 					/>
 				</CardContent>
 			</Card>

@@ -54,7 +54,7 @@ const BooleanSettingRenderer = ({ setting }: BooleanSettingRendererProps) => {
 			render={({ field }) => (
 				<Checkbox
 					checked={field.value || false}
-					onCheckedChange={(e) => field.onChange(e.checked)}
+					onCheckedChange={(isChecked) => field.onChange(isChecked as boolean)}
 					disabled={field.disabled}
 				/>
 			)}

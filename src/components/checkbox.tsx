@@ -1,17 +1,14 @@
-import { Checkbox as ArkCheckbox } from "@ark-ui/react";
+import * as RadixCheckbox from "@radix-ui/react-checkbox";
 import { CheckIcon } from "lucide-react";
 
-export interface CheckboxProps extends ArkCheckbox.RootProps {}
+export interface CheckboxProps extends RadixCheckbox.CheckboxProps {}
 
 export const Checkbox = (props: CheckboxProps) => {
 	return (
-		<ArkCheckbox.Root className="checkbox" {...props}>
-			<ArkCheckbox.Control className="checkbox-control">
-				<ArkCheckbox.Indicator className="checkbox-indicator">
-					<CheckIcon size={18} />
-				</ArkCheckbox.Indicator>
-			</ArkCheckbox.Control>
-			<ArkCheckbox.HiddenInput />
-		</ArkCheckbox.Root>
+		<RadixCheckbox.Root className="checkbox">
+			<RadixCheckbox.Indicator className="checkbox-indicator">
+				<CheckIcon />
+			</RadixCheckbox.Indicator>
+		</RadixCheckbox.Root>
 	);
 };
