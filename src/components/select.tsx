@@ -1,126 +1,59 @@
-import {
-	Select as ArkSelect,
-	Portal as ArkPortal,
-	type PortalProps as ArkPortalProps,
-} from "@ark-ui/react";
+import * as RadixSelect from "@radix-ui/react-select";
 import clsx from "clsx";
-import { ChevronsUpDownIcon } from "lucide-react";
+import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import type { PropsWithChildren } from "react";
 
-export interface SelectRootProps extends ArkSelect.RootProps<any> {}
+export interface SelectRootProps extends RadixSelect.SelectProps {}
 
-export const SelectRoot = ({ className, ...props }: SelectRootProps) => {
-	return <ArkSelect.Root className={clsx("select", className)} {...props} />;
+export const SelectRoot = (props: SelectRootProps) => {
+	return <RadixSelect.Root {...props} />;
 };
 
-export interface SelectLabelProps extends ArkSelect.LabelProps {}
+export interface SelectTriggerProps extends RadixSelect.SelectTriggerProps {}
 
-export const SelectLabel = ({ className, ...props }: SelectLabelProps) => {
-	return <ArkSelect.Label className={clsx("select-label", className)} {...props} />;
-};
-
-export interface SelectControlProps extends ArkSelect.ControlProps {}
-
-export const SelectControl = ({ className, ...props }: SelectControlProps) => {
-	return <ArkSelect.Control className={clsx("select-control", className)} {...props} />;
-};
-
-export interface SelectTriggerProps extends ArkSelect.TriggerProps {}
-
-export const SelectTrigger = ({ className, ...props }: SelectTriggerProps) => {
-	return <ArkSelect.Trigger className={clsx("select-trigger", className)} {...props} />;
-};
-
-export interface SelectValueTextProps extends ArkSelect.ValueTextProps {}
-
-export const SelectValueText = ({ className, ...props }: SelectValueTextProps) => {
-	return <ArkSelect.ValueText className={clsx("select-value-text", className)} {...props} />;
-};
-
-export interface SelectIndicatorProps extends ArkSelect.IndicatorProps {}
-
-export const SelectIndicator = ({ className, children, ...props }: SelectValueTextProps) => {
+export const SelectTrigger = ({ className, children, ...props }: SelectTriggerProps) => {
 	return (
-		<ArkSelect.Indicator className={clsx("select-indicator", className)} {...props}>
-			{children ?? <ChevronsUpDownIcon />}
-		</ArkSelect.Indicator>
+		<RadixSelect.Trigger className={clsx("select-trigger", className)} {...props}>
+			{children}
+		</RadixSelect.Trigger>
 	);
 };
 
-export const SelectContent = ({ children }: PropsWithChildren<ArkPortalProps>) => {
+export interface SelectValueProps extends RadixSelect.SelectValueProps {}
+
+export const SelectValue = ({ className, ...props }: SelectValueProps) => {
+	return <RadixSelect.Value className={clsx("select-value", className)} {...props} />;
+};
+
+export interface SelectIconProps extends RadixSelect.SelectIconProps {}
+
+export const SelectIcon = ({ className, ...props }: SelectIconProps) => {
 	return (
-		<ArkPortal>
-			<ArkSelect.Positioner className="select-positioner">
-				<ArkSelect.Content className="select-content">{children}</ArkSelect.Content>
-			</ArkSelect.Positioner>
-		</ArkPortal>
+		<RadixSelect.SelectIcon className={clsx("select-icon", className)} {...props}>
+			<ChevronDownIcon />
+		</RadixSelect.SelectIcon>
 	);
 };
 
-export interface SelectItemProps extends ArkSelect.ItemProps {}
-
-export const SelectItem = ({ className, ...props }: SelectItemProps) => {
-	return <ArkSelect.Item className={clsx("select-item", className)} {...props} />;
-};
-
-export interface SelectItemTextProps extends ArkSelect.ItemTextProps {}
-
-export const SelectItemText = ({ className, ...props }: SelectItemTextProps) => {
-	return <ArkSelect.ItemText className={clsx("select-item-text", className)} {...props} />;
-};
-
-export interface SelectItemIndicatorProps extends ArkSelect.ItemIndicatorProps {}
-
-export const SelectItemIndicator = ({
-	className,
-	children,
-	...props
-}: SelectItemIndicatorProps) => {
+export const SelectContent = ({ children }: PropsWithChildren) => {
 	return (
-		<ArkSelect.ItemIndicator className="select-item-indicator" {...props}>
-			{children ?? "✓"}
-		</ArkSelect.ItemIndicator>
+		<RadixSelect.Portal>
+			<RadixSelect.Content>
+				<RadixSelect.Viewport>{children}</RadixSelect.Viewport>
+			</RadixSelect.Content>
+		</RadixSelect.Portal>
 	);
 };
 
-export const SelectItemGroup = ArkSelect.ItemGroup;
-export const SelectItemGroupLabel = ArkSelect.ItemGroupLabel;
+export interface SelectItemProps extends RadixSelect.SelectItemProps {}
 
-export const SelectHiddenSelect = ArkSelect.HiddenSelect;
-
-export interface SelectProps extends ArkSelect.RootProps<any> {
-	placeholder?: string;
-}
-
-export const SimpleSelect = ({
-	placeholder,
-	children,
-	...rootProps
-}: PropsWithChildren<SelectProps>) => {
+export const SelectItem = ({ className, children, ...props }: SelectItemProps) => {
 	return (
-		<SelectRoot {...rootProps}>
-			<SelectControl>
-				<SelectTrigger>
-					<SelectValueText placeholder={placeholder} />
-					<SelectIndicator />
-				</SelectTrigger>
-			</SelectControl>
-			<SelectContent>{children}</SelectContent>
-			<SelectHiddenSelect />
-		</SelectRoot>
-	);
-};
-
-export interface SimpleSelectItemProps extends SelectItemProps {
-	item: any;
-	label: string;
-}
-
-export const SimpleSelectItem = ({ item, label }: SimpleSelectItemProps) => {
-	return (
-		<SelectItem item={item}>
-			<SelectItemText>{label}</SelectItemText>
-			<SelectItemIndicator />
-		</SelectItem>
+		<RadixSelect.Item className={clsx("select-item", className)} {...props}>
+			<RadixSelect.ItemText className="select-item-text">{children}</RadixSelect.ItemText>
+			<RadixSelect.ItemIndicator className="select-item-indicator">
+				<CheckIcon className="select-item-indicator-icon" />
+			</RadixSelect.ItemIndicator>
+		</RadixSelect.Item>
 	);
 };

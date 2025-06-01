@@ -3,7 +3,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "../../../components/button";
 import { Field } from "../../../components/field";
-import { SimpleSelect, SimpleSelectItem } from "../../../components/select";
+import {
+	SelectContent,
+	SelectIcon,
+	SelectItem,
+	SelectRoot,
+	SelectTrigger,
+	SelectValue,
+} from "../../../components/select";
 import { Tooltip } from "../../../components/tooltip";
 import {
 	ComponentPreview,
@@ -16,24 +23,7 @@ export const Route = createFileRoute("/design-playground/elements/tooltip")({
 });
 
 function TooltipElementPage() {
-	const [placement, setPlacement] = useState<string>("top");
-
-	const placementCollection = createListCollection({
-		items: [
-			{ value: "top", label: "Top" },
-			{ value: "top-start", label: "Top start" },
-			{ value: "top-end", label: "Top end" },
-			{ value: "bottom", label: "Bottom" },
-			{ value: "bottom-start", label: "Bottom start" },
-			{ value: "bottom-end", label: "Bottom end" },
-			{ value: "left", label: "Left" },
-			{ value: "left-start", label: "Left start" },
-			{ value: "left-end", label: "Left end" },
-			{ value: "right", label: "Right" },
-			{ value: "right-start", label: "Right start" },
-			{ value: "right-end", label: "Right end" },
-		],
-	});
+	const [placement, setPlacement] = useState("top");
 
 	return (
 		<div className="tooltip-element-page">
@@ -51,19 +41,26 @@ function TooltipElementPage() {
 					<Field
 						label="Placement"
 						control={
-							<SimpleSelect
-								value={[placement]}
-								collection={placementCollection}
-								onValueChange={(e) => setPlacement(e.value[0])}
-							>
-								{placementCollection.items.map((item) => (
-									<SimpleSelectItem
-										item={item}
-										label={item.label}
-										key={item.value}
-									/>
-								))}
-							</SimpleSelect>
+							<SelectRoot value={placement} onValueChange={setPlacement}>
+								<SelectTrigger>
+									<SelectValue />
+									<SelectIcon />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="top">Top</SelectItem>
+									<SelectItem value="top-start">Top start</SelectItem>
+									<SelectItem value="top-end">Top end</SelectItem>
+									<SelectItem value="bottom">Bottom</SelectItem>
+									<SelectItem value="bottom-start">Bottom start</SelectItem>
+									<SelectItem value="bottom-end">Bottom end</SelectItem>
+									<SelectItem value="left">Left</SelectItem>
+									<SelectItem value="left-start">Left start</SelectItem>
+									<SelectItem value="left-end">Left end</SelectItem>
+									<SelectItem value="right">Right</SelectItem>
+									<SelectItem value="right-start">Right start</SelectItem>
+									<SelectItem value="right-end">Right end</SelectItem>
+								</SelectContent>
+							</SelectRoot>
 						}
 					/>
 				</ComponentPreviewPanel>
