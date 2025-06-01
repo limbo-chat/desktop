@@ -1,4 +1,4 @@
-import { Collapsible as ArkCollapsible } from "@ark-ui/react";
+import * as RadixCollapsible from "@radix-ui/react-collapsible";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown, ClipboardIcon } from "lucide-react";
 import { useEffect, useMemo } from "react";
@@ -43,8 +43,8 @@ export const DefaultToolCallRenderer = ({ toolCall }: limbo.ToolRendererProps) =
 	}, [tool, toolCall.toolId]);
 
 	return (
-		<ArkCollapsible.Root className="tool-call">
-			<ArkCollapsible.Trigger asChild>
+		<RadixCollapsible.Root className="tool-call">
+			<RadixCollapsible.Trigger asChild>
 				<button className="tool-call-header">
 					<div className="tool-call-info">
 						<div className="tool-call-icon-container">{icon}</div>
@@ -52,8 +52,8 @@ export const DefaultToolCallRenderer = ({ toolCall }: limbo.ToolRendererProps) =
 					</div>
 					<ChevronDown className="tool-call-collapse-icon" />
 				</button>
-			</ArkCollapsible.Trigger>
-			<ArkCollapsible.Content className="tool-call-body">
+			</RadixCollapsible.Trigger>
+			<RadixCollapsible.Content className="tool-call-body">
 				<ToolCallDataContainer
 					title="Arguments"
 					content={JSON.stringify(toolCall.arguments)}
@@ -67,8 +67,8 @@ export const DefaultToolCallRenderer = ({ toolCall }: limbo.ToolRendererProps) =
 						content={toolCall.error ?? "An unknown error occurred"}
 					/>
 				)}
-			</ArkCollapsible.Content>
-		</ArkCollapsible.Root>
+			</RadixCollapsible.Content>
+		</RadixCollapsible.Root>
 	);
 };
 
