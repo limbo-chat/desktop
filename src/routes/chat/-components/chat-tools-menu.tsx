@@ -29,8 +29,8 @@ export const ChatToolsMenu = () => {
 						</div>
 						<Switch
 							checked={enabledToolIds.includes(tool.id)}
-							onCheckedChange={({ checked }) => {
-								if (checked) {
+							onCheckedChange={(isChecked) => {
+								if (isChecked) {
 									setEnabledToolIds([...enabledToolIds, tool.id]);
 								} else {
 									const newEnabledToolIds = enabledToolIds.filter(

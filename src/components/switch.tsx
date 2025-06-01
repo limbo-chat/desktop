@@ -1,15 +1,12 @@
-import { Switch as ArkSwitch } from "@ark-ui/react";
+import * as RadixSwitch from "@radix-ui/react-switch";
 import clsx from "clsx";
 
-export interface SwitchProps extends Omit<ArkSwitch.RootProps, "children"> {}
+export interface SwitchProps extends RadixSwitch.SwitchProps {}
 
 export const Switch = ({ className, ...props }: SwitchProps) => {
 	return (
-		<ArkSwitch.Root className={clsx("switch", className)} {...props}>
-			<ArkSwitch.Control className="switch-control">
-				<ArkSwitch.Thumb className="switch-thumb" />
-			</ArkSwitch.Control>
-			<ArkSwitch.HiddenInput />
-		</ArkSwitch.Root>
+		<RadixSwitch.Root className={clsx("switch", className)} {...props}>
+			<RadixSwitch.Thumb className="switch-thumb" />
+		</RadixSwitch.Root>
 	);
 };
