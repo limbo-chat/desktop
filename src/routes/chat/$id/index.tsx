@@ -88,16 +88,16 @@ function ChatPage() {
 	}, [listChatMessagesQuery.data]);
 
 	useEffect(() => {
-		if (messages.length === 0) {
-			return;
-		}
-
-		if (hasScrolledToBottomOnLoad.current) {
-			scrollToBottom();
-		} else {
+		if (!hasScrolledToBottomOnLoad.current && messages.length > 0) {
 			scrollToBottom("instant");
 
 			hasScrolledToBottomOnLoad.current = true;
+		}
+	}, [messages]);
+
+	useEffect(() => {
+		if (hasScrolledToBottomOnLoad.current) {
+			scrollToBottom();
 		}
 	}, [messages.length]);
 
