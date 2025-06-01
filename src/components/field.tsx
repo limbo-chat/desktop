@@ -1,4 +1,3 @@
-import type { FieldRootProps } from "@ark-ui/react";
 import clsx from "clsx";
 import { createContext, useContext, useId, type HTMLAttributes, type ReactNode } from "react";
 import { PasswordInput, type PasswordInputProps } from "./inputs/password-input";
@@ -34,7 +33,7 @@ export const useFieldControlAccessibilityProps = () => {
 	};
 };
 
-export interface FieldProps extends HTMLAttributes<HTMLDivElement> {
+export interface FieldRootProps extends HTMLAttributes<HTMLDivElement> {
 	hasError?: boolean;
 }
 
@@ -80,7 +79,7 @@ export const FieldError = ({ className, ...props }: FieldErrorProps) => {
 
 // implementations
 
-export interface FieldProps extends Omit<FieldRootProps, "children"> {
+export interface FieldProps extends FieldRootProps {
 	label?: string;
 	description?: string;
 	error?: string;

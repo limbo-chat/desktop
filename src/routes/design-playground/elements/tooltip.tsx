@@ -1,4 +1,3 @@
-import { createListCollection } from "@ark-ui/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "../../../components/button";
@@ -29,11 +28,7 @@ function TooltipElementPage() {
 		<div className="tooltip-element-page">
 			<ComponentPreview>
 				<ComponentPreviewContent>
-					<Tooltip
-						open
-						label="Tooltip label"
-						positioning={{ placement: placement as any }}
-					>
+					<Tooltip open label="Tooltip label" contentProps={{ side: placement as any }}>
 						<Button>Trigger</Button>
 					</Tooltip>
 				</ComponentPreviewContent>
@@ -48,17 +43,9 @@ function TooltipElementPage() {
 								</SelectTrigger>
 								<SelectContent>
 									<SelectItem value="top">Top</SelectItem>
-									<SelectItem value="top-start">Top start</SelectItem>
-									<SelectItem value="top-end">Top end</SelectItem>
-									<SelectItem value="bottom">Bottom</SelectItem>
-									<SelectItem value="bottom-start">Bottom start</SelectItem>
-									<SelectItem value="bottom-end">Bottom end</SelectItem>
-									<SelectItem value="left">Left</SelectItem>
-									<SelectItem value="left-start">Left start</SelectItem>
-									<SelectItem value="left-end">Left end</SelectItem>
 									<SelectItem value="right">Right</SelectItem>
-									<SelectItem value="right-start">Right start</SelectItem>
-									<SelectItem value="right-end">Right end</SelectItem>
+									<SelectItem value="bottom">Bottom</SelectItem>
+									<SelectItem value="left">Left</SelectItem>
 								</SelectContent>
 							</SelectRoot>
 						}

@@ -1,17 +1,21 @@
-import { Tooltip as ArkTooltip } from "@ark-ui/react/tooltip";
-import type { PropsWithChildren } from "react";
+import * as RadixTooltip from "@radix-ui/react-tooltip";
 
-export interface TooltipProps extends ArkTooltip.RootProps {
+export interface TooltipProps extends RadixTooltip.TooltipProps {
 	label: string;
+	contentProps?: RadixTooltip.TooltipContentProps;
 }
 
-export const Tooltip = ({ label, children, ...props }: PropsWithChildren<TooltipProps>) => {
+export const Tooltip = ({ label, contentProps, children, ...props }: TooltipProps) => {
 	return (
-		<ArkTooltip.Root {...props}>
-			<ArkTooltip.Trigger asChild>{children}</ArkTooltip.Trigger>
-			<ArkTooltip.Positioner>
-				<ArkTooltip.Content className="tooltip">{label}</ArkTooltip.Content>
-			</ArkTooltip.Positioner>
-		</ArkTooltip.Root>
+		<RadixTooltip.Provider>
+			<RadixTooltip.Root {...props}>
+				<RadixTooltip.Trigger asChild>{children}</RadixTooltip.Trigger>
+				<RadixTooltip.Portal>
+					<RadixTooltip.Content className="tooltip" sideOffset={5} {...contentProps}>
+						{label}
+					</RadixTooltip.Content>
+				</RadixTooltip.Portal>
+			</RadixTooltip.Root>
+		</RadixTooltip.Provider>
 	);
 };
