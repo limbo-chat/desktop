@@ -50,7 +50,9 @@ export const ChatLLMPicker = () => {
 					<TextInput
 						placeholder="Search models..."
 						leftSection={<SearchIcon />}
-					></TextInput>
+						value={search}
+						onChange={(e) => setSearch(e.target.value)}
+					/>
 				</div>
 				<div className="llm-picker-results">
 					{filteredLLMs.map((llm) => {
