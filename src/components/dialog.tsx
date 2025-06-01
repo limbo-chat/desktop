@@ -1,29 +1,31 @@
-import { Dialog as ArkDialog, Portal as ArkPortal } from "@ark-ui/react";
+import * as RadixDialog from "@radix-ui/react-dialog";
 import clsx from "clsx";
 import { XIcon } from "lucide-react";
 import type { HTMLAttributes } from "react";
 import { IconButton, type IconButtonProps } from "./icon-button";
 
-export interface DialogRootProps extends ArkDialog.RootProps {}
+export interface DialogRootProps extends RadixDialog.DialogProps {}
 
-export const DialogRoot = ArkDialog.Root;
+export const DialogRoot = RadixDialog.Root;
 
-export interface DialogTriggerProps extends ArkDialog.TriggerProps {}
+export interface DialogTriggerProps extends RadixDialog.DialogTriggerProps {}
 
 export const DialogTrigger = ({ className, ...props }: DialogTriggerProps) => {
-	return <ArkDialog.Trigger className={clsx("dialog-trigger", className)} {...props} />;
+	return <RadixDialog.Trigger className={clsx("dialog-trigger", className)} {...props} />;
 };
 
-export interface DialogContentProps extends ArkDialog.ContentProps {}
+export const DialogCloseTrigger = ({ className, ...props }: DialogTriggerProps) => {
+	return <RadixDialog.Close className={clsx("dialog-close-trigger", className)} {...props} />;
+};
+
+export interface DialogContentProps extends RadixDialog.DialogContentProps {}
 
 export const DialogContent = ({ className, ...props }: DialogContentProps) => {
 	return (
-		<ArkPortal>
-			<ArkDialog.Backdrop className="dialog-backdrop" />
-			<ArkDialog.Positioner className="dialog-positioner">
-				<ArkDialog.Content className={clsx("dialog-content", className)} {...props} />
-			</ArkDialog.Positioner>
-		</ArkPortal>
+		<RadixDialog.Portal>
+			<RadixDialog.Overlay className="dialog-overlay" />
+			<RadixDialog.Content className={clsx("dialog-content", className)} {...props} />
+		</RadixDialog.Portal>
 	);
 };
 
@@ -33,30 +35,22 @@ export const DialogHeader = ({ className, ...props }: DialogHeaderProps) => {
 	return <div className={clsx("dialog-header", className)} {...props} />;
 };
 
-export interface DialogTitleProps extends ArkDialog.TitleProps {}
+export interface DialogTitleProps extends RadixDialog.DialogTitleProps {}
 
 export const DialogTitle = ({ className, ...props }: DialogTitleProps) => {
-	return <ArkDialog.Title className={clsx("dialog-title", className)} {...props} />;
+	return <RadixDialog.Title className={clsx("dialog-title", className)} {...props} />;
 };
 
-export interface DialogDescriptionProps extends ArkDialog.DescriptionProps {}
+export interface DialogDescriptionProps extends RadixDialog.DialogDescriptionProps {}
 
 export const DialogDescription = ({ className, ...props }: DialogDescriptionProps) => {
-	return <ArkDialog.Description className={clsx("dialog-description", className)} {...props} />;
+	return <RadixDialog.Description className={clsx("dialog-description", className)} {...props} />;
 };
 
 export interface DialogFooterProps extends HTMLAttributes<HTMLDivElement> {}
 
 export const DialogFooter = ({ className, ...props }: DialogFooterProps) => {
 	return <div className={clsx("dialog-footer", className)} {...props} />;
-};
-
-export interface DialogCloseTriggerProps extends ArkDialog.CloseTriggerProps {}
-
-export const DialogCloseTrigger = ({ className, ...props }: DialogCloseTriggerProps) => {
-	return (
-		<ArkDialog.CloseTrigger className={clsx("dialog-close-trigger", className)} {...props} />
-	);
 };
 
 export interface DialogCloseButtonProps extends IconButtonProps {}

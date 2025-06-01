@@ -122,7 +122,7 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 				}}
 				dialogProps={{
 					open: isUninstallPluginDialogOpen,
-					onOpenChange: (e) => setIsUninstallPluginDialogOpen(e.open),
+					onOpenChange: setIsUninstallPluginDialogOpen,
 				}}
 				onUninstallComplete={() => setIsUninstallPluginDialogOpen(false)}
 			/>
@@ -267,7 +267,7 @@ function PluginsSettingsPage() {
 				onInstallComplete={() => setIsInstallPluginDialogOpen(false)}
 				dialogProps={{
 					open: isInstallPluginDialogOpen,
-					onOpenChange: (e) => setIsInstallPluginDialogOpen(e.open),
+					onOpenChange: setIsInstallPluginDialogOpen,
 				}}
 			/>
 			<SettingsPage className="plugins-page">

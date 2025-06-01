@@ -114,8 +114,8 @@ export const CommandPaletteModal = () => {
 	return (
 		<DialogRoot
 			open={isCommandPaletteOpen}
-			onOpenChange={({ open }) => {
-				setIsCommandPaletteOpen(open);
+			onOpenChange={(isOpen) => {
+				setIsCommandPaletteOpen(isOpen);
 				setSearch("");
 			}}
 		>

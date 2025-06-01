@@ -129,7 +129,7 @@ const ChatItem = ({ chat }: ChatItemProps) => {
 				chat={chat}
 				dialogProps={{
 					open: isRenameDialogOpen,
-					onOpenChange: (e) => setIsRenameDialogOpen(e.open),
+					onOpenChange: setIsRenameDialogOpen,
 				}}
 				onRenameComplete={() => setIsRenameDialogOpen(false)}
 			/>
