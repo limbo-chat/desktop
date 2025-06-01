@@ -61,7 +61,7 @@ export const ChatLLMPicker = () => {
 								key={llm.id}
 							>
 								<span>{llm.name}</span>
-								<Tooltip label={llm.description} positioning={{ placement: "top" }}>
+								<Tooltip label={llm.description} contentProps={{ side: "top" }}>
 									<InfoIcon />
 								</Tooltip>
 							</MenuItem>

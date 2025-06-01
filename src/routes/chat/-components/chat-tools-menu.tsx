@@ -23,7 +23,7 @@ export const ChatToolsMenu = () => {
 					<MenuItem key={tool.id}>
 						<div>
 							<span>{tool.id}</span>
-							<Tooltip label={tool.description} positioning={{ placement: "top" }}>
+							<Tooltip label={tool.description} contentProps={{ side: "top" }}>
 								<InfoIcon />
 							</Tooltip>
 						</div>
