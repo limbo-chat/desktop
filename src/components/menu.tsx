@@ -1,50 +1,36 @@
-import { Menu as ArkMenu } from "@ark-ui/react";
+import * as RadixMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
 
-export interface MenuRootProps extends ArkMenu.RootProps {}
+export interface MenuRootProps extends RadixMenu.DropdownMenuProps {}
 
-export const MenuRoot = ArkMenu.Root;
+export const MenuRoot = RadixMenu.Root;
 
-export interface MenuTriggerProps extends ArkMenu.TriggerProps {}
+export interface MenuTriggerProps extends RadixMenu.DropdownMenuTriggerProps {}
 
 export const MenuTrigger = ({ className, ...props }: MenuTriggerProps) => {
-	return <ArkMenu.Trigger className={clsx("menu-trigger", className)} {...props} />;
+	return <RadixMenu.Trigger className={clsx("menu-trigger", className)} {...props} />;
 };
 
-export interface MenuPositionerProps extends ArkMenu.PositionerProps {}
-
-export const MenuPositioner = ({ className, ...props }: MenuPositionerProps) => {
-	return <ArkMenu.Positioner className={clsx("menu-positioner", className)} {...props} />;
-};
-
-export interface MenuContentProps extends ArkMenu.ContentProps {}
+export interface MenuContentProps extends RadixMenu.DropdownMenuContentProps {}
 
 export const MenuContent = ({ className, ...props }: MenuContentProps) => {
-	return <ArkMenu.Content className={clsx("menu-content", className)} {...props} />;
+	return <RadixMenu.Content className={clsx("menu-content", className)} {...props} />;
 };
 
-export interface MenuItemGroupProps extends ArkMenu.ItemGroupProps {}
+export interface MenuGroupProps extends RadixMenu.DropdownMenuGroupProps {}
 
-export const MenuItemGroup = ({ className, ...props }: MenuItemProps) => {
-	return <ArkMenu.ItemGroup className={clsx("menu-item-group", className)} {...props} />;
+export const MenuGroup = ({ className, ...props }: MenuGroupProps) => {
+	return <RadixMenu.Group className={clsx("menu-group", className)} {...props} />;
 };
 
-export interface MenuItemGroupLabelProps extends ArkMenu.ItemGroupLabelProps {}
-
-export const MenuItemGroupLabel = ({ className, ...props }: MenuItemProps) => {
-	return (
-		<ArkMenu.ItemGroupLabel className={clsx("menu-item-group-label", className)} {...props} />
-	);
-};
-
-export interface MenuItemProps extends ArkMenu.ItemProps {}
+export interface MenuItemProps extends RadixMenu.DropdownMenuItemProps {}
 
 export const MenuItem = ({ className, ...props }: MenuItemProps) => {
-	return <ArkMenu.Item className={clsx("menu-item", className)} {...props} />;
+	return <RadixMenu.Item className={clsx("menu-item", className)} {...props} />;
 };
 
-export interface MenuSeparatorProps extends ArkMenu.SeparatorProps {}
+export interface MenuSeparatorProps extends RadixMenu.DropdownMenuSeparatorProps {}
 
-export const MenuSeparator = ({ className, ...props }: MenuItemProps) => {
-	return <ArkMenu.Separator className={clsx("menu-separator", className)} {...props} />;
+export const MenuSeparator = ({ className, ...props }: MenuSeparatorProps) => {
+	return <RadixMenu.Separator className={clsx("menu-separator", className)} {...props} />;
 };

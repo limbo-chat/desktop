@@ -15,13 +15,7 @@ import {
 	type DialogRootProps,
 } from "../../../components/dialog";
 import { TextInput } from "../../../components/inputs/text-input";
-import {
-	MenuContent,
-	MenuItem,
-	MenuPositioner,
-	MenuRoot,
-	MenuTrigger,
-} from "../../../components/menu";
+import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from "../../../components/menu";
 import {
 	Sidebar,
 	SidebarGroup,
@@ -141,21 +135,19 @@ const ChatItem = ({ chat }: ChatItemProps) => {
 							<MenuTrigger>
 								<EllipsisIcon />
 							</MenuTrigger>
-							<MenuPositioner>
-								<MenuContent>
-									<MenuItem
-										value="rename"
-										onClick={() => setIsRenameDialogOpen(true)}
-									>
-										<PencilIcon />
-										Rename
-									</MenuItem>
-									<MenuItem value="delete" onClick={handleDelete}>
-										<Trash2Icon />
-										Delete
-									</MenuItem>
-								</MenuContent>
-							</MenuPositioner>
+							<MenuContent>
+								<MenuItem
+									data-action="rename"
+									onClick={() => setIsRenameDialogOpen(true)}
+								>
+									<PencilIcon />
+									Rename
+								</MenuItem>
+								<MenuItem data-action="delete" onClick={handleDelete}>
+									<Trash2Icon />
+									Delete
+								</MenuItem>
+							</MenuContent>
 						</MenuRoot>
 					</SidebarItem>
 				)}
