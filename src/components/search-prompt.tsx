@@ -1,10 +1,11 @@
 import clsx from "clsx";
-import type { HTMLAttributes, InputHTMLAttributes } from "react";
+import { Command } from "cmdk";
+import type { ComponentProps, HTMLAttributes } from "react";
 
-export interface SearchPromptProps extends HTMLAttributes<HTMLDivElement> {}
+export interface SearchPromptProps extends ComponentProps<typeof Command> {}
 
 export const SearchPrompt = ({ className, ...props }: SearchPromptProps) => {
-	return <div className={clsx("search-prompt", className)} {...props} />;
+	return <Command className={clsx("search-prompt", className)} {...props} />;
 };
 
 export interface SearchPromptInputContainerProps extends HTMLAttributes<HTMLDivElement> {}
@@ -16,27 +17,45 @@ export const SearchPromptInputContainer = ({
 	return <div className={clsx("search-prompt-input-container", className)} {...props} />;
 };
 
-export interface SearchPromptInputProps extends InputHTMLAttributes<HTMLInputElement> {}
+export interface SearchPromptInputProps extends ComponentProps<typeof Command.Input> {}
 
 export const SearchPromptInput = ({ className, ...props }: SearchPromptInputProps) => {
-	return (
-		<input
-			className={clsx("search-prompt-input", className)}
-			type="text"
-			autoComplete="off"
-			autoCapitalize="off"
-			spellCheck="false"
-			enterKeyHint="done"
-			{...props}
-		/>
-	);
+	return <Command.Input className={clsx("search-prompt-input", className)} {...props} />;
 };
 
-export interface SearchPromptResultsProps extends HTMLAttributes<HTMLDivElement> {}
+export interface SearchPromptResultsProps extends ComponentProps<typeof Command.List> {}
 
 export const SearchPromptResults = ({ className, ...props }: SearchPromptResultsProps) => {
-	return <div className={clsx("search-prompt-results", className)} tabIndex={-1} {...props} />;
+	return <Command.List className={clsx("search-prompt-results", className)} {...props} />;
 };
+
+// result items
+
+export interface ResultItemProps extends ComponentProps<typeof Command.Item> {}
+
+export const ResultItem = ({ className, ...props }: ResultItemProps) => {
+	return <Command.Item className={clsx("result-item")} {...props} />;
+};
+
+export interface ResultContentProps extends HTMLAttributes<HTMLDivElement> {}
+
+export const ResultContent = ({ className, ...props }: ResultContentProps) => {
+	return <div className={clsx("result-content")} {...props} />;
+};
+
+export interface ResultTitleProps extends HTMLAttributes<HTMLDivElement> {}
+
+export const ResultTitle = ({ className, ...props }: ResultTitleProps) => {
+	return <div className={clsx("result-title")} {...props} />;
+};
+
+export interface EmptyResultProps extends HTMLAttributes<HTMLDivElement> {}
+
+export const EmptyResult = ({ className, ...props }: EmptyResultProps) => {
+	return <div className={clsx("empty-result")} {...props} />;
+};
+
+// instructions
 
 export interface SearchPromptInstructionsProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -72,30 +91,4 @@ export const SearchPromptInstructionText = ({
 	...props
 }: SearchPromptInstructionCommandProps) => {
 	return <span className="search-prompt-instruction-text" {...props} />;
-};
-
-// result items
-
-export interface ResultItemProps extends HTMLAttributes<HTMLDivElement> {}
-
-export const ResultItem = ({ className, ...props }: ResultItemProps) => {
-	return <div className={clsx("result-item")} {...props} />;
-};
-
-export interface ResultContentProps extends HTMLAttributes<HTMLDivElement> {}
-
-export const ResultContent = ({ className, ...props }: ResultContentProps) => {
-	return <div className={clsx("result-content")} {...props} />;
-};
-
-export interface ResultTitleProps extends HTMLAttributes<HTMLDivElement> {}
-
-export const ResultTitle = ({ className, ...props }: ResultTitleProps) => {
-	return <div className={clsx("result-title")} {...props} />;
-};
-
-export interface EmptyResultProps extends HTMLAttributes<HTMLDivElement> {}
-
-export const EmptyResult = ({ className, ...props }: EmptyResultProps) => {
-	return <div className={clsx("empty-result")} {...props} />;
 };

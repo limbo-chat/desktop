@@ -1,3 +1,4 @@
+import { FocusScope } from "@radix-ui/react-focus-scope";
 import clsx from "clsx";
 import { useEffect } from "react";
 import { modalContext } from "./contexts";
@@ -39,9 +40,9 @@ export const ModalHost = () => {
 		<modalContext.Provider value={{ close: handleClose }}>
 			<div className={clsx("modal", activeModal.className)}>
 				<div className="modal-overlay" onClick={handleClose} />
-				<div className="modal-content">
+				<FocusScope className="modal-content" trapped loop>
 					<ModalComponent />
-				</div>
+				</FocusScope>
 			</div>
 		</modalContext.Provider>
 	);

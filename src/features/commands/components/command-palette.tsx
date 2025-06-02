@@ -43,18 +43,18 @@ export const CommandPalette = ({ onExecuteCommand }: CommandPaletteProps) => {
 	}, [fuse, search, commands]);
 
 	return (
-		<SearchPrompt className="command-palette">
+		<SearchPrompt className="command-palette" label="Command palette" loop shouldFilter={false}>
 			<SearchPromptInputContainer>
 				<SearchPromptInput
 					placeholder="Search commands..."
 					value={search}
-					onChange={(e) => setSearch(e.target.value)}
+					onValueChange={setSearch}
 				/>
 			</SearchPromptInputContainer>
 			<SearchPromptResults>
 				{filteredCommands.length === 0 && <EmptyResult>No commands found</EmptyResult>}
 				{filteredCommands.map((command) => (
-					<ResultItem key={command.id} onClick={() => onExecuteCommand(command.id)}>
+					<ResultItem key={command.id} onSelect={() => onExecuteCommand(command.id)}>
 						<ResultContent>
 							<ResultTitle>{command.name}</ResultTitle>
 						</ResultContent>
