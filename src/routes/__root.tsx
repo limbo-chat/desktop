@@ -177,11 +177,11 @@ const MainContent = () => {
 };
 
 function RootLayout() {
-	const appIsFocused = useIsAppFocused();
+	const isAppFocused = useIsAppFocused();
 
 	return (
 		<RootLayoutProviders>
-			<div className="app" data-app-focused={appIsFocused}>
+			<div className="app" data-is-focused={isAppFocused}>
 				<Titlebar />
 				<ModalHost />
 				<Suspense fallback={"loading, todo replace"}>
