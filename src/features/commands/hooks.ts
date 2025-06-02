@@ -1,8 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useHotkey } from "../../hooks/common";
-import { useCommandPaletteStore, useCommandStore } from "./stores";
-import { addCommand, removeCommand, setIsCommandPaletteOpen } from "./utils";
+import { useCommandStore } from "./stores";
+import { addCommand, removeCommand, showCommandPalette } from "./utils";
 
 export const useCommands = () => {
 	return useCommandStore((state) => state.commands);
@@ -17,19 +17,11 @@ export const useCommandList = () => {
 };
 
 export const useOpenCommandPaletteHotkey = () => {
-	const executeHotkey = useCallback(() => {
-		setIsCommandPaletteOpen(true);
-	}, []);
-
 	useHotkey({
 		key: "p",
 		metakey: true,
-		execute: executeHotkey,
+		execute: showCommandPalette,
 	});
-};
-
-export const useIsCommandPaletteOpen = () => {
-	return useCommandPaletteStore((state) => state.isOpen);
 };
 
 export const useRegisterCoreCommands = () => {

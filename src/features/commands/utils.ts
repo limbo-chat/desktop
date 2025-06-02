@@ -1,5 +1,7 @@
 import type * as limbo from "limbo";
-import { useCommandPaletteStore, useCommandStore } from "./stores";
+import { setActiveModal } from "../modals/utils";
+import { CommandPaletteModal } from "./components/command-palette";
+import { useCommandStore } from "./stores";
 
 export function addCommand(command: limbo.Command) {
 	const commandStore = useCommandStore.getState();
@@ -13,8 +15,9 @@ export function removeCommand(commandId: string) {
 	commandStore.removeCommand(commandId);
 }
 
-export function setIsCommandPaletteOpen(isOpen: boolean) {
-	const commandPaletteStore = useCommandPaletteStore.getState();
-
-	commandPaletteStore.setIsOpen(isOpen);
+export function showCommandPalette() {
+	setActiveModal({
+		className: "command-palette-modal",
+		component: CommandPaletteModal,
+	});
 }

@@ -1,6 +1,5 @@
 import Fuse from "fuse.js";
 import { useMemo, useState } from "react";
-import { ModalContent, ModalRoot } from "../../../components/modal";
 import {
 	EmptyResult,
 	SearchPrompt,
@@ -15,16 +14,16 @@ import {
 	ResultItem,
 	ResultTitle,
 } from "../../../components/search-prompt";
-import { useCommandList, useCommands, useIsCommandPaletteOpen } from "../hooks";
-import { setIsCommandPaletteOpen } from "../utils";
+import { useModalContext } from "../../modals/hooks";
+import { useCommandList, useCommands } from "../hooks";
 
-interface CommandPaletteProps {
-	search: string;
-	onSearchChange: (search: string) => void;
+export interface CommandPaletteProps {
 	onExecuteCommand: (commandId: string) => void;
 }
 
-const CommandPalette = ({ search, onSearchChange, onExecuteCommand }: CommandPaletteProps) => {
+export const CommandPalette = ({ onExecuteCommand }: CommandPaletteProps) => {
+	const [search, setSearch] = useState("");
+
 	const commands = useCommandList();
 
 	const fuse = useMemo(() => {
@@ -49,7 +48,7 @@ const CommandPalette = ({ search, onSearchChange, onExecuteCommand }: CommandPal
 				<SearchPromptInput
 					placeholder="Search commands..."
 					value={search}
-					onChange={(e) => onSearchChange(e.target.value)}
+					onChange={(e) => setSearch(e.target.value)}
 				/>
 			</SearchPromptInputContainer>
 			<SearchPromptResults>
@@ -81,9 +80,8 @@ const CommandPalette = ({ search, onSearchChange, onExecuteCommand }: CommandPal
 };
 
 export const CommandPaletteModal = () => {
+	const modalCtx = useModalContext();
 	const commandMap = useCommands();
-	const isCommandPaletteOpen = useIsCommandPaletteOpen();
-	const [search, setSearch] = useState("");
 
 	const executeCommand = async (commandId: string) => {
 		const command = commandMap.get(commandId);
@@ -94,8 +92,7 @@ export const CommandPaletteModal = () => {
 
 		// should the command palette be closed instantly or after the command is executed?
 
-		setIsCommandPaletteOpen(false);
-		setSearch("");
+		modalCtx.close();
 
 		try {
 			await command.execute();
@@ -111,21 +108,5 @@ export const CommandPaletteModal = () => {
 		}
 	};
 
-	return (
-		<ModalRoot
-			open={isCommandPaletteOpen}
-			onOpenChange={(isOpen) => {
-				setIsCommandPaletteOpen(isOpen);
-				setSearch("");
-			}}
-		>
-			<ModalContent className="command-palette-modal">
-				<CommandPalette
-					search={search}
-					onSearchChange={setSearch}
-					onExecuteCommand={(commandId) => executeCommand(commandId)}
-				/>
-			</ModalContent>
-		</ModalRoot>
-	);
+	return <CommandPalette onExecuteCommand={executeCommand} />;
 };

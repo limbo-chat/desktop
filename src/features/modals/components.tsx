@@ -29,11 +29,15 @@ export const ModalHost = () => {
 		return null;
 	}
 
+	const ModalComponent = activeModal.component;
+
 	return (
 		<modalContext.Provider value={{ close: () => setActiveModal(null) }}>
 			<div className={clsx("modal", activeModal.className)}>
 				<div className="modal-overlay" />
-				<div className="modal-content">{activeModal.content}</div>
+				<div className="modal-content">
+					<ModalComponent />
+				</div>
 			</div>
 		</modalContext.Provider>
 	);

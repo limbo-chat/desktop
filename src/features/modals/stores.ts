@@ -1,9 +1,9 @@
-import type { ReactNode } from "@tanstack/react-router";
+import type { FC } from "react";
 import { create } from "zustand";
 
 export interface Modal {
 	className?: string;
-	content: ReactNode;
+	component: FC;
 }
 
 export interface ModalStore {

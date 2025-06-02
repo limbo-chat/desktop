@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { MessageSquareIcon, SettingsIcon, TerminalIcon } from "lucide-react";
 import { Tooltip } from "../../components/tooltip";
-import { setIsCommandPaletteOpen } from "../../features/commands/utils";
+import { showCommandPalette } from "../../features/commands/utils";
 
 export const SideDock = () => {
 	return (
@@ -17,7 +17,7 @@ export const SideDock = () => {
 				</Link>
 			</Tooltip>
 			<Tooltip label="Open command palette" contentProps={{ side: "right" }}>
-				<button className="side-dock-item" onClick={() => setIsCommandPaletteOpen(true)}>
+				<button className="side-dock-item" onClick={showCommandPalette}>
 					<TerminalIcon />
 				</button>
 			</Tooltip>

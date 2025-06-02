@@ -11,32 +11,20 @@ export const useCommandStore = create<CommandStore>((set) => ({
 	commands: new Map(),
 	addCommand: (command) => {
 		set((state) => {
-			const newTools = new Map(state.commands);
+			const newCommands = new Map(state.commands);
 
-			newTools.set(command.id, command);
+			newCommands.set(command.id, command);
 
-			return { commands: newTools };
+			return { commands: newCommands };
 		});
 	},
 	removeCommand: (commandId) => {
 		set((state) => {
-			const newTools = new Map(state.commands);
+			const newCommands = new Map(state.commands);
 
-			newTools.delete(commandId);
+			newCommands.delete(commandId);
 
-			return { commands: newTools };
+			return { commands: newCommands };
 		});
-	},
-}));
-
-export interface CommandPaletteStore {
-	isOpen: boolean;
-	setIsOpen: (isOpen: boolean) => void;
-}
-
-export const useCommandPaletteStore = create<CommandPaletteStore>((set) => ({
-	isOpen: false,
-	setIsOpen: (isOpen) => {
-		set({ isOpen });
 	},
 }));
