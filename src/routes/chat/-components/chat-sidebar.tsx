@@ -1,3 +1,4 @@
+import * as RadixDialog from "@radix-ui/react-dialog";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useMatch, useRouter } from "@tanstack/react-router";
 import { EllipsisIcon, MessageCirclePlusIcon, PencilIcon, Trash2Icon } from "lucide-react";
@@ -6,13 +7,10 @@ import { useForm } from "react-hook-form";
 import { Button } from "../../../components/button";
 import {
 	DialogCloseButton,
-	DialogCloseTrigger,
-	DialogContent,
 	DialogFooter,
 	DialogHeader,
-	DialogRoot,
+	Dialog,
 	DialogTitle,
-	type DialogRootProps,
 } from "../../../components/dialog";
 import { TextInput } from "../../../components/inputs/text-input";
 import {
@@ -23,6 +21,7 @@ import {
 	MenuRoot,
 	MenuTrigger,
 } from "../../../components/menu";
+import { ModalRoot, type ModalRootProps } from "../../../components/modal";
 import {
 	Sidebar,
 	SidebarGroup,
@@ -39,10 +38,10 @@ interface RenameChatDialogProps {
 		name: string;
 	};
 	onRenameComplete: () => void;
-	dialogProps: DialogRootProps;
+	modalProps: ModalRootProps;
 }
 
-const RenameChatDialog = ({ chat, onRenameComplete, dialogProps }: RenameChatDialogProps) => {
+const RenameChatDialog = ({ chat, onRenameComplete, modalProps }: RenameChatDialogProps) => {
 	const renameChatMutation = useRenameChatMutation();
 
 	const form = useForm({
@@ -66,8 +65,8 @@ const RenameChatDialog = ({ chat, onRenameComplete, dialogProps }: RenameChatDia
 	});
 
 	return (
-		<DialogRoot {...dialogProps}>
-			<DialogContent>
+		<ModalRoot {...modalProps}>
+			<Dialog>
 				<DialogCloseButton />
 				<DialogHeader>
 					<DialogTitle>Rename chat</DialogTitle>
@@ -75,9 +74,9 @@ const RenameChatDialog = ({ chat, onRenameComplete, dialogProps }: RenameChatDia
 				<form onSubmit={onSubmit}>
 					<TextInput placeholder="Enter a name" {...form.register("name")} />
 					<DialogFooter>
-						<DialogCloseTrigger asChild>
+						<RadixDialog.Close asChild>
 							<Button>Cancel</Button>
-						</DialogCloseTrigger>
+						</RadixDialog.Close>
 						<Button
 							type="submit"
 							disabled={!form.formState.isDirty}
@@ -87,8 +86,8 @@ const RenameChatDialog = ({ chat, onRenameComplete, dialogProps }: RenameChatDia
 						</Button>
 					</DialogFooter>
 				</form>
-			</DialogContent>
-		</DialogRoot>
+			</Dialog>
+		</ModalRoot>
 	);
 };
 
@@ -128,7 +127,7 @@ const ChatItem = ({ chat }: ChatItemProps) => {
 		<>
 			<RenameChatDialog
 				chat={chat}
-				dialogProps={{
+				modalProps={{
 					open: isRenameDialogOpen,
 					onOpenChange: setIsRenameDialogOpen,
 				}}

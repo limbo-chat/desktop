@@ -1,6 +1,6 @@
 import Fuse from "fuse.js";
 import { useMemo, useState } from "react";
-import { DialogContent, DialogRoot } from "../../../components/dialog";
+import { ModalContent, ModalRoot } from "../../../components/modal";
 import {
 	EmptyResult,
 	SearchPrompt,
@@ -44,7 +44,7 @@ const CommandPalette = ({ search, onSearchChange, onExecuteCommand }: CommandPal
 	}, [fuse, search, commands]);
 
 	return (
-		<SearchPrompt>
+		<SearchPrompt className="command-palette">
 			<SearchPromptInputContainer>
 				<SearchPromptInput
 					placeholder="Search commands..."
@@ -112,20 +112,20 @@ export const CommandPaletteModal = () => {
 	};
 
 	return (
-		<DialogRoot
+		<ModalRoot
 			open={isCommandPaletteOpen}
 			onOpenChange={(isOpen) => {
 				setIsCommandPaletteOpen(isOpen);
 				setSearch("");
 			}}
 		>
-			<DialogContent>
+			<ModalContent className="command-palette-modal">
 				<CommandPalette
 					search={search}
 					onSearchChange={setSearch}
 					onExecuteCommand={(commandId) => executeCommand(commandId)}
 				/>
-			</DialogContent>
-		</DialogRoot>
+			</ModalContent>
+		</ModalRoot>
 	);
 };

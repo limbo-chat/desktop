@@ -9,16 +9,20 @@ import type { PluginManifest } from "../../../../electron/plugins/schemas";
 import { Button } from "../../../components/button";
 import {
 	DialogCloseButton,
-	DialogCloseTrigger,
-	DialogContent,
 	DialogDescription,
 	DialogFooter,
 	DialogHeader,
-	DialogRoot,
+	Dialog,
 	DialogTitle,
 	type DialogRootProps,
 } from "../../../components/dialog";
 import { IconButton } from "../../../components/icon-button";
+import {
+	ModalCloseTrigger,
+	ModalContent,
+	ModalRoot,
+	type ModalRootProps,
+} from "../../../components/modal";
 import { Switch } from "../../../components/switch";
 import { Tooltip } from "../../../components/tooltip";
 import { TextInputFieldController } from "../../../features/forms/components";
@@ -41,13 +45,13 @@ interface UninstallPluginDialogProps {
 		name: string;
 	};
 	onUninstallComplete: () => void;
-	dialogProps: DialogRootProps;
+	modalProps: ModalRootProps;
 }
 
 const UninstallPluginDialog = ({
 	plugin,
 	onUninstallComplete,
-	dialogProps,
+	modalProps,
 }: UninstallPluginDialogProps) => {
 	const uninstallPluginMutation = useUninstallPluginMutation();
 
@@ -65,26 +69,31 @@ const UninstallPluginDialog = ({
 	};
 
 	return (
-		<DialogRoot {...dialogProps}>
-			<DialogContent>
-				<DialogHeader>
-					<DialogCloseButton />
-					<DialogTitle>Uninstall {plugin.name}</DialogTitle>
-					<DialogDescription>
-						Are you sure you want to uninstall this plugin? The plugin and associated
-						data will be deleted.
-					</DialogDescription>
-				</DialogHeader>
-				<DialogFooter>
-					<DialogCloseTrigger asChild>
-						<Button>Cancel</Button>
-					</DialogCloseTrigger>
-					<Button isLoading={uninstallPluginMutation.isPending} onClick={handleUninstall}>
-						Uninstall
-					</Button>
-				</DialogFooter>
-			</DialogContent>
-		</DialogRoot>
+		<ModalRoot>
+			<ModalContent>
+				<Dialog>
+					<DialogHeader>
+						<DialogCloseButton />
+						<DialogTitle>Uninstall {plugin.name}</DialogTitle>
+						<DialogDescription>
+							Are you sure you want to uninstall this plugin? The plugin and
+							associated data will be deleted.
+						</DialogDescription>
+					</DialogHeader>
+					<DialogFooter>
+						<ModalCloseTrigger asChild>
+							<Button>Cancel</Button>
+						</ModalCloseTrigger>
+						<Button
+							isLoading={uninstallPluginMutation.isPending}
+							onClick={handleUninstall}
+						>
+							Uninstall
+						</Button>
+					</DialogFooter>
+				</Dialog>
+			</ModalContent>
+		</ModalRoot>
 	);
 };
 
@@ -120,7 +129,7 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 					id: plugin.manifest.id,
 					name: plugin.manifest.name,
 				}}
-				dialogProps={{
+				modalProps={{
 					open: isUninstallPluginDialogOpen,
 					onOpenChange: setIsUninstallPluginDialogOpen,
 				}}
@@ -175,7 +184,7 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 
 interface InstallPluginDialogProps {
 	onInstallComplete: () => void;
-	dialogProps: DialogRootProps;
+	modalProps: ModalRootProps;
 }
 
 const installPluginFormSchema = z.object({
@@ -184,7 +193,7 @@ const installPluginFormSchema = z.object({
 	}),
 });
 
-const InstallPluginDialog = ({ onInstallComplete, dialogProps }: InstallPluginDialogProps) => {
+const InstallPluginDialog = ({ onInstallComplete, modalProps }: InstallPluginDialogProps) => {
 	const installPluginMutation = useInstallPluginMutation();
 
 	const form = useForm({
@@ -215,40 +224,42 @@ const InstallPluginDialog = ({ onInstallComplete, dialogProps }: InstallPluginDi
 	});
 
 	return (
-		<DialogRoot {...dialogProps}>
-			<DialogContent>
-				<DialogCloseButton />
-				<DialogHeader>
-					<DialogTitle>Install plugin</DialogTitle>
-					<DialogDescription>
-						Enter the GitHub repository URL of the plugin you want to install.
-					</DialogDescription>
-				</DialogHeader>
-				<form onSubmit={onSubmit}>
-					<TextInputFieldController
-						name="repoUrl"
-						control={form.control}
-						textFieldProps={{
-							textInputProps: {
-								placeholder: "https://github.com/limbo-llm/plugin-ollama",
-							},
-						}}
-					/>
-					<DialogFooter>
-						<DialogCloseTrigger asChild>
-							<Button>Cancel</Button>
-						</DialogCloseTrigger>
-						<Button
-							type="submit"
-							disabled={!form.formState.isDirty}
-							isLoading={installPluginMutation.isPending}
-						>
-							Install
-						</Button>
-					</DialogFooter>
-				</form>
-			</DialogContent>
-		</DialogRoot>
+		<ModalRoot {...modalProps}>
+			<ModalContent>
+				<Dialog>
+					<DialogCloseButton />
+					<DialogHeader>
+						<DialogTitle>Install plugin</DialogTitle>
+						<DialogDescription>
+							Enter the GitHub repository URL of the plugin you want to install.
+						</DialogDescription>
+					</DialogHeader>
+					<form onSubmit={onSubmit}>
+						<TextInputFieldController
+							name="repoUrl"
+							control={form.control}
+							textFieldProps={{
+								textInputProps: {
+									placeholder: "https://github.com/limbo-llm/plugin-ollama",
+								},
+							}}
+						/>
+						<DialogFooter>
+							<ModalCloseTrigger asChild>
+								<Button>Cancel</Button>
+							</ModalCloseTrigger>
+							<Button
+								type="submit"
+								disabled={!form.formState.isDirty}
+								isLoading={installPluginMutation.isPending}
+							>
+								Install
+							</Button>
+						</DialogFooter>
+					</form>
+				</Dialog>
+			</ModalContent>
+		</ModalRoot>
 	);
 };
 
@@ -265,7 +276,7 @@ function PluginsSettingsPage() {
 		<>
 			<InstallPluginDialog
 				onInstallComplete={() => setIsInstallPluginDialogOpen(false)}
-				dialogProps={{
+				modalProps={{
 					open: isInstallPluginDialogOpen,
 					onOpenChange: setIsInstallPluginDialogOpen,
 				}}

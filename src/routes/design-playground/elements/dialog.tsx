@@ -1,16 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "../../../components/button";
 import {
+	Dialog,
 	DialogCloseButton,
-	DialogCloseTrigger,
-	DialogContent,
 	DialogDescription,
 	DialogFooter,
 	DialogHeader,
-	DialogRoot,
 	DialogTitle,
-	DialogTrigger,
 } from "../../../components/dialog";
+import {
+	ModalCloseTrigger,
+	ModalContent,
+	ModalRoot,
+	ModalTrigger,
+} from "../../../components/modal";
 
 export const Route = createFileRoute("/design-playground/elements/dialog")({
 	component: DialogElementPage,
@@ -19,23 +22,25 @@ export const Route = createFileRoute("/design-playground/elements/dialog")({
 function DialogElementPage() {
 	return (
 		<div className="dialog-element-page">
-			<DialogRoot>
-				<DialogTrigger asChild>
+			<ModalRoot>
+				<ModalTrigger asChild>
 					<Button>Open dialog</Button>
-				</DialogTrigger>
-				<DialogContent>
-					<DialogCloseButton />
-					<DialogHeader>
-						<DialogTitle>Hello world!</DialogTitle>
-						<DialogDescription>This is a dialog</DialogDescription>
-					</DialogHeader>
-					<DialogFooter>
-						<DialogCloseTrigger asChild>
-							<Button>Close dialog</Button>
-						</DialogCloseTrigger>
-					</DialogFooter>
-				</DialogContent>
-			</DialogRoot>
+				</ModalTrigger>
+				<ModalContent>
+					<Dialog>
+						<DialogCloseButton />
+						<DialogHeader>
+							<DialogTitle>Hello world!</DialogTitle>
+							<DialogDescription>This is a dialog</DialogDescription>
+						</DialogHeader>
+						<DialogFooter>
+							<ModalCloseTrigger asChild>
+								<Button>Close dialog</Button>
+							</ModalCloseTrigger>
+						</DialogFooter>
+					</Dialog>
+				</ModalContent>
+			</ModalRoot>
 		</div>
 	);
 }

@@ -4,29 +4,10 @@ import { XIcon } from "lucide-react";
 import type { HTMLAttributes } from "react";
 import { IconButton, type IconButtonProps } from "./icon-button";
 
-export interface DialogRootProps extends RadixDialog.DialogProps {}
+export interface DialogRootProps extends HTMLAttributes<HTMLDivElement> {}
 
-export const DialogRoot = RadixDialog.Root;
-
-export interface DialogTriggerProps extends RadixDialog.DialogTriggerProps {}
-
-export const DialogTrigger = ({ className, ...props }: DialogTriggerProps) => {
-	return <RadixDialog.Trigger className={clsx("dialog-trigger", className)} {...props} />;
-};
-
-export const DialogCloseTrigger = ({ className, ...props }: DialogTriggerProps) => {
-	return <RadixDialog.Close className={clsx("dialog-close-trigger", className)} {...props} />;
-};
-
-export interface DialogContentProps extends RadixDialog.DialogContentProps {}
-
-export const DialogContent = ({ className, ...props }: DialogContentProps) => {
-	return (
-		<RadixDialog.Portal>
-			<RadixDialog.Overlay className="dialog-overlay" />
-			<RadixDialog.Content className={clsx("dialog-content", className)} {...props} />
-		</RadixDialog.Portal>
-	);
+export const Dialog = ({ className, ...props }: DialogRootProps) => {
+	return <div className={clsx("dialog")} {...props} />;
 };
 
 export interface DialogHeaderProps extends HTMLAttributes<HTMLDivElement> {}
@@ -57,10 +38,10 @@ export interface DialogCloseButtonProps extends IconButtonProps {}
 
 export const DialogCloseButton = ({ className, ...props }: DialogCloseButtonProps) => {
 	return (
-		<DialogCloseTrigger asChild>
+		<RadixDialog.DialogClose asChild>
 			<IconButton className={clsx("dialog-close-button", className)} {...props}>
 				<XIcon />
 			</IconButton>
-		</DialogCloseTrigger>
+		</RadixDialog.DialogClose>
 	);
 };
