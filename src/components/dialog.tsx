@@ -1,9 +1,8 @@
-import * as RadixDialog from "@radix-ui/react-dialog";
 import clsx from "clsx";
 import { XIcon } from "lucide-react";
 import type { HTMLAttributes } from "react";
+import { useModalContext } from "../features/modals/hooks";
 import { IconButton, type IconButtonProps } from "./icon-button";
-import { ModalContent, ModalRoot, type ModalContentProps } from "./modal";
 
 export interface DialogRootProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -17,16 +16,16 @@ export const DialogHeader = ({ className, ...props }: DialogHeaderProps) => {
 	return <div className={clsx("dialog-header", className)} {...props} />;
 };
 
-export interface DialogTitleProps extends RadixDialog.DialogTitleProps {}
+export interface DialogTitleProps extends HTMLAttributes<HTMLDivElement> {}
 
 export const DialogTitle = ({ className, ...props }: DialogTitleProps) => {
-	return <RadixDialog.Title className={clsx("dialog-title", className)} {...props} />;
+	return <div className={clsx("dialog-title", className)} {...props} />;
 };
 
-export interface DialogDescriptionProps extends RadixDialog.DialogDescriptionProps {}
+export interface DialogDescriptionProps extends HTMLAttributes<HTMLParagraphElement> {}
 
 export const DialogDescription = ({ className, ...props }: DialogDescriptionProps) => {
-	return <RadixDialog.Description className={clsx("dialog-description", className)} {...props} />;
+	return <p className={clsx("dialog-description", className)} {...props} />;
 };
 
 export interface DialogFooterProps extends HTMLAttributes<HTMLDivElement> {}
@@ -38,17 +37,15 @@ export const DialogFooter = ({ className, ...props }: DialogFooterProps) => {
 export interface DialogCloseButtonProps extends IconButtonProps {}
 
 export const DialogCloseButton = ({ className, ...props }: DialogCloseButtonProps) => {
+	const modalCtx = useModalContext();
+
 	return (
-		<RadixDialog.DialogClose asChild>
-			<IconButton className={clsx("dialog-close-button", className)} {...props}>
-				<XIcon />
-			</IconButton>
-		</RadixDialog.DialogClose>
+		<IconButton
+			onClick={modalCtx.close}
+			className={clsx("dialog-close-button", className)}
+			{...props}
+		>
+			<XIcon />
+		</IconButton>
 	);
-};
-
-export interface DialogModalContentProps extends ModalContentProps {}
-
-export const DialogModalContent = ({ className, ...props }: DialogModalContentProps) => {
-	return <ModalContent className={clsx("dialog-modal", className)} {...props} />;
 };

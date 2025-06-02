@@ -14,18 +14,13 @@ import {
 	DialogHeader,
 	Dialog,
 	DialogTitle,
-	DialogModalContent,
 } from "../../../components/dialog";
 import { IconButton } from "../../../components/icon-button";
-import {
-	ModalCloseTrigger,
-	ModalContent,
-	ModalRoot,
-	type ModalRootProps,
-} from "../../../components/modal";
 import { Switch } from "../../../components/switch";
 import { Tooltip } from "../../../components/tooltip";
 import { TextInputFieldController } from "../../../features/forms/components";
+import { useModalContext } from "../../../features/modals/hooks";
+import { showDialog } from "../../../features/modals/utils";
 import { usePluginList } from "../../../features/plugins/hooks/core";
 import {
 	useDisablePluginMutation,
@@ -44,15 +39,10 @@ interface UninstallPluginDialogProps {
 		id: string;
 		name: string;
 	};
-	onUninstallComplete: () => void;
-	modalProps: ModalRootProps;
 }
 
-const UninstallPluginDialog = ({
-	plugin,
-	onUninstallComplete,
-	modalProps,
-}: UninstallPluginDialogProps) => {
+const UninstallPluginDialog = ({ plugin }: UninstallPluginDialogProps) => {
+	const modalCtx = useModalContext();
 	const uninstallPluginMutation = useUninstallPluginMutation();
 
 	const handleUninstall = () => {
@@ -62,38 +52,29 @@ const UninstallPluginDialog = ({
 			},
 			{
 				onSuccess: () => {
-					onUninstallComplete();
+					modalCtx.close();
 				},
 			}
 		);
 	};
 
 	return (
-		<ModalRoot>
-			<DialogModalContent>
-				<Dialog>
-					<DialogHeader>
-						<DialogCloseButton />
-						<DialogTitle>Uninstall {plugin.name}</DialogTitle>
-						<DialogDescription>
-							Are you sure you want to uninstall this plugin? The plugin and
-							associated data will be deleted.
-						</DialogDescription>
-					</DialogHeader>
-					<DialogFooter>
-						<ModalCloseTrigger asChild>
-							<Button>Cancel</Button>
-						</ModalCloseTrigger>
-						<Button
-							isLoading={uninstallPluginMutation.isPending}
-							onClick={handleUninstall}
-						>
-							Uninstall
-						</Button>
-					</DialogFooter>
-				</Dialog>
-			</DialogModalContent>
-		</ModalRoot>
+		<Dialog>
+			<DialogHeader>
+				<DialogCloseButton />
+				<DialogTitle>Uninstall {plugin.name}</DialogTitle>
+				<DialogDescription>
+					Are you sure you want to uninstall this plugin? The plugin and associated data
+					will be deleted.
+				</DialogDescription>
+			</DialogHeader>
+			<DialogFooter>
+				<Button onClick={modalCtx.close}>Cancel</Button>
+				<Button isLoading={uninstallPluginMutation.isPending} onClick={handleUninstall}>
+					Uninstall
+				</Button>
+			</DialogFooter>
+		</Dialog>
 	);
 };
 
@@ -107,7 +88,6 @@ interface PluginCardProps {
 const PluginCard = ({ plugin }: PluginCardProps) => {
 	const enablePluginMutaton = useEnablePluginMutation();
 	const disablePluginMutation = useDisablePluginMutation();
-	const [isUninstallPluginDialogOpen, setIsUninstallPluginDialogOpen] = useState(false);
 	const authorName = plugin.manifest.author.name ?? plugin.manifest.author.email;
 
 	const toggleEnabled = () => {
@@ -123,69 +103,62 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 	};
 
 	return (
-		<>
-			<UninstallPluginDialog
-				plugin={{
-					id: plugin.manifest.id,
-					name: plugin.manifest.name,
-				}}
-				modalProps={{
-					open: isUninstallPluginDialogOpen,
-					onOpenChange: setIsUninstallPluginDialogOpen,
-				}}
-				onUninstallComplete={() => setIsUninstallPluginDialogOpen(false)}
-			/>
-			<div
-				className="plugin-card"
-				data-plugin-id={plugin.manifest.id}
-				data-enabled={plugin.enabled}
-			>
-				<div className="plugin-card-header">
-					<span className="plugin-card-title">{plugin.manifest.name}</span>
-					<Switch checked={plugin.enabled} onCheckedChange={toggleEnabled} />
+		<div
+			className="plugin-card"
+			data-plugin-id={plugin.manifest.id}
+			data-enabled={plugin.enabled}
+		>
+			<div className="plugin-card-header">
+				<span className="plugin-card-title">{plugin.manifest.name}</span>
+				<Switch checked={plugin.enabled} onCheckedChange={toggleEnabled} />
+			</div>
+			<div className="plugin-card-content">
+				<div className="plugin-card-info">
+					<span className="plugin-card-version">v{plugin.manifest.version}</span>
+					{authorName && <span className="plugin-card-author">By {authorName}</span>}
+					<p className="plugin-card-description">{plugin.manifest.description}</p>
 				</div>
-				<div className="plugin-card-content">
-					<div className="plugin-card-info">
-						<span className="plugin-card-version">v{plugin.manifest.version}</span>
-						{authorName && <span className="plugin-card-author">By {authorName}</span>}
-						<p className="plugin-card-description">{plugin.manifest.description}</p>
-					</div>
-					<div className="plugin-card-actions">
-						<Tooltip label="Settings">
-							<Link
-								className="icon-button plugin-card-action"
-								to="/settings/plugins/$id"
-								params={{ id: plugin.manifest.id }}
-								data-action="open-settings"
-							>
-								<SettingsIcon />
-							</Link>
-						</Tooltip>
-						<Tooltip label="Reload">
-							<IconButton className="plugin-card-action" data-action="reload">
-								<RefreshCwIcon />
-							</IconButton>
-						</Tooltip>
-						<Tooltip label="Uninstall">
-							<IconButton
-								className="plugin-card-action"
-								data-action="uninstall"
-								onClick={() => setIsUninstallPluginDialogOpen(true)}
-							>
-								<Trash2Icon />
-							</IconButton>
-						</Tooltip>
-					</div>
+				<div className="plugin-card-actions">
+					<Tooltip label="Settings">
+						<Link
+							className="icon-button plugin-card-action"
+							to="/settings/plugins/$id"
+							params={{ id: plugin.manifest.id }}
+							data-action="open-settings"
+						>
+							<SettingsIcon />
+						</Link>
+					</Tooltip>
+					<Tooltip label="Reload">
+						<IconButton className="plugin-card-action" data-action="reload">
+							<RefreshCwIcon />
+						</IconButton>
+					</Tooltip>
+					<Tooltip label="Uninstall">
+						<IconButton
+							className="plugin-card-action"
+							data-action="uninstall"
+							onClick={() =>
+								showDialog({
+									component: () => (
+										<UninstallPluginDialog
+											plugin={{
+												id: plugin.manifest.id,
+												name: plugin.manifest.name,
+											}}
+										/>
+									),
+								})
+							}
+						>
+							<Trash2Icon />
+						</IconButton>
+					</Tooltip>
 				</div>
 			</div>
-		</>
+		</div>
 	);
 };
-
-interface InstallPluginDialogProps {
-	onInstallComplete: () => void;
-	modalProps: ModalRootProps;
-}
 
 const installPluginFormSchema = z.object({
 	repoUrl: z.string().regex(/^https:\/\/github\.com\/[^/]+\/[^/]+$/, {
@@ -193,7 +166,8 @@ const installPluginFormSchema = z.object({
 	}),
 });
 
-const InstallPluginDialog = ({ onInstallComplete, modalProps }: InstallPluginDialogProps) => {
+const InstallPluginDialog = () => {
+	const modalCtx = useModalContext();
 	const installPluginMutation = useInstallPluginMutation();
 
 	const form = useForm({
@@ -215,94 +189,76 @@ const InstallPluginDialog = ({ onInstallComplete, modalProps }: InstallPluginDia
 			},
 			{
 				onSuccess: () => {
-					form.reset();
-
-					onInstallComplete();
+					modalCtx.close();
 				},
 			}
 		);
 	});
 
 	return (
-		<ModalRoot {...modalProps}>
-			<ModalContent>
-				<Dialog>
-					<DialogCloseButton />
-					<DialogHeader>
-						<DialogTitle>Install plugin</DialogTitle>
-						<DialogDescription>
-							Enter the GitHub repository URL of the plugin you want to install.
-						</DialogDescription>
-					</DialogHeader>
-					<form onSubmit={onSubmit}>
-						<TextInputFieldController
-							name="repoUrl"
-							control={form.control}
-							textFieldProps={{
-								textInputProps: {
-									placeholder: "https://github.com/limbo-llm/plugin-ollama",
-								},
-							}}
-						/>
-						<DialogFooter>
-							<ModalCloseTrigger asChild>
-								<Button>Cancel</Button>
-							</ModalCloseTrigger>
-							<Button
-								type="submit"
-								disabled={!form.formState.isDirty}
-								isLoading={installPluginMutation.isPending}
-							>
-								Install
-							</Button>
-						</DialogFooter>
-					</form>
-				</Dialog>
-			</ModalContent>
-		</ModalRoot>
+		<Dialog>
+			<DialogCloseButton />
+			<DialogHeader>
+				<DialogTitle>Install plugin</DialogTitle>
+				<DialogDescription>
+					Enter the GitHub repository URL of the plugin you want to install.
+				</DialogDescription>
+			</DialogHeader>
+			<form onSubmit={onSubmit}>
+				<TextInputFieldController
+					name="repoUrl"
+					control={form.control}
+					textFieldProps={{
+						textInputProps: {
+							placeholder: "https://github.com/limbo-llm/plugin-ollama",
+						},
+					}}
+				/>
+				<DialogFooter>
+					<Button onClick={modalCtx.close}>Cancel</Button>
+					<Button
+						type="submit"
+						disabled={!form.formState.isDirty}
+						isLoading={installPluginMutation.isPending}
+					>
+						Install
+					</Button>
+				</DialogFooter>
+			</form>
+		</Dialog>
 	);
 };
 
 function PluginsSettingsPage() {
 	const plugins = usePluginList();
 	const mainRouterClient = useMainRouterClient();
-	const [isInstallPluginDialogOpen, setIsInstallPluginDialogOpen] = useState(false);
 
 	const openPluginsFolder = () => {
 		mainRouterClient.plugins.openFolder.mutate();
 	};
 
 	return (
-		<>
-			<InstallPluginDialog
-				onInstallComplete={() => setIsInstallPluginDialogOpen(false)}
-				modalProps={{
-					open: isInstallPluginDialogOpen,
-					onOpenChange: setIsInstallPluginDialogOpen,
-				}}
-			/>
-			<SettingsPage className="plugins-page">
-				<div className="plugins-page-header">
-					<h1 className="plugins-page-title">Plugins</h1>
-					<div className="plugins-page-actions">
-						<Tooltip label="Open plugins folder">
-							<IconButton color="secondary" onClick={openPluginsFolder}>
-								<FolderIcon />
-							</IconButton>
-						</Tooltip>
-						<Tooltip label="Install plugin">
-							<IconButton onClick={() => setIsInstallPluginDialogOpen(true)}>
-								<PlusIcon />
-							</IconButton>
-						</Tooltip>
-					</div>
+		<SettingsPage className="plugins-page">
+			<div className="plugins-page-header">
+				<h1 className="plugins-page-title">Plugins</h1>
+				<div className="plugins-page-actions">
+					<Tooltip label="Open plugins folder">
+						<IconButton color="secondary" onClick={openPluginsFolder}>
+							<FolderIcon />
+						</IconButton>
+					</Tooltip>
+					<Tooltip label="Install plugin">
+						<IconButton onClick={() => showDialog({ component: InstallPluginDialog })}>
+							<PlusIcon />
+						</IconButton>
+					</Tooltip>
 				</div>
-				<div className="plugin-list">
-					{Object.values(plugins).map((plugin) => (
-						<PluginCard plugin={plugin} key={plugin.manifest.id} />
-					))}
-				</div>
-			</SettingsPage>
-		</>
+			</div>
+			<div className="plugin-list">
+				{Object.values(plugins).map((plugin) => (
+					<PluginCard plugin={plugin} key={plugin.manifest.id} />
+				))}
+			</div>
+		</SettingsPage>
 	);
 }

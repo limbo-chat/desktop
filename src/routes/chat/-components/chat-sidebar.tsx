@@ -1,4 +1,3 @@
-import * as RadixDialog from "@radix-ui/react-dialog";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useMatch, useRouter } from "@tanstack/react-router";
 import { EllipsisIcon, MessageCirclePlusIcon, PencilIcon, Trash2Icon } from "lucide-react";
@@ -6,12 +5,11 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../../../components/button";
 import {
-	DialogCloseButton,
+	Dialog,
 	DialogFooter,
 	DialogHeader,
-	Dialog,
 	DialogTitle,
-	DialogModalContent,
+	DialogCloseButton,
 } from "../../../components/dialog";
 import { TextInput } from "../../../components/inputs/text-input";
 import {
@@ -22,7 +20,6 @@ import {
 	MenuRoot,
 	MenuTrigger,
 } from "../../../components/menu";
-import { ModalRoot, type ModalRootProps } from "../../../components/modal";
 import {
 	Sidebar,
 	SidebarGroup,
@@ -31,6 +28,8 @@ import {
 	SidebarItem,
 } from "../../../components/sidebar";
 import { useDeleteChatMutation, useRenameChatMutation } from "../../../features/chat/hooks/queries";
+import { useModalContext } from "../../../features/modals/hooks";
+import { showDialog } from "../../../features/modals/utils";
 import { useMainRouter } from "../../../lib/trpc";
 
 interface RenameChatDialogProps {
@@ -38,11 +37,10 @@ interface RenameChatDialogProps {
 		id: string;
 		name: string;
 	};
-	onRenameComplete: () => void;
-	modalProps: ModalRootProps;
 }
 
-const RenameChatDialog = ({ chat, onRenameComplete, modalProps }: RenameChatDialogProps) => {
+const RenameChatDialog = ({ chat }: RenameChatDialogProps) => {
+	const modalCtx = useModalContext();
 	const renameChatMutation = useRenameChatMutation();
 
 	const form = useForm({
@@ -59,38 +57,32 @@ const RenameChatDialog = ({ chat, onRenameComplete, modalProps }: RenameChatDial
 			},
 			{
 				onSuccess: () => {
-					onRenameComplete();
+					modalCtx.close();
 				},
 			}
 		);
 	});
 
 	return (
-		<ModalRoot {...modalProps}>
-			<DialogModalContent>
-				<Dialog>
-					<DialogCloseButton />
-					<DialogHeader>
-						<DialogTitle>Rename chat</DialogTitle>
-					</DialogHeader>
-					<form onSubmit={onSubmit}>
-						<TextInput placeholder="Enter a name" {...form.register("name")} />
-						<DialogFooter>
-							<RadixDialog.Close asChild>
-								<Button>Cancel</Button>
-							</RadixDialog.Close>
-							<Button
-								type="submit"
-								disabled={!form.formState.isDirty}
-								isLoading={renameChatMutation.isPending}
-							>
-								Save
-							</Button>
-						</DialogFooter>
-					</form>
-				</Dialog>
-			</DialogModalContent>
-		</ModalRoot>
+		<Dialog>
+			<DialogCloseButton />
+			<DialogHeader>
+				<DialogTitle>Rename chat</DialogTitle>
+			</DialogHeader>
+			<form onSubmit={onSubmit}>
+				<TextInput placeholder="Enter a name" {...form.register("name")} />
+				<DialogFooter>
+					<Button onClick={modalCtx.close}>Cancel</Button>
+					<Button
+						type="submit"
+						disabled={!form.formState.isDirty}
+						isLoading={renameChatMutation.isPending}
+					>
+						Save
+					</Button>
+				</DialogFooter>
+			</form>
+		</Dialog>
 	);
 };
 
@@ -105,7 +97,6 @@ interface ChatItemProps {
 const ChatItem = ({ chat }: ChatItemProps) => {
 	const router = useRouter();
 	const deleteChatMutation = useDeleteChatMutation();
-	const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
 
 	const match = useMatch({
 		strict: false,
@@ -127,45 +118,39 @@ const ChatItem = ({ chat }: ChatItemProps) => {
 	};
 
 	return (
-		<>
-			<RenameChatDialog
-				chat={chat}
-				modalProps={{
-					open: isRenameDialogOpen,
-					onOpenChange: setIsRenameDialogOpen,
-				}}
-				onRenameComplete={() => setIsRenameDialogOpen(false)}
-			/>
-			<Link to="/chat/$id" params={{ id: chat.id }}>
-				{({ isActive }) => (
-					<SidebarItem isActive={isActive}>
-						{chat.name}
-						<MenuRoot>
-							<MenuTrigger onClick={(e) => e.stopPropagation()}>
-								<EllipsisIcon />
-							</MenuTrigger>
-							<MenuContent>
-								<MenuItem
-									data-action="rename"
-									onClick={() => setIsRenameDialogOpen(true)}
-								>
-									<MenuItemIcon>
-										<PencilIcon />
-									</MenuItemIcon>
-									<MenuItemLabel>Rename</MenuItemLabel>
-								</MenuItem>
-								<MenuItem data-action="delete" onClick={handleDelete}>
-									<MenuItemIcon>
-										<Trash2Icon />
-									</MenuItemIcon>
-									<MenuItemLabel>Delete</MenuItemLabel>
-								</MenuItem>
-							</MenuContent>
-						</MenuRoot>
-					</SidebarItem>
-				)}
-			</Link>
-		</>
+		<Link to="/chat/$id" params={{ id: chat.id }}>
+			{({ isActive }) => (
+				<SidebarItem isActive={isActive}>
+					{chat.name}
+					<MenuRoot>
+						<MenuTrigger onClick={(e) => e.stopPropagation()}>
+							<EllipsisIcon />
+						</MenuTrigger>
+						<MenuContent>
+							<MenuItem
+								data-action="rename"
+								onClick={() =>
+									showDialog({
+										component: () => <RenameChatDialog chat={chat} />,
+									})
+								}
+							>
+								<MenuItemIcon>
+									<PencilIcon />
+								</MenuItemIcon>
+								<MenuItemLabel>Rename</MenuItemLabel>
+							</MenuItem>
+							<MenuItem data-action="delete" onClick={handleDelete}>
+								<MenuItemIcon>
+									<Trash2Icon />
+								</MenuItemIcon>
+								<MenuItemLabel>Delete</MenuItemLabel>
+							</MenuItem>
+						</MenuContent>
+					</MenuRoot>
+				</SidebarItem>
+			)}
+		</Link>
 	);
 };
 
