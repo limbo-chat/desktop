@@ -31,10 +31,14 @@ export const ModalHost = () => {
 
 	const ModalComponent = activeModal.component;
 
+	const handleClose = () => {
+		setActiveModal(null);
+	};
+
 	return (
-		<modalContext.Provider value={{ close: () => setActiveModal(null) }}>
+		<modalContext.Provider value={{ close: handleClose }}>
 			<div className={clsx("modal", activeModal.className)}>
-				<div className="modal-overlay" />
+				<div className="modal-overlay" onClick={handleClose} />
 				<div className="modal-content">
 					<ModalComponent />
 				</div>
