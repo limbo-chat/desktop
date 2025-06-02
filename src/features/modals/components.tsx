@@ -30,11 +30,11 @@ export const ModalHost = () => {
 		return null;
 	}
 
-	const ModalComponent = activeModal.component;
-
 	const handleClose = () => {
 		setActiveModal(null);
 	};
+
+	const ModalComponent = activeModal.component;
 
 	return (
 		<modalContext.Provider value={{ close: handleClose }}>

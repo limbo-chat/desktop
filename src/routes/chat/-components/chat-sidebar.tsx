@@ -1,7 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useMatch, useRouter } from "@tanstack/react-router";
 import { EllipsisIcon, MessageCirclePlusIcon, PencilIcon, Trash2Icon } from "lucide-react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../../../components/button";
 import {
@@ -56,7 +55,7 @@ const RenameChatDialog = ({ chat }: RenameChatDialogProps) => {
 				name: data.name,
 			},
 			{
-				onSuccess: () => {
+				onSuccess: (newha) => {
 					modalCtx.close();
 				},
 			}
@@ -65,14 +64,15 @@ const RenameChatDialog = ({ chat }: RenameChatDialogProps) => {
 
 	return (
 		<Dialog>
-			<DialogCloseButton />
 			<DialogHeader>
 				<DialogTitle>Rename chat</DialogTitle>
 			</DialogHeader>
 			<form onSubmit={onSubmit}>
 				<TextInput placeholder="Enter a name" {...form.register("name")} />
 				<DialogFooter>
-					<Button onClick={modalCtx.close}>Cancel</Button>
+					<Button type="button" onClick={modalCtx.close}>
+						Cancel
+					</Button>
 					<Button
 						type="submit"
 						disabled={!form.formState.isDirty}

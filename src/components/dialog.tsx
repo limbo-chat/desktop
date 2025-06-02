@@ -4,10 +4,17 @@ import type { HTMLAttributes } from "react";
 import { useModalContext } from "../features/modals/hooks";
 import { IconButton, type IconButtonProps } from "./icon-button";
 
-export interface DialogRootProps extends HTMLAttributes<HTMLDivElement> {}
+export interface DialogProps extends HTMLAttributes<HTMLDivElement> {
+	withCloseButton?: boolean;
+}
 
-export const Dialog = ({ className, ...props }: DialogRootProps) => {
-	return <div className={clsx("dialog")} {...props} />;
+export const Dialog = ({ className, withCloseButton = true, children, ...props }: DialogProps) => {
+	return (
+		<div className={clsx("dialog")} {...props}>
+			{children}
+			{withCloseButton && <DialogCloseButton />}
+		</div>
+	);
 };
 
 export interface DialogHeaderProps extends HTMLAttributes<HTMLDivElement> {}

@@ -197,7 +197,6 @@ const InstallPluginDialog = () => {
 
 	return (
 		<Dialog>
-			<DialogCloseButton />
 			<DialogHeader>
 				<DialogTitle>Install plugin</DialogTitle>
 				<DialogDescription>

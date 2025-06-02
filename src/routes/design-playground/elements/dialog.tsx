@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "../../../components/button";
 import {
 	Dialog,
-	DialogCloseButton,
 	DialogDescription,
 	DialogFooter,
 	DialogHeader,
@@ -17,7 +16,6 @@ export const Route = createFileRoute("/design-playground/elements/dialog")({
 const DemoDialog = () => {
 	return (
 		<Dialog>
-			<DialogCloseButton />
 			<DialogHeader>
 				<DialogTitle>Hello world!</DialogTitle>
 				<DialogDescription>This is a dialog</DialogDescription>
