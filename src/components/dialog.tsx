@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { XIcon } from "lucide-react";
 import type { HTMLAttributes } from "react";
 import { IconButton, type IconButtonProps } from "./icon-button";
+import { ModalContent, ModalRoot, type ModalContentProps } from "./modal";
 
 export interface DialogRootProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -44,4 +45,10 @@ export const DialogCloseButton = ({ className, ...props }: DialogCloseButtonProp
 			</IconButton>
 		</RadixDialog.DialogClose>
 	);
+};
+
+export interface DialogModalContentProps extends ModalContentProps {}
+
+export const DialogModalContent = ({ className, ...props }: DialogModalContentProps) => {
+	return <ModalContent className={clsx("dialog-modal", className)} {...props} />;
 };

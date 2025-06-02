@@ -11,6 +11,7 @@ import {
 	DialogHeader,
 	Dialog,
 	DialogTitle,
+	DialogModalContent,
 } from "../../../components/dialog";
 import { TextInput } from "../../../components/inputs/text-input";
 import {
@@ -66,27 +67,29 @@ const RenameChatDialog = ({ chat, onRenameComplete, modalProps }: RenameChatDial
 
 	return (
 		<ModalRoot {...modalProps}>
-			<Dialog>
-				<DialogCloseButton />
-				<DialogHeader>
-					<DialogTitle>Rename chat</DialogTitle>
-				</DialogHeader>
-				<form onSubmit={onSubmit}>
-					<TextInput placeholder="Enter a name" {...form.register("name")} />
-					<DialogFooter>
-						<RadixDialog.Close asChild>
-							<Button>Cancel</Button>
-						</RadixDialog.Close>
-						<Button
-							type="submit"
-							disabled={!form.formState.isDirty}
-							isLoading={renameChatMutation.isPending}
-						>
-							Save
-						</Button>
-					</DialogFooter>
-				</form>
-			</Dialog>
+			<DialogModalContent>
+				<Dialog>
+					<DialogCloseButton />
+					<DialogHeader>
+						<DialogTitle>Rename chat</DialogTitle>
+					</DialogHeader>
+					<form onSubmit={onSubmit}>
+						<TextInput placeholder="Enter a name" {...form.register("name")} />
+						<DialogFooter>
+							<RadixDialog.Close asChild>
+								<Button>Cancel</Button>
+							</RadixDialog.Close>
+							<Button
+								type="submit"
+								disabled={!form.formState.isDirty}
+								isLoading={renameChatMutation.isPending}
+							>
+								Save
+							</Button>
+						</DialogFooter>
+					</form>
+				</Dialog>
+			</DialogModalContent>
 		</ModalRoot>
 	);
 };

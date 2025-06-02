@@ -6,6 +6,7 @@ import {
 	DialogDescription,
 	DialogFooter,
 	DialogHeader,
+	DialogModalContent,
 	DialogTitle,
 } from "../../../components/dialog";
 import {
@@ -26,7 +27,7 @@ function DialogElementPage() {
 				<ModalTrigger asChild>
 					<Button>Open dialog</Button>
 				</ModalTrigger>
-				<ModalContent>
+				<DialogModalContent>
 					<Dialog>
 						<DialogCloseButton />
 						<DialogHeader>
@@ -39,7 +40,7 @@ function DialogElementPage() {
 							</ModalCloseTrigger>
 						</DialogFooter>
 					</Dialog>
-				</ModalContent>
+				</DialogModalContent>
 			</ModalRoot>
 		</div>
 	);

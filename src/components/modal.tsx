@@ -6,11 +6,11 @@ export interface ModalRootProps extends RadixDialog.DialogProps {}
 
 export const ModalRoot = RadixDialog.Root;
 
-export interface ModalContentProps {
+export interface ModalContentProps extends PropsWithChildren {
 	className?: string;
 }
 
-export const ModalContent = ({ className, children }: PropsWithChildren<ModalContentProps>) => {
+export const ModalContent = ({ className, children }: ModalContentProps) => {
 	return (
 		<RadixDialog.Portal>
 			<div className={clsx("modal", className)}>

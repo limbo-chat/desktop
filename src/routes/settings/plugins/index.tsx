@@ -14,7 +14,7 @@ import {
 	DialogHeader,
 	Dialog,
 	DialogTitle,
-	type DialogRootProps,
+	DialogModalContent,
 } from "../../../components/dialog";
 import { IconButton } from "../../../components/icon-button";
 import {
@@ -70,7 +70,7 @@ const UninstallPluginDialog = ({
 
 	return (
 		<ModalRoot>
-			<ModalContent>
+			<DialogModalContent>
 				<Dialog>
 					<DialogHeader>
 						<DialogCloseButton />
@@ -92,7 +92,7 @@ const UninstallPluginDialog = ({
 						</Button>
 					</DialogFooter>
 				</Dialog>
-			</ModalContent>
+			</DialogModalContent>
 		</ModalRoot>
 	);
 };
