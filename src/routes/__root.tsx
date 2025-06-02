@@ -7,6 +7,7 @@ import type { MainRouter } from "../../electron/trpc/router";
 import { CommandPaletteModal } from "../features/commands/components/command-palette";
 import { useOpenCommandPaletteHotkey, useRegisterCoreCommands } from "../features/commands/hooks";
 import { useCustomStylesLoader, useCustomStylesSubscriber } from "../features/custom-styles/hooks";
+import { ModalHost } from "../features/modals/components";
 import {
 	PluginBackendProvider,
 	PluginManagerProvider,
@@ -184,6 +185,7 @@ function RootLayout() {
 		<RootLayoutProviders>
 			<div className="app" data-app-focused={appIsFocused}>
 				<Titlebar />
+				<ModalHost />
 				<Suspense fallback={"loading, todo replace"}>
 					<MainContent />
 				</Suspense>
