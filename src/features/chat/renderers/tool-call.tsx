@@ -10,7 +10,7 @@ import { useTool, useToolCall } from "../../tools/hooks";
 import { useToolCallStore } from "../../tools/stores";
 
 export interface ToolCallNodeRendererProps {
-	node: limbo.ToolCallChatMessageNode;
+	node: limbo.ChatMessageNode;
 }
 
 interface ToolCallDataContainerProps {
@@ -84,13 +84,15 @@ const ToolCallRenderer = ({ toolCall }: ToolCallRendererProps) => {
 };
 
 export const ToolCallNodeRenderer = ({ node }: ToolCallNodeRendererProps) => {
+	const toolCallId = node.data.tool_call_id as string;
+
 	const mainRouter = useMainRouter();
-	const toolCallState = useToolCall(node.data.tool_call_id);
+	const toolCallState = useToolCall(toolCallId);
 
 	const getToolCallQuery = useQuery(
 		mainRouter.toolCalls.get.queryOptions(
 			{
-				id: node.data.tool_call_id,
+				id: node.data.tool_call_id as string,
 			},
 			{
 				// if the tool call is not loaded, we fetch it
@@ -114,14 +116,14 @@ export const ToolCallNodeRenderer = ({ node }: ToolCallNodeRendererProps) => {
 		if (getToolCallQuery.isError) {
 			return (
 				<div className="node" data-type={node.type} data-status="error">
-					Failed to load tool call: {node.data.tool_call_id}
+					Failed to load tool call: {toolCallId}
 				</div>
 			);
 		}
 
 		return (
 			<div className="node" data-type={node.type} data-status="loading">
-				Loading tool call: {node.data.tool_call_id}
+				Loading tool call: {toolCallId}
 			</div>
 		);
 	}

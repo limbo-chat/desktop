@@ -12,11 +12,11 @@ export interface ChatStore {
 	getMessage: (messageId: string) => ChatMessageType | undefined;
 	addMessage: (message: ChatMessageType) => void;
 	updateMessage: (messageId: string, partialMessage: Partial<ChatMessageType>) => void;
-	addNodeToMessage: (messageId: string, node: limbo.CoreChatMessageNode) => void;
+	addNodeToMessage: (messageId: string, node: limbo.ChatMessageNode) => void;
 	updateMessageNode: (
 		messageId: string,
 		nodeIdx: number,
-		partialNode: Partial<limbo.CoreChatMessageNode>
+		partialNode: Partial<limbo.ChatMessageNode>
 	) => void;
 	removeMessage: (messageId: string) => void;
 	reset: () => void;

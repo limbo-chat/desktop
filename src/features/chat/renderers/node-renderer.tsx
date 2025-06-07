@@ -5,7 +5,7 @@ import { ToolCallNodeRenderer } from "./tool-call";
 import { UnknownNodeRenderer } from "./unknown";
 
 export interface NodeRendererProps {
-	node: limbo.CoreChatMessageNode;
+	node: limbo.ChatMessageNode;
 }
 
 // TODO, correct any value type

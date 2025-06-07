@@ -73,11 +73,24 @@ export const useSendMessage = () => {
 		// add the user message to the prompt builder
 		promptBuilder.appendMessage({
 			role: "user",
-			content: message,
+			content: [
+				{
+					type: "text",
+					data: {
+						content: message,
+					},
+				},
+			],
 		});
 
-		// run the plugins on the executeOnBeforeAssistantResponseHooks lifecycle hook
-		await pluginManager.executeOnBeforeAssistantResponseHooks({
+		// run the plugins on the onPrepareChatPrompt lifecycle hook
+		await pluginManager.executeOnPrepareChatPromptHooks({
+			chatId,
+			promptBuilder,
+		});
+
+		// run the plugins on the onTransformChatPrompt lifecycle hook
+		await pluginManager.executeOnTransformChatPromptHooks({
 			chatId,
 			promptBuilder,
 		});
@@ -105,7 +118,7 @@ export const useSendMessage = () => {
 			}
 		}
 
-		const assistantMessageChatNodes: limbo.CoreChatMessageNode[] = [];
+		const assistantMessageChatNodes: limbo.ChatMessageNode[] = [];
 		const finalToolCalls: limbo.LLM.ToolCall[] = [];
 
 		try {
@@ -270,11 +283,14 @@ export const useSendMessage = () => {
 							}
 
 							promptBuilder.appendMessage({
-								role: "tool",
-								toolId: finalToolCall.toolId,
-								callId,
-								arguments: finalToolCall.arguments,
-								result: resultStr,
+								role: "assistant",
+								content: [
+									{
+										type: "tool_call",
+										// @ts-expect-error
+										data: finalToolCall,
+									},
+								],
 							});
 						})
 					);

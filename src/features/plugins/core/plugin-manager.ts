@@ -85,16 +85,30 @@ export class PluginManager {
 		);
 	}
 
-	public async executeOnBeforeAssistantResponseHooks(args: limbo.OnBeforeAssistantResponseArgs) {
+	public async executeOnPrepareChatPromptHooks(args: limbo.OnPrepareChatPromptArgs) {
 		const plugins = [...this.plugins.values()];
 
 		await Promise.allSettled(
 			plugins.map(async (plugin) => {
-				if (typeof plugin.module.onBeforeAssistantResponse !== "function") {
+				if (typeof plugin.module.onPrepareChatPrompt !== "function") {
 					return;
 				}
 
-				await plugin.module.onBeforeAssistantResponse(args);
+				await plugin.module.onPrepareChatPrompt(args);
+			})
+		);
+	}
+
+	public async executeOnTransformChatPromptHooks(args: limbo.OnTransformChatPromptArgs) {
+		const plugins = [...this.plugins.values()];
+
+		await Promise.allSettled(
+			plugins.map(async (plugin) => {
+				if (typeof plugin.module.onTransformChatPrompt !== "function") {
+					return;
+				}
+
+				await plugin.module.onTransformChatPrompt(args);
 			})
 		);
 	}

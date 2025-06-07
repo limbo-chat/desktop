@@ -7,7 +7,7 @@ export interface PromptBuilderOptions {
 
 export class ChatPromptBuilder implements limbo.ChatPromptBuilder {
 	private systemPrompt = "";
-	private messages: limbo.PromptMessage[] = [];
+	private messages: limbo.ChatPromptMessage[] = [];
 
 	public getSystemPrompt() {
 		return this.systemPrompt;
@@ -29,15 +29,38 @@ export class ChatPromptBuilder implements limbo.ChatPromptBuilder {
 		return this.messages;
 	}
 
-	public appendMessage(message: limbo.PromptMessage) {
+	public appendMessage(message: limbo.ChatPromptMessage) {
 		this.messages.push(message);
 	}
 
-	public toPromptMessages(): limbo.PromptMessage[] {
+	public replaceMessage(index: number, message: limbo.ChatPromptMessage) {
+		if (index < 0 || index >= this.messages.length) {
+			return;
+		}
+
+		this.messages[index] = message;
+	}
+
+	public deleteMessage(index: number) {
+		if (index < 0 || index >= this.messages.length) {
+			return;
+		}
+
+		this.messages.splice(index, 1);
+	}
+
+	public toPromptMessages(): limbo.ChatPromptMessage[] {
 		return [
 			{
 				role: "system",
-				content: this.systemPrompt,
+				content: [
+					{
+						type: "text",
+						data: {
+							content: this.getSystemPrompt(),
+						},
+					},
+				],
 			},
 			...this.messages,
 		];
