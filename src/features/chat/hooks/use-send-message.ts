@@ -234,6 +234,7 @@ export const useSendMessage = () => {
 						const toolCallResult = await executeToolCall({
 							tool,
 							args: toolCall.arguments,
+							messageHandle,
 						});
 
 						const finalToolCall: limbo.ToolCall = {

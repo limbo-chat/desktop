@@ -6,6 +6,7 @@ const ajv = new Ajv();
 export interface ExecuteToolCallOptions {
 	tool: limbo.Tool;
 	args: any;
+	messageHandle: limbo.MessageHandle;
 }
 
 export type ExecuteToolCallResult =
@@ -15,6 +16,7 @@ export type ExecuteToolCallResult =
 export async function executeToolCall({
 	tool,
 	args,
+	messageHandle,
 }: ExecuteToolCallOptions): Promise<ExecuteToolCallResult> {
 	const validateArguments = ajv.compile(tool.schema);
 	const areArgumentsValid = validateArguments(args);
@@ -27,7 +29,10 @@ export async function executeToolCall({
 	}
 
 	try {
-		const result = await tool.execute(args);
+		const result = await tool.execute({
+			args,
+			message: messageHandle,
+		});
 
 		return {
 			status: "success",
