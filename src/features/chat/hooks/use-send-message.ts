@@ -135,7 +135,7 @@ export const useSendMessage = () => {
 				let completeResponseText = "";
 				const toolCalls: limbo.LLM.ToolCall[] = [];
 
-				await llm.streamText({
+				await llm.chat({
 					tools: toolDefinitions,
 					messages: promptBuilder.toPromptMessages(),
 					onText: (text) => {
