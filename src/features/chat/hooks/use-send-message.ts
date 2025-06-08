@@ -70,8 +70,7 @@ export const useSendMessage = () => {
 			"Answer the user's request using relevant tools (if they are available). Before calling a tool, think about which of the provided tools is the relevant tool to answer the user's request. Ensure tools are called in parallel if possible."
 		);
 
-		// add the user message to the prompt builder
-		promptBuilder.appendMessage({
+		const userMessage = promptBuilder.createMessage({
 			role: "user",
 			content: [
 				{
@@ -82,6 +81,9 @@ export const useSendMessage = () => {
 				},
 			],
 		});
+
+		// add the user message to the prompt builder
+		promptBuilder.appendMessage(userMessage);
 
 		// run the plugins on the onPrepareChatPrompt lifecycle hook
 		await pluginManager.executeOnPrepareChatPromptHooks({
@@ -282,7 +284,7 @@ export const useSendMessage = () => {
 								resultStr = `Error: ${finalToolCall.error ?? "Unknown error"}`;
 							}
 
-							promptBuilder.appendMessage({
+							const finalAssistantMessage = promptBuilder.createMessage({
 								role: "assistant",
 								content: [
 									{
@@ -292,6 +294,8 @@ export const useSendMessage = () => {
 									},
 								],
 							});
+
+							promptBuilder.appendMessage(finalAssistantMessage);
 						})
 					);
 				}
