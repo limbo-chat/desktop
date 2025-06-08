@@ -1,4 +1,3 @@
-import Ajv from "ajv";
 import { ulid } from "ulid";
 import type * as limbo from "limbo";
 import { useMainRouterClient } from "../../../lib/trpc";
@@ -6,6 +5,7 @@ import { buildNamespacedResourceId } from "../../../lib/utils";
 import { usePluginManager } from "../../plugins/hooks/core";
 import { useToolCallStore } from "../../tools/stores";
 import { ChatPromptBuilder } from "../core/chat-prompt-builder";
+import { executeToolCall } from "../core/utils";
 import { useChatStore } from "../stores";
 
 export interface SendMessageOptions {
@@ -14,8 +14,6 @@ export interface SendMessageOptions {
 	message: string;
 	enabledToolIds: string[];
 }
-
-const ajv = new Ajv();
 
 export const useSendMessage = () => {
 	const pluginManager = usePluginManager();
@@ -32,43 +30,16 @@ export const useSendMessage = () => {
 		// trigger the loading state
 		chatStore.setIsAssistantResponsePending(true);
 
-		// add user message to store
-		const userMessageId = ulid();
-		const userMessageCreatedAt = new Date().toISOString();
-
-		chatStore.addMessage({
-			role: "user",
-			id: userMessageId,
-			content: [
-				{
-					type: "text",
-					data: {
-						content: message,
-					},
-				},
-			],
-			createdAt: userMessageCreatedAt,
-		});
-
-		// add an empty placeholder for the assistant message
-		const assistantMessageId = ulid();
-
-		chatStore.addMessage({
-			id: assistantMessageId,
-			role: "assistant",
-			status: "pending",
-			content: [],
-			createdAt: new Date().toISOString(),
-		});
-
-		// create a prompt builder and add the user's message to it
-
+		// create a new prompt builder
 		const promptBuilder = new ChatPromptBuilder();
 
 		// set the default chat system prompt
 		promptBuilder.setSystemPrompt(
 			"Answer the user's request using relevant tools (if they are available). Before calling a tool, think about which of the provided tools is the relevant tool to answer the user's request. Ensure tools are called in parallel if possible."
 		);
+
+		const userMessageId = ulid();
+		const userMessageCreatedAt = new Date().toISOString();
 
 		const userMessage = promptBuilder.createMessage({
 			role: "user",
@@ -85,6 +56,31 @@ export const useSendMessage = () => {
 		// add the user message to the prompt builder
 		promptBuilder.appendMessage(userMessage);
 
+		// add user message to the chat store
+		chatStore.addMessage({
+			role: "user",
+			id: userMessageId,
+			content: userMessage.getNodes(),
+			createdAt: userMessageCreatedAt,
+		});
+
+		const assistantMessageId = ulid();
+
+		const assistantMessage = promptBuilder.createMessage({
+			role: "assistant",
+			content: [],
+		});
+
+		// add the assistant message to the chat store
+		chatStore.addMessage({
+			id: assistantMessageId,
+			role: "assistant",
+			status: "pending",
+			content: assistantMessage.getNodes(),
+			createdAt: new Date().toISOString(),
+		});
+
+		// create a prompt builder and add the user's message to it
 		// run the plugins on the onPrepareChatPrompt lifecycle hook
 		await pluginManager.executeOnPrepareChatPromptHooks({
 			chatId,
@@ -120,7 +116,6 @@ export const useSendMessage = () => {
 			}
 		}
 
-		const assistantMessageChatNodes: limbo.ChatMessageNode[] = [];
 		const finalToolCalls: limbo.LLM.ToolCall[] = [];
 
 		try {
@@ -129,175 +124,115 @@ export const useSendMessage = () => {
 			let shouldLoop = true;
 			let iterations = 0;
 
+			let hasAppendedAssistantMessage = false;
+
 			// max iterations to prevent catastrophic infinite loops
 			// can reeavaluate this later
 			while (shouldLoop && iterations < 25) {
 				shouldLoop = false;
 
-				let completeResponseText = "";
-				const toolCalls: limbo.LLM.ToolCall[] = [];
+				let currentMarkdownNode: limbo.ChatMessageNode | null = null;
+				let currentMarkdownNodeIndex: number | null = null;
 
 				await llm.chat({
 					tools: toolDefinitions,
 					messages: promptBuilder.toPromptMessages(),
 					onText: (text) => {
-						completeResponseText += text;
+						if (currentMarkdownNode) {
+							currentMarkdownNode.data.content += text;
 
-						const assistantMessage = chatStore.getMessage(assistantMessageId);
-
-						// it should always be there, but just in case
-						if (!assistantMessage) {
-							return;
-						}
-
-						const lastNode =
-							assistantMessage.content[assistantMessage.content.length - 1];
-
-						if (lastNode && lastNode.type === "markdown") {
+							// update the existing markdown node in the chat store
 							chatStore.updateMessageNode(
 								assistantMessageId,
-								assistantMessage.content.length - 1,
-								{
-									data: {
-										content: completeResponseText,
-									},
-								}
+								currentMarkdownNodeIndex!,
+								currentMarkdownNode
 							);
 						} else {
-							chatStore.addNodeToMessage(assistantMessageId, {
+							// create a new markdown node
+							currentMarkdownNode = {
 								type: "markdown",
 								data: {
-									content: completeResponseText,
+									content: text,
 								},
-							});
+							};
+
+							// add the node to the assistant message
+							assistantMessage.appendNode(currentMarkdownNode);
+
+							// calculate the index for the current markdown node
+							currentMarkdownNodeIndex = assistantMessage.getNodes().length - 1;
+
+							// add the node to the chat store
+							chatStore.addNodeToMessage(assistantMessageId, currentMarkdownNode);
 						}
 					},
-					onToolCall: (toolCall) => {
-						toolCalls.push(toolCall);
+					onToolCall: async (toolCall) => {
+						shouldLoop = true;
+						currentMarkdownNode = null;
+						currentMarkdownNodeIndex = null;
+
+						const tool = toolMap.get(toolCall.toolId);
+						const toolCallId = ulid();
+
+						chatStore.addNodeToMessage(assistantMessageId, {
+							type: "tool_call",
+							data: {
+								tool_call_id: toolCallId,
+							},
+						});
+
+						if (!tool) {
+							const finalToolCall: limbo.ToolCall = {
+								id: toolCallId,
+								toolId: toolCall.toolId,
+								arguments: toolCall.arguments,
+								status: "error",
+								error: "Tool not found",
+							};
+
+							toolCallStore.addToolCall(finalToolCall);
+
+							return finalToolCall;
+						}
+
+						toolCallStore.addToolCall({
+							id: toolCallId,
+							status: "pending",
+							arguments: toolCall.arguments,
+							toolId: toolCall.toolId,
+						});
+
+						const toolCallResult = await executeToolCall({
+							tool,
+							args: toolCall.arguments,
+						});
+
+						const finalToolCall: limbo.ToolCall = {
+							id: toolCallId,
+							toolId: toolCall.toolId,
+							arguments: toolCall.arguments,
+							...toolCallResult,
+						};
+
+						finalToolCalls.push(finalToolCall);
+						toolCallStore.addToolCall(finalToolCall);
+
+						assistantMessage.appendNode({
+							type: "tool_call",
+							data: {
+								tool_call_id: finalToolCall.id,
+							},
+						});
+
+						return finalToolCall;
 					},
 				});
 
-				if (completeResponseText.length > 0) {
-					assistantMessageChatNodes.push({
-						type: "markdown",
-						data: {
-							content: completeResponseText,
-						},
-					});
-				}
+				if (!hasAppendedAssistantMessage) {
+					// add the assistant message to the prompt builder after the first generation
+					promptBuilder.appendMessage(assistantMessage);
 
-				if (toolCalls.length > 0) {
-					shouldLoop = true;
-
-					// execute the tool calls in parallel
-					await Promise.allSettled(
-						toolCalls.map(async (toolCall) => {
-							const tool = toolMap.get(toolCall.toolId);
-
-							if (!tool) {
-								return;
-							}
-
-							// generarte a unique call ID for the tool call
-							const callId = ulid();
-
-							// add the tool call to the store in the pending state
-							toolCallStore.addToolCall({
-								id: callId,
-								status: "pending",
-								arguments: toolCall.arguments,
-								toolId: toolCall.toolId,
-							});
-
-							// add the tool call reference to the assistant message
-							chatStore.addNodeToMessage(assistantMessageId, {
-								type: "tool_call",
-								data: {
-									tool_call_id: callId,
-								},
-							});
-
-							// validate the tool call arguments
-							const validateArguments = ajv.compile(tool.schema);
-							const areArgumentsValid = validateArguments(toolCall.arguments);
-
-							let finalToolCall: limbo.ToolCall;
-
-							if (areArgumentsValid) {
-								try {
-									const result = await tool.execute(toolCall.arguments);
-
-									finalToolCall = {
-										id: callId,
-										toolId: toolCall.toolId,
-										arguments: toolCall.arguments,
-										status: "success",
-										result,
-									};
-								} catch (error) {
-									let errorMessage = null;
-
-									if (error instanceof Error) {
-										errorMessage = error.message;
-									}
-
-									finalToolCall = {
-										id: callId,
-										toolId: toolCall.toolId,
-										arguments: toolCall.arguments,
-										status: "error",
-										error: errorMessage,
-									};
-								}
-							} else {
-								finalToolCall = {
-									id: callId,
-									toolId: toolCall.toolId,
-									arguments: toolCall.arguments,
-									status: "error",
-									error: "Invalid arguments",
-								};
-							}
-
-							// 1) Update the tool call node in the store with the final result
-							toolCallStore.addToolCall(finalToolCall);
-
-							// add the final tool call to the list of final tool calls
-							finalToolCalls.push(finalToolCall);
-
-							// 2) add the tool call node to the assistant message
-
-							assistantMessageChatNodes.push({
-								type: "tool_call",
-								data: {
-									tool_call_id: finalToolCall.id,
-								},
-							});
-
-							// 3) Add the tool call to the prompt builder for subsequent generations
-
-							let resultStr;
-
-							if (finalToolCall.status === "success") {
-								resultStr = finalToolCall.result;
-							} else {
-								resultStr = `Error: ${finalToolCall.error ?? "Unknown error"}`;
-							}
-
-							const finalAssistantMessage = promptBuilder.createMessage({
-								role: "assistant",
-								content: [
-									{
-										type: "tool_call",
-										// @ts-expect-error
-										data: finalToolCall,
-									},
-								],
-							});
-
-							promptBuilder.appendMessage(finalAssistantMessage);
-						})
-					);
+					hasAppendedAssistantMessage = true;
 				}
 
 				iterations++;
@@ -333,16 +268,9 @@ export const useSendMessage = () => {
 		// note: we wait to do this until the end to avoid saving incomplete messages
 		await mainRouter.chats.messages.create.mutate({
 			id: userMessageId,
-			role: "user",
-			content: [
-				{
-					type: "text",
-					data: {
-						content: message,
-					},
-				},
-			],
 			chatId: chatId,
+			role: "user",
+			content: userMessage.getNodes(),
 			createdAt: userMessageCreatedAt,
 		});
 
@@ -351,7 +279,7 @@ export const useSendMessage = () => {
 			id: assistantMessageId,
 			chatId: chatId,
 			role: "assistant",
-			content: assistantMessageChatNodes,
+			content: assistantMessage.getNodes(),
 			createdAt: new Date().toISOString(),
 		});
 
