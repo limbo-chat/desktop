@@ -104,10 +104,6 @@ function ChatPage() {
 	}, [chat, chatState, listChatMessagesQuery.data]);
 
 	useEffect(() => {
-		console.log(listChatMessagesQuery.data);
-	}, []);
-
-	useEffect(() => {
 		if (!hasScrolledToBottomOnLoad.current && messages.length > 0) {
 			scrollToBottom("instant");
 
