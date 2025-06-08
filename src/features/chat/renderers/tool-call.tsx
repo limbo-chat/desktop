@@ -9,10 +9,6 @@ import { parseNamespacedResourceId } from "../../../lib/utils";
 import { useTool, useToolCall } from "../../tools/hooks";
 import { useToolCallStore } from "../../tools/stores";
 
-export interface ToolCallNodeRendererProps {
-	node: limbo.ChatMessageNode;
-}
-
 interface ToolCallDataContainerProps {
 	title: string;
 	content: string;
@@ -83,7 +79,7 @@ const ToolCallRenderer = ({ toolCall }: ToolCallRendererProps) => {
 	return <Renderer toolCall={toolCall} />;
 };
 
-export const ToolCallNodeRenderer = ({ node }: ToolCallNodeRendererProps) => {
+export const ToolCallNodeRenderer = ({ node }: limbo.ui.ChatNodeComponentProps) => {
 	const toolCallId = node.data.tool_call_id as string;
 
 	const mainRouter = useMainRouter();
@@ -92,7 +88,7 @@ export const ToolCallNodeRenderer = ({ node }: ToolCallNodeRendererProps) => {
 	const getToolCallQuery = useQuery(
 		mainRouter.toolCalls.get.queryOptions(
 			{
-				id: node.data.tool_call_id as string,
+				id: toolCallId,
 			},
 			{
 				// if the tool call is not loaded, we fetch it

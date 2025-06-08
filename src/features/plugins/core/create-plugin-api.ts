@@ -99,8 +99,12 @@ export function createPluginAPI({ hostBridge, pluginContext }: CreatePluginAPIOp
 			unregisterMarkdownElement: (elementId) => {
 				pluginContext.unregisterMarkdownElement(elementId);
 			},
-			registerChatNode: (node) => {},
-			unregisterChatNode: (nodeId) => {},
+			registerChatNode: (node) => {
+				pluginContext.registerChatNode(node);
+			},
+			unregisterChatNode: (nodeId) => {
+				pluginContext.unregisterChatNode(nodeId);
+			},
 		},
 	};
 }
