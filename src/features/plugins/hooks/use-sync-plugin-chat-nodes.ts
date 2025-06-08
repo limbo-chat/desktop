@@ -24,10 +24,7 @@ export const useSyncPluginChatNodes = () => {
 
 					addedChatNodeIds.add(namespacedChatNodeId);
 
-					chatNodeStore.addChatNode({
-						...chatNode,
-						id: namespacedChatNodeId,
-					});
+					chatNodeStore.addChatNode(namespacedChatNodeId, chatNode);
 				}
 			}
 		};
