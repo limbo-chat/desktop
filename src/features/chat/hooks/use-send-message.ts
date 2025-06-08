@@ -22,13 +22,18 @@ export const useSendMessage = () => {
 	const sendMessage = async ({ llm, chatId, message, enabledToolIds }: SendMessageOptions) => {
 		const chatStore = useChatStore.getState();
 		const toolCallStore = useToolCallStore.getState();
+		const chatState = chatStore.chats[chatId];
 
-		if (!chatStore.userHasSentMessage) {
-			chatStore.setUserHasSentMessage(true);
+		if (!chatState) {
+			return;
+		}
+
+		if (!chatState.userHasSentMessage) {
+			chatStore.setUserHasSentMessage(chatId, true);
 		}
 
 		// trigger the loading state
-		chatStore.setIsAssistantResponsePending(true);
+		chatStore.setIsResponsePending(chatId, true);
 
 		// create a new prompt builder
 		const promptBuilder = new ChatPromptBuilder();
@@ -57,7 +62,7 @@ export const useSendMessage = () => {
 		promptBuilder.appendMessage(userMessage);
 
 		// add user message to the chat store
-		chatStore.addMessage({
+		chatStore.addMessage(chatId, {
 			role: "user",
 			id: userMessageId,
 			content: userMessage.getNodes(),
@@ -72,7 +77,7 @@ export const useSendMessage = () => {
 		});
 
 		// add the assistant message to the chat store
-		chatStore.addMessage({
+		chatStore.addMessage(chatId, {
 			id: assistantMessageId,
 			role: "assistant",
 			status: "pending",
@@ -126,32 +131,56 @@ export const useSendMessage = () => {
 			prependNode: (node) => {
 				assistantMessage.prependNode(node);
 
-				chatStore.setMessageNodes(assistantMessageId, assistantMessage.getNodes());
+				chatStore.setMessageNodes(
+					chatId,
+					assistantMessageId,
+					structuredClone(assistantMessage.getNodes())
+				);
 			},
 			appendNode: (node) => {
 				assistantMessage.appendNode(node);
 
-				chatStore.setMessageNodes(assistantMessageId, assistantMessage.getNodes());
+				chatStore.setMessageNodes(
+					chatId,
+					assistantMessageId,
+					structuredClone(assistantMessage.getNodes())
+				);
 			},
 			removeNode: (node) => {
 				assistantMessage.removeNode(node);
 
-				chatStore.setMessageNodes(assistantMessageId, assistantMessage.getNodes());
+				chatStore.setMessageNodes(
+					chatId,
+					assistantMessageId,
+					structuredClone(assistantMessage.getNodes())
+				);
 			},
 			removeNodeAt: (index) => {
 				assistantMessage.removeNodeAt(index);
 
-				chatStore.setMessageNodes(assistantMessageId, assistantMessage.getNodes());
+				chatStore.setMessageNodes(
+					chatId,
+					assistantMessageId,
+					structuredClone(assistantMessage.getNodes())
+				);
 			},
 			replaceNode: (index, node) => {
 				assistantMessage.replaceNode(index, node);
 
-				chatStore.setMessageNodes(assistantMessageId, assistantMessage.getNodes());
+				chatStore.setMessageNodes(
+					chatId,
+					assistantMessageId,
+					structuredClone(assistantMessage.getNodes())
+				);
 			},
 			replaceNodeAt(index, newNodeOrNodes) {
 				assistantMessage.replaceNodeAt(index, newNodeOrNodes);
 
-				chatStore.setMessageNodes(assistantMessageId, assistantMessage.getNodes());
+				chatStore.setMessageNodes(
+					chatId,
+					assistantMessageId,
+					structuredClone(assistantMessage.getNodes())
+				);
 			},
 		};
 
@@ -194,7 +223,11 @@ export const useSendMessage = () => {
 						}
 
 						// sync the assistant message with the chat store
-						chatStore.setMessageNodes(assistantMessageId, assistantMessage.getNodes());
+						chatStore.setMessageNodes(
+							chatId,
+							assistantMessageId,
+							structuredClone(assistantMessage.getNodes())
+						);
 					},
 					onToolCall: async (toolCall) => {
 						shouldLoop = true;
@@ -203,7 +236,7 @@ export const useSendMessage = () => {
 						const tool = toolMap.get(toolCall.toolId);
 						const toolCallId = ulid();
 
-						chatStore.addNodeToMessage(assistantMessageId, {
+						chatStore.addNodeToMessage(chatId, assistantMessageId, {
 							type: "tool_call",
 							data: {
 								tool_call_id: toolCallId,
@@ -272,18 +305,18 @@ export const useSendMessage = () => {
 			}
 		} catch (error) {
 			// if there was an error during generation, remove the user's message and the assistant message
-			chatStore.removeMessage(userMessageId);
-			chatStore.removeMessage(assistantMessageId);
+			chatStore.removeMessage(chatId, userMessageId);
+			chatStore.removeMessage(chatId, assistantMessageId);
 
 			// remove the pending state
-			chatStore.setIsAssistantResponsePending(false);
+			chatStore.setIsResponsePending(chatId, false);
 
 			// rethrow the error
 			throw error;
 		}
 
 		// mark the assistant message as complete
-		chatStore.updateMessage(assistantMessageId, {
+		chatStore.updateMessage(chatId, assistantMessageId, {
 			role: "assistant",
 			status: "complete",
 			createdAt: new Date().toISOString(),
@@ -317,7 +350,7 @@ export const useSendMessage = () => {
 		});
 
 		// remove the pending state
-		chatStore.setIsAssistantResponsePending(false);
+		chatStore.setIsResponsePending(chatId, false);
 	};
 
 	return sendMessage;

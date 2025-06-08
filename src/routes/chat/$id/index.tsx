@@ -2,11 +2,10 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useRef, type ButtonHTMLAttributes } from "react";
-import { useShallow } from "zustand/shallow";
 import { ChatLog } from "../../../features/chat/components/chat-log";
 import { RenameChatDialog } from "../../../features/chat/components/rename-chat-dialog";
+import { useChatState } from "../../../features/chat/hooks/common";
 import { useDeleteChatMutation } from "../../../features/chat/hooks/queries";
-import { useMessageList } from "../../../features/chat/hooks/use-message-list";
 import { useChatStore } from "../../../features/chat/stores";
 import { addCommand, removeCommand } from "../../../features/commands/utils";
 import { showDialog } from "../../../features/modals/utils";
@@ -45,8 +44,8 @@ const ScrollToBottomButton = ({ state, ...props }: ScrollToBottomButtonProps) =>
 function ChatPage() {
 	const params = Route.useParams();
 	const navigate = useNavigate();
-	const messages = useMessageList();
 	const mainRouter = useMainRouter();
+	const chatState = useChatState(params.id);
 	const deleteChatMutation = useDeleteChatMutation();
 	const scrollableRef = useRef<HTMLDivElement>(null);
 	const hasScrolledToBottomOnLoad = useRef(false);
@@ -58,19 +57,12 @@ function ChatPage() {
 	);
 
 	const chat = getChatQuery.data;
+	const messages = chatState?.messages ?? [];
 
 	const listChatMessagesQuery = useSuspenseQuery(
 		mainRouter.chats.messages.list.queryOptions({
 			chatId: params.id,
 		})
-	);
-
-	const chatStore = useChatStore(
-		useShallow((state) => ({
-			userHasSentMessage: state.userHasSentMessage,
-			addMessage: state.addMessage,
-			reset: state.reset,
-		}))
 	);
 
 	const isAtBottom = useIsAtBottom({
@@ -90,8 +82,18 @@ function ChatPage() {
 	}, []);
 
 	useEffect(() => {
+		if (chatState) {
+			return;
+		}
+
+		const chatStore = useChatStore.getState();
+
+		// add the chat to the store
+		chatStore.addChat(chat.id);
+
+		// add the messages to the store
 		for (const message of listChatMessagesQuery.data) {
-			chatStore.addMessage({
+			chatStore.addMessage(chat.id, {
 				id: message.id,
 				content: message.content,
 				role: message.role,
@@ -99,7 +101,11 @@ function ChatPage() {
 				createdAt: message.createdAt,
 			});
 		}
-	}, [listChatMessagesQuery.data]);
+	}, [chat, chatState, listChatMessagesQuery.data]);
+
+	useEffect(() => {
+		console.log(listChatMessagesQuery.data);
+	}, []);
 
 	useEffect(() => {
 		if (!hasScrolledToBottomOnLoad.current && messages.length > 0) {
@@ -118,8 +124,6 @@ function ChatPage() {
 	useEffect(() => {
 		return () => {
 			hasScrolledToBottomOnLoad.current = false;
-
-			chatStore.reset();
 		};
 	}, [params.id]);
 
@@ -162,7 +166,7 @@ function ChatPage() {
 		};
 	}, [params.id]);
 
-	const shouldShowSpacer = chatStore.userHasSentMessage && messages.length > 2;
+	const shouldShowSpacer = chatState?.userHasSentMessage && messages.length > 2;
 
 	return (
 		<div className="chat-page" data-is-at-bottom={isAtBottom}>

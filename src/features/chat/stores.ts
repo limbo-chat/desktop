@@ -3,46 +3,135 @@ import { immer } from "zustand/middleware/immer";
 import type * as limbo from "limbo";
 import type { ChatMessageType } from "./types";
 
-export interface ChatStore {
+export interface ChatState {
 	messages: ChatMessageType[];
 	userHasSentMessage: boolean;
 	isAssistantResponsePending: boolean;
-	setUserHasSentMessage: (userHasSentMessage: boolean) => void;
-	setIsAssistantResponsePending: (isResponsePending: boolean) => void;
-	getMessage: (messageId: string) => ChatMessageType | undefined;
-	addMessage: (message: ChatMessageType) => void;
-	updateMessage: (messageId: string, partialMessage: Partial<ChatMessageType>) => void;
-	addNodeToMessage: (messageId: string, node: limbo.ChatMessageNode) => void;
-	setMessageNodes: (messageId: string, nodes: limbo.ChatMessageNode[]) => void;
-	removeMessage: (messageId: string) => void;
+}
+
+export interface ChatStore {
+	chats: Record<string, ChatState>;
+	recentChats: string[];
+	addChat: (chatId: string, chatLimit?: number) => void;
+	removeChat: (chatId: string) => void;
+	setIsResponsePending: (chatId: string, isPending: boolean) => void;
+	setUserHasSentMessage: (chatId: string, hasSent: boolean) => void;
+	addMessage: (chatId: string, message: ChatMessageType) => void;
+	updateMessage: (
+		chatId: string,
+		messageId: string,
+		partialMessage: Partial<ChatMessageType>
+	) => void;
+	removeMessage: (chatId: string, messageId: string) => void;
+	addNodeToMessage: (chatId: string, messageId: string, node: limbo.ChatMessageNode) => void;
+	setMessageNodes: (chatId: string, messageId: string, nodes: limbo.ChatMessageNode[]) => void;
 	reset: () => void;
 }
 
 export const useChatStore = create(
-	immer<ChatStore>((set, get) => ({
-		messages: [],
-		userHasSentMessage: false,
-		isAssistantResponsePending: false,
-		setUserHasSentMessage: (userHasSentMessage) => {
-			set({ userHasSentMessage });
-		},
-		setIsAssistantResponsePending: (isResponsePending) => {
-			set({ isAssistantResponsePending: isResponsePending });
-		},
-		getMessage: (messageId) => {
-			const state = get();
-
-			return state.messages.find((message) => message.id === messageId);
-		},
-		addMessage: (message) => {
+	immer<ChatStore>((set) => ({
+		chats: {},
+		recentChats: [],
+		addChat: (chatId, chatLimit = 5) => {
 			set((state) => {
-				state.messages.push(message);
+				state.chats[chatId] = {
+					isAssistantResponsePending: false,
+					userHasSentMessage: false,
+					messages: [],
+				};
+
+				state.recentChats.push(chatId);
+
+				if (state.recentChats.length > chatLimit) {
+					const lastChatId = state.recentChats.shift();
+
+					if (lastChatId) {
+						delete state.chats[lastChatId];
+					}
+				}
 			});
 		},
-		updateMessage: (messageId, partialMessage) => {},
-		addNodeToMessage: (messageId, node) => {
+		removeChat: (chatId) => {
 			set((state) => {
-				const message = state.messages.find((msg) => msg.id === messageId);
+				delete state.chats[chatId];
+			});
+		},
+		setUserHasSentMessage: (chatId, hasSent) => {
+			set((state) => {
+				const chat = state.chats[chatId];
+
+				if (!chat) {
+					return;
+				}
+
+				chat.userHasSentMessage = hasSent;
+			});
+		},
+		setIsResponsePending: (chatId, isPending) => {
+			set((state) => {
+				const chat = state.chats[chatId];
+
+				if (!chat) {
+					return;
+				}
+
+				chat.isAssistantResponsePending = isPending;
+			});
+		},
+		addMessage: (chatId, message) => {
+			set((state) => {
+				const chat = state.chats[chatId];
+
+				if (!chat) {
+					return;
+				}
+
+				chat.messages.push(message);
+			});
+		},
+		updateMessage: (chatId, messageId, partialMessage) => {
+			set((state) => {
+				const chat = state.chats[chatId];
+
+				if (!chat) {
+					return;
+				}
+
+				const messageIdx = chat.messages.findIndex((msg) => msg.id === messageId);
+
+				if (messageIdx === -1) {
+					return;
+				}
+
+				const oldMessage = chat.messages[messageIdx];
+
+				// @ts-expect-error
+				chat.messages[messageIdx] = {
+					...oldMessage,
+					...partialMessage,
+				};
+			});
+		},
+		removeMessage: (chatId, messageId) => {
+			set((state) => {
+				const chat = state.chats[chatId];
+
+				if (!chat) {
+					return;
+				}
+
+				chat.messages = chat.messages.filter((msg) => msg.id !== messageId);
+			});
+		},
+		addNodeToMessage: (chatId, messageId, node) => {
+			set((state) => {
+				const chat = state.chats[chatId];
+
+				if (!chat) {
+					return;
+				}
+
+				const message = chat.messages.find((msg) => msg.id === messageId);
 
 				if (!message) {
 					return;
@@ -51,9 +140,15 @@ export const useChatStore = create(
 				message.content.push(node);
 			});
 		},
-		setMessageNodes: (messageId, nodes) => {
+		setMessageNodes: (chatId, messageId, nodes) => {
 			set((state) => {
-				const message = state.messages.find((msg) => msg.id === messageId);
+				const chat = state.chats[chatId];
+
+				if (!chat) {
+					return;
+				}
+
+				const message = chat.messages.find((msg) => msg.id === messageId);
 
 				if (!message) {
 					return;
@@ -62,16 +157,10 @@ export const useChatStore = create(
 				message.content = nodes;
 			});
 		},
-		removeMessage: (messageId) => {
-			set((state) => {
-				state.messages = state.messages.filter((message) => message.id !== messageId);
-			});
-		},
 		reset: () => {
 			set((state) => {
-				state.messages = [];
-				state.userHasSentMessage = false;
-				state.isAssistantResponsePending = false;
+				state.chats = {};
+				state.recentChats = [];
 			});
 		},
 	}))

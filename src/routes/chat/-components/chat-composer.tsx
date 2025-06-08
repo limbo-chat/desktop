@@ -5,6 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import { useShallow } from "zustand/shallow";
 import { IconButton } from "../../../components/icon-button";
+import { useChatState } from "../../../features/chat/hooks/common";
 import { useCreateChatMutation } from "../../../features/chat/hooks/queries";
 import { useSendMessage } from "../../../features/chat/hooks/use-send-message";
 import { useChatStore } from "../../../features/chat/stores";
@@ -24,28 +25,23 @@ export const ChatComposer = ({ ref }: ChatComposerProps) => {
 	const sendMessage = useSendMessage();
 	const createChatMutation = useCreateChatMutation();
 
-	// may need to read more from chat store here later, that's why I'm ising useShallow, even if it's unecessary for now
-	const chatStore = useChatStore(
-		useShallow((state) => ({
-			isAssistantResponsePending: state.isAssistantResponsePending,
-		}))
-	);
-
-	const localStore = useLocalStore(
-		useShallow((state) => ({
-			selectedModel: state.selectedChatLLMId,
-		}))
-	);
-
 	const params = useParams({
 		strict: false,
 	});
+
+	const chatState = useChatState(params.id);
 
 	const form = useForm({
 		defaultValues: {
 			message: "",
 		},
 	});
+
+	const localStore = useLocalStore(
+		useShallow((state) => ({
+			selectedModel: state.selectedChatLLMId,
+		}))
+	);
 
 	const onSubmit = form.handleSubmit(async (data) => {
 		if (!localStore.selectedModel) {
@@ -69,6 +65,11 @@ export const ChatComposer = ({ ref }: ChatComposerProps) => {
 			const newChat = await createChatMutation.mutateAsync({
 				name: "New chat",
 			});
+
+			const chatStore = useChatStore.getState();
+
+			// add the new chat to the store
+			chatStore.addChat(newChat.id);
 
 			chatId = newChat.id;
 
@@ -100,7 +101,7 @@ export const ChatComposer = ({ ref }: ChatComposerProps) => {
 	});
 
 	const message = form.watch("message");
-	const canSendMessage = message.length > 0 && !chatStore.isAssistantResponsePending;
+	const canSendMessage = message.length > 0 && !chatState?.isAssistantResponsePending;
 
 	return (
 		<div className="chat-composer" ref={ref}>
