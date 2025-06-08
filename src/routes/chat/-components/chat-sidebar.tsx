@@ -1,16 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useMatch, useRouter } from "@tanstack/react-router";
 import { EllipsisIcon, MessageCirclePlusIcon, PencilIcon, Trash2Icon } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { Button } from "../../../components/button";
-import {
-	Dialog,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogCloseButton,
-} from "../../../components/dialog";
-import { TextInput } from "../../../components/inputs/text-input";
 import {
 	MenuContent,
 	MenuItem,
@@ -26,65 +16,10 @@ import {
 	SidebarGroupTitle,
 	SidebarItem,
 } from "../../../components/sidebar";
-import { useDeleteChatMutation, useRenameChatMutation } from "../../../features/chat/hooks/queries";
-import { useModalContext } from "../../../features/modals/hooks";
+import { RenameChatDialog } from "../../../features/chat/components/rename-chat-dialog";
+import { useDeleteChatMutation } from "../../../features/chat/hooks/queries";
 import { showDialog } from "../../../features/modals/utils";
 import { useMainRouter } from "../../../lib/trpc";
-
-interface RenameChatDialogProps {
-	chat: {
-		id: string;
-		name: string;
-	};
-}
-
-const RenameChatDialog = ({ chat }: RenameChatDialogProps) => {
-	const modalCtx = useModalContext();
-	const renameChatMutation = useRenameChatMutation();
-
-	const form = useForm({
-		values: {
-			name: chat.name,
-		},
-	});
-
-	const onSubmit = form.handleSubmit((data) => {
-		renameChatMutation.mutate(
-			{
-				id: chat.id,
-				name: data.name,
-			},
-			{
-				onSuccess: (newha) => {
-					modalCtx.close();
-				},
-			}
-		);
-	});
-
-	return (
-		<Dialog>
-			<DialogHeader>
-				<DialogTitle>Rename chat</DialogTitle>
-			</DialogHeader>
-			<form onSubmit={onSubmit}>
-				<TextInput placeholder="Enter a name" {...form.register("name")} />
-				<DialogFooter>
-					<Button type="button" onClick={modalCtx.close}>
-						Cancel
-					</Button>
-					<Button
-						type="submit"
-						disabled={!form.formState.isDirty}
-						isLoading={renameChatMutation.isPending}
-					>
-						Save
-					</Button>
-				</DialogFooter>
-			</form>
-		</Dialog>
-	);
-};
 
 interface ChatItemProps {
 	chat: {

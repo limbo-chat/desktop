@@ -1,11 +1,15 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useRef, type ButtonHTMLAttributes } from "react";
 import { useShallow } from "zustand/shallow";
 import { ChatLog } from "../../../features/chat/components/chat-log";
+import { RenameChatDialog } from "../../../features/chat/components/rename-chat-dialog";
+import { useDeleteChatMutation } from "../../../features/chat/hooks/queries";
 import { useMessageList } from "../../../features/chat/hooks/use-message-list";
 import { useChatStore } from "../../../features/chat/stores";
+import { addCommand, removeCommand } from "../../../features/commands/utils";
+import { showDialog } from "../../../features/modals/utils";
 import { useAnimationUnmount, useIsAtBottom } from "../../../hooks/common";
 import { useMainRouter } from "../../../lib/trpc";
 
@@ -40,15 +44,26 @@ const ScrollToBottomButton = ({ state, ...props }: ScrollToBottomButtonProps) =>
 
 function ChatPage() {
 	const params = Route.useParams();
-	const mainRouter = useMainRouter();
+	const navigate = useNavigate();
 	const messages = useMessageList();
+	const mainRouter = useMainRouter();
+	const deleteChatMutation = useDeleteChatMutation();
 	const scrollableRef = useRef<HTMLDivElement>(null);
 	const hasScrolledToBottomOnLoad = useRef(false);
 
-	const isAtBottom = useIsAtBottom({
-		ref: scrollableRef,
-		threshold: 25,
-	});
+	const getChatQuery = useSuspenseQuery(
+		mainRouter.chats.get.queryOptions({
+			id: params.id,
+		})
+	);
+
+	const chat = getChatQuery.data;
+
+	const listChatMessagesQuery = useSuspenseQuery(
+		mainRouter.chats.messages.list.queryOptions({
+			chatId: params.id,
+		})
+	);
 
 	const chatStore = useChatStore(
 		useShallow((state) => ({
@@ -57,6 +72,11 @@ function ChatPage() {
 			reset: state.reset,
 		}))
 	);
+
+	const isAtBottom = useIsAtBottom({
+		ref: scrollableRef,
+		threshold: 25,
+	});
 
 	const scrollToBottom = useCallback((behavior: ScrollBehavior = "auto") => {
 		if (!scrollableRef.current) {
@@ -68,12 +88,6 @@ function ChatPage() {
 			behavior,
 		});
 	}, []);
-
-	const listChatMessagesQuery = useSuspenseQuery(
-		mainRouter.chats.messages.list.queryOptions({
-			chatId: params.id,
-		})
-	);
 
 	useEffect(() => {
 		for (const message of listChatMessagesQuery.data) {
@@ -106,6 +120,45 @@ function ChatPage() {
 			hasScrolledToBottomOnLoad.current = false;
 
 			chatStore.reset();
+		};
+	}, [params.id]);
+
+	useEffect(() => {
+		addCommand({
+			id: "rename-current-chat",
+			name: "Rename current chat",
+			execute: () => {
+				showDialog({
+					component: () => (
+						<RenameChatDialog
+							chat={{
+								id: chat.id,
+								name: chat.name,
+							}}
+						/>
+					),
+				});
+			},
+		});
+
+		addCommand({
+			id: "delete-current-chat",
+			name: "Delete current chat",
+			execute: () => {
+				deleteChatMutation.mutate(
+					{ id: chat.id },
+					{
+						onSuccess: () => {
+							navigate({ to: "/chat" });
+						},
+					}
+				);
+			},
+		});
+
+		return () => {
+			removeCommand("rename-current-chat");
+			removeCommand("delete-current-chat");
 		};
 	}, [params.id]);
 
