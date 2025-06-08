@@ -27,7 +27,7 @@ export class ChatMessageBuilder implements limbo.ChatMessageBuilder {
 	}
 
 	getNodes() {
-		return this.nodes;
+		return [...this.nodes];
 	}
 
 	prependNode(node: limbo.ChatMessageNode) {
@@ -35,6 +35,8 @@ export class ChatMessageBuilder implements limbo.ChatMessageBuilder {
 	}
 
 	appendNode(node: limbo.ChatMessageNode) {
+		console.log("Appending node to message:", node);
+
 		this.nodes.push(node);
 	}
 
@@ -126,7 +128,7 @@ export class ChatPromptBuilder implements limbo.ChatPromptBuilder {
 	}
 
 	getMessages() {
-		return this.messages;
+		return [...this.messages];
 	}
 
 	appendMessage(message: ChatMessageBuilder) {

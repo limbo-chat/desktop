@@ -1,7 +1,5 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { chatNodeSchema } from "../../../chats/schemas";
-import type { ChatNode } from "../../../chats/types";
 import { db } from "../../../db/db";
 import { publicProcedure, router } from "../../trpc";
 
@@ -9,12 +7,16 @@ const listChatMessagesInputSchema = z.object({
 	chatId: z.string(),
 });
 
+const chatNodeSchema = z.object({
+	type: z.string(),
+	data: z.record(z.any()),
+});
+
 const createChatMessageInputSchema = z.object({
 	id: z.string(),
 	chatId: z.string(),
-	// due to a diffuculity modeling the schemas with zod (nested disriminated unions, i'm just going to use any here)
-	content: z.array<z.ZodType<ChatNode>>(chatNodeSchema),
 	role: z.enum(["user", "assistant"]),
+	content: z.array(chatNodeSchema),
 	createdAt: z.string().datetime(),
 });
 
@@ -34,7 +36,7 @@ export const chatMessagesRouter = router({
 			.execute();
 
 		const chatMessagesWithParsedContent = chatMessages.map((chatMessage) => {
-			const parsedContent = JSON.parse(chatMessage.content) as ChatNode[];
+			const parsedContent = JSON.parse(chatMessage.content);
 
 			return {
 				...chatMessage,
@@ -67,7 +69,7 @@ export const chatMessagesRouter = router({
 		const chatMessages = await chatMessagesQuery.execute();
 
 		const chatMessagesWithParsedContent = chatMessages.map((chatMessage) => {
-			const parsedContent = JSON.parse(chatMessage.content) as ChatNode[];
+			const parsedContent = JSON.parse(chatMessage.content);
 
 			return {
 				...chatMessage,

@@ -116,11 +116,51 @@ export const useSendMessage = () => {
 			}
 		}
 
+		const messageHandle: limbo.MessageHandle = {
+			getNode: (index) => {
+				return assistantMessage.getNode(index);
+			},
+			getNodes: () => {
+				return assistantMessage.getNodes();
+			},
+			prependNode: (node) => {
+				assistantMessage.prependNode(node);
+
+				chatStore.setMessageNodes(assistantMessageId, assistantMessage.getNodes());
+			},
+			appendNode: (node) => {
+				assistantMessage.appendNode(node);
+
+				chatStore.setMessageNodes(assistantMessageId, assistantMessage.getNodes());
+			},
+			removeNode: (node) => {
+				assistantMessage.removeNode(node);
+
+				chatStore.setMessageNodes(assistantMessageId, assistantMessage.getNodes());
+			},
+			removeNodeAt: (index) => {
+				assistantMessage.removeNodeAt(index);
+
+				chatStore.setMessageNodes(assistantMessageId, assistantMessage.getNodes());
+			},
+			replaceNode: (index, node) => {
+				assistantMessage.replaceNode(index, node);
+
+				chatStore.setMessageNodes(assistantMessageId, assistantMessage.getNodes());
+			},
+			replaceNodeAt(index, newNodeOrNodes) {
+				assistantMessage.replaceNodeAt(index, newNodeOrNodes);
+
+				chatStore.setMessageNodes(assistantMessageId, assistantMessage.getNodes());
+			},
+		};
+
 		const finalToolCalls: limbo.LLM.ToolCall[] = [];
 
 		try {
 			// generate the assistant's response
 
+			// let shouldLoop = true;
 			let shouldLoop = true;
 			let iterations = 0;
 
@@ -132,21 +172,14 @@ export const useSendMessage = () => {
 				shouldLoop = false;
 
 				let currentMarkdownNode: limbo.ChatMessageNode | null = null;
-				let currentMarkdownNodeIndex: number | null = null;
 
 				await llm.chat({
 					tools: toolDefinitions,
 					messages: promptBuilder.toPromptMessages(),
+					message: messageHandle,
 					onText: (text) => {
 						if (currentMarkdownNode) {
 							currentMarkdownNode.data.content += text;
-
-							// update the existing markdown node in the chat store
-							chatStore.updateMessageNode(
-								assistantMessageId,
-								currentMarkdownNodeIndex!,
-								currentMarkdownNode
-							);
 						} else {
 							// create a new markdown node
 							currentMarkdownNode = {
@@ -158,18 +191,14 @@ export const useSendMessage = () => {
 
 							// add the node to the assistant message
 							assistantMessage.appendNode(currentMarkdownNode);
-
-							// calculate the index for the current markdown node
-							currentMarkdownNodeIndex = assistantMessage.getNodes().length - 1;
-
-							// add the node to the chat store
-							chatStore.addNodeToMessage(assistantMessageId, currentMarkdownNode);
 						}
+
+						// sync the assistant message with the chat store
+						chatStore.setMessageNodes(assistantMessageId, assistantMessage.getNodes());
 					},
 					onToolCall: async (toolCall) => {
 						shouldLoop = true;
 						currentMarkdownNode = null;
-						currentMarkdownNodeIndex = null;
 
 						const tool = toolMap.get(toolCall.toolId);
 						const toolCallId = ulid();
@@ -236,6 +265,9 @@ export const useSendMessage = () => {
 				}
 
 				iterations++;
+
+				// temp
+				break;
 			}
 		} catch (error) {
 			// if there was an error during generation, remove the user's message and the assistant message

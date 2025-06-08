@@ -13,11 +13,7 @@ export interface ChatStore {
 	addMessage: (message: ChatMessageType) => void;
 	updateMessage: (messageId: string, partialMessage: Partial<ChatMessageType>) => void;
 	addNodeToMessage: (messageId: string, node: limbo.ChatMessageNode) => void;
-	updateMessageNode: (
-		messageId: string,
-		nodeIdx: number,
-		partialNode: Partial<limbo.ChatMessageNode>
-	) => void;
+	setMessageNodes: (messageId: string, nodes: limbo.ChatMessageNode[]) => void;
 	removeMessage: (messageId: string) => void;
 	reset: () => void;
 }
@@ -43,31 +39,10 @@ export const useChatStore = create(
 				state.messages.push(message);
 			});
 		},
-		removeMessage: (messageId) => {
-			set((state) => {
-				state.messages = state.messages.filter((message) => message.id !== messageId);
-			});
-		},
-		updateMessage: (messageId, partialMessage) => {
-			set((state) => {
-				const messageIdx = state.messages.findIndex((message) => message.id === messageId);
-
-				if (messageIdx === -1) {
-					return;
-				}
-
-				const prevMessage = state.messages[messageIdx];
-
-				// @ts-expect-error
-				state.messages[messageIdx] = {
-					...prevMessage,
-					...partialMessage,
-				};
-			});
-		},
+		updateMessage: (messageId, partialMessage) => {},
 		addNodeToMessage: (messageId, node) => {
 			set((state) => {
-				const message = state.messages.find((message) => message.id === messageId);
+				const message = state.messages.find((msg) => msg.id === messageId);
 
 				if (!message) {
 					return;
@@ -76,24 +51,20 @@ export const useChatStore = create(
 				message.content.push(node);
 			});
 		},
-		updateMessageNode: (messageId, nodeIdx, partialNode) => {
+		setMessageNodes: (messageId, nodes) => {
 			set((state) => {
-				const message = state.messages.find((message) => message.id === messageId);
+				const message = state.messages.find((msg) => msg.id === messageId);
 
 				if (!message) {
 					return;
 				}
 
-				const oldNode = message.content[nodeIdx];
-
-				if (!oldNode) {
-					return;
-				}
-
-				message.content[nodeIdx] = {
-					...oldNode,
-					...partialNode,
-				};
+				message.content = nodes;
+			});
+		},
+		removeMessage: (messageId) => {
+			set((state) => {
+				state.messages = state.messages.filter((message) => message.id !== messageId);
 			});
 		},
 		reset: () => {

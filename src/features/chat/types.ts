@@ -1,9 +1,9 @@
-import type { ChatNode } from "../../../electron/chats/types";
+import type * as limbo from "limbo";
 
 export interface BaseChatMessage {
 	id: string;
 	createdAt: string;
-	content: ChatNode[];
+	content: limbo.ChatMessageNode[];
 }
 
 export interface UserChatMessage extends BaseChatMessage {

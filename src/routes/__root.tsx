@@ -103,6 +103,7 @@ function RootLayoutProviders({ children }: PropsWithChildren) {
 						id: chatId,
 					});
 				},
+				// @ts-expect-error, types are actually correct, some trpc incompatibility for some reason
 				getChatMessages: async (opts) => {
 					return await mainRouterClient.chats.messages.getMany.query(opts);
 				},
