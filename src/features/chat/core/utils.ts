@@ -7,6 +7,7 @@ export interface ExecuteToolCallOptions {
 	tool: limbo.Tool;
 	args: any;
 	messageHandle: limbo.MessageHandle;
+	abortSignal: AbortSignal;
 }
 
 export type ExecuteToolCallResult =
@@ -17,6 +18,7 @@ export async function executeToolCall({
 	tool,
 	args,
 	messageHandle,
+	abortSignal,
 }: ExecuteToolCallOptions): Promise<ExecuteToolCallResult> {
 	const validateArguments = ajv.compile(tool.schema);
 	const areArgumentsValid = validateArguments(args);
@@ -32,6 +34,7 @@ export async function executeToolCall({
 		const result = await tool.execute({
 			args,
 			message: messageHandle,
+			abortSignal,
 		});
 
 		return {
@@ -42,7 +45,11 @@ export async function executeToolCall({
 		let errorMessage = null;
 
 		if (error instanceof Error) {
-			errorMessage = error.message;
+			if (error.name === "AbortError") {
+				errorMessage = "Aborted";
+			} else {
+				errorMessage = error.message;
+			}
 		}
 
 		return {

@@ -19,7 +19,7 @@ const ToolCallDataContainer = ({ title, content }: ToolCallDataContainerProps) =
 		<div className="tool-call-data">
 			<div className="tool-call-data-header">
 				<span className="tool-call-data-title">{title}</span>
-				<IconButton color="secondary">
+				<IconButton>
 					<ClipboardIcon />
 				</IconButton>
 			</div>

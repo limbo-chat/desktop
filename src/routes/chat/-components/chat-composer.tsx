@@ -1,5 +1,5 @@
 import { useParams, useRouter } from "@tanstack/react-router";
-import { ArrowUpIcon } from "lucide-react";
+import { ArrowUpIcon, CircleStopIcon } from "lucide-react";
 import type { Ref } from "react";
 import { Controller, useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
@@ -22,7 +22,7 @@ export interface ChatComposerProps {
 export const ChatComposer = ({ ref }: ChatComposerProps) => {
 	const router = useRouter();
 	const pluginManager = usePluginManager();
-	const sendMessage = useSendMessage();
+	const { sendMessage, cancelResponse } = useSendMessage();
 	const createChatMutation = useCreateChatMutation();
 
 	const params = useParams({
@@ -89,23 +89,36 @@ export const ChatComposer = ({ ref }: ChatComposerProps) => {
 			await sendMessage({
 				llm,
 				chatId: chatId,
-				message: data.message,
+				message,
 				enabledToolIds: getEnabledToolIds(),
 			});
 		} catch (err) {
 			console.error("Failed to send message:", err);
 
 			// If sending message fails, we can add the message back to the form
-			form.setValue("message", data.message);
+			form.setValue("message", message);
 		}
 	});
 
 	const message = form.watch("message");
-	const canSendMessage = message.length > 0 && !chatState?.isAssistantResponsePending;
+	const canSendMessage = message.length > 0;
+	const canCancelResponse = chatState?.isAssistantResponsePending;
+
+	const handleSubmitClick = () => {
+		if (canCancelResponse) {
+			console.log(params.id);
+
+			if (params.id) {
+				cancelResponse(params.id);
+			}
+		} else {
+			onSubmit();
+		}
+	};
 
 	return (
 		<div className="chat-composer" ref={ref}>
-			<form className="chat-composer-form" onSubmit={onSubmit}>
+			<form className="chat-composer-form">
 				<Controller
 					name="message"
 					control={form.control}
@@ -124,14 +137,22 @@ export const ChatComposer = ({ ref }: ChatComposerProps) => {
 								if (e.key === "Enter" && !e.shiftKey) {
 									e.preventDefault();
 
-									onSubmit();
+									if (!canCancelResponse) {
+										onSubmit();
+									}
 								}
 							}}
 						/>
 					)}
 				/>
-				<IconButton type="submit" color="secondary" disabled={!canSendMessage}>
-					<ArrowUpIcon />
+				<IconButton
+					disabled={!canSendMessage && !canCancelResponse}
+					onClick={(e) => {
+						e.preventDefault();
+						handleSubmitClick();
+					}}
+				>
+					{canCancelResponse ? <CircleStopIcon /> : <ArrowUpIcon />}
 				</IconButton>
 			</form>
 			<div className="chat-composer-accessories">

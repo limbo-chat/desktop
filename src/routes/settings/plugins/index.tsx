@@ -242,7 +242,7 @@ function PluginsSettingsPage() {
 				<h1 className="plugins-page-title">Plugins</h1>
 				<div className="plugins-page-actions">
 					<Tooltip label="Open plugins folder">
-						<IconButton color="secondary" onClick={openPluginsFolder}>
+						<IconButton onClick={openPluginsFolder}>
 							<FolderIcon />
 						</IconButton>
 					</Tooltip>

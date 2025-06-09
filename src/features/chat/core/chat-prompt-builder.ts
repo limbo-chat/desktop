@@ -35,8 +35,6 @@ export class ChatMessageBuilder implements limbo.ChatMessageBuilder {
 	}
 
 	appendNode(node: limbo.ChatMessageNode) {
-		console.log("Appending node to message:", node);
-
 		this.nodes.push(node);
 	}
 
