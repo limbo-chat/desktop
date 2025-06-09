@@ -21,17 +21,7 @@ export interface ChatMessageTable {
 export type ChatMessage = Selectable<ChatMessageTable>;
 export type NewChatMessage = Insertable<ChatMessageTable>;
 
-export interface ToolCallTable {
-	id: string;
-	toolId: string;
-	status: "success" | "error";
-	arguments: string;
-	result: string | null;
-	error: string | null;
-}
-
 export interface Database {
 	chat: ChatTable;
 	chatMessage: ChatMessageTable;
-	toolCall: ToolCallTable;
 }

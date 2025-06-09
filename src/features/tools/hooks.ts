@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useToolStore, useToolCallStore } from "./stores";
+import { useToolStore } from "./stores";
 
 export const useTools = () => {
 	return useToolStore((state) => state.tools);
@@ -17,8 +17,4 @@ export const useToolList = () => {
 	return useMemo(() => {
 		return [...tools.values()];
 	}, [tools]);
-};
-
-export const useToolCall = (toolCallId: string) => {
-	return useToolCallStore((state) => state.toolCalls.get(toolCallId));
 };

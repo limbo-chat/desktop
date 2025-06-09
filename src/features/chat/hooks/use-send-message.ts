@@ -4,7 +4,6 @@ import type * as limbo from "limbo";
 import { useMainRouterClient } from "../../../lib/trpc";
 import { buildNamespacedResourceId } from "../../../lib/utils";
 import { usePluginManager } from "../../plugins/hooks/core";
-import { useToolCallStore } from "../../tools/stores";
 import { ChatPromptBuilder } from "../core/chat-prompt-builder";
 import { executeToolCall } from "../core/utils";
 import { useChatStore } from "../stores";
@@ -25,60 +24,50 @@ async function handleLLMToolCall({
 	const tool = tools.get(toolCall.toolId);
 	const toolCallId = ulid();
 
-	const toolCallStore = useToolCallStore.getState();
-
-	// add the initial tool call to the store with pending status
-	toolCallStore.addToolCall({
-		id: toolCallId,
-		toolId: toolCall.toolId,
-		arguments: toolCall.arguments,
-		status: "pending",
-	});
-
-	// add the tool call to the message
-	messageHandle.appendNode({
+	const originalToolCallNode = {
 		type: "tool_call",
 		data: {
-			tool_call_id: toolCallId,
+			id: toolCallId,
+			toolId: toolCall.toolId,
+			arguments: toolCall.arguments,
+			status: "pending",
 		},
-	});
+	};
 
-	if (!tool) {
-		const finalToolCall: limbo.ToolCall = {
+	// add the tool call to the message
+	messageHandle.appendNode(originalToolCallNode);
+
+	let finalToolCall: limbo.ToolCall;
+
+	if (tool) {
+		const toolCallResult = await executeToolCall({
+			tool,
+			args: toolCall.arguments,
+			messageHandle,
+			abortSignal: abortSignal,
+		});
+
+		finalToolCall = {
+			id: toolCallId,
+			toolId: toolCall.toolId,
+			arguments: toolCall.arguments,
+			...toolCallResult,
+		};
+	} else {
+		finalToolCall = {
 			id: toolCallId,
 			toolId: toolCall.toolId,
 			arguments: toolCall.arguments,
 			status: "error",
 			error: "Tool not found",
 		};
-
-		toolCallStore.addToolCall(finalToolCall);
-
-		return finalToolCall;
 	}
 
-	toolCallStore.addToolCall({
-		id: toolCallId,
-		status: "pending",
-		arguments: toolCall.arguments,
-		toolId: toolCall.toolId,
+	messageHandle.replaceNode(originalToolCallNode, {
+		type: "tool_call",
+		// @ts-expect-error
+		data: finalToolCall,
 	});
-
-	const toolCallResult = await executeToolCall({
-		tool,
-		args: toolCall.arguments,
-		messageHandle,
-		abortSignal: abortSignal,
-	});
-
-	const finalToolCall: limbo.ToolCall = {
-		id: toolCallId,
-		toolId: toolCall.toolId,
-		arguments: toolCall.arguments,
-		...toolCallResult,
-	};
-
-	toolCallStore.addToolCall(finalToolCall);
 
 	return finalToolCall;
 }
@@ -272,8 +261,6 @@ export const useSendMessage = () => {
 				},
 			};
 
-			const finalToolCalls: limbo.LLM.ToolCall[] = [];
-
 			try {
 				// generate the assistant's response
 
@@ -342,10 +329,7 @@ export const useSendMessage = () => {
 					}
 
 					// wait for all tool calls to finish executing
-					const settledToolCalls = await Promise.all(toolCallPromises);
-
-					// add the tool calls to the prompt builder
-					finalToolCalls.push(...settledToolCalls);
+					await Promise.all(toolCallPromises);
 
 					iterations++;
 				}
@@ -362,23 +346,12 @@ export const useSendMessage = () => {
 				// otherwise, swallow the abort error
 			}
 
-			// remove the abort controller from the map
-			abortControllers.current.delete(chatId);
-
 			// mark the assistant message as complete
 			chatStore.updateMessage(chatId, assistantMessageId, {
 				role: "assistant",
 				status: "complete",
 				createdAt: new Date().toISOString(),
 			});
-
-			// save the final tool calls to the database
-			await Promise.all(
-				finalToolCalls.map(async (finalToolCall) => {
-					// @ts-ignore TEMP IGNORE
-					await mainRouter.toolCalls.create.mutate(finalToolCall);
-				})
-			);
 
 			// save the user message and final assistant message to the database
 			// note: we wait to do this until the end to avoid saving incomplete messages
@@ -398,6 +371,9 @@ export const useSendMessage = () => {
 				content: assistantMessage.getNodes(),
 				createdAt: new Date().toISOString(),
 			});
+
+			// remove the abort controller from the map
+			abortControllers.current.delete(chatId);
 
 			// remove the pending state
 			chatStore.setIsResponsePending(chatId, false);

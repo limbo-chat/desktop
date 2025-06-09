@@ -1,13 +1,10 @@
 import * as RadixCollapsible from "@radix-ui/react-collapsible";
-import { useQuery } from "@tanstack/react-query";
 import { ChevronDown, ClipboardIcon } from "lucide-react";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import type * as limbo from "limbo";
 import { IconButton } from "../../../components/icon-button";
-import { useMainRouter } from "../../../lib/trpc";
 import { parseNamespacedResourceId } from "../../../lib/utils";
-import { useTool, useToolCall } from "../../tools/hooks";
-import { useToolCallStore } from "../../tools/stores";
+import { useTool } from "../../tools/hooks";
 
 interface ToolCallDataContainerProps {
 	title: string;
@@ -80,58 +77,16 @@ const ToolCallRenderer = ({ toolCall }: ToolCallRendererProps) => {
 };
 
 export const ToolCallNodeRenderer = ({ node }: limbo.ui.ChatNodeComponentProps) => {
-	const toolCallId = node.data.tool_call_id as string;
-
-	const mainRouter = useMainRouter();
-	const toolCallState = useToolCall(toolCallId);
-
-	const getToolCallQuery = useQuery(
-		mainRouter.toolCalls.get.queryOptions(
-			{
-				id: toolCallId,
-			},
-			{
-				// if the tool call is not loaded, we fetch it
-				enabled: toolCallState === undefined,
-			}
-		)
-	);
-
-	useEffect(() => {
-		if (!getToolCallQuery.data) {
-			return;
-		}
-
-		const toolCallStore = useToolCallStore.getState();
-
-		// @ts-ignore TEMP IGNORE
-		toolCallStore.addToolCall(getToolCallQuery.data);
-	}, [getToolCallQuery.data]);
-
-	if (!toolCallState) {
-		if (getToolCallQuery.isError) {
-			return (
-				<div className="node" data-type={node.type} data-status="error">
-					Failed to load tool call: {toolCallId}
-				</div>
-			);
-		}
-
-		return (
-			<div className="node" data-type={node.type} data-status="loading">
-				Loading tool call: {toolCallId}
-			</div>
-		);
-	}
+	const toolCall = node.data as any as limbo.ToolCall;
 
 	return (
 		<div
 			className="node"
 			data-type={node.type}
-			data-tool-id={toolCallState.toolId}
-			data-status={toolCallState.status}
+			data-tool-id={toolCall.id}
+			data-status={toolCall.status}
 		>
-			<ToolCallRenderer toolCall={toolCallState} />
+			<ToolCallRenderer toolCall={toolCall} />
 		</div>
 	);
 };
