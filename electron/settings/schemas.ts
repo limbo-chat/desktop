@@ -1,7 +1,9 @@
 import { z } from "zod";
 
 export const settingsSchema = z.object({
-	developerMode: z.boolean(),
+	username: z.string(),
+	systemPrompt: z.string(),
+	isDeveloperModeEnabled: z.boolean(),
 });
 
 export type Settings = z.infer<typeof settingsSchema>;

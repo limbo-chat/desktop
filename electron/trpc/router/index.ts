@@ -3,8 +3,10 @@ import { router } from "../trpc";
 import { chatsRouter } from "./chats";
 import { customStylesRouter } from "./custom-styles";
 import { pluginsRouter } from "./plugins";
+import { settingsRouter } from "./settings";
 
 export const mainRouter = router({
+	settings: settingsRouter,
 	customStyles: customStylesRouter,
 	plugins: pluginsRouter,
 	chats: chatsRouter,

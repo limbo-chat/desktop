@@ -3,12 +3,11 @@ import { SETTINGS_PATH } from "./constants";
 import { settingsSchema, type Settings } from "./schemas";
 
 const defaultSettings: Settings = {
-	developerMode: false,
+	username: "",
+	systemPrompt:
+		"You are a helpful assistant. Answer <%= username %> to tbe best of your ability.",
+	isDeveloperModeEnabled: false,
 } as const;
-
-export function writeSettings(settings: Settings) {
-	fs.writeFileSync(SETTINGS_PATH, JSON.stringify(settings));
-}
 
 export function readSettings(): Settings {
 	if (!fs.existsSync(SETTINGS_PATH)) {
@@ -29,4 +28,17 @@ export function readSettings(): Settings {
 
 		return defaultSettings;
 	}
+}
+
+export function writeSettings(settings: Settings) {
+	fs.writeFileSync(SETTINGS_PATH, JSON.stringify(settings));
+}
+
+export function updateSettings(partialSettings: Partial<Settings>): Settings {
+	const currentSettings = readSettings();
+	const updatedSettings = { ...currentSettings, ...partialSettings };
+
+	writeSettings(updatedSettings);
+
+	return updatedSettings;
 }
