@@ -1,3 +1,4 @@
+import type { error } from "ajv/dist/vocabularies/applicator/dependencies";
 import { useCallback, useRef } from "react";
 import { ulid } from "ulid";
 import type * as limbo from "limbo";
@@ -5,7 +6,11 @@ import { useMainRouterClient } from "../../../lib/trpc";
 import { buildNamespacedResourceId } from "../../../lib/utils";
 import { usePluginManager } from "../../plugins/hooks/core";
 import { ChatPromptBuilder } from "../core/chat-prompt-builder";
-import { executeToolCall } from "../core/utils";
+import {
+	adaptChatPromptForCapabilities,
+	executeToolCall,
+	transformBuiltInNodesInChatPrompt,
+} from "../core/utils";
 import { useChatStore } from "../stores";
 
 interface HandleLLMToolCallOptions {
@@ -24,7 +29,7 @@ async function handleLLMToolCall({
 	const tool = tools.get(toolCall.toolId);
 	const toolCallId = ulid();
 
-	const originalToolCallNode = {
+	const pendingToolCallNode = {
 		type: "tool_call",
 		data: {
 			id: toolCallId,
@@ -35,7 +40,7 @@ async function handleLLMToolCall({
 	};
 
 	// add the tool call to the message
-	messageHandle.appendNode(originalToolCallNode);
+	messageHandle.appendNode(pendingToolCallNode);
 
 	let finalToolCall: limbo.ToolCall;
 
@@ -63,7 +68,7 @@ async function handleLLMToolCall({
 		};
 	}
 
-	messageHandle.replaceNode(originalToolCallNode, {
+	messageHandle.replaceNode(pendingToolCallNode, {
 		type: "tool_call",
 		// @ts-expect-error
 		data: finalToolCall,
@@ -161,19 +166,6 @@ export const useSendMessage = () => {
 				createdAt: new Date().toISOString(),
 			});
 
-			// create a prompt builder and add the user's message to it
-			// run the plugins on the onPrepareChatPrompt lifecycle hook
-			await pluginManager.executeOnPrepareChatPromptHooks({
-				chatId,
-				promptBuilder,
-			});
-
-			// run the plugins on the onTransformChatPrompt lifecycle hook
-			await pluginManager.executeOnTransformChatPromptHooks({
-				chatId,
-				promptBuilder,
-			});
-
 			const plugins = pluginManager.getPlugins();
 
 			const toolMap = new Map<string, limbo.Tool>();
@@ -260,6 +252,12 @@ export const useSendMessage = () => {
 				},
 			};
 
+			// run the plugins on the onPrepareChatPrompt lifecycle hook
+			await pluginManager.executeOnPrepareChatPromptHooks({
+				chatId,
+				promptBuilder,
+			});
+
 			try {
 				// generate the assistant's response
 
@@ -272,6 +270,22 @@ export const useSendMessage = () => {
 				// max iterations to prevent catastrophic infinite loops
 				while (shouldLoop && iterations < 25 && !abortSignal.aborted) {
 					shouldLoop = false;
+
+					// first transform the chat prompt for core functionality
+					transformBuiltInNodesInChatPrompt(promptBuilder);
+
+					// run the plugins on the onTransformChatPrompt lifecycle hook to transform the chat prompt
+					await pluginManager.executeOnTransformChatPromptHooks({
+						chatId,
+						promptBuilder,
+					});
+
+					adaptChatPromptForCapabilities({
+						capabilities: llm.capabilities,
+						chatPromptBuilder: promptBuilder,
+					});
+
+					// before passing the prompt to the LLM, adapt it for the LLM's capabilities
 
 					let currentMarkdownNode: limbo.ChatMessageNode | null = null;
 
