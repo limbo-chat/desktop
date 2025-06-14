@@ -4,6 +4,18 @@ import handlebars from "handlebars";
 import type { Chat } from "../../../electron/db/types";
 import type { MainRouter } from "../../../electron/trpc/router";
 
+export interface RenderSystemPromptContext {
+	user: {
+		username: string;
+	};
+}
+
+export function renderSystemPrompt(systemPromptTemplate: string, ctx: RenderSystemPromptContext) {
+	const template = handlebars.compile(systemPromptTemplate);
+
+	return template(ctx);
+}
+
 export function removeChatFromQueryCache(
 	queryClient: QueryClient,
 	mainRouter: TRPCOptionsProxy<MainRouter>,
@@ -41,19 +53,8 @@ export function updateChatInQueryCache(
 			if (chat.id === updatedChat.id) {
 				return updatedChat;
 			}
+
 			return chat;
 		});
 	});
-}
-
-export interface RenderSystemPromptContext {
-	user: {
-		username: string;
-	};
-}
-
-export function renderSystemPrompt(systemPromptTemplate: string, ctx: RenderSystemPromptContext) {
-	const template = handlebars.compile(systemPromptTemplate);
-
-	return template(ctx);
 }

@@ -93,14 +93,14 @@ export const ChatComposer = ({ ref }: ChatComposerProps) => {
 			const settings = await mainRouter.settings.get.query();
 			const systemPromptTemplate = settings.systemPrompt;
 
+			const enabledToolIds = getEnabledToolIds();
+
 			// render the handlebars template
 			const systemPrompt = renderSystemPrompt(systemPromptTemplate, {
 				user: {
 					username: settings.username,
 				},
-			});
-
-			const enabledToolIds = getEnabledToolIds();
+			}).trim();
 
 			await sendMessage({
 				chatId: chatId,
