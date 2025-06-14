@@ -9,9 +9,11 @@ import { useChatState } from "../../../features/chat/hooks/common";
 import { useCreateChatMutation } from "../../../features/chat/hooks/queries";
 import { useSendMessage } from "../../../features/chat/hooks/use-send-message";
 import { useChatStore } from "../../../features/chat/stores";
+import { renderSystemPrompt } from "../../../features/chat/utils";
 import { usePluginManager } from "../../../features/plugins/hooks/core";
 import { useLocalStore } from "../../../features/storage/stores";
 import { getEnabledToolIds } from "../../../features/storage/utils";
+import { useMainRouterClient } from "../../../lib/trpc";
 import { ChatLLMPicker } from "./chat-llm-picker";
 import { ChatToolsMenu } from "./chat-tools-menu";
 
@@ -21,6 +23,7 @@ export interface ChatComposerProps {
 
 export const ChatComposer = ({ ref }: ChatComposerProps) => {
 	const router = useRouter();
+	const mainRouter = useMainRouterClient();
 	const pluginManager = usePluginManager();
 	const { sendMessage, cancelResponse } = useSendMessage();
 	const createChatMutation = useCreateChatMutation();
@@ -86,11 +89,25 @@ export const ChatComposer = ({ ref }: ChatComposerProps) => {
 		}
 
 		try {
+			// get the settings frmo the main process
+			const settings = await mainRouter.settings.get.query();
+			const systemPromptTemplate = settings.systemPrompt;
+
+			// render the handlebars template
+			const systemPrompt = renderSystemPrompt(systemPromptTemplate, {
+				user: {
+					username: settings.username,
+				},
+			});
+
+			const enabledToolIds = getEnabledToolIds();
+
 			await sendMessage({
-				llm,
 				chatId: chatId,
+				llm,
+				systemPrompt,
+				enabledToolIds,
 				message,
-				enabledToolIds: getEnabledToolIds(),
 			});
 		} catch (err) {
 			console.error("Failed to send message:", err);

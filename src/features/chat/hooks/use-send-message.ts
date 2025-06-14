@@ -75,8 +75,9 @@ async function handleLLMToolCall({
 export interface SendMessageOptions {
 	llm: limbo.LLM;
 	chatId: string;
-	message: string;
+	systemPrompt: string;
 	enabledToolIds: string[];
+	message: string;
 }
 
 export const useSendMessage = () => {
@@ -85,7 +86,7 @@ export const useSendMessage = () => {
 	const abortControllers = useRef<Map<string, AbortController>>(new Map());
 
 	const sendMessage = useCallback(
-		async ({ llm, chatId, message, enabledToolIds }: SendMessageOptions) => {
+		async ({ llm, chatId, systemPrompt, message, enabledToolIds }: SendMessageOptions) => {
 			const chatStore = useChatStore.getState();
 			const chatState = chatStore.chats[chatId];
 
@@ -116,9 +117,7 @@ export const useSendMessage = () => {
 			const promptBuilder = new ChatPromptBuilder();
 
 			// set the default chat system prompt
-			promptBuilder.setSystemPrompt(
-				"Answer the user's request using relevant tools (if they are available). Before calling a tool, think about which of the provided tools is the relevant tool to answer the user's request. Ensure tools are called in parallel if possible."
-			);
+			promptBuilder.setSystemPrompt(systemPrompt);
 
 			const userMessageId = ulid();
 			const userMessageCreatedAt = new Date().toISOString();

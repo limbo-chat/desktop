@@ -9,7 +9,6 @@ import { SettingsPage } from "./-components/settings-page";
 
 export const Route = createFileRoute("/settings/personalization")({
 	component: PersonalizationSettingsPage,
-	wrapInSuspense: true,
 });
 
 function PersonalizationSettingsPage() {
@@ -44,14 +43,17 @@ function PersonalizationSettingsPage() {
 				<FieldRoot>
 					<FieldLabel>System prompt</FieldLabel>
 					<FieldDescription>
-						This prompt is used to set the context for all chat completions.{" "}
-						<a href="https://ejs.co/" target="_blank" tabIndex={-1}>
-							Learn about EJS
+						This prompt is used to set the context for all chat completions. Learn about{" "}
+						<a href="https://handlebarsjs.com" target="_blank" tabIndex={-1}>
+							Handlebars
 						</a>
+						.
 					</FieldDescription>
 					<textarea {...form.register("systemPrompt")} />
 				</FieldRoot>
-				<Button type="submit">Save preferences</Button>
+				<Button type="submit" disabled={!form.formState.isDirty}>
+					Save preferences
+				</Button>
 			</form>
 		</SettingsPage>
 	);

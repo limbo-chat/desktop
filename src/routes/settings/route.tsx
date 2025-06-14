@@ -1,4 +1,5 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
+import { Suspense } from "react";
 import {
 	Sidebar,
 	SidebarGroup,
@@ -84,7 +85,9 @@ function SettingsLayout() {
 	return (
 		<div className="settings-layout">
 			<SettingsSidebar />
-			<Outlet />
+			<Suspense fallback="loading">
+				<Outlet />
+			</Suspense>
 		</div>
 	);
 }

@@ -1,5 +1,6 @@
 import type { QueryClient } from "@tanstack/react-query";
 import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
+import handlebars from "handlebars";
 import type { Chat } from "../../../electron/db/types";
 import type { MainRouter } from "../../../electron/trpc/router";
 
@@ -43,4 +44,16 @@ export function updateChatInQueryCache(
 			return chat;
 		});
 	});
+}
+
+export interface RenderSystemPromptContext {
+	user: {
+		username: string;
+	};
+}
+
+export function renderSystemPrompt(systemPromptTemplate: string, ctx: RenderSystemPromptContext) {
+	const template = handlebars.compile(systemPromptTemplate);
+
+	return template(ctx);
 }
