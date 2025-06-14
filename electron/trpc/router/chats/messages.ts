@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { db } from "../../../db/db";
+import { getDb } from "../../../db/utils";
 import { publicProcedure, router } from "../../trpc";
 
 const listChatMessagesInputSchema = z.object({
@@ -29,6 +29,8 @@ const getManyChatMessagesInputSchema = z.object({
 
 export const chatMessagesRouter = router({
 	list: publicProcedure.input(listChatMessagesInputSchema).query(async ({ input }) => {
+		const db = await getDb();
+
 		const chatMessages = await db
 			.selectFrom("chatMessage")
 			.selectAll()
@@ -47,6 +49,8 @@ export const chatMessagesRouter = router({
 		return chatMessagesWithParsedContent;
 	}),
 	getMany: publicProcedure.input(getManyChatMessagesInputSchema).query(async ({ input }) => {
+		const db = await getDb();
+
 		const chatMessagesQuery = db
 			.selectFrom("chatMessage")
 			.selectAll()
@@ -80,6 +84,8 @@ export const chatMessagesRouter = router({
 		return chatMessagesWithParsedContent;
 	}),
 	create: publicProcedure.input(createChatMessageInputSchema).mutation(async ({ input }) => {
+		const db = await getDb();
+
 		const chatMessage = await db
 			.insertInto("chatMessage")
 			.values({

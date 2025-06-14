@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { ulid } from "ulid";
 import { z } from "zod";
-import { db } from "../../../db/db";
+import { getDb } from "../../../db/utils";
 import { publicProcedure, router } from "../../trpc";
 import { chatMessagesRouter } from "./messages";
 
@@ -17,6 +17,8 @@ const renameChatInputSchema = z.object({
 export const chatsRouter = router({
 	messages: chatMessagesRouter,
 	list: publicProcedure.query(async () => {
+		const db = await getDb();
+
 		const chats = await db
 			.selectFrom("chat")
 			.selectAll()
@@ -26,6 +28,8 @@ export const chatsRouter = router({
 		return chats;
 	}),
 	get: publicProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
+		const db = await getDb();
+
 		const chat = await db
 			.selectFrom("chat")
 			.selectAll()
@@ -42,6 +46,8 @@ export const chatsRouter = router({
 		return chat;
 	}),
 	create: publicProcedure.input(createChatInputSchema).mutation(async ({ input, ctx }) => {
+		const db = await getDb();
+
 		const chat = await db
 			.insertInto("chat")
 			.values({
@@ -55,6 +61,8 @@ export const chatsRouter = router({
 		return chat;
 	}),
 	rename: publicProcedure.input(renameChatInputSchema).mutation(async ({ input }) => {
+		const db = await getDb();
+
 		const chat = await db
 			.selectFrom("chat")
 			.selectAll()
@@ -88,9 +96,13 @@ export const chatsRouter = router({
 		return updatedChat;
 	}),
 	delete: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
+		const db = await getDb();
+
 		await db.deleteFrom("chat").where("id", "=", input.id).execute();
 	}),
 	deleteAll: publicProcedure.mutation(async () => {
+		const db = await getDb();
+
 		const deletedChatResults = await db.deleteFrom("chat").returning("id").execute();
 
 		return deletedChatResults.map((result) => result.id);

@@ -4,9 +4,12 @@ import { createIPCHandler } from "trpc-electron/main";
 import { MAIN_DIST, RENDERER_DIST, VITE_DEV_SERVER_URL, VITE_PUBLIC } from "./constants";
 import { ensureCustomStylesDirectory } from "./custom-styles/utils";
 import { CustomStylesWatcher } from "./custom-styles/watcher";
-import { migrateToLatest } from "./db/migrate";
+import { ensureDb } from "./db/utils";
+import { defaultMeta, readMeta, writeMeta } from "./meta/utils";
+import { LATEST_DATA_VERSION } from "./migrations/constants";
+import { migrateToLatestVersion } from "./migrations/utils";
 import { ensurePluginsDir } from "./plugins/utils";
-import { readSettings } from "./settings/utils";
+import { ensureSettings } from "./settings/utils";
 import { mainRouter } from "./trpc/router";
 
 function createWindow() {
@@ -19,10 +22,6 @@ function createWindow() {
 		...(process.platform !== "darwin" ? { titleBarOverlay: true } : {}),
 		webPreferences: {
 			preload: path.join(MAIN_DIST, "preload.mjs"),
-			// I am considering enabling nodeIntegration in the future so plugins can use Node.js APIs directly.
-			// but for now, I will keep it disabled
-			// nodeIntegration: true,
-			// contextIsolation: true,
 		},
 	});
 
@@ -50,18 +49,42 @@ function createWindow() {
 	return window;
 }
 
-async function ensureFilesExist() {
+async function ensureData() {
 	await Promise.all([
-		readSettings(),
+		ensureSettings(),
 		ensurePluginsDir(),
 		ensureCustomStylesDirectory(),
-		migrateToLatest(),
+		ensureDb(),
 	]);
 }
 
-app.whenReady().then(async () => {
-	await ensureFilesExist();
+async function startApp() {
+	let meta = readMeta();
 
+	if (!meta) {
+		// fresh install
+		meta = defaultMeta;
+
+		writeMeta(defaultMeta);
+	}
+
+	// check if the user's data version is behind the latest version
+	if (meta.dataVersion < LATEST_DATA_VERSION) {
+		// if so, run migrations to bring it up to date
+		await migrateToLatestVersion(meta.dataVersion);
+
+		meta = {
+			...meta,
+			dataVersion: LATEST_DATA_VERSION,
+		};
+
+		// update the meta file with the latest data version
+		writeMeta(meta);
+	}
+
+	await ensureData();
+
+	// create the main window
 	const mainWindow = createWindow();
 
 	// the renderer has a loading process that will send a "ready" event when it is ready to show
@@ -84,7 +107,9 @@ app.whenReady().then(async () => {
 	});
 
 	customStylesWatcher.start();
-});
+}
+
+app.whenReady().then(startApp);
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

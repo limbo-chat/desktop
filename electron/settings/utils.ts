@@ -2,12 +2,18 @@ import fs from "node:fs";
 import { SETTINGS_PATH } from "./constants";
 import { settingsSchema, type Settings } from "./schemas";
 
-const defaultSettings: Settings = {
+export const defaultSettings: Settings = {
 	username: "",
 	systemPrompt:
-		"You are a helpful assistant. Answer <%= username %> to tbe best of your ability.",
+		"You are a helpful assistant. Answer <%= username %> to the best of your ability.",
 	isDeveloperModeEnabled: false,
 } as const;
+
+export function ensureSettings() {
+	if (!fs.existsSync(SETTINGS_PATH)) {
+		writeSettings(defaultSettings);
+	}
+}
 
 export function readSettings(): Settings {
 	if (!fs.existsSync(SETTINGS_PATH)) {
