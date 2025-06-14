@@ -1,6 +1,7 @@
 import { useEffect, useMemo, type HTMLProps } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import type * as limbo from "limbo";
+import { Button } from "../../../components/button";
 import { Checkbox } from "../../../components/checkbox";
 import { PasswordInputFieldController, TextInputFieldController } from "../../forms/components";
 import { useLLMList } from "../../llms/hooks";
@@ -131,9 +132,7 @@ export const PluginSettingsForm = ({
 }: PluginSettingsFormProps) => {
 	const settings = usePluginContextSettings(plugin.context);
 
-	const form = useForm({
-		mode: "onBlur",
-	});
+	const form = useForm();
 
 	const handleSubmit = form.handleSubmit((data) => {
 		onSubmit(data);
@@ -157,6 +156,9 @@ export const PluginSettingsForm = ({
 				{settings.map((setting) => (
 					<SettingRenderer setting={setting} key={setting.id} />
 				))}
+				<Button type="submit" disabled={!form.formState.isDirty}>
+					Save changes
+				</Button>
 			</form>
 		</FormProvider>
 	);
