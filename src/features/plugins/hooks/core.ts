@@ -118,7 +118,7 @@ export const useActivePlugin = (pluginId: string) => {
 			pluginManager.events.off("plugin:added", handleChange);
 			pluginManager.events.off("plugin:removed", handleChange);
 		};
-	}, []);
+	}, [pluginId]);
 
 	return plugin;
 };
