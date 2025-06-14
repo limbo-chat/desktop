@@ -123,8 +123,6 @@ export const ChatComposer = ({ ref }: ChatComposerProps) => {
 
 	const handleSubmitClick = () => {
 		if (canCancelResponse) {
-			console.log(params.id);
-
 			if (params.id) {
 				cancelResponse(params.id);
 			}

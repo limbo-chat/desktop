@@ -1,4 +1,3 @@
-import type { error } from "ajv/dist/vocabularies/applicator/dependencies";
 import { useCallback, useRef } from "react";
 import { ulid } from "ulid";
 import type * as limbo from "limbo";
@@ -313,6 +312,7 @@ export const useSendMessage = () => {
 							}
 
 							// sync the assistant message with the chat store
+
 							chatStore.setMessageNodes(
 								chatId,
 								assistantMessageId,

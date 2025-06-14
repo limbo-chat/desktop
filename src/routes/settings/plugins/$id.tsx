@@ -38,8 +38,6 @@ const PluginSettingsFormContainer = ({ plugin }: PluginSettingsFormContainerProp
 	useEffect(() => {
 		const cachedSettings = plugin.context.getCachedSettingValues();
 
-		console.log(cachedSettings);
-
 		setSettingsValues(cachedSettings);
 	}, [plugin.context]);
 
