@@ -1,12 +1,10 @@
-import { useEffect, useMemo, type HTMLProps } from "react";
+import { useMemo, type HTMLProps } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import type * as limbo from "limbo";
 import { Button } from "../../../components/button";
 import { Checkbox } from "../../../components/checkbox";
 import { PasswordInputFieldController, TextInputFieldController } from "../../forms/components";
 import { useLLMList } from "../../llms/hooks";
-import { usePluginContextSettings } from "../../plugins/hooks/use-plugin-context-settings";
-import type { ActivePlugin } from "../core/plugin-manager";
 
 // TODO, some of the settings renderers are incomplete
 
@@ -121,38 +119,28 @@ const SettingRenderer = ({ setting }: SettingRendererProps) => {
 };
 
 export interface PluginSettingsFormProps extends HTMLProps<HTMLFormElement> {
-	plugin: ActivePlugin;
-	onSubmit: (data: any) => void;
+	values: Record<string, any>;
+	settings: limbo.Setting[];
+	onSubmit: (data: Record<string, any>) => void;
 }
 
 export const PluginSettingsForm = ({
-	plugin,
+	settings,
+	values,
 	onSubmit,
-	...htmlFormProps
+	...props
 }: PluginSettingsFormProps) => {
-	const settings = usePluginContextSettings(plugin.context);
-
-	const form = useForm();
+	const form = useForm({
+		values,
+	});
 
 	const handleSubmit = form.handleSubmit((data) => {
 		onSubmit(data);
 	});
 
-	useEffect(() => {
-		for (const setting of settings) {
-			const settingValue = plugin.context.getCachedSettingValue(setting.id);
-
-			form.setValue(setting.id, settingValue);
-		}
-
-		return () => {
-			form.reset();
-		};
-	}, [settings]);
-
 	return (
 		<FormProvider {...form}>
-			<form onSubmit={handleSubmit} onBlur={handleSubmit} {...htmlFormProps}>
+			<form onSubmit={handleSubmit} onBlur={handleSubmit} {...props}>
 				{settings.map((setting) => (
 					<SettingRenderer setting={setting} key={setting.id} />
 				))}

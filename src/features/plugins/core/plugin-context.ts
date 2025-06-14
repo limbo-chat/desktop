@@ -44,12 +44,18 @@ export class PluginContext {
 		this.notifyStateChanged();
 	}
 
+	// settings cache
+
 	public setCachedSettingValue(settingId: string, value: any) {
 		this.settingsCache.set(settingId, value);
 	}
 
 	public getCachedSettingValue(settingId: string) {
 		return this.settingsCache.get(settingId);
+	}
+
+	public getCachedSettingValues() {
+		return Object.fromEntries(this.settingsCache);
 	}
 
 	// commands

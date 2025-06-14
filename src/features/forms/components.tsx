@@ -26,7 +26,7 @@ export const TextInputFieldController = ({
 						ref: field.ref,
 						onChange: field.onChange,
 						onBlur: field.onBlur,
-						value: field.value,
+						value: field.value ?? "",
 						disabled: field.disabled,
 						...textFieldProps.textInputProps,
 					}}
@@ -56,7 +56,7 @@ export const PasswordInputFieldController = ({
 						ref: field.ref,
 						onChange: field.onChange,
 						onBlur: field.onBlur,
-						value: field.value,
+						value: field.value ?? "",
 						disabled: field.disabled,
 						...passwordFieldProps.passwordInputProps,
 					}}
