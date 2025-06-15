@@ -4,6 +4,7 @@ import { createTRPCClient } from "@trpc/client";
 import { Suspense, useMemo, useRef, type PropsWithChildren } from "react";
 import { ipcLink } from "trpc-electron/renderer";
 import type { MainRouter } from "../../electron/trpc/router";
+import { Loading } from "../components/loading";
 import { useOpenCommandPaletteHotkey, useRegisterCoreCommands } from "../features/commands/hooks";
 import { useCustomStylesLoader, useCustomStylesSubscriber } from "../features/custom-styles/hooks";
 import { ModalHost } from "../features/modals/components";
@@ -185,7 +186,7 @@ function RootLayout() {
 			<div className="app" data-is-focused={isAppFocused}>
 				<Titlebar />
 				<ModalHost />
-				<Suspense fallback={"loading, todo replace"}>
+				<Suspense fallback={<Loading />}>
 					<MainContent />
 				</Suspense>
 			</div>

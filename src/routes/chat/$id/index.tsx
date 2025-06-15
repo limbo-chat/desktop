@@ -14,7 +14,6 @@ import { useMainRouter } from "../../../lib/trpc";
 
 export const Route = createFileRoute("/chat/$id/")({
 	component: ChatPage,
-	wrapInSuspense: true,
 });
 
 interface ScrollToBottomButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

@@ -1,5 +1,6 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { Suspense } from "react";
+import { Loading } from "../../components/loading";
 import {
 	Sidebar,
 	SidebarGroup,
@@ -33,9 +34,9 @@ const SettingsSidebar = () => {
 							Personalization
 						</SidebarItem>
 					</Link>
-					<Link to="/settings/chats">
-						<SidebarItem isActive={location.pathname.endsWith("/chats")}>
-							Chats
+					<Link to="/settings/data">
+						<SidebarItem isActive={location.pathname.endsWith("/data")}>
+							Data
 						</SidebarItem>
 					</Link>
 					<Link to="/settings/appearance">
@@ -85,7 +86,7 @@ function SettingsLayout() {
 	return (
 		<div className="settings-layout">
 			<SettingsSidebar />
-			<Suspense fallback="loading">
+			<Suspense fallback={<Loading />}>
 				<Outlet />
 			</Suspense>
 		</div>

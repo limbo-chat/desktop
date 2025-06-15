@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import type { ButtonHTMLAttributes } from "react";
-import { LoadingSpinner } from "./loading-spinner";
+import { LoadingIcon } from "./loading-icon";
 
 export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "color"> {
 	isLoading?: boolean;
@@ -20,7 +20,7 @@ export const Button = ({
 			className={clsx("button", className)}
 			{...buttonProps}
 		>
-			{isLoading ? <LoadingSpinner /> : children}
+			{isLoading ? <LoadingIcon /> : children}
 		</button>
 	);
 };

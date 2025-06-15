@@ -1,5 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useMeasure } from "@uidotdev/usehooks";
+import { Suspense } from "react";
+import { Loading } from "../../components/loading";
 import { ChatComposer } from "./-components/chat-composer";
 import { ChatSidebar } from "./-components/chat-sidebar";
 
@@ -25,7 +27,9 @@ function ChatLayout() {
 					"--chat-composer-width": chatComposerDimensions.width + "px",
 				}}
 			>
-				{areChatComposerDimensionsAvailable && <Outlet />}
+				<Suspense fallback={<Loading />}>
+					{areChatComposerDimensionsAvailable && <Outlet />}
+				</Suspense>
 				<ChatComposer ref={chatComposerRef} />
 			</div>
 		</div>
