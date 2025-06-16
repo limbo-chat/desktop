@@ -4,6 +4,15 @@ import { createTRPCClient } from "@trpc/client";
 import { Suspense, useMemo, useRef, type PropsWithChildren } from "react";
 import { ipcLink } from "trpc-electron/renderer";
 import type { MainRouter } from "../../electron/trpc/router";
+import { Button } from "../components/button";
+import {
+	ErrorRoot,
+	ErrorContainer,
+	ErrorControl,
+	ErrorDescription,
+	ErrorInfo,
+	ErrorTitle,
+} from "../components/error";
 import { Loading } from "../components/loading";
 import { useOpenCommandPaletteHotkey, useRegisterCoreCommands } from "../features/commands/hooks";
 import { useCustomStylesLoader, useCustomStylesSubscriber } from "../features/custom-styles/hooks";
@@ -32,10 +41,21 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 	component: RootLayout,
 	notFoundComponent: () => {
 		return (
-			<div>
-				<p>not found</p>
-				<Link to="/chat">home</Link>
-			</div>
+			<ErrorContainer>
+				<ErrorRoot>
+					<ErrorInfo>
+						<ErrorTitle>Page not found</ErrorTitle>
+						<ErrorDescription>
+							The page you are looking for does not exist
+						</ErrorDescription>
+					</ErrorInfo>
+				</ErrorRoot>
+				<ErrorControl>
+					<Link className="button" to="/chat">
+						home
+					</Link>
+				</ErrorControl>
+			</ErrorContainer>
 		);
 	},
 });

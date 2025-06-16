@@ -1,6 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { SettingsPage, SettingsPageContent } from "../-components/settings-page";
+import {
+	ErrorRoot,
+	ErrorContainer,
+	ErrorControl,
+	ErrorDescription,
+	ErrorInfo,
+	ErrorTitle,
+} from "../../../components/error";
 import { PluginSettingsSection } from "../../../features/plugins/components/plugin-settings-section";
 import type { ActivePlugin } from "../../../features/plugins/core/plugin-manager";
 import { useActivePlugin } from "../../../features/plugins/hooks/core";
@@ -56,7 +64,21 @@ function PluginSettingsPage() {
 				{plugin ? (
 					<PluginSettingsFormContainer plugin={plugin} />
 				) : (
-					<div>Plugin not found</div>
+					<ErrorContainer>
+						<ErrorRoot>
+							<ErrorInfo>
+								<ErrorTitle>Plugin not found</ErrorTitle>
+								<ErrorDescription>
+									The plugin you are trying to access is not active.
+								</ErrorDescription>
+							</ErrorInfo>
+							<ErrorControl>
+								<Link className="button" to="/settings/plugins">
+									Go back
+								</Link>
+							</ErrorControl>
+						</ErrorRoot>
+					</ErrorContainer>
 				)}
 			</SettingsPageContent>
 		</SettingsPage>
