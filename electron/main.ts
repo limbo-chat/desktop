@@ -17,7 +17,6 @@ interface CreateWindowOptions {
 
 function createWindow(opts: CreateWindowOptions) {
 	const window = new BrowserWindow({
-		show: false,
 		titleBarStyle: "hidden",
 		transparent: opts.transparent,
 		icon: ICON_PATH,
@@ -110,11 +109,14 @@ async function startApp() {
 		},
 	});
 
-	const customStylesWatcher = new CustomStylesWatcher({
-		window: mainWindow,
-	});
+	// custom styles wathcing should only be enabled in developer mode
+	if (settings.isDeveloperModeEnabled) {
+		const customStylesWatcher = new CustomStylesWatcher({
+			window: mainWindow,
+		});
 
-	customStylesWatcher.start();
+		customStylesWatcher.start();
+	}
 }
 
 app.whenReady().then(startApp);
