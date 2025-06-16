@@ -1,32 +1,29 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { Anchor } from "../../components/anchor";
 import { Button } from "../../components/button";
-import { FieldDescription, FieldLabel, FieldRoot } from "../../components/field";
 import {
-	SettingsActions,
-	SettingsForm,
+	SettingItem,
+	SettingItemControl,
+	SettingItemDescription,
+	SettingItemInfo,
+	SettingItemTitle,
 	SettingsSection,
+	SettingsSectionActions,
 	SettingsSectionContent,
 } from "../../components/settings";
-import { useUpdateSettingsMutation } from "../../features/settings/hooks";
-import { useMainRouter } from "../../lib/trpc";
 import {
-	SettingsPage,
-	SettingsPageContent,
-	SettingsPageDescription,
-	SettingsPageHeader,
-	SettingsPageTitle,
-} from "./-components/settings-page";
+	useGetSettingsSuspenseQuery,
+	useUpdateSettingsMutation,
+} from "../../features/settings/hooks";
+import { SettingsPage, SettingsPageContent } from "./-components/settings-page";
 
 export const Route = createFileRoute("/settings/personalization")({
 	component: PersonalizationSettingsPage,
 });
 
 function PersonalizationSettingsPage() {
-	const mainRouter = useMainRouter();
-	const getSettingsQuery = useSuspenseQuery(mainRouter.settings.get.queryOptions());
+	const getSettingsQuery = useGetSettingsSuspenseQuery();
 	const updateSettingsMutation = useUpdateSettingsMutation();
 	const settings = getSettingsQuery.data;
 
@@ -43,42 +40,46 @@ function PersonalizationSettingsPage() {
 
 	return (
 		<SettingsPage data-page="personalization">
-			<SettingsPageHeader>
-				<SettingsPageTitle>Personalization</SettingsPageTitle>
-				<SettingsPageDescription>Personalize your experience.</SettingsPageDescription>
-			</SettingsPageHeader>
 			<SettingsPageContent>
-				<SettingsSection>
-					<SettingsSectionContent>
-						<SettingsForm onSubmit={handleSubmit}>
-							<FieldRoot data-field="username">
-								<FieldLabel>Username</FieldLabel>
-								<FieldDescription>
-									What would you like to be called?
-								</FieldDescription>
-								<input
-									type="text"
-									placeholder="Enter your name"
-									{...form.register("username")}
-								/>
-							</FieldRoot>
-							<FieldRoot data-field="system-prompt">
-								<FieldLabel>System prompt</FieldLabel>
-								<FieldDescription>
-									This prompt is used to set the context for all chat completions.
-									Learn about{" "}
-									<Anchor
-										href="https://handlebarsjs.com"
-										target="_blank"
-										tabIndex={-1}
-									>
-										Handlebars
-									</Anchor>
-									.
-								</FieldDescription>
-								<textarea {...form.register("systemPrompt")} />
-							</FieldRoot>
-							<SettingsActions>
+				<form onSubmit={handleSubmit}>
+					<SettingsSection>
+						<SettingsSectionContent>
+							<SettingItem data-setting="username">
+								<SettingItemInfo>
+									<SettingItemTitle>Username</SettingItemTitle>
+									<SettingItemDescription>
+										What would you like to be called?
+									</SettingItemDescription>
+								</SettingItemInfo>
+								<SettingItemControl>
+									<input
+										type="text"
+										placeholder="Enter your name"
+										{...form.register("username")}
+									/>
+								</SettingItemControl>
+							</SettingItem>
+							<SettingItem data-setting="system-prompt">
+								<SettingItemInfo>
+									<SettingItemTitle>System prompt</SettingItemTitle>
+									<SettingItemDescription>
+										This prompt is used to set the context for all chat
+										completions. Learn about{" "}
+										<Anchor
+											href="https://handlebarsjs.com"
+											target="_blank"
+											tabIndex={-1}
+										>
+											Handlebars
+										</Anchor>
+										.
+									</SettingItemDescription>
+								</SettingItemInfo>
+								<SettingItemControl>
+									<textarea {...form.register("systemPrompt")} />
+								</SettingItemControl>
+							</SettingItem>
+							<SettingsSectionActions>
 								<Button
 									data-action="cancel"
 									disabled={!form.formState.isDirty}
@@ -93,10 +94,10 @@ function PersonalizationSettingsPage() {
 								>
 									Save changes
 								</Button>
-							</SettingsActions>
-						</SettingsForm>
-					</SettingsSectionContent>
-				</SettingsSection>
+							</SettingsSectionActions>
+						</SettingsSectionContent>
+					</SettingsSection>
+				</form>
 			</SettingsPageContent>
 		</SettingsPage>
 	);

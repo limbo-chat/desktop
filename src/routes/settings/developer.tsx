@@ -1,45 +1,66 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/card";
 import { Checkbox } from "../../components/checkbox";
 import {
-	SettingsPage,
-	SettingsPageContent,
-	SettingsPageDescription,
-	SettingsPageHeader,
-	SettingsPageTitle,
-} from "./-components/settings-page";
+	SettingItem,
+	SettingItemControl,
+	SettingItemDescription,
+	SettingItemInfo,
+	SettingItemTitle,
+	SettingsSection,
+	SettingsSectionContent,
+} from "../../components/settings";
+import {
+	useGetSettingsSuspenseQuery,
+	useUpdateSettingsMutation,
+} from "../../features/settings/hooks";
+import { SettingsPage, SettingsPageContent } from "./-components/settings-page";
 
 export const Route = createFileRoute("/settings/developer")({
 	component: DeveloperSettingsPage,
 });
 
 function DeveloperSettingsPage() {
-	const [isDevMode, setIsDevMode] = useState<boolean>(false);
+	const getSettingsQuery = useGetSettingsSuspenseQuery();
+	const updateSettingsMutation = useUpdateSettingsMutation();
+	const settings = getSettingsQuery.data;
 
 	return (
 		<SettingsPage data-page="developer">
-			<SettingsPageHeader>
-				<SettingsPageTitle>Developer settings</SettingsPageTitle>
-				<SettingsPageDescription>
-					Settings for developers and advanced users
-				</SettingsPageDescription>
-			</SettingsPageHeader>
 			<SettingsPageContent>
-				<Card>
-					<CardHeader>
-						<CardTitle>Developer mode</CardTitle>
-						<CardDescription>
-							Developer mode enables hot reloading of plugins and custom styles
-						</CardDescription>
-					</CardHeader>
-					<CardContent>
-						<Checkbox
-							checked={isDevMode}
-							onCheckedChange={(isChecked) => setIsDevMode(isChecked as boolean)}
-						/>
-					</CardContent>
-				</Card>
+				<SettingsSection>
+					<SettingsSectionContent>
+						<SettingItem>
+							<SettingItemInfo>
+								<SettingItemTitle>Enable developer mode</SettingItemTitle>
+								<SettingItemDescription>
+									Developer mode enables hot reloading of plugins and custom
+									styles
+								</SettingItemDescription>
+							</SettingItemInfo>
+							<SettingItemControl>
+								<Checkbox
+									checked={settings.isDeveloperModeEnabled}
+									onCheckedChange={(isChecked) => {
+										if (typeof isChecked !== "boolean") {
+											return;
+										}
+
+										updateSettingsMutation.mutate(
+											{
+												isDeveloperModeEnabled: isChecked,
+											},
+											{
+												onSuccess: () => {
+													// todo show toast that says to reload the app
+												},
+											}
+										);
+									}}
+								/>
+							</SettingItemControl>
+						</SettingItem>
+					</SettingsSectionContent>
+				</SettingsSection>
 			</SettingsPageContent>
 		</SettingsPage>
 	);

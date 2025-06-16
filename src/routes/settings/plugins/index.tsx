@@ -1,10 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { FolderIcon, PlusIcon, RefreshCwIcon, SettingsIcon, Trash2Icon } from "lucide-react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { SettingsPage } from "../-components/settings-page";
+import {
+	SettingsPage,
+	SettingsPageContent,
+	SettingsPageHeader,
+	SettingsPageTitle,
+} from "../-components/settings-page";
 import type { PluginManifest } from "../../../../electron/plugins/schemas";
 import { Button } from "../../../components/button";
 import {
@@ -237,10 +241,10 @@ function PluginsSettingsPage() {
 	};
 
 	return (
-		<SettingsPage className="plugins-page">
-			<div className="plugins-page-header">
-				<h1 className="plugins-page-title">Plugins</h1>
-				<div className="plugins-page-actions">
+		<SettingsPage data-page="plugins">
+			<SettingsPageHeader>
+				<SettingsPageTitle>Plugins</SettingsPageTitle>
+				<div className="plugins-actions">
 					<Tooltip label="Open plugins folder">
 						<IconButton onClick={openPluginsFolder}>
 							<FolderIcon />
@@ -252,12 +256,14 @@ function PluginsSettingsPage() {
 						</IconButton>
 					</Tooltip>
 				</div>
-			</div>
-			<div className="plugin-list">
-				{Object.values(plugins).map((plugin) => (
-					<PluginCard plugin={plugin} key={plugin.manifest.id} />
-				))}
-			</div>
+			</SettingsPageHeader>
+			<SettingsPageContent>
+				<div className="plugin-list">
+					{Object.values(plugins).map((plugin) => (
+						<PluginCard plugin={plugin} key={plugin.manifest.id} />
+					))}
+				</div>
+			</SettingsPageContent>
 		</SettingsPage>
 	);
 }

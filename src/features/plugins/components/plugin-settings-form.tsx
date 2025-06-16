@@ -1,9 +1,19 @@
-import { useMemo, type HTMLProps } from "react";
+import { useMemo } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import type * as limbo from "limbo";
 import { Button } from "../../../components/button";
 import { Checkbox } from "../../../components/checkbox";
-import { PasswordInputFieldController, TextInputFieldController } from "../../forms/components";
+import { PasswordInput } from "../../../components/inputs/password-input";
+import {
+	SettingItem,
+	SettingItemControl,
+	SettingItemDescription,
+	SettingItemInfo,
+	SettingItemTitle,
+	SettingsSection,
+	SettingsSectionActions,
+	SettingsSectionContent,
+} from "../../../components/settings";
 import { useLLMList } from "../../llms/hooks";
 
 // TODO, some of the settings renderers are incomplete
@@ -15,29 +25,36 @@ interface TextSettingRendererProps {
 const TextSettingRenderer = ({ setting }: TextSettingRendererProps) => {
 	if (setting.variant === "password") {
 		return (
-			<PasswordInputFieldController
+			<Controller
 				name={setting.id}
-				passwordFieldProps={{
-					label: setting.label,
-					description: setting.description,
-					passwordInputProps: {
-						placeholder: setting.placeholder,
-					},
-				}}
+				render={({ field }) => (
+					<PasswordInput
+						ref={field.ref}
+						placeholder={setting.placeholder}
+						disabled={field.disabled}
+						value={field.value ?? ""}
+						onChange={(e) => field.onChange(e.target.value)}
+						onBlur={field.onBlur}
+					/>
+				)}
 			/>
 		);
 	}
 
 	return (
-		<TextInputFieldController
+		<Controller
 			name={setting.id}
-			textFieldProps={{
-				label: setting.label,
-				description: setting.description,
-				textInputProps: {
-					placeholder: setting.placeholder,
-				},
-			}}
+			render={({ field }) => (
+				<input
+					type="text"
+					ref={field.ref}
+					placeholder={setting.placeholder}
+					disabled={field.disabled}
+					value={field.value ?? ""}
+					onChange={(e) => field.onChange(e.target.value)}
+					onBlur={field.onBlur}
+				/>
+			)}
 		/>
 	);
 };
@@ -114,22 +131,27 @@ interface SettingRendererProps {
 const SettingRenderer = ({ setting }: SettingRendererProps) => {
 	const Renderer = settingRendererMap[setting.type];
 
-	// @ts-expect-error
-	return <Renderer setting={setting} />;
+	return (
+		<SettingItem>
+			<SettingItemInfo>
+				<SettingItemTitle>{setting.label}</SettingItemTitle>
+				<SettingItemDescription>{setting.description}</SettingItemDescription>
+			</SettingItemInfo>
+			<SettingItemControl>
+				{/* @ts-expect-error idk */}
+				<Renderer setting={setting} />
+			</SettingItemControl>
+		</SettingItem>
+	);
 };
 
-export interface PluginSettingsFormProps extends HTMLProps<HTMLFormElement> {
+export interface PluginSettingsFormProps {
 	values: Record<string, any>;
 	settings: limbo.Setting[];
 	onSubmit: (data: Record<string, any>) => void;
 }
 
-export const PluginSettingsForm = ({
-	settings,
-	values,
-	onSubmit,
-	...props
-}: PluginSettingsFormProps) => {
+export const PluginSettingsForm = ({ settings, values, onSubmit }: PluginSettingsFormProps) => {
 	const form = useForm({
 		values,
 	});
@@ -140,13 +162,19 @@ export const PluginSettingsForm = ({
 
 	return (
 		<FormProvider {...form}>
-			<form onSubmit={handleSubmit} onBlur={handleSubmit} {...props}>
-				{settings.map((setting) => (
-					<SettingRenderer setting={setting} key={setting.id} />
-				))}
-				<Button type="submit" disabled={!form.formState.isDirty}>
-					Save changes
-				</Button>
+			<form onSubmit={handleSubmit}>
+				<SettingsSection>
+					<SettingsSectionContent>
+						{settings.map((setting) => (
+							<SettingRenderer setting={setting} key={setting.id} />
+						))}
+					</SettingsSectionContent>
+					<SettingsSectionActions>
+						<Button type="submit" disabled={!form.formState.isDirty}>
+							Save changes
+						</Button>
+					</SettingsSectionActions>
+				</SettingsSection>
 			</form>
 		</FormProvider>
 	);

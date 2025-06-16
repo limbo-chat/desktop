@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { SettingsPage } from "../-components/settings-page";
+import { SettingsPage, SettingsPageContent } from "../-components/settings-page";
 import { PluginSettingsForm } from "../../../features/plugins/components/plugin-settings-form";
 import type { ActivePlugin } from "../../../features/plugins/core/plugin-manager";
 import { useActivePlugin } from "../../../features/plugins/hooks/core";
@@ -50,7 +50,13 @@ function PluginSettingsPage() {
 
 	return (
 		<SettingsPage className="plugin-settings-page">
-			{plugin ? <PluginSettingsFormContainer plugin={plugin} /> : <div>Plugin not found</div>}
+			<SettingsPageContent>
+				{plugin ? (
+					<PluginSettingsFormContainer plugin={plugin} />
+				) : (
+					<div>Plugin not found</div>
+				)}
+			</SettingsPageContent>
 		</SettingsPage>
 	);
 }

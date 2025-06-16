@@ -25,14 +25,38 @@ export const SettingsSectionContent = ({ className, ...props }: SettingsSectionC
 	return <div className={clsx("settings-section-content")} {...props} />;
 };
 
-export interface SettingsActionsProps extends HTMLAttributes<HTMLDivElement> {}
+export interface SettingsSectionActionsProps extends HTMLAttributes<HTMLDivElement> {}
 
-export const SettingsActions = ({ className, ...props }: SettingsActionsProps) => {
-	return <div className={clsx("settings-actions", className)} {...props} />;
+export const SettingsSectionActions = ({ className, ...props }: SettingsSectionActionsProps) => {
+	return <div className={clsx("settings-section-actions", className)} {...props} />;
 };
 
-export interface SettingsFormProps extends HTMLAttributes<HTMLFormElement> {}
+export interface SettingItemProps extends HTMLAttributes<HTMLDivElement> {}
 
-export const SettingsForm = ({ className, ...props }: SettingsFormProps) => {
-	return <form className={clsx("settings-form")} {...props} />;
+export const SettingItem = ({ className, ...props }: SettingItemProps) => {
+	return <div className={clsx("setting-item")} {...props} />;
+};
+
+export interface SettingItemInfoProps extends HTMLAttributes<HTMLDivElement> {}
+
+export const SettingItemInfo = ({ className, ...props }: SettingItemInfoProps) => {
+	return <div className={clsx("setting-item-info")} {...props} />;
+};
+
+export interface SettingItemTitleProps extends HTMLAttributes<HTMLDivElement> {}
+
+export const SettingItemTitle = ({ className, ...props }: SettingItemTitleProps) => {
+	return <div className={clsx("setting-item-title")} {...props} />;
+};
+
+export interface SettingItemDescriptionProps extends HTMLAttributes<HTMLDivElement> {}
+
+export const SettingItemDescription = ({ className, ...props }: SettingItemDescriptionProps) => {
+	return <div className={clsx("setting-item-description")} {...props} />;
+};
+
+export interface SettingItemControlProps extends HTMLAttributes<HTMLDivElement> {}
+
+export const SettingItemControl = ({ className, ...props }: SettingItemControlProps) => {
+	return <div className={clsx("setting-item-control")} {...props} />;
 };

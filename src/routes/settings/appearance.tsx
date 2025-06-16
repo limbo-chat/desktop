@@ -1,23 +1,19 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Checkbox } from "../../components/checkbox";
-import { Field } from "../../components/field";
 import {
+	SettingItem,
+	SettingItemControl,
+	SettingItemDescription,
+	SettingItemInfo,
+	SettingItemTitle,
 	SettingsSection,
 	SettingsSectionContent,
-	SettingsSectionHeader,
-	SettingsSectionTitle,
 } from "../../components/settings";
 import {
 	useGetSettingsSuspenseQuery,
 	useUpdateSettingsMutation,
 } from "../../features/settings/hooks";
-import {
-	SettingsPage,
-	SettingsPageContent,
-	SettingsPageDescription,
-	SettingsPageHeader,
-	SettingsPageTitle,
-} from "./-components/settings-page";
+import { SettingsPage, SettingsPageContent } from "./-components/settings-page";
 
 export const Route = createFileRoute("/settings/appearance")({
 	component: AppearanceSettingsPage,
@@ -30,27 +26,28 @@ function AppearanceSettingsPage() {
 
 	return (
 		<SettingsPage data-page="appearance">
-			<SettingsPageHeader>
-				<SettingsPageTitle>Appearance</SettingsPageTitle>
-				<SettingsPageDescription>Customize the and feel of limbo</SettingsPageDescription>
-			</SettingsPageHeader>
 			<SettingsPageContent>
 				<SettingsSection>
 					<SettingsSectionContent>
-						<Field
-							label="Enable transparency"
-							description="Enable transparency for the app window. Performance may take a hit with transparency enabled."
-							control={
+						<SettingItem>
+							<SettingItemInfo>
+								<SettingItemTitle>Enable transparency</SettingItemTitle>
+								<SettingItemDescription>
+									Enable transparency for the app window. Performance may take a
+									hit with transparency enabled.
+								</SettingItemDescription>
+							</SettingItemInfo>
+							<SettingItemControl>
 								<Checkbox
 									checked={settings.isTransparencyEnabled}
-									onCheckedChange={(checked) => {
-										if (typeof checked !== "boolean") {
+									onCheckedChange={(isChecked) => {
+										if (typeof isChecked !== "boolean") {
 											return;
 										}
 
 										updateSettingsMutation.mutate(
 											{
-												isTransparencyEnabled: checked,
+												isTransparencyEnabled: isChecked,
 											},
 											{
 												onSuccess: () => {
@@ -60,18 +57,8 @@ function AppearanceSettingsPage() {
 										);
 									}}
 								/>
-							}
-						/>
-					</SettingsSectionContent>
-				</SettingsSection>
-				<SettingsSection>
-					<SettingsSectionHeader>
-						<SettingsSectionTitle>Extras</SettingsSectionTitle>
-					</SettingsSectionHeader>
-					<SettingsSectionContent>
-						<Link className="button" to="/design-playground">
-							Open design playground
-						</Link>
+							</SettingItemControl>
+						</SettingItem>
 					</SettingsSectionContent>
 				</SettingsSection>
 			</SettingsPageContent>
