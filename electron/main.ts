@@ -17,7 +17,7 @@ interface CreateWindowOptions {
 	transparent: boolean;
 }
 
-const ipc = createIPCHandler({
+const trpcIpcHandler = createIPCHandler({
 	router: mainRouter,
 });
 
@@ -33,8 +33,10 @@ function createMainWindow(opts: CreateWindowOptions) {
 		},
 	});
 
+	const newMainWindowId = newMainWindow.webContents.id;
+
 	// attach the IPC handler to the new window
-	ipc.attachWindow(newMainWindow);
+	trpcIpcHandler.attachWindow(newMainWindow);
 
 	// open links externally
 	newMainWindow.webContents.setWindowOpenHandler((details) => {
@@ -52,7 +54,7 @@ function createMainWindow(opts: CreateWindowOptions) {
 	});
 
 	newMainWindow.on("closed", () => {
-		ipc.detachWindow(newMainWindow);
+		trpcIpcHandler.detachWindow(newMainWindow, newMainWindowId);
 
 		mainWindow = null;
 	});
@@ -146,6 +148,8 @@ async function startApp() {
 	});
 
 	if (settings.isDeveloperModeEnabled) {
+		console.log("Developer mode is enabled.");
+
 		watchCustomStyles();
 	}
 }
