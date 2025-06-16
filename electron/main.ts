@@ -17,6 +17,10 @@ interface CreateWindowOptions {
 	transparent: boolean;
 }
 
+const ipc = createIPCHandler({
+	router: mainRouter,
+});
+
 function createMainWindow(opts: CreateWindowOptions) {
 	const newMainWindow = new BrowserWindow({
 		titleBarStyle: "hidden",
@@ -28,6 +32,9 @@ function createMainWindow(opts: CreateWindowOptions) {
 			preload: PRELOAD_DIST,
 		},
 	});
+
+	// attach the IPC handler to the new window
+	ipc.attachWindow(newMainWindow);
 
 	// open links externally
 	newMainWindow.webContents.setWindowOpenHandler((details) => {
@@ -44,14 +51,10 @@ function createMainWindow(opts: CreateWindowOptions) {
 		newMainWindow.webContents.send("blur");
 	});
 
-	createIPCHandler({
-		router: mainRouter,
-		windows: [newMainWindow],
-		createContext: async () => {
-			return {
-				win: newMainWindow,
-			};
-		},
+	newMainWindow.on("closed", () => {
+		ipc.detachWindow(newMainWindow);
+
+		mainWindow = null;
 	});
 
 	if (VITE_DEV_SERVER_URL) {
@@ -70,6 +73,30 @@ async function ensureData() {
 		ensureCustomStylesDirectory(),
 		ensureDb(),
 	]);
+}
+
+function watchCustomStyles() {
+	const customStylesWatcher = new CustomStylesWatcher();
+
+	customStylesWatcher.events.on("add", (filePath) => {
+		if (mainWindow) {
+			mainWindow.webContents.send("custom-style:add", filePath);
+		}
+	});
+
+	customStylesWatcher.events.on("change", (filePath) => {
+		if (mainWindow) {
+			mainWindow.webContents.send("custom-style:reload", filePath);
+		}
+	});
+
+	customStylesWatcher.events.on("remove", (filePath) => {
+		if (mainWindow) {
+			mainWindow.webContents.send("custom-style:remove", filePath);
+		}
+	});
+
+	customStylesWatcher.start();
 }
 
 async function startApp() {
@@ -118,30 +145,8 @@ async function startApp() {
 		}
 	});
 
-	// custom styles wathcing should only be enabled in developer mode
 	if (settings.isDeveloperModeEnabled) {
-		// initialize the custom styles watcher
-		const customStylesWatcher = new CustomStylesWatcher();
-
-		customStylesWatcher.events.on("add", (filePath) => {
-			if (mainWindow) {
-				mainWindow.webContents.send("custom-style:add", filePath);
-			}
-		});
-
-		customStylesWatcher.events.on("change", (filePath) => {
-			if (mainWindow) {
-				mainWindow.webContents.send("custom-style:reload", filePath);
-			}
-		});
-
-		customStylesWatcher.events.on("remove", (filePath) => {
-			if (mainWindow) {
-				mainWindow.webContents.send("custom-style:remove", filePath);
-			}
-		});
-
-		customStylesWatcher.start();
+		watchCustomStyles();
 	}
 }
 
