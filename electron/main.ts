@@ -1,7 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain } from "electron";
-import path from "node:path";
 import { createIPCHandler } from "trpc-electron/main";
-import { MAIN_DIST, RENDERER_DIST, VITE_DEV_SERVER_URL, VITE_PUBLIC } from "./constants";
+import { HTML_PATH, ICON_PATH, PRELOAD_DIST, VITE_DEV_SERVER_URL } from "./constants";
 import { ensureCustomStylesDirectory } from "./custom-styles/utils";
 import { CustomStylesWatcher } from "./custom-styles/watcher";
 import { ensureDb } from "./db/utils";
@@ -9,19 +8,23 @@ import { defaultMeta, readMeta, writeMeta } from "./meta/utils";
 import { LATEST_DATA_VERSION } from "./migrations/constants";
 import { migrateToLatestVersion } from "./migrations/utils";
 import { ensurePluginsDir } from "./plugins/utils";
-import { ensureSettings } from "./settings/utils";
+import { ensureSettings, readSettings } from "./settings/utils";
 import { mainRouter } from "./trpc/router";
 
-function createWindow() {
+interface CreateWindowOptions {
+	transparent: boolean;
+}
+
+function createWindow(opts: CreateWindowOptions) {
 	const window = new BrowserWindow({
-		transparent: true,
 		show: false,
 		titleBarStyle: "hidden",
-		icon: path.join(VITE_PUBLIC, "electron-vite.svg"),
+		transparent: opts.transparent,
+		icon: ICON_PATH,
 		// expose window controls in Windows/Linux
 		...(process.platform !== "darwin" ? { titleBarOverlay: true } : {}),
 		webPreferences: {
-			preload: path.join(MAIN_DIST, "preload.mjs"),
+			preload: PRELOAD_DIST,
 		},
 	});
 
@@ -43,7 +46,7 @@ function createWindow() {
 	if (VITE_DEV_SERVER_URL) {
 		window.loadURL(VITE_DEV_SERVER_URL);
 	} else {
-		window.loadFile(path.join(RENDERER_DIST, "index.html"));
+		window.loadFile(HTML_PATH);
 	}
 
 	return window;
@@ -84,8 +87,13 @@ async function startApp() {
 
 	await ensureData();
 
+	// read the settings before creating the window
+	const settings = readSettings();
+
 	// create the main window
-	const mainWindow = createWindow();
+	const mainWindow = createWindow({
+		transparent: settings.isTransparencyEnabled,
+	});
 
 	// the renderer has a loading process that will send a "ready" event when it is ready to show
 	ipcMain.on("renderer:ready", () => {
@@ -124,6 +132,8 @@ app.on("activate", () => {
 	// On OS X it's common to re-create a window in the app when the
 	// dock icon is clicked and there are no other windows open.
 	if (BrowserWindow.getAllWindows().length === 0) {
-		createWindow();
+		const settings = readSettings();
+
+		createWindow({ transparent: settings.isTransparencyEnabled });
 	}
 });
