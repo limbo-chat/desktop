@@ -65,8 +65,6 @@ export function adaptChatPromptForCapabilities({
 	chatPromptBuilder,
 }: AdaptPromptForCapabilitiesOptions) {
 	if (!capabilities.includes("tool_calling")) {
-		console.log("Tool calling capability not available, transforming chat prompt");
-
 		serializeToolCallNodesInChatPrompt(chatPromptBuilder);
 	}
 }

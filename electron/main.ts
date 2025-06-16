@@ -148,8 +148,6 @@ async function startApp() {
 	});
 
 	if (settings.isDeveloperModeEnabled) {
-		console.log("Developer mode is enabled.");
-
 		watchCustomStyles();
 	}
 }
