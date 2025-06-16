@@ -1,7 +1,14 @@
 import { watch, type FSWatcher } from "chokidar";
 import type { BrowserWindow } from "electron";
+import EventEmitter from "eventemitter3";
 import path from "node:path";
 import { CUSTOM_STYLES_DIR } from "./constants";
+
+export interface CustomStylesWatcherEvents {
+	add: (filePath: string) => void;
+	change: (filePath: string) => void;
+	remove: (filePath: string) => void;
+}
 
 export interface CustomStylesWatcherOptions {
 	window: BrowserWindow;
@@ -9,11 +16,7 @@ export interface CustomStylesWatcherOptions {
 
 export class CustomStylesWatcher {
 	private watcher: FSWatcher | null = null;
-	private window: BrowserWindow;
-
-	constructor(opts: CustomStylesWatcherOptions) {
-		this.window = opts.window;
-	}
+	public events = new EventEmitter<CustomStylesWatcherEvents>();
 
 	public start() {
 		this.watcher = watch(CUSTOM_STYLES_DIR, {
@@ -36,17 +39,15 @@ export class CustomStylesWatcher {
 		});
 
 		this.watcher.on("add", (filePath) => {
-			this.window.webContents.send("custom-style:add", filePath);
+			this.events.emit("add", filePath);
 		});
 
 		this.watcher.on("change", (filePath) => {
-			console.log(`Custom style changed: ${filePath}`);
-
-			this.window.webContents.send("custom-style:reload", filePath);
+			this.events.emit("change", filePath);
 		});
 
 		this.watcher.on("unlink", (filePath) => {
-			this.window.webContents.send("custom-style:remove", filePath);
+			this.events.emit("remove", filePath);
 		});
 	}
 

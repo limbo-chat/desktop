@@ -11,12 +11,14 @@ import { ensurePluginsDir } from "./plugins/utils";
 import { ensureSettings, readSettings } from "./settings/utils";
 import { mainRouter } from "./trpc/router";
 
+let mainWindow: BrowserWindow | null = null;
+
 interface CreateWindowOptions {
 	transparent: boolean;
 }
 
-function createWindow(opts: CreateWindowOptions) {
-	const window = new BrowserWindow({
+function createMainWindow(opts: CreateWindowOptions) {
+	const newMainWindow = new BrowserWindow({
 		titleBarStyle: "hidden",
 		transparent: opts.transparent,
 		icon: ICON_PATH,
@@ -28,27 +30,37 @@ function createWindow(opts: CreateWindowOptions) {
 	});
 
 	// open links externally
-	window.webContents.setWindowOpenHandler((details) => {
+	newMainWindow.webContents.setWindowOpenHandler((details) => {
 		shell.openExternal(details.url);
 
 		return { action: "deny" };
 	});
 
-	window.on("focus", () => {
-		window.webContents.send("focus");
+	newMainWindow.on("focus", () => {
+		newMainWindow.webContents.send("focus");
 	});
 
-	window.on("blur", () => {
-		window.webContents.send("blur");
+	newMainWindow.on("blur", () => {
+		newMainWindow.webContents.send("blur");
+	});
+
+	createIPCHandler({
+		router: mainRouter,
+		windows: [newMainWindow],
+		createContext: async () => {
+			return {
+				win: newMainWindow,
+			};
+		},
 	});
 
 	if (VITE_DEV_SERVER_URL) {
-		window.loadURL(VITE_DEV_SERVER_URL);
+		newMainWindow.loadURL(VITE_DEV_SERVER_URL);
 	} else {
-		window.loadFile(HTML_PATH);
+		newMainWindow.loadFile(HTML_PATH);
 	}
 
-	return window;
+	mainWindow = newMainWindow;
 }
 
 async function ensureData() {
@@ -84,35 +96,49 @@ async function startApp() {
 		writeMeta(meta);
 	}
 
+	// ensure the required data sources are as expected
 	await ensureData();
 
 	// read the settings before creating the window
 	const settings = readSettings();
 
-	// create the main window
-	const mainWindow = createWindow({
+	// create the main window on startup
+	createMainWindow({
 		transparent: settings.isTransparencyEnabled,
 	});
 
 	// the renderer has a loading process that will send a "ready" event when it is ready to show
-	ipcMain.on("renderer:ready", () => {
-		mainWindow.show();
-	});
+	ipcMain.on("renderer:ready", (e) => {
+		if (!mainWindow) {
+			return;
+		}
 
-	createIPCHandler({
-		router: mainRouter,
-		windows: [mainWindow],
-		createContext: async () => {
-			return {
-				win: mainWindow,
-			};
-		},
+		if (e.sender.id === mainWindow.webContents.id) {
+			mainWindow.show();
+		}
 	});
 
 	// custom styles wathcing should only be enabled in developer mode
 	if (settings.isDeveloperModeEnabled) {
-		const customStylesWatcher = new CustomStylesWatcher({
-			window: mainWindow,
+		// initialize the custom styles watcher
+		const customStylesWatcher = new CustomStylesWatcher();
+
+		customStylesWatcher.events.on("add", (filePath) => {
+			if (mainWindow) {
+				mainWindow.webContents.send("custom-style:add", filePath);
+			}
+		});
+
+		customStylesWatcher.events.on("change", (filePath) => {
+			if (mainWindow) {
+				mainWindow.webContents.send("custom-style:reload", filePath);
+			}
+		});
+
+		customStylesWatcher.events.on("remove", (filePath) => {
+			if (mainWindow) {
+				mainWindow.webContents.send("custom-style:remove", filePath);
+			}
 		});
 
 		customStylesWatcher.start();
@@ -136,6 +162,6 @@ app.on("activate", () => {
 	if (BrowserWindow.getAllWindows().length === 0) {
 		const settings = readSettings();
 
-		createWindow({ transparent: settings.isTransparencyEnabled });
+		createMainWindow({ transparent: settings.isTransparencyEnabled });
 	}
 });
