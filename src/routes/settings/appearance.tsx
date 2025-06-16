@@ -9,6 +9,7 @@ import {
 	SettingsSection,
 	SettingsSectionContent,
 } from "../../components/settings";
+import { showNotification } from "../../features/notifications/utils";
 import {
 	useGetSettingsSuspenseQuery,
 	useUpdateSettingsMutation,
@@ -50,8 +51,20 @@ function AppearanceSettingsPage() {
 												isTransparencyEnabled: isChecked,
 											},
 											{
-												onSuccess: () => {
-													// todo show toast that says to reload the app
+												onSuccess: (newSettings) => {
+													if (newSettings.isTransparencyEnabled) {
+														showNotification({
+															title: "Transparency enabled",
+															message:
+																"Restart the app to apply changes",
+														});
+													} else {
+														showNotification({
+															title: "Transparency disabled",
+															message:
+																"Restart the app to apply changes",
+														});
+													}
 												},
 											}
 										);

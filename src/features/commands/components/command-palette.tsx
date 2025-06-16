@@ -15,6 +15,7 @@ import {
 	ResultTitle,
 } from "../../../components/search-prompt";
 import { useModalContext } from "../../modals/hooks";
+import { showNotification } from "../../notifications/utils";
 import { useCommandList, useCommands } from "../hooks";
 
 export interface CommandPaletteProps {
@@ -103,8 +104,10 @@ export const CommandPaletteModal = () => {
 				errorMessage = error.message;
 			}
 
-			// TODO, indicate error with toast
-			console.error(`Error executing command "${command.name}":`, errorMessage);
+			showNotification({
+				title: "Command failed",
+				message: errorMessage,
+			});
 		}
 	};
 

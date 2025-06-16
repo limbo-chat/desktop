@@ -9,6 +9,7 @@ import {
 	SettingsSection,
 	SettingsSectionContent,
 } from "../../components/settings";
+import { showNotification } from "../../features/notifications/utils";
 import {
 	useGetSettingsSuspenseQuery,
 	useUpdateSettingsMutation,
@@ -50,8 +51,20 @@ function DeveloperSettingsPage() {
 												isDeveloperModeEnabled: isChecked,
 											},
 											{
-												onSuccess: () => {
-													// todo show toast that says to reload the app
+												onSuccess: (newSettings) => {
+													if (newSettings.isDeveloperModeEnabled) {
+														showNotification({
+															title: "Developer mode enabled",
+															message:
+																"Restart the app to apply changes",
+														});
+													} else {
+														showNotification({
+															title: "Developer mode disabled",
+															message:
+																"Restart the app to apply changes",
+														});
+													}
 												},
 											}
 										);
