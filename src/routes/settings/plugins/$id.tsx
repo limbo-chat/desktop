@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { SettingsPage, SettingsPageContent } from "../-components/settings-page";
-import { PluginSettingsForm } from "../../../features/plugins/components/plugin-settings-form";
+import { PluginSettingsSection } from "../../../features/plugins/components/plugin-settings-section";
 import type { ActivePlugin } from "../../../features/plugins/core/plugin-manager";
 import { useActivePlugin } from "../../../features/plugins/hooks/core";
 import { useUpdatePluginSettingsMutation } from "../../../features/plugins/hooks/queries";
@@ -41,7 +41,9 @@ const PluginSettingsFormContainer = ({ plugin }: PluginSettingsFormContainerProp
 		setSettingsValues(cachedSettings);
 	}, [plugin.context]);
 
-	return <PluginSettingsForm values={settingsValues} settings={settings} onSubmit={onSubmit} />;
+	return (
+		<PluginSettingsSection values={settingsValues} settings={settings} onSubmit={onSubmit} />
+	);
 };
 
 function PluginSettingsPage() {

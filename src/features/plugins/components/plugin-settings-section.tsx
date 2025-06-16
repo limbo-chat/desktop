@@ -145,13 +145,17 @@ const SettingRenderer = ({ setting }: SettingRendererProps) => {
 	);
 };
 
-export interface PluginSettingsFormProps {
+export interface PluginSettingsSectionProps {
 	values: Record<string, any>;
 	settings: limbo.Setting[];
 	onSubmit: (data: Record<string, any>) => void;
 }
 
-export const PluginSettingsForm = ({ settings, values, onSubmit }: PluginSettingsFormProps) => {
+export const PluginSettingsSection = ({
+	settings,
+	values,
+	onSubmit,
+}: PluginSettingsSectionProps) => {
 	const form = useForm({
 		values,
 	});
@@ -170,7 +174,14 @@ export const PluginSettingsForm = ({ settings, values, onSubmit }: PluginSetting
 						))}
 					</SettingsSectionContent>
 					<SettingsSectionActions>
-						<Button type="submit" disabled={!form.formState.isDirty}>
+						<Button
+							data-action="cancel"
+							disabled={!form.formState.isDirty}
+							onClick={() => form.reset()}
+						>
+							Cancel
+						</Button>
+						<Button type="submit" data-action="save" disabled={!form.formState.isDirty}>
 							Save changes
 						</Button>
 					</SettingsSectionActions>
