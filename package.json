@@ -50,6 +50,7 @@
 		"react-hook-form": "^7.56.4",
 		"react-textarea-autosize": "^8.5.9",
 		"semver": "^7.7.2",
+		"sonner": "^2.0.5",
 		"tiny-glob": "^0.2.9",
 		"trpc-electron": "^0.1.2",
 		"ulid": "^3.0.0",

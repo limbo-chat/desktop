@@ -2,9 +2,9 @@ import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRootRouteWithContext, Link, Outlet } from "@tanstack/react-router";
 import { createTRPCClient } from "@trpc/client";
 import { Suspense, useMemo, useRef, type PropsWithChildren } from "react";
+import { Toaster } from "sonner";
 import { ipcLink } from "trpc-electron/renderer";
 import type { MainRouter } from "../../electron/trpc/router";
-import { Button } from "../components/button";
 import {
 	ErrorRoot,
 	ErrorContainer,
@@ -52,7 +52,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 				</ErrorRoot>
 				<ErrorControl>
 					<Link className="button" to="/chat">
-						home
+						Return home
 					</Link>
 				</ErrorControl>
 			</ErrorContainer>
@@ -206,6 +206,7 @@ function RootLayout() {
 			<div className="app" data-is-focused={isAppFocused}>
 				<Titlebar />
 				<ModalHost />
+				<Toaster />
 				<Suspense fallback={<Loading />}>
 					<MainContent />
 				</Suspense>
