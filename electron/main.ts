@@ -26,6 +26,8 @@ function createMainWindow(opts: CreateWindowOptions) {
 		titleBarStyle: "hidden",
 		transparent: opts.transparent,
 		icon: ICON_PATH,
+		minHeight: 200,
+		minWidth: 300,
 		// expose window controls in Windows/Linux
 		...(process.platform !== "darwin" ? { titleBarOverlay: true } : {}),
 		webPreferences: {
