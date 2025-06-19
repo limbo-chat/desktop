@@ -19,16 +19,14 @@ export const SettingsSectionTitle = ({ className, ...props }: SettingsSectionTit
 	return <h2 className={clsx("settings-section-title", className)} {...props} />;
 };
 
+export const SettingsSectionDescription = ({ className, ...props }: SettingsSectionTitleProps) => {
+	return <h2 className={clsx("settings-section-description", className)} {...props} />;
+};
+
 export interface SettingsSectionContentProps extends HTMLAttributes<HTMLDivElement> {}
 
 export const SettingsSectionContent = ({ className, ...props }: SettingsSectionContentProps) => {
 	return <div className={clsx("settings-section-content")} {...props} />;
-};
-
-export interface SettingsSectionActionsProps extends HTMLAttributes<HTMLDivElement> {}
-
-export const SettingsSectionActions = ({ className, ...props }: SettingsSectionActionsProps) => {
-	return <div className={clsx("settings-section-actions", className)} {...props} />;
 };
 
 export interface SettingItemProps extends HTMLAttributes<HTMLDivElement> {}

@@ -19,10 +19,11 @@ import {
 	Dialog,
 	DialogTitle,
 } from "../../../components/dialog";
+import { Field } from "../../../components/field";
+import * as FieldPrimitives from "../../../components/field-primitives";
 import { IconButton } from "../../../components/icon-button";
 import { Switch } from "../../../components/switch";
 import { Tooltip } from "../../../components/tooltip";
-import { TextInputFieldController } from "../../../features/forms/components";
 import { useModalContext } from "../../../features/modals/hooks";
 import { showDialog } from "../../../features/modals/utils";
 import { usePluginList } from "../../../features/plugins/hooks/core";
@@ -208,15 +209,12 @@ const InstallPluginDialog = () => {
 				</DialogDescription>
 			</DialogHeader>
 			<form onSubmit={onSubmit}>
-				<TextInputFieldController
-					name="repoUrl"
-					control={form.control}
-					textFieldProps={{
-						textInputProps: {
-							placeholder: "https://github.com/limbo-llm/plugin-ollama",
-						},
-					}}
-				/>
+				<Field id="repo-url">
+					<FieldPrimitives.TextInput
+						placeholder="https://github.com/limbo-llm/plugin-ollama"
+						{...form.register("repoUrl")}
+					/>
+				</Field>
 				<DialogFooter>
 					<Button onClick={modalCtx.close}>Cancel</Button>
 					<Button

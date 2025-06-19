@@ -33,23 +33,20 @@ function TooltipElementPage() {
 					</Tooltip>
 				</ComponentPreviewContent>
 				<ComponentPreviewPanel>
-					<Field
-						label="Placement"
-						control={
-							<SelectRoot value={placement} onValueChange={setPlacement}>
-								<SelectTrigger>
-									<SelectValue />
-									<SelectIcon />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="top">Top</SelectItem>
-									<SelectItem value="right">Right</SelectItem>
-									<SelectItem value="bottom">Bottom</SelectItem>
-									<SelectItem value="left">Left</SelectItem>
-								</SelectContent>
-							</SelectRoot>
-						}
-					/>
+					<Field id="placement" label="Placement">
+						<SelectRoot value={placement} onValueChange={setPlacement}>
+							<SelectTrigger>
+								<SelectValue />
+								<SelectIcon />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="top">Top</SelectItem>
+								<SelectItem value="right">Right</SelectItem>
+								<SelectItem value="bottom">Bottom</SelectItem>
+								<SelectItem value="left">Left</SelectItem>
+							</SelectContent>
+						</SelectRoot>
+					</Field>
 				</ComponentPreviewPanel>
 			</ComponentPreview>
 		</div>

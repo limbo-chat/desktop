@@ -26,6 +26,9 @@ const DesignPlaygroundSidebar = () => {
 					<Link to="/design-playground/elements/tooltip">
 						{({ isActive }) => <SidebarItem isActive={isActive}>Tooltip</SidebarItem>}
 					</Link>
+					<Link to="/design-playground/elements/form">
+						{({ isActive }) => <SidebarItem isActive={isActive}>Form</SidebarItem>}
+					</Link>
 					<Link to="/design-playground/elements/dialog">
 						{({ isActive }) => <SidebarItem isActive={isActive}>Dialog</SidebarItem>}
 					</Link>

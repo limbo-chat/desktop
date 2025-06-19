@@ -2,6 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { Anchor } from "../../components/anchor";
 import { Button } from "../../components/button";
+import { Field } from "../../components/field";
+import * as FieldPrimitives from "../../components/field-primitives";
+import {
+	Form,
+	FormActions,
+	FormContent,
+	FormFooter,
+	FormSection,
+	FormSectionContent,
+} from "../../components/form";
 import {
 	SettingItem,
 	SettingItemControl,
@@ -9,7 +19,6 @@ import {
 	SettingItemInfo,
 	SettingItemTitle,
 	SettingsSection,
-	SettingsSectionActions,
 	SettingsSectionContent,
 } from "../../components/settings";
 import {
@@ -41,63 +50,63 @@ function PersonalizationSettingsPage() {
 	return (
 		<SettingsPage data-page="personalization">
 			<SettingsPageContent>
-				<form onSubmit={handleSubmit}>
-					<SettingsSection>
-						<SettingsSectionContent>
-							<SettingItem data-setting="username">
-								<SettingItemInfo>
-									<SettingItemTitle>Username</SettingItemTitle>
-									<SettingItemDescription>
-										What would you like to be called?
-									</SettingItemDescription>
-								</SettingItemInfo>
-								<SettingItemControl>
-									<input
-										type="text"
+				<Form onSubmit={handleSubmit}>
+					<FormContent>
+						<FormSection>
+							<FormSectionContent>
+								<Field
+									id="username"
+									label="Username"
+									description="What would you like to be called?"
+								>
+									<FieldPrimitives.TextInput
 										placeholder="Enter your name"
 										{...form.register("username")}
 									/>
-								</SettingItemControl>
-							</SettingItem>
-							<SettingItem data-setting="system-prompt">
-								<SettingItemInfo>
-									<SettingItemTitle>System prompt</SettingItemTitle>
-									<SettingItemDescription>
-										This prompt is used to set the context for all chat
-										completions. Learn about{" "}
-										<Anchor
-											href="https://handlebarsjs.com"
-											target="_blank"
-											tabIndex={-1}
-										>
-											Handlebars
-										</Anchor>
-										.
-									</SettingItemDescription>
-								</SettingItemInfo>
-								<SettingItemControl>
-									<textarea {...form.register("systemPrompt")} />
-								</SettingItemControl>
-							</SettingItem>
-							<SettingsSectionActions>
-								<Button
-									data-action="cancel"
-									disabled={!form.formState.isDirty}
-									onClick={() => form.reset()}
+								</Field>
+								<Field
+									id="system-prompt"
+									label="System prompt"
+									description={
+										<>
+											This prompt is used to set the context for all chat
+											completions. Learn about{" "}
+											<Anchor
+												href="https://handlebarsjs.com"
+												target="_blank"
+												tabIndex={-1}
+											>
+												Handlebars
+											</Anchor>
+											.
+										</>
+									}
 								>
-									Cancel
-								</Button>
-								<Button
-									type="submit"
-									data-action="save"
-									disabled={!form.formState.isDirty}
-								>
-									Save changes
-								</Button>
-							</SettingsSectionActions>
-						</SettingsSectionContent>
-					</SettingsSection>
-				</form>
+									<FieldPrimitives.Textarea {...form.register("systemPrompt")} />
+								</Field>
+							</FormSectionContent>
+						</FormSection>
+					</FormContent>
+					<FormFooter>
+						<FormActions>
+							<Button
+								type="button"
+								data-action="cancel"
+								disabled={!form.formState.isDirty}
+								onClick={() => form.reset()}
+							>
+								Cancel
+							</Button>
+							<Button
+								type="submit"
+								data-action="submit"
+								disabled={!form.formState.isDirty}
+							>
+								Save changes
+							</Button>
+						</FormActions>
+					</FormFooter>
+				</Form>
 			</SettingsPageContent>
 		</SettingsPage>
 	);

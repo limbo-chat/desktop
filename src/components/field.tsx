@@ -1,142 +1,33 @@
-import clsx from "clsx";
-import { createContext, useContext, useId, type HTMLAttributes, type ReactNode } from "react";
-import { PasswordInput, type PasswordInputProps } from "./inputs/password-input";
-import { TextInput, type TextInputProps } from "./inputs/text-input";
+import type { PropsWithChildren, ReactNode } from "react";
+import * as FieldPrimitives from "./field-primitives";
 
-// TODO, there is more work to be done in making the form interactions accessible and semantic.
-// selects, checkboxes, textarea, ... custom controls
-
-export interface FieldContext {
+export interface FieldProps {
 	id: string;
-	hasError: boolean;
+	label?: ReactNode;
+	description?: ReactNode;
+	error?: ReactNode;
 }
 
-const fieldContext = createContext<FieldContext | null>(null);
-
-export const useFieldContext = () => {
-	const ctx = useContext(fieldContext);
-
-	if (!ctx) {
-		throw new Error("useFieldContext must be used within a FieldRoot");
-	}
-
-	return ctx;
-};
-
-export const useFieldControlAccessibilityProps = () => {
-	const { id, hasError } = useFieldContext();
-
-	return {
-		id,
-		"aria-describedby": `${id}-description${hasError ? ` ${id}-error` : ""}`,
-		"aria-invalid": hasError,
-	};
-};
-
-export interface FieldRootProps extends HTMLAttributes<HTMLDivElement> {
-	hasError?: boolean;
-}
-
-export const FieldRoot = ({ hasError = false, className, ...props }: FieldProps) => {
-	const id = useId();
-
+export const Field = ({
+	id,
+	label,
+	description,
+	error,
+	children,
+}: PropsWithChildren<FieldProps>) => {
 	return (
-		<fieldContext.Provider value={{ id, hasError }}>
-			<div
-				className={clsx("field", className)}
-				{...props}
-				data-invalid={hasError ?? undefined}
-			/>
-		</fieldContext.Provider>
+		<FieldPrimitives.Root
+			id={id}
+			isError={!!error}
+			hasDescription={!!description}
+			hasError={!!error}
+		>
+			{label && <FieldPrimitives.Label>{label}</FieldPrimitives.Label>}
+			{description && (
+				<FieldPrimitives.Description>{description}</FieldPrimitives.Description>
+			)}
+			<FieldPrimitives.Control>{children}</FieldPrimitives.Control>
+			{error && <FieldPrimitives.Error>{error}</FieldPrimitives.Error>}
+		</FieldPrimitives.Root>
 	);
-};
-
-export interface FieldLabelProps extends HTMLAttributes<HTMLLabelElement> {}
-
-export const FieldLabel = ({ className, ...props }: FieldLabelProps) => {
-	const { id } = useFieldContext();
-
-	return <label htmlFor={id} className={clsx("field-label", className)} {...props} />;
-};
-
-export interface FieldDescriptionProps extends HTMLAttributes<HTMLParagraphElement> {}
-
-export const FieldDescription = ({ className, ...props }: FieldDescriptionProps) => {
-	const { id } = useFieldContext();
-
-	return (
-		<p id={`${id}:description`} className={clsx("field-description", className)} {...props} />
-	);
-};
-
-export interface FieldErrorProps extends HTMLAttributes<HTMLParagraphElement> {}
-
-export const FieldError = ({ className, ...props }: FieldErrorProps) => {
-	const { id } = useFieldContext();
-
-	return <div id={`${id}:error`} className={clsx("field-error", className)} {...props} />;
-};
-
-// implementations
-
-export interface FieldProps extends FieldRootProps {
-	label?: string;
-	description?: string;
-	error?: string;
-	control?: ReactNode;
-}
-
-export const Field = ({ label, description, error, control, ...rootProps }: FieldProps) => {
-	return (
-		<FieldRoot className="field" hasError={!!error} {...rootProps}>
-			{label && <FieldLabel>{label}</FieldLabel>}
-			{description && <FieldDescription>{description}</FieldDescription>}
-			{control}
-			{error && <FieldError>{error}</FieldError>}
-		</FieldRoot>
-	);
-};
-
-export const InlineField = ({ label, description, error, control, ...rootProps }: FieldProps) => {
-	return (
-		<FieldRoot className="inline-field" hasError={!!error} {...rootProps}>
-			{control}
-			<div className="inline-field-info">
-				{label && <FieldLabel>{label}</FieldLabel>}
-				{description && <FieldDescription>{description}</FieldDescription>}
-				{error && <FieldError>{error}</FieldError>}
-			</div>
-		</FieldRoot>
-	);
-};
-
-export const FieldTextInput = (props: TextInputProps) => {
-	const accessbilityProps = useFieldControlAccessibilityProps();
-
-	return <TextInput {...accessbilityProps} {...props} />;
-};
-
-export interface TextInputFieldProps extends FieldProps, FieldRootProps {
-	textInputProps?: TextInputProps;
-}
-
-export const TextInputField = ({ textInputProps, ...fieldProps }: TextInputFieldProps) => {
-	return <Field control={<FieldTextInput {...textInputProps} />} {...fieldProps} />;
-};
-
-export const FieldPasswordInput = (props: PasswordInputProps) => {
-	const accessbilityProps = useFieldControlAccessibilityProps();
-
-	return <PasswordInput {...accessbilityProps} {...props} />;
-};
-
-export interface PasswordInputFieldProps extends FieldProps, FieldRootProps {
-	passwordInputProps?: PasswordInputProps;
-}
-
-export const PasswordInputField = ({
-	passwordInputProps,
-	...fieldProps
-}: PasswordInputFieldProps) => {
-	return <Field control={<FieldPasswordInput {...passwordInputProps} />} {...fieldProps} />;
 };

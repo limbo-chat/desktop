@@ -11,7 +11,6 @@ import {
 	SettingItemInfo,
 	SettingItemTitle,
 	SettingsSection,
-	SettingsSectionActions,
 	SettingsSectionContent,
 } from "../../../components/settings";
 import { useLLMList } from "../../llms/hooks";
@@ -166,25 +165,13 @@ export const PluginSettingsSection = ({
 
 	return (
 		<FormProvider {...form}>
-			<form onSubmit={handleSubmit}>
+			<form onBlur={handleSubmit} onSubmit={handleSubmit}>
 				<SettingsSection>
 					<SettingsSectionContent>
 						{settings.map((setting) => (
 							<SettingRenderer setting={setting} key={setting.id} />
 						))}
 					</SettingsSectionContent>
-					<SettingsSectionActions>
-						<Button
-							data-action="cancel"
-							disabled={!form.formState.isDirty}
-							onClick={() => form.reset()}
-						>
-							Cancel
-						</Button>
-						<Button type="submit" data-action="save" disabled={!form.formState.isDirty}>
-							Save changes
-						</Button>
-					</SettingsSectionActions>
 				</SettingsSection>
 			</form>
 		</FormProvider>
