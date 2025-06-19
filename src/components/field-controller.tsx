@@ -1,7 +1,7 @@
 import { createContext, useContext, type InputHTMLAttributes, type PropsWithChildren } from "react";
 import { useController } from "react-hook-form";
-import { Field, type FieldProps } from "./field";
-import * as FieldPrimitive from "./field-primitive";
+import { Field as ComposedField, type FieldProps } from "./field";
+import * as Field from "./field-primitive";
 import * as RadioGroupPrimitive from "./radio-group-primitive";
 
 export interface ControllerProps {
@@ -28,9 +28,9 @@ export const Root = ({ name, children, ...fieldProps }: PropsWithChildren<RootPr
 
 	return (
 		<fieldControllerContext.Provider value={{ name }}>
-			<Field error={fieldState.error?.message} {...fieldProps}>
+			<ComposedField error={fieldState.error?.message} {...fieldProps}>
 				{children}
-			</Field>
+			</ComposedField>
 		</fieldControllerContext.Provider>
 	);
 };
@@ -39,14 +39,14 @@ export const TextInput = (props: InputHTMLAttributes<HTMLInputElement>) => {
 	const { name } = useFieldControllerContext();
 	const { field } = useController({ name });
 
-	return <FieldPrimitive.TextInput {...field} value={field.value || ""} {...props} />;
+	return <Field.TextInput {...field} value={field.value || ""} {...props} />;
 };
 
 export const Textarea = (props: InputHTMLAttributes<HTMLTextAreaElement>) => {
 	const { name } = useFieldControllerContext();
 	const { field } = useController({ name });
 
-	return <FieldPrimitive.Textarea {...field} value={field.value || ""} {...props} />;
+	return <Field.Textarea {...field} value={field.value || ""} {...props} />;
 };
 
 export const RadioGroup = (props: RadioGroupPrimitive.RootProps) => {
@@ -54,10 +54,6 @@ export const RadioGroup = (props: RadioGroupPrimitive.RootProps) => {
 	const { field } = useController({ name });
 
 	return (
-		<FieldPrimitive.RadioGroup
-			value={field.value ?? null}
-			onValueChange={field.onChange}
-			{...props}
-		/>
+		<Field.RadioGroup value={field.value ?? null} onValueChange={field.onChange} {...props} />
 	);
 };

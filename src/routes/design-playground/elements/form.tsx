@@ -4,18 +4,9 @@ import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../../../components/button";
 import * as FieldController from "../../../components/field-controller";
-import {
-	Form,
-	FormActions,
-	FormContent,
-	FormFooter,
-	FormSection,
-	FormSectionContent,
-	FormSectionDescription,
-	FormSectionHeader,
-	FormSectionTitle,
-} from "../../../components/form";
+import * as Form from "../../../components/form-primitive";
 import { RadioOption } from "../../../components/radio-group";
+import * as RhfForm from "../../../components/rhf-form";
 
 export const Route = createFileRoute("/design-playground/elements/form")({
 	component: FormElementPage,
@@ -44,27 +35,23 @@ const DemoForm = () => {
 		},
 	});
 
-	const handleCancel = () => {
-		form.reset();
-	};
-
 	const handleSubmit = form.handleSubmit((data) => {
 		console.log(data);
 	});
 
 	return (
 		<FormProvider {...form}>
-			<Form onSubmit={handleSubmit}>
-				<FormContent>
-					<FormSection data-section="profile">
-						<FormSectionHeader>
-							<FormSectionTitle>Profile</FormSectionTitle>
-							<FormSectionDescription>
+			<Form.Root onSubmit={handleSubmit}>
+				<Form.Content>
+					<Form.Section id="profile">
+						<Form.SectionHeader>
+							<Form.SectionTitle>Profile</Form.SectionTitle>
+							<Form.SectionDescription>
 								This information will be displayed publicly so be careful what you
 								share
-							</FormSectionDescription>
-						</FormSectionHeader>
-						<FormSectionContent>
+							</Form.SectionDescription>
+						</Form.SectionHeader>
+						<Form.SectionContent>
 							<FieldController.Root id="username" name="username" label="Username">
 								<FieldController.TextInput placeholder="limbo.com/johndoe" />
 							</FieldController.Root>
@@ -76,16 +63,16 @@ const DemoForm = () => {
 							>
 								<FieldController.Textarea placeholder="Textareas allow a user to write a lot of text" />
 							</FieldController.Root>
-						</FormSectionContent>
-					</FormSection>
-					<FormSection data-section="personal-information">
-						<FormSectionHeader>
-							<FormSectionTitle>Personal information</FormSectionTitle>
-							<FormSectionDescription>
+						</Form.SectionContent>
+					</Form.Section>
+					<Form.Section id="personal-information">
+						<Form.SectionHeader>
+							<Form.SectionTitle>Personal information</Form.SectionTitle>
+							<Form.SectionDescription>
 								Use a permanent address where you can receive mail.
-							</FormSectionDescription>
-						</FormSectionHeader>
-						<FormSectionContent>
+							</Form.SectionDescription>
+						</Form.SectionHeader>
+						<Form.SectionContent>
 							<FieldController.Root
 								id="first-name"
 								name="firstName"
@@ -96,17 +83,17 @@ const DemoForm = () => {
 							<FieldController.Root id="last-name" name="lastName" label="Last name">
 								<FieldController.TextInput placeholder="Doe" />
 							</FieldController.Root>
-						</FormSectionContent>
-					</FormSection>
-					<FormSection data-section="notifications">
-						<FormSectionHeader>
-							<FormSectionTitle>Notifications</FormSectionTitle>
-							<FormSectionDescription>
+						</Form.SectionContent>
+					</Form.Section>
+					<Form.Section id="notifications">
+						<Form.SectionHeader>
+							<Form.SectionTitle>Notifications</Form.SectionTitle>
+							<Form.SectionDescription>
 								We'll always let you know about important changes, but you pick what
 								else you want to hear about.
-							</FormSectionDescription>
-						</FormSectionHeader>
-						<FormSectionContent>
+							</Form.SectionDescription>
+						</Form.SectionHeader>
+						<Form.SectionContent>
 							<FieldController.Root
 								id="visibility"
 								name="visibility"
@@ -118,29 +105,16 @@ const DemoForm = () => {
 									<RadioOption value="private" label="Private" />
 								</FieldController.RadioGroup>
 							</FieldController.Root>
-						</FormSectionContent>
-					</FormSection>
-				</FormContent>
-				<FormFooter>
-					<FormActions>
-						<Button
-							type="button"
-							data-action="cancel"
-							disabled={!form.formState.isDirty}
-							onClick={handleCancel}
-						>
-							Cancel
-						</Button>
-						<Button
-							type="submit"
-							data-action="submit"
-							disabled={!form.formState.isDirty}
-						>
-							Submit
-						</Button>
-					</FormActions>
-				</FormFooter>
-			</Form>
+						</Form.SectionContent>
+					</Form.Section>
+				</Form.Content>
+				<Form.Footer>
+					<Form.Actions>
+						<RhfForm.ResetButton>Cancel</RhfForm.ResetButton>
+						<Form.SubmitButton>Submit</Form.SubmitButton>
+					</Form.Actions>
+				</Form.Footer>
+			</Form.Root>
 		</FormProvider>
 	);
 };

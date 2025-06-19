@@ -3,14 +3,8 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Anchor } from "../../components/anchor";
 import { Button } from "../../components/button";
 import * as FieldController from "../../components/field-controller";
-import {
-	Form,
-	FormActions,
-	FormContent,
-	FormFooter,
-	FormSection,
-	FormSectionContent,
-} from "../../components/form";
+import * as Form from "../../components/form-primitive";
+import * as RhfForm from "../../components/rhf-form";
 import {
 	useGetSettingsSuspenseQuery,
 	useUpdateSettingsMutation,
@@ -41,10 +35,10 @@ function PersonalizationSettingsPage() {
 		<SettingsPage data-page="personalization">
 			<SettingsPageContent>
 				<FormProvider {...form}>
-					<Form onSubmit={handleSubmit}>
-						<FormContent>
-							<FormSection>
-								<FormSectionContent>
+					<Form.Root onSubmit={handleSubmit}>
+						<Form.Content>
+							<Form.Section>
+								<Form.SectionContent>
 									<FieldController.Root
 										id="username"
 										name="username"
@@ -74,29 +68,16 @@ function PersonalizationSettingsPage() {
 									>
 										<FieldController.Textarea />
 									</FieldController.Root>
-								</FormSectionContent>
-							</FormSection>
-						</FormContent>
-						<FormFooter>
-							<FormActions>
-								<Button
-									type="button"
-									data-action="cancel"
-									disabled={!form.formState.isDirty}
-									onClick={() => form.reset()}
-								>
-									Cancel
-								</Button>
-								<Button
-									type="submit"
-									data-action="submit"
-									disabled={!form.formState.isDirty}
-								>
-									Save changes
-								</Button>
-							</FormActions>
-						</FormFooter>
-					</Form>
+								</Form.SectionContent>
+							</Form.Section>
+						</Form.Content>
+						<Form.Footer>
+							<Form.Actions>
+								<RhfForm.ResetButton>Cancel</RhfForm.ResetButton>
+								<Form.SubmitButton>Save changes</Form.SubmitButton>
+							</Form.Actions>
+						</Form.Footer>
+					</Form.Root>
 				</FormProvider>
 			</SettingsPageContent>
 		</SettingsPage>

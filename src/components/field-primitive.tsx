@@ -53,6 +53,7 @@ export const useFieldControlAccessibilityProps = () => {
 };
 
 export interface RootProps extends HTMLAttributes<HTMLDivElement> {
+	/** an identifier for the field */
 	id: string;
 	isError?: boolean;
 	hasDescription?: boolean;
