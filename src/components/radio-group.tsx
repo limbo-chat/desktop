@@ -1,6 +1,6 @@
-import * as RadioGroupPrimitives from "./radio-group-primitives";
+import * as RadioGroupPrimitive from "./radio-group-primitive";
 
-export interface RadioOptionProps extends RadioGroupPrimitives.InputProps {
+export interface RadioOptionProps extends RadioGroupPrimitive.InputProps {
 	id?: string;
 	label: string;
 }
@@ -9,11 +9,11 @@ export const RadioOption = ({ id, label, ...props }: RadioOptionProps) => {
 	const idValue = id ?? props.value;
 
 	return (
-		<RadioGroupPrimitives.Option>
-			<RadioGroupPrimitives.Input id={idValue} {...props} />
-			<RadioGroupPrimitives.OptionLabel htmlFor={idValue}>
+		<RadioGroupPrimitive.Option>
+			<RadioGroupPrimitive.Input id={idValue} {...props} />
+			<RadioGroupPrimitive.OptionLabel htmlFor={idValue}>
 				{label}
-			</RadioGroupPrimitives.OptionLabel>
-		</RadioGroupPrimitives.Option>
+			</RadioGroupPrimitive.OptionLabel>
+		</RadioGroupPrimitive.Option>
 	);
 };

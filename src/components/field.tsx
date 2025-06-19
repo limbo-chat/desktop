@@ -1,5 +1,5 @@
 import type { PropsWithChildren, ReactNode } from "react";
-import * as FieldPrimitives from "./field-primitives";
+import * as FieldPrimitive from "./field-primitive";
 
 export interface FieldProps {
 	id: string;
@@ -16,18 +16,16 @@ export const Field = ({
 	children,
 }: PropsWithChildren<FieldProps>) => {
 	return (
-		<FieldPrimitives.Root
+		<FieldPrimitive.Root
 			id={id}
 			isError={!!error}
 			hasDescription={!!description}
 			hasError={!!error}
 		>
-			{label && <FieldPrimitives.Label>{label}</FieldPrimitives.Label>}
-			{description && (
-				<FieldPrimitives.Description>{description}</FieldPrimitives.Description>
-			)}
-			<FieldPrimitives.Control>{children}</FieldPrimitives.Control>
-			{error && <FieldPrimitives.Error>{error}</FieldPrimitives.Error>}
-		</FieldPrimitives.Root>
+			{label && <FieldPrimitive.Label>{label}</FieldPrimitive.Label>}
+			{description && <FieldPrimitive.Description>{description}</FieldPrimitive.Description>}
+			<FieldPrimitive.Control>{children}</FieldPrimitive.Control>
+			{error && <FieldPrimitive.Error>{error}</FieldPrimitive.Error>}
+		</FieldPrimitive.Root>
 	);
 };

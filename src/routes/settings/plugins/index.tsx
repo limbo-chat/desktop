@@ -20,7 +20,7 @@ import {
 	DialogTitle,
 } from "../../../components/dialog";
 import { Field } from "../../../components/field";
-import * as FieldPrimitives from "../../../components/field-primitives";
+import * as FieldPrimitive from "../../../components/field-primitive";
 import { IconButton } from "../../../components/icon-button";
 import { Switch } from "../../../components/switch";
 import { Tooltip } from "../../../components/tooltip";
@@ -210,7 +210,7 @@ const InstallPluginDialog = () => {
 			</DialogHeader>
 			<form onSubmit={onSubmit}>
 				<Field id="repo-url">
-					<FieldPrimitives.TextInput
+					<FieldPrimitive.TextInput
 						placeholder="https://github.com/limbo-llm/plugin-ollama"
 						{...form.register("repoUrl")}
 					/>

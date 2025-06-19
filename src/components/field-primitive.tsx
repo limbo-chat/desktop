@@ -7,7 +7,7 @@ import {
 	type InputHTMLAttributes,
 	type LabelHTMLAttributes,
 } from "react";
-import * as RadioGroupPrimitives from "./radio-group-primitives";
+import * as RadioGroupPrimitive from "./radio-group-primitive";
 
 export interface FieldContext {
 	id: string;
@@ -41,8 +41,6 @@ export const useFieldControlAccessibilityProps = () => {
 		if (hasError) {
 			describedBy += ` ${id}-error`;
 		}
-
-		console.log("ariaDescribedBy", describedBy);
 
 		return describedBy || undefined;
 	}, [id, hasDescription, hasError]);
@@ -127,10 +125,10 @@ export const Textarea = (props: InputHTMLAttributes<HTMLTextAreaElement>) => {
 	return <textarea {...accessibilityProps} {...props} />;
 };
 
-export const RadioGroup = (props: RadioGroupPrimitives.RootProps) => {
+export const RadioGroup = (props: RadioGroupPrimitive.RootProps) => {
 	const accessibilityProps = useFieldControlAccessibilityProps();
 
-	return <RadioGroupPrimitives.Root {...accessibilityProps} {...props} />;
+	return <RadioGroupPrimitive.Root {...accessibilityProps} {...props} />;
 };
 
 export { FieldError as Error };

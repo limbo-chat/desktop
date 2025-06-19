@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { Anchor } from "../../components/anchor";
 import { Button } from "../../components/button";
 import { Field } from "../../components/field";
-import * as FieldPrimitives from "../../components/field-primitives";
+import * as FieldPrimitive from "../../components/field-primitive";
 import {
 	Form,
 	FormActions,
@@ -59,7 +59,7 @@ function PersonalizationSettingsPage() {
 									label="Username"
 									description="What would you like to be called?"
 								>
-									<FieldPrimitives.TextInput
+									<FieldPrimitive.TextInput
 										placeholder="Enter your name"
 										{...form.register("username")}
 									/>
@@ -82,7 +82,7 @@ function PersonalizationSettingsPage() {
 										</>
 									}
 								>
-									<FieldPrimitives.Textarea {...form.register("systemPrompt")} />
+									<FieldPrimitive.Textarea {...form.register("systemPrompt")} />
 								</Field>
 							</FormSectionContent>
 						</FormSection>
