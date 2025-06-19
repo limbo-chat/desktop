@@ -11,7 +11,7 @@ export interface ControllerProps {
 
 const fieldControllerContext = createContext<ControllerProps | null>(null);
 
-const useFieldControllerContext = () => {
+export const useFieldControllerContext = () => {
 	const ctx = useContext(fieldControllerContext);
 
 	if (!ctx) {
