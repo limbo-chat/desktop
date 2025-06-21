@@ -7,6 +7,8 @@ import {
 	MenuItemIcon,
 	MenuItemLabel,
 	MenuRoot,
+	MenuSection,
+	MenuSectionContent,
 	MenuTrigger,
 } from "../../../components/menu";
 import {
@@ -62,25 +64,29 @@ const ChatItem = ({ chat }: ChatItemProps) => {
 							<EllipsisIcon />
 						</MenuTrigger>
 						<MenuContent>
-							<MenuItem
-								data-action="rename"
-								onClick={() =>
-									showDialog({
-										component: () => <RenameChatDialog chat={chat} />,
-									})
-								}
-							>
-								<MenuItemIcon>
-									<PencilIcon />
-								</MenuItemIcon>
-								<MenuItemLabel>Rename</MenuItemLabel>
-							</MenuItem>
-							<MenuItem data-action="delete" onClick={handleDelete}>
-								<MenuItemIcon>
-									<Trash2Icon />
-								</MenuItemIcon>
-								<MenuItemLabel>Delete</MenuItemLabel>
-							</MenuItem>
+							<MenuSection>
+								<MenuSectionContent>
+									<MenuItem
+										data-action="rename"
+										onClick={() =>
+											showDialog({
+												component: () => <RenameChatDialog chat={chat} />,
+											})
+										}
+									>
+										<MenuItemIcon>
+											<PencilIcon />
+										</MenuItemIcon>
+										<MenuItemLabel>Rename</MenuItemLabel>
+									</MenuItem>
+									<MenuItem data-action="delete" onClick={handleDelete}>
+										<MenuItemIcon>
+											<Trash2Icon />
+										</MenuItemIcon>
+										<MenuItemLabel>Delete</MenuItemLabel>
+									</MenuItem>
+								</MenuSectionContent>
+							</MenuSection>
 						</MenuContent>
 					</MenuRoot>
 				</SidebarItem>

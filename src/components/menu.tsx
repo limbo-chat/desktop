@@ -8,25 +8,45 @@ export const MenuRoot = RadixMenu.Root;
 
 export interface MenuTriggerProps extends RadixMenu.DropdownMenuTriggerProps {}
 
-export const MenuTrigger = ({ className, ...props }: MenuTriggerProps) => {
-	return <RadixMenu.Trigger className={clsx("menu-trigger", className)} {...props} />;
-};
+export const MenuTrigger = RadixMenu.Trigger;
 
 export interface MenuContentProps extends RadixMenu.DropdownMenuContentProps {}
 
 export const MenuContent = ({ className, ...props }: MenuContentProps) => {
 	return (
 		<RadixMenu.Portal>
-			<RadixMenu.Content className={clsx("menu-content", className)} {...props} />
+			<RadixMenu.Content className={clsx("menu", className)} {...props} />
 		</RadixMenu.Portal>
 	);
 };
 
-export interface MenuGroupProps extends RadixMenu.DropdownMenuGroupProps {}
+// menu sections
 
-export const MenuGroup = ({ className, ...props }: MenuGroupProps) => {
-	return <RadixMenu.Group className={clsx("menu-group", className)} {...props} />;
+export interface MenuSectionProps extends RadixMenu.DropdownMenuGroupProps {}
+
+export const MenuSection = ({ className, ...props }: MenuSectionProps) => {
+	return <RadixMenu.Group className={clsx("menu-section", className)} {...props} />;
 };
+
+export interface MenuSectionHeaderProps extends HTMLAttributes<HTMLDivElement> {}
+
+export const MenuSectionHeader = ({ className, ...props }: MenuSectionProps) => {
+	return <div className={clsx("menu-section-header", className)} {...props} />;
+};
+
+export interface MenuSectionHeaderProps extends HTMLAttributes<HTMLDivElement> {}
+
+export const MenuSectionLabel = ({ className, ...props }: MenuSectionProps) => {
+	return <RadixMenu.Label className={clsx("menu-section-label", className)} {...props} />;
+};
+
+export interface MenuSectionContentProps extends HTMLAttributes<HTMLDivElement> {}
+
+export const MenuSectionContent = ({ className, ...props }: MenuSectionProps) => {
+	return <div className={clsx("menu-section-content", className)} {...props} />;
+};
+
+// menu items
 
 export interface MenuItemProps extends RadixMenu.DropdownMenuItemProps {}
 
@@ -34,18 +54,14 @@ export const MenuItem = ({ className, ...props }: MenuItemProps) => {
 	return <RadixMenu.Item className={clsx("menu-item", className)} {...props} />;
 };
 
-export interface MenuItemTextProps extends HTMLAttributes<HTMLDivElement> {}
+export interface MenuItemLabelProps extends HTMLAttributes<HTMLDivElement> {}
 
-export const MenuItemLabel = ({ className, ...props }: MenuItemTextProps) => {
+export const MenuItemLabel = ({ className, ...props }: MenuItemLabelProps) => {
 	return <div className={clsx("menu-item-label", className)} {...props} />;
 };
 
-export const MenuItemIcon = ({ className, ...props }: MenuItemTextProps) => {
+export interface MenuItemIconProps extends HTMLAttributes<HTMLDivElement> {}
+
+export const MenuItemIcon = ({ className, ...props }: MenuItemIconProps) => {
 	return <div className={clsx("menu-item-icon", className)} {...props} />;
-};
-
-export interface MenuSeparatorProps extends RadixMenu.DropdownMenuSeparatorProps {}
-
-export const MenuSeparator = ({ className, ...props }: MenuSeparatorProps) => {
-	return <RadixMenu.Separator className={clsx("menu-separator", className)} {...props} />;
 };

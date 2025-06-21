@@ -1,6 +1,13 @@
 import { HammerIcon, InfoIcon } from "lucide-react";
 import { IconButton } from "../../../components/icon-button";
-import { MenuRoot, MenuTrigger, MenuContent, MenuItem } from "../../../components/menu";
+import {
+	MenuRoot,
+	MenuTrigger,
+	MenuContent,
+	MenuItem,
+	MenuSection,
+	MenuSectionContent,
+} from "../../../components/menu";
 import { Switch } from "../../../components/switch";
 import { Tooltip } from "../../../components/tooltip";
 import { useEnabledToolIds } from "../../../features/storage/hooks";
@@ -19,30 +26,37 @@ export const ChatToolsMenu = () => {
 				</IconButton>
 			</MenuTrigger>
 			<MenuContent>
-				{tools.map((tool) => (
-					<MenuItem key={tool.id}>
-						<div>
-							<span>{tool.id}</span>
-							<Tooltip label={tool.description} contentProps={{ side: "top" }}>
-								<InfoIcon />
-							</Tooltip>
-						</div>
-						<Switch
-							checked={enabledToolIds.includes(tool.id)}
-							onCheckedChange={(isChecked) => {
-								if (isChecked) {
-									setEnabledToolIds([...enabledToolIds, tool.id]);
-								} else {
-									const newEnabledToolIds = enabledToolIds.filter(
-										(enabledToolid) => enabledToolid !== tool.id
-									);
+				<MenuSection>
+					<MenuSectionContent>
+						{tools.map((tool) => (
+							<MenuItem key={tool.id}>
+								<div>
+									<span>{tool.id}</span>
+									<Tooltip
+										label={tool.description}
+										contentProps={{ side: "top" }}
+									>
+										<InfoIcon />
+									</Tooltip>
+								</div>
+								<Switch
+									checked={enabledToolIds.includes(tool.id)}
+									onCheckedChange={(isChecked) => {
+										if (isChecked) {
+											setEnabledToolIds([...enabledToolIds, tool.id]);
+										} else {
+											const newEnabledToolIds = enabledToolIds.filter(
+												(enabledToolid) => enabledToolid !== tool.id
+											);
 
-									setEnabledToolIds(newEnabledToolIds);
-								}
-							}}
-						/>
-					</MenuItem>
-				))}
+											setEnabledToolIds(newEnabledToolIds);
+										}
+									}}
+								/>
+							</MenuItem>
+						))}
+					</MenuSectionContent>
+				</MenuSection>
 			</MenuContent>
 		</MenuRoot>
 	);
