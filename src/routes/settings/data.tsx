@@ -36,7 +36,7 @@ function ChatSettingsPage() {
 								</SettingItemDescription>
 							</SettingItemInfo>
 							<SettingItemControl>
-								<Button data-action="delete-chats" onClick={handleDeleteAllChats}>
+								<Button action="delete-chats" onClick={handleDeleteAllChats}>
 									Delete chats
 								</Button>
 							</SettingItemControl>

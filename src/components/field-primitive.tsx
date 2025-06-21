@@ -71,9 +71,9 @@ export const Root = ({
 	return (
 		<fieldContext.Provider value={{ id, isError, hasError, hasDescription }}>
 			<div
+				className={clsx("field", className)}
 				data-field={id}
 				data-error={isError || undefined}
-				className={clsx("field", className)}
 				{...props}
 			/>
 		</fieldContext.Provider>
