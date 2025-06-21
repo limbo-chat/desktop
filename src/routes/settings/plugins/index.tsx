@@ -12,6 +12,17 @@ import {
 import type { PluginManifest } from "../../../../electron/plugins/schemas";
 import { Button } from "../../../components/button";
 import {
+	Card,
+	CardAction,
+	CardActions,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardInfo,
+	CardTitle,
+} from "../../../components/card";
+import {
 	DialogCloseButton,
 	DialogDescription,
 	DialogFooter,
@@ -93,7 +104,6 @@ interface PluginCardProps {
 const PluginCard = ({ plugin }: PluginCardProps) => {
 	const enablePluginMutaton = useEnablePluginMutation();
 	const disablePluginMutation = useDisablePluginMutation();
-	const authorName = plugin.manifest.author.name ?? plugin.manifest.author.email;
 
 	const toggleEnabled = () => {
 		if (plugin.enabled) {
@@ -108,22 +118,27 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 	};
 
 	return (
-		<div
+		<Card
 			className="plugin-card"
 			data-plugin-id={plugin.manifest.id}
-			data-enabled={plugin.enabled}
+			data-plugin-enabled={plugin.enabled}
 		>
-			<div className="plugin-card-header">
-				<span className="plugin-card-title">{plugin.manifest.name}</span>
-				<Switch checked={plugin.enabled} onCheckedChange={toggleEnabled} />
-			</div>
-			<div className="plugin-card-content">
-				<div className="plugin-card-info">
-					<span className="plugin-card-version">v{plugin.manifest.version}</span>
-					{authorName && <span className="plugin-card-author">By {authorName}</span>}
-					<p className="plugin-card-description">{plugin.manifest.description}</p>
-				</div>
-				<div className="plugin-card-actions">
+			<CardHeader>
+				<CardInfo>
+					<CardTitle>{plugin.manifest.name}</CardTitle>
+					<CardDescription>{plugin.manifest.description}</CardDescription>
+				</CardInfo>
+				<CardAction>
+					<Switch checked={plugin.enabled} onCheckedChange={toggleEnabled} />
+				</CardAction>
+			</CardHeader>
+			<CardContent>
+				<div className="plugin-version">v{plugin.manifest.version}</div>
+				<div className="plugin-author">By {plugin.manifest.author.name}</div>
+				<p className="plugin-card-description">{plugin.manifest.description}</p>
+			</CardContent>
+			<CardFooter>
+				<CardActions>
 					<Tooltip label="Settings">
 						<Link
 							className="icon-button"
@@ -158,9 +173,9 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 							<Trash2Icon />
 						</IconButton>
 					</Tooltip>
-				</div>
-			</div>
-		</div>
+				</CardActions>
+			</CardFooter>
+		</Card>
 	);
 };
 
