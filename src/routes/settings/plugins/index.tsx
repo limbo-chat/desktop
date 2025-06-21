@@ -126,7 +126,7 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 				<div className="plugin-card-actions">
 					<Tooltip label="Settings">
 						<Link
-							className="icon-button plugin-card-action"
+							className="icon-button"
 							to="/settings/plugins/$id"
 							params={{ id: plugin.manifest.id }}
 							data-action="open-settings"
@@ -135,14 +135,13 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 						</Link>
 					</Tooltip>
 					<Tooltip label="Reload">
-						<IconButton className="plugin-card-action" data-action="reload">
+						<IconButton action="reload">
 							<RefreshCwIcon />
 						</IconButton>
 					</Tooltip>
 					<Tooltip label="Uninstall">
 						<IconButton
-							className="plugin-card-action"
-							data-action="uninstall"
+							action="uninstall"
 							onClick={() =>
 								showDialog({
 									component: () => (

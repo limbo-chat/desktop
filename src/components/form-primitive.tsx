@@ -2,10 +2,13 @@ import clsx from "clsx";
 import type { HTMLAttributes } from "react";
 import { Button, type ButtonProps } from "./button";
 
-export interface RootProps extends HTMLAttributes<HTMLFormElement> {}
+export interface RootProps extends HTMLAttributes<HTMLFormElement> {
+	/** an identifier for the form */
+	id?: string;
+}
 
-export const Root = ({ className, ...props }: RootProps) => {
-	return <form className={clsx("form", className)} {...props} />;
+export const Root = ({ id, className, ...props }: RootProps) => {
+	return <form className={clsx("form", className)} data-form={id} {...props} />;
 };
 
 // form header
@@ -86,9 +89,9 @@ export const Actions = ({ className, ...props }: FormActionsProps) => {
 // buttons
 
 export const SubmitButton = (props: ButtonProps) => {
-	return <Button type="submit" data-action="submit" {...props} />;
+	return <Button type="submit" action="submit" {...props} />;
 };
 
 export const CancelButton = (props: ButtonProps) => {
-	return <Button type="button" data-action="cancel" {...props} />;
+	return <Button type="button" action="cancel" {...props} />;
 };
