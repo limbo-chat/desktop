@@ -144,7 +144,6 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 			<CardContent>
 				<div className="plugin-version">v{plugin.manifest.version}</div>
 				<div className="plugin-author">By {plugin.manifest.author.name}</div>
-				<p className="plugin-card-description">{plugin.manifest.description}</p>
 			</CardContent>
 			<CardFooter>
 				<CardActions>
