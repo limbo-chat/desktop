@@ -29,6 +29,9 @@ import {
 	DialogHeader,
 	Dialog,
 	DialogTitle,
+	DialogActions,
+	DialogInfo,
+	DialogContent,
 } from "../../../components/dialog";
 import { Field } from "../../../components/field";
 import * as FieldPrimitive from "../../../components/field-primitive";
@@ -77,18 +80,24 @@ const UninstallPluginDialog = ({ plugin }: UninstallPluginDialogProps) => {
 	return (
 		<Dialog>
 			<DialogHeader>
+				<DialogInfo>
+					<DialogTitle>Uninstall {plugin.name}</DialogTitle>
+				</DialogInfo>
 				<DialogCloseButton />
-				<DialogTitle>Uninstall {plugin.name}</DialogTitle>
-				<DialogDescription>
+			</DialogHeader>
+			<DialogContent>
+				<p>
 					Are you sure you want to uninstall this plugin? The plugin and associated data
 					will be deleted.
-				</DialogDescription>
-			</DialogHeader>
+				</p>
+			</DialogContent>
 			<DialogFooter>
-				<Button onClick={modalCtx.close}>Cancel</Button>
-				<Button isLoading={uninstallPluginMutation.isPending} onClick={handleUninstall}>
-					Uninstall
-				</Button>
+				<DialogActions>
+					<Button onClick={modalCtx.close}>Cancel</Button>
+					<Button isLoading={uninstallPluginMutation.isPending} onClick={handleUninstall}>
+						Uninstall
+					</Button>
+				</DialogActions>
 			</DialogFooter>
 		</Dialog>
 	);

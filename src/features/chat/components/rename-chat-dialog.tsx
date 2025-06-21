@@ -1,7 +1,16 @@
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "../../../components/button";
-import { Dialog, DialogFooter, DialogHeader, DialogTitle } from "../../../components/dialog";
-import { TextInput } from "../../../components/inputs/text-input";
+import {
+	Dialog,
+	DialogActions,
+	DialogCloseButton,
+	DialogContent,
+	DialogFooter,
+	DialogHeader,
+	DialogInfo,
+	DialogTitle,
+} from "../../../components/dialog";
+import * as FieldController from "../../../components/field-controller";
 import { useModalContext } from "../../modals/hooks";
 import { useRenameChatMutation } from "../hooks/queries";
 
@@ -37,25 +46,34 @@ export const RenameChatDialog = ({ chat }: RenameChatDialogProps) => {
 	});
 
 	return (
-		<Dialog>
-			<DialogHeader>
-				<DialogTitle>Rename chat</DialogTitle>
-			</DialogHeader>
-			<form onSubmit={onSubmit}>
-				<TextInput placeholder="Enter a name" {...form.register("name")} />
+		<FormProvider {...form}>
+			<Dialog component="form" onSubmit={onSubmit}>
+				<DialogHeader>
+					<DialogInfo>
+						<DialogTitle>Rename chat</DialogTitle>
+					</DialogInfo>
+					<DialogCloseButton />
+				</DialogHeader>
+				<DialogContent>
+					<FieldController.Root id="name" name="name">
+						<FieldController.TextInput placeholder="Enter a name" />
+					</FieldController.Root>
+				</DialogContent>
 				<DialogFooter>
-					<Button type="button" onClick={modalCtx.close}>
-						Cancel
-					</Button>
-					<Button
-						type="submit"
-						disabled={!form.formState.isDirty}
-						isLoading={renameChatMutation.isPending}
-					>
-						Save
-					</Button>
+					<DialogActions>
+						<Button type="button" onClick={modalCtx.close}>
+							Cancel
+						</Button>
+						<Button
+							type="submit"
+							disabled={!form.formState.isDirty}
+							isLoading={renameChatMutation.isPending}
+						>
+							Save
+						</Button>
+					</DialogActions>
 				</DialogFooter>
-			</form>
-		</Dialog>
+			</Dialog>
+		</FormProvider>
 	);
 };

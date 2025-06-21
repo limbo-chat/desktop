@@ -2,9 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "../../../components/button";
 import {
 	Dialog,
+	DialogActions,
+	DialogCloseButton,
+	DialogContent,
 	DialogDescription,
 	DialogFooter,
 	DialogHeader,
+	DialogInfo,
 	DialogTitle,
 } from "../../../components/dialog";
 import { showDialog } from "../../../features/modals/utils";
@@ -17,11 +21,25 @@ const DemoDialog = () => {
 	return (
 		<Dialog>
 			<DialogHeader>
-				<DialogTitle>Hello world!</DialogTitle>
-				<DialogDescription>This is a dialog</DialogDescription>
+				<DialogInfo>
+					<DialogTitle>Hello world!</DialogTitle>
+					<DialogDescription>This is a dialog</DialogDescription>
+				</DialogInfo>
+				<DialogCloseButton />
 			</DialogHeader>
+			<DialogContent>
+				<p>
+					Amet sit nisi ut velit sit non quis. Velit quis qui est do irure nisi aute.
+					Dolor do reprehenderit non. Lorem consequat ex irure quis dolore est. Est anim
+					magna et irure consequat est id. Enim fugiat sint in sint adipisicing laborum
+					veniam. Et ipsum adipisicing ipsum proident deserunt culpa ex. Quis tempor
+					commodo commodo anim.
+				</p>
+			</DialogContent>
 			<DialogFooter>
-				<Button>Close dialog</Button>
+				<DialogActions>
+					<Button>Close dialog</Button>
+				</DialogActions>
 			</DialogFooter>
 		</Dialog>
 	);
