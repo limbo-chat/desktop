@@ -11,6 +11,7 @@ import {
 	DialogInfo,
 	DialogTitle,
 } from "../../../components/dialog";
+import { useModalContext } from "../../../features/modals/hooks";
 import { showDialog } from "../../../features/modals/utils";
 
 export const Route = createFileRoute("/design-playground/elements/dialog")({
@@ -18,6 +19,8 @@ export const Route = createFileRoute("/design-playground/elements/dialog")({
 });
 
 const DemoDialog = () => {
+	const modalCtx = useModalContext();
+
 	return (
 		<Dialog>
 			<DialogHeader>
@@ -38,7 +41,7 @@ const DemoDialog = () => {
 			</DialogContent>
 			<DialogFooter>
 				<DialogActions>
-					<Button>Close dialog</Button>
+					<Button onClick={modalCtx.close}>Close dialog</Button>
 				</DialogActions>
 			</DialogFooter>
 		</Dialog>

@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { FolderIcon, PlusIcon, RefreshCwIcon, SettingsIcon, Trash2Icon } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 import {
 	SettingsPage,
@@ -34,6 +34,7 @@ import {
 	DialogContent,
 } from "../../../components/dialog";
 import { Field } from "../../../components/field";
+import * as FieldController from "../../../components/field-controller";
 import * as FieldPrimitive from "../../../components/field-primitive";
 import { IconButton } from "../../../components/icon-button";
 import { Switch } from "../../../components/switch";
@@ -52,6 +53,72 @@ import { useMainRouterClient } from "../../../lib/trpc";
 export const Route = createFileRoute("/settings/plugins/")({
 	component: PluginsSettingsPage,
 });
+
+const InstallPluginDialog = () => {
+	const modalCtx = useModalContext();
+	const installPluginMutation = useInstallPluginMutation();
+
+	const form = useForm({
+		resolver: zodResolver(installPluginFormSchema),
+		values: {
+			repoUrl: "",
+		},
+	});
+
+	const onSubmit = form.handleSubmit((data) => {
+		const repoParts = data.repoUrl.split("/");
+		const repoOwner = repoParts[3];
+		const repoName = repoParts[4];
+
+		installPluginMutation.mutate(
+			{
+				owner: repoOwner,
+				repo: repoName,
+			},
+			{
+				onSuccess: () => {
+					modalCtx.close();
+				},
+			}
+		);
+	});
+
+	return (
+		<FormProvider {...form}>
+			<Dialog component="form" onSubmit={onSubmit}>
+				<DialogHeader>
+					<DialogInfo>
+						<DialogTitle>Install plugin</DialogTitle>
+						<DialogDescription>
+							Enter the GitHub repository URL of the plugin you want to install.
+						</DialogDescription>
+					</DialogInfo>
+					<DialogCloseButton />
+				</DialogHeader>
+				<DialogContent>
+					<FieldController.Root id="repo-url" name="repoUrl">
+						<FieldController.TextInput
+							autoFocus
+							placeholder="https://github.com/limbo-llm/plugin-ollama"
+						/>
+					</FieldController.Root>
+				</DialogContent>
+				<DialogFooter>
+					<DialogActions>
+						<Button onClick={modalCtx.close}>Cancel</Button>
+						<Button
+							type="submit"
+							disabled={!form.formState.isDirty}
+							isLoading={installPluginMutation.isPending}
+						>
+							Install
+						</Button>
+					</DialogActions>
+				</DialogFooter>
+			</Dialog>
+		</FormProvider>
+	);
+};
 
 interface UninstallPluginDialogProps {
 	plugin: {
@@ -192,65 +259,6 @@ const installPluginFormSchema = z.object({
 		message: "Please enter a valid GitHub repo URL",
 	}),
 });
-
-const InstallPluginDialog = () => {
-	const modalCtx = useModalContext();
-	const installPluginMutation = useInstallPluginMutation();
-
-	const form = useForm({
-		resolver: zodResolver(installPluginFormSchema),
-		values: {
-			repoUrl: "",
-		},
-	});
-
-	const onSubmit = form.handleSubmit((data) => {
-		const repoParts = data.repoUrl.split("/");
-		const repoOwner = repoParts[3];
-		const repoName = repoParts[4];
-
-		installPluginMutation.mutate(
-			{
-				owner: repoOwner,
-				repo: repoName,
-			},
-			{
-				onSuccess: () => {
-					modalCtx.close();
-				},
-			}
-		);
-	});
-
-	return (
-		<Dialog>
-			<DialogHeader>
-				<DialogTitle>Install plugin</DialogTitle>
-				<DialogDescription>
-					Enter the GitHub repository URL of the plugin you want to install.
-				</DialogDescription>
-			</DialogHeader>
-			<form onSubmit={onSubmit}>
-				<Field id="repo-url">
-					<FieldPrimitive.TextInput
-						placeholder="https://github.com/limbo-llm/plugin-ollama"
-						{...form.register("repoUrl")}
-					/>
-				</Field>
-				<DialogFooter>
-					<Button onClick={modalCtx.close}>Cancel</Button>
-					<Button
-						type="submit"
-						disabled={!form.formState.isDirty}
-						isLoading={installPluginMutation.isPending}
-					>
-						Install
-					</Button>
-				</DialogFooter>
-			</form>
-		</Dialog>
-	);
-};
 
 function PluginsSettingsPage() {
 	const plugins = usePluginList();
