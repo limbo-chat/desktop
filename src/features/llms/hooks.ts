@@ -11,6 +11,16 @@ export const useLLM = (id: string) => {
 	return llms.get(id);
 };
 
+export const useMaybeLLM = (id: string | null) => {
+	const llms = useLLMs();
+
+	if (!id) {
+		return undefined;
+	}
+
+	return llms.get(id);
+};
+
 export const useLLMList = () => {
 	const llms = useLLMs();
 

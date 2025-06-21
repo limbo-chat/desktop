@@ -35,6 +35,11 @@ const DesignPlaygroundSidebar = () => {
 					<Link to="/design-playground/elements/markdown">
 						{({ isActive }) => <SidebarItem isActive={isActive}>Markdown</SidebarItem>}
 					</Link>
+					<Link to="/design-playground/elements/llm-picker">
+						{({ isActive }) => (
+							<SidebarItem isActive={isActive}>LLM picker</SidebarItem>
+						)}
+					</Link>
 				</SidebarGroupContent>
 			</SidebarGroup>
 		</Sidebar>
