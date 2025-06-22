@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMatch, useRouter } from "@tanstack/react-router";
 import { EllipsisIcon, MessageCirclePlusIcon, PencilIcon, Trash2Icon } from "lucide-react";
+import { IconButton } from "../../../components/icon-button";
 import { Link } from "../../../components/link";
 import {
 	MenuContent,
@@ -65,10 +66,12 @@ const ChatItem = ({ chat }: ChatItemProps) => {
 		>
 			<SidebarItemLabel>{chat.name}</SidebarItemLabel>
 			<MenuRoot>
-				<MenuTrigger>
-					<EllipsisIcon />
+				<MenuTrigger asChild>
+					<IconButton>
+						<EllipsisIcon />
+					</IconButton>
 				</MenuTrigger>
-				<MenuContent>
+				<MenuContent className="chat-menu">
 					<MenuSection>
 						<MenuSectionContent>
 							<MenuItem
