@@ -15,8 +15,6 @@ export class WindowManager {
 		const settings = readSettings();
 		const windowState = readWindowState();
 
-		console.log("Creating main window with state:", windowState);
-
 		this.mainWindow = new BrowserWindow({
 			icon: ICON_PATH,
 			titleBarStyle: "hidden",
