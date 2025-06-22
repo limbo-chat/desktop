@@ -13,10 +13,12 @@
 		"build:linux": "pnpm build && electron-builder --linux",
 		"typecheck": "tsc --noEmit",
 		"format": "prettier --write .",
+		"rebild:deps": "electron-rebuild better-sqlite3",
 		"postinstall": "electron-builder install-app-deps"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^5.0.1",
+		"@limbo/api": "file:../../../node/oss/limbo/limbo-api",
 		"@octokit/rest": "^21.1.1",
 		"@radix-ui/react-checkbox": "^1.3.2",
 		"@radix-ui/react-collapsible": "^1.1.11",
@@ -46,7 +48,6 @@
 		"hast-util-to-jsx-runtime": "^2.3.6",
 		"immer": "^10.1.1",
 		"kysely": "^0.28.2",
-		"@limbo/api": "file:../../../node/oss/limbo/limbo-api",
 		"lowlight": "^3.3.0",
 		"lucide-react": "^0.483.0",
 		"markdown-to-jsx": "^7.7.6",
@@ -63,7 +64,7 @@
 		"zustand": "^5.0.5"
 	},
 	"devDependencies": {
-		"@electron/rebuild": "^3.7.2",
+		"@electron/rebuild": "^4.0.1",
 		"@tanstack/router-plugin": "^1.120.12",
 		"@trivago/prettier-plugin-sort-imports": "^5.2.2",
 		"@types/better-sqlite3": "^7.6.13",
