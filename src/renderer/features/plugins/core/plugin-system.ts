@@ -1,4 +1,4 @@
-import type * as limbo from "limbo";
+import type * as limbo from "@limbo/api";
 import { createPluginAPI } from "./create-plugin-api";
 import type { GetPluginResult } from "./plugin-backend";
 import { PluginContext } from "./plugin-context";

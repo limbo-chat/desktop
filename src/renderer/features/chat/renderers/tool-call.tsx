@@ -1,7 +1,7 @@
 import * as RadixCollapsible from "@radix-ui/react-collapsible";
 import { ChevronDown, ClipboardIcon } from "lucide-react";
 import { useMemo } from "react";
-import type * as limbo from "limbo";
+import type * as limbo from "@limbo/api";
 import { IconButton } from "../../../components/icon-button";
 import { parseNamespacedResourceId } from "../../../lib/utils";
 import { useTool } from "../../tools/hooks";

@@ -1,6 +1,6 @@
 import { useCallback, useRef } from "react";
 import { ulid } from "ulid";
-import type * as limbo from "limbo";
+import type * as limbo from "@limbo/api";
 import { useMainRouterClient } from "../../../lib/trpc";
 import { buildNamespacedResourceId } from "../../../lib/utils";
 import { usePluginManager } from "../../plugins/hooks/core";

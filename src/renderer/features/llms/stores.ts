@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type * as limbo from "limbo";
+import type * as limbo from "@limbo/api";
 
 export interface LLMStore {
 	llms: Map<string, limbo.LLM>;

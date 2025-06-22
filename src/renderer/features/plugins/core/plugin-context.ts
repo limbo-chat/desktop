@@ -1,5 +1,5 @@
 import EventEmitter from "eventemitter3";
-import type * as limbo from "limbo";
+import type * as limbo from "@limbo/api";
 
 export interface PluginContextEvents {
 	"state:changed": () => void;

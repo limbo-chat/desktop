@@ -2,7 +2,7 @@ import { Command } from "cmdk";
 import Fuse from "fuse.js";
 import { SearchIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import type * as limbo from "limbo";
+import type * as limbo from "@limbo/api";
 import { useLLMList } from "../hooks";
 
 interface LLMPickerItemProps {

@@ -1,4 +1,4 @@
-import type * as limbo from "limbo";
+import type * as limbo from "@limbo/api";
 
 export interface BaseChatMessage {
 	id: string;

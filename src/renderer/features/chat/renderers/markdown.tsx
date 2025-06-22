@@ -1,4 +1,4 @@
-import type * as limbo from "limbo";
+import type * as limbo from "@limbo/api";
 import { MarkdownContainer } from "../../markdown/components/markdown-container";
 import { MarkdownRenderer } from "../../markdown/components/markdown-renderer";
 

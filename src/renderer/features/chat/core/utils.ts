@@ -1,5 +1,5 @@
 import Ajv from "ajv";
-import type * as limbo from "limbo";
+import type * as limbo from "@limbo/api";
 
 const ajv = new Ajv();
 

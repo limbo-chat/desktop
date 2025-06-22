@@ -49,7 +49,7 @@
 		"hast-util-to-jsx-runtime": "^2.3.6",
 		"immer": "^10.1.1",
 		"kysely": "^0.28.2",
-		"limbo": "0.0.1",
+		"@limbo/api": "file:../../../node/oss/limbo/limbo-api",
 		"lowlight": "^3.3.0",
 		"lucide-react": "^0.483.0",
 		"markdown-to-jsx": "^7.7.6",

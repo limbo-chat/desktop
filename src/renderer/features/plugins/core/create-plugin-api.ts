@@ -1,4 +1,4 @@
-import type * as limbo from "limbo";
+import type * as limbo from "@limbo/api";
 import type { PluginContext } from "./plugin-context";
 
 export interface PluginAPIHostBridge {

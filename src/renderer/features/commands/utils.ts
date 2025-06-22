@@ -1,4 +1,4 @@
-import type * as limbo from "limbo";
+import type * as limbo from "@limbo/api";
 import { setActiveModal } from "../modals/utils";
 import { CommandPaletteModal } from "./components/command-palette";
 import { useCommandStore } from "./stores";

@@ -1,4 +1,4 @@
-import type * as limbo from "limbo";
+import type * as limbo from "@limbo/api";
 import { useLLMStore } from "./stores";
 
 export function addLLM(llm: limbo.LLM) {

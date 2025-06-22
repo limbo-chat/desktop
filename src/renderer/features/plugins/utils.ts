@@ -1,4 +1,4 @@
-import type * as limbo from "limbo";
+import type * as limbo from "@limbo/api";
 import { useMarkdownElementStore } from "../markdown/stores";
 
 export function addMarkdownElement(elementId: string, element: limbo.ui.MarkdownElement) {

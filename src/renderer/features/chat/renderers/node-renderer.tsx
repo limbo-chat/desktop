@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type * as limbo from "limbo";
+import type * as limbo from "@limbo/api";
 import { useCollatedChatNodeComponents } from "../../chat-nodes/hooks";
 import { MarkdownNodeRenderer } from "./markdown";
 import { TextNodeRenderer } from "./text";

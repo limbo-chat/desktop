@@ -1,4 +1,4 @@
-import type * as limbo from "limbo";
+import type * as limbo from "@limbo/api";
 import { useToolStore } from "./stores";
 
 export function addTool(tool: limbo.Tool) {

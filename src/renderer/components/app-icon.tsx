@@ -1,6 +1,6 @@
 // hopefully this still gets tree shaken
 import * as lucide from "lucide-react";
-import type * as limbo from "limbo";
+import type * as limbo from "@limbo/api";
 
 const appIcons: Record<limbo.AppIcon, any> = {
 	file: lucide.FileIcon,
