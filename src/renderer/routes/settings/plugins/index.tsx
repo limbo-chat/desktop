@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { FolderIcon, PlusIcon, RefreshCwIcon, SettingsIcon, Trash2Icon } from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -33,10 +33,9 @@ import {
 	DialogInfo,
 	DialogContent,
 } from "../../../components/dialog";
-import { Field } from "../../../components/field";
 import * as FieldController from "../../../components/field-controller";
-import * as FieldPrimitive from "../../../components/field-primitive";
 import { IconButton } from "../../../components/icon-button";
+import { Link } from "../../../components/link";
 import { Switch } from "../../../components/switch";
 import { Tooltip } from "../../../components/tooltip";
 import { useModalContext } from "../../../features/modals/hooks";

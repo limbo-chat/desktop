@@ -1,5 +1,5 @@
-import { Link } from "@tanstack/react-router";
 import { MessageSquareIcon, SettingsIcon, TerminalIcon } from "lucide-react";
+import { Link } from "../../components/link";
 import { Tooltip } from "../../components/tooltip";
 import { showCommandPalette } from "../../features/commands/utils";
 

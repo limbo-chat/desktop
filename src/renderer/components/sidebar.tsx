@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import type { HTMLAttributes } from "react";
+import { Link, type LinkProps } from "./link";
 
 export interface SidebarProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -40,10 +41,37 @@ export interface SidebarItemProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const SidebarItem = ({ isActive, className, ...props }: SidebarItemProps) => {
-	return <div className="sidebar-item" data-active={isActive || undefined} {...props} />;
+	return (
+		<div
+			className={clsx("sidebar-item", className)}
+			data-active={isActive || undefined}
+			{...props}
+		/>
+	);
 };
 
-export const SidebarLinkItem = () => {};
+export interface SidebarLinkItemProps extends LinkProps {
+	isActive?: boolean;
+}
+
+export const SidebarLinkItem = ({
+	isActive,
+	className,
+	activeProps,
+	...props
+}: SidebarLinkItemProps) => {
+	return (
+		<Link
+			className={clsx("sidebar-item")}
+			data-active={isActive || undefined}
+			activeProps={{
+				"data-active": typeof isActive === "boolean" ? isActive : true,
+				...activeProps,
+			}}
+			{...props}
+		/>
+	);
+};
 
 export interface SidebarItemIconProps extends HTMLAttributes<HTMLDivElement> {}
 

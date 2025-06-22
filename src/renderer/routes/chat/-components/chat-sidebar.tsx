@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Link, useMatch, useRouter } from "@tanstack/react-router";
+import { useMatch, useRouter } from "@tanstack/react-router";
 import { EllipsisIcon, MessageCirclePlusIcon, PencilIcon, Trash2Icon } from "lucide-react";
+import { Link } from "../../../components/link";
 import {
 	MenuContent,
 	MenuItem,
@@ -15,10 +16,10 @@ import {
 	Sidebar,
 	SidebarSection,
 	SidebarSectionContent,
-	SidebarItem,
 	SidebarItemLabel,
 	SidebarSectionHeader,
 	SidebarSectionTitle,
+	SidebarLinkItem,
 } from "../../../components/sidebar";
 import { RenameChatDialog } from "../../../features/chat/components/rename-chat-dialog";
 import { useDeleteChatMutation } from "../../../features/chat/hooks/queries";
@@ -57,7 +58,12 @@ const ChatItem = ({ chat }: ChatItemProps) => {
 	};
 
 	return (
-		<SidebarItem isActive={false}>
+		<SidebarLinkItem
+			to="/chat/$id"
+			params={{
+				id: chat.id,
+			}}
+		>
 			<SidebarItemLabel>{chat.name}</SidebarItemLabel>
 			<MenuRoot>
 				<MenuTrigger>
@@ -89,7 +95,7 @@ const ChatItem = ({ chat }: ChatItemProps) => {
 					</MenuSection>
 				</MenuContent>
 			</MenuRoot>
-		</SidebarItem>
+		</SidebarLinkItem>
 	);
 };
 

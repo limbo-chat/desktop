@@ -6,6 +6,8 @@ import {
 	SidebarSectionTitle,
 	SidebarSectionContent,
 	SidebarItem,
+	SidebarLinkItem,
+	SidebarItemLabel,
 } from "../../components/sidebar";
 
 export const Route = createFileRoute("/design-playground")({
@@ -20,26 +22,24 @@ const DesignPlaygroundSidebar = () => {
 					<SidebarSectionTitle>Elements</SidebarSectionTitle>
 				</SidebarSectionHeader>
 				<SidebarSectionContent>
-					<Link to="/design-playground/elements/button">
-						{({ isActive }) => <SidebarItem isActive={isActive}>Button</SidebarItem>}
-					</Link>
-					<Link to="/design-playground/elements/tooltip">
-						{({ isActive }) => <SidebarItem isActive={isActive}>Tooltip</SidebarItem>}
-					</Link>
-					<Link to="/design-playground/elements/form">
-						{({ isActive }) => <SidebarItem isActive={isActive}>Form</SidebarItem>}
-					</Link>
-					<Link to="/design-playground/elements/dialog">
-						{({ isActive }) => <SidebarItem isActive={isActive}>Dialog</SidebarItem>}
-					</Link>
-					<Link to="/design-playground/elements/markdown">
-						{({ isActive }) => <SidebarItem isActive={isActive}>Markdown</SidebarItem>}
-					</Link>
-					<Link to="/design-playground/elements/llm-picker">
-						{({ isActive }) => (
-							<SidebarItem isActive={isActive}>LLM picker</SidebarItem>
-						)}
-					</Link>
+					<SidebarLinkItem to="/design-playground/elements/button">
+						<SidebarItemLabel>Button</SidebarItemLabel>
+					</SidebarLinkItem>
+					<SidebarLinkItem to="/design-playground/elements/tooltip">
+						<SidebarItemLabel>Tooltip</SidebarItemLabel>
+					</SidebarLinkItem>
+					<SidebarLinkItem to="/design-playground/elements/form">
+						<SidebarItemLabel>Form</SidebarItemLabel>
+					</SidebarLinkItem>
+					<SidebarLinkItem to="/design-playground/elements/dialog">
+						<SidebarItemLabel>Dialog</SidebarItemLabel>
+					</SidebarLinkItem>
+					<SidebarLinkItem to="/design-playground/elements/markdown">
+						<SidebarItemLabel>Markdown</SidebarItemLabel>
+					</SidebarLinkItem>
+					<SidebarLinkItem to="/design-playground/elements/llm-picker">
+						<SidebarItemLabel>LLM picker</SidebarItemLabel>
+					</SidebarLinkItem>
 				</SidebarSectionContent>
 			</SidebarSection>
 		</Sidebar>
