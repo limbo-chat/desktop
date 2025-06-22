@@ -26,6 +26,7 @@ import { Route as SettingsPluginsIndexImport } from './routes/settings/plugins/i
 import { Route as ChatIdIndexImport } from './routes/chat/$id/index'
 import { Route as SettingsPluginsIdImport } from './routes/settings/plugins/$id'
 import { Route as DesignPlaygroundElementsTooltipImport } from './routes/design-playground/elements/tooltip'
+import { Route as DesignPlaygroundElementsMenuImport } from './routes/design-playground/elements/menu'
 import { Route as DesignPlaygroundElementsMarkdownImport } from './routes/design-playground/elements/markdown'
 import { Route as DesignPlaygroundElementsLlmPickerImport } from './routes/design-playground/elements/llm-picker'
 import { Route as DesignPlaygroundElementsFormImport } from './routes/design-playground/elements/form'
@@ -122,6 +123,13 @@ const DesignPlaygroundElementsTooltipRoute =
   DesignPlaygroundElementsTooltipImport.update({
     id: '/elements/tooltip',
     path: '/elements/tooltip',
+    getParentRoute: () => DesignPlaygroundRouteRoute,
+  } as any)
+
+const DesignPlaygroundElementsMenuRoute =
+  DesignPlaygroundElementsMenuImport.update({
+    id: '/elements/menu',
+    path: '/elements/menu',
     getParentRoute: () => DesignPlaygroundRouteRoute,
   } as any)
 
@@ -276,6 +284,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DesignPlaygroundElementsMarkdownImport
       parentRoute: typeof DesignPlaygroundRouteImport
     }
+    '/design-playground/elements/menu': {
+      id: '/design-playground/elements/menu'
+      path: '/elements/menu'
+      fullPath: '/design-playground/elements/menu'
+      preLoaderRoute: typeof DesignPlaygroundElementsMenuImport
+      parentRoute: typeof DesignPlaygroundRouteImport
+    }
     '/design-playground/elements/tooltip': {
       id: '/design-playground/elements/tooltip'
       path: '/elements/tooltip'
@@ -330,6 +345,7 @@ interface DesignPlaygroundRouteRouteChildren {
   DesignPlaygroundElementsFormRoute: typeof DesignPlaygroundElementsFormRoute
   DesignPlaygroundElementsLlmPickerRoute: typeof DesignPlaygroundElementsLlmPickerRoute
   DesignPlaygroundElementsMarkdownRoute: typeof DesignPlaygroundElementsMarkdownRoute
+  DesignPlaygroundElementsMenuRoute: typeof DesignPlaygroundElementsMenuRoute
   DesignPlaygroundElementsTooltipRoute: typeof DesignPlaygroundElementsTooltipRoute
 }
 
@@ -341,6 +357,7 @@ const DesignPlaygroundRouteRouteChildren: DesignPlaygroundRouteRouteChildren = {
   DesignPlaygroundElementsLlmPickerRoute:
     DesignPlaygroundElementsLlmPickerRoute,
   DesignPlaygroundElementsMarkdownRoute: DesignPlaygroundElementsMarkdownRoute,
+  DesignPlaygroundElementsMenuRoute: DesignPlaygroundElementsMenuRoute,
   DesignPlaygroundElementsTooltipRoute: DesignPlaygroundElementsTooltipRoute,
 }
 
@@ -390,6 +407,7 @@ export interface FileRoutesByFullPath {
   '/design-playground/elements/form': typeof DesignPlaygroundElementsFormRoute
   '/design-playground/elements/llm-picker': typeof DesignPlaygroundElementsLlmPickerRoute
   '/design-playground/elements/markdown': typeof DesignPlaygroundElementsMarkdownRoute
+  '/design-playground/elements/menu': typeof DesignPlaygroundElementsMenuRoute
   '/design-playground/elements/tooltip': typeof DesignPlaygroundElementsTooltipRoute
   '/settings/plugins/$id': typeof SettingsPluginsIdRoute
   '/chat/$id': typeof ChatIdIndexRoute
@@ -410,6 +428,7 @@ export interface FileRoutesByTo {
   '/design-playground/elements/form': typeof DesignPlaygroundElementsFormRoute
   '/design-playground/elements/llm-picker': typeof DesignPlaygroundElementsLlmPickerRoute
   '/design-playground/elements/markdown': typeof DesignPlaygroundElementsMarkdownRoute
+  '/design-playground/elements/menu': typeof DesignPlaygroundElementsMenuRoute
   '/design-playground/elements/tooltip': typeof DesignPlaygroundElementsTooltipRoute
   '/settings/plugins/$id': typeof SettingsPluginsIdRoute
   '/chat/$id': typeof ChatIdIndexRoute
@@ -434,6 +453,7 @@ export interface FileRoutesById {
   '/design-playground/elements/form': typeof DesignPlaygroundElementsFormRoute
   '/design-playground/elements/llm-picker': typeof DesignPlaygroundElementsLlmPickerRoute
   '/design-playground/elements/markdown': typeof DesignPlaygroundElementsMarkdownRoute
+  '/design-playground/elements/menu': typeof DesignPlaygroundElementsMenuRoute
   '/design-playground/elements/tooltip': typeof DesignPlaygroundElementsTooltipRoute
   '/settings/plugins/$id': typeof SettingsPluginsIdRoute
   '/chat/$id/': typeof ChatIdIndexRoute
@@ -459,6 +479,7 @@ export interface FileRouteTypes {
     | '/design-playground/elements/form'
     | '/design-playground/elements/llm-picker'
     | '/design-playground/elements/markdown'
+    | '/design-playground/elements/menu'
     | '/design-playground/elements/tooltip'
     | '/settings/plugins/$id'
     | '/chat/$id'
@@ -478,6 +499,7 @@ export interface FileRouteTypes {
     | '/design-playground/elements/form'
     | '/design-playground/elements/llm-picker'
     | '/design-playground/elements/markdown'
+    | '/design-playground/elements/menu'
     | '/design-playground/elements/tooltip'
     | '/settings/plugins/$id'
     | '/chat/$id'
@@ -500,6 +522,7 @@ export interface FileRouteTypes {
     | '/design-playground/elements/form'
     | '/design-playground/elements/llm-picker'
     | '/design-playground/elements/markdown'
+    | '/design-playground/elements/menu'
     | '/design-playground/elements/tooltip'
     | '/settings/plugins/$id'
     | '/chat/$id/'
@@ -556,6 +579,7 @@ export const routeTree = rootRoute
         "/design-playground/elements/form",
         "/design-playground/elements/llm-picker",
         "/design-playground/elements/markdown",
+        "/design-playground/elements/menu",
         "/design-playground/elements/tooltip"
       ]
     },
@@ -617,6 +641,10 @@ export const routeTree = rootRoute
     },
     "/design-playground/elements/markdown": {
       "filePath": "design-playground/elements/markdown.tsx",
+      "parent": "/design-playground"
+    },
+    "/design-playground/elements/menu": {
+      "filePath": "design-playground/elements/menu.tsx",
       "parent": "/design-playground"
     },
     "/design-playground/elements/tooltip": {

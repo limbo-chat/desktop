@@ -31,6 +31,9 @@ const DesignPlaygroundSidebar = () => {
 					<SidebarLinkItem to="/design-playground/elements/form">
 						<SidebarItemLabel>Form</SidebarItemLabel>
 					</SidebarLinkItem>
+					<SidebarLinkItem to="/design-playground/elements/menu">
+						<SidebarItemLabel>Menu</SidebarItemLabel>
+					</SidebarLinkItem>
 					<SidebarLinkItem to="/design-playground/elements/dialog">
 						<SidebarItemLabel>Dialog</SidebarItemLabel>
 					</SidebarLinkItem>

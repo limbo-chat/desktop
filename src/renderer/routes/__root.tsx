@@ -17,7 +17,6 @@ import { Loading } from "../components/loading";
 import { useOpenCommandPaletteHotkey, useRegisterCoreCommands } from "../features/commands/hooks";
 import { useCustomStylesLoader, useCustomStylesSubscriber } from "../features/custom-styles/hooks";
 import { ModalHost } from "../features/modals/components";
-import { showNotification } from "../features/notifications/utils";
 import {
 	PluginBackendProvider,
 	PluginManagerProvider,
