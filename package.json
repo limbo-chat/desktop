@@ -1,17 +1,22 @@
 {
-	"name": "limbo",
+	"name": "limbo-desktop",
 	"private": true,
 	"type": "module",
 	"version": "0.0.0",
-	"main": "dist-electron/main.js",
+	"main": "./dist/main/main.mjs",
 	"scripts": {
-		"dev": "vite",
-		"build-vite": "vite build",
-		"build": "vite build && electron-builder",
-		"preview": "vite preview",
+		"dev": "electron-vite dev",
+		"preview": "electron-vite preview",
+		"build": "pnpm typecheck && electron-vite build",
+		"build:unpack": "pnpm build && electron-builder --dir",
+		"build:win": "pnpm build && electron-builder --win",
+		"build:mac": "electron-vite build && electron-builder --mac",
+		"build:linux": "electron-vite build && electron-builder --linux",
+		"typecheck:node": "tsc --noEmit -p tsconfig.node.json",
+		"typecheck:web": "tsc --noEmit -p tsconfig.web.json",
+		"typecheck": "pnpm typecheck:node && pnpm typecheck:web",
 		"format": "prettier --write .",
-		"typecheck": "tsc --noEmit",
-		"electron:rebuild-packages": "electron-rebuild -f -w better-sqlite3"
+		"postinstall": "electron-builder install-app-deps"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^5.0.1",
@@ -37,13 +42,14 @@
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"cmdk": "^1.1.1",
+		"electron-vite": "^3.1.0",
 		"eventemitter3": "^5.0.1",
 		"fuse.js": "^7.1.0",
 		"handlebars": "^4.7.8",
 		"hast-util-to-jsx-runtime": "^2.3.6",
 		"immer": "^10.1.1",
 		"kysely": "^0.28.2",
-		"limbo": "file:../limbo-api",
+		"limbo": "0.0.1",
 		"lowlight": "^3.3.0",
 		"lucide-react": "^0.483.0",
 		"markdown-to-jsx": "^7.7.6",
@@ -72,8 +78,6 @@
 		"electron-builder": "^25.1.8",
 		"prettier": "^3.5.3",
 		"typescript": "^5.8.3",
-		"vite": "^6.3.5",
-		"vite-plugin-electron": "^0.29.0",
-		"vite-plugin-electron-renderer": "^0.14.6"
+		"vite": "^6.3.5"
 	}
 }

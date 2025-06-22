@@ -1,0 +1,7 @@
+{
+	"extends": "./tsconfig.base.json",
+	"include": ["src/vite-env.d.ts", "src/renderer"],
+	"compilerOptions": {
+		"lib": ["ES2020", "DOM", "DOM.Iterable"]
+	}
+}

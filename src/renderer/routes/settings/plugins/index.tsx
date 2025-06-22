@@ -9,7 +9,7 @@ import {
 	SettingsPageHeader,
 	SettingsPageTitle,
 } from "../-components/settings-page";
-import type { PluginManifest } from "../../../../electron/plugins/schemas";
+import type { PluginManifest } from "../../../../main/plugins/schemas";
 import { Button } from "../../../components/button";
 import {
 	Card,

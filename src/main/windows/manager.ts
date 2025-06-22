@@ -1,5 +1,5 @@
 import { BrowserWindow } from "electron";
-import { HTML_PATH, ICON_PATH, PRELOAD_DIST, VITE_DEV_SERVER_URL } from "../constants";
+import { DEV_SERVER_URL, ICON_PATH, PRELOAD_FILE_PATH, HTML_PATH } from "../constants";
 import { readSettings } from "../settings/utils";
 import { manageWindowState, readWindowState } from "../window-state/utils";
 import { applyDefaultWindowOptions } from "./utils";
@@ -28,7 +28,7 @@ export class WindowManager {
 			// expose window controls in Windows/Linux
 			...(process.platform !== "darwin" ? { titleBarOverlay: true } : {}),
 			webPreferences: {
-				preload: PRELOAD_DIST,
+				preload: PRELOAD_FILE_PATH,
 			},
 		});
 
@@ -41,8 +41,8 @@ export class WindowManager {
 		// we want to track the state of the main window
 		manageWindowState(this.mainWindow);
 
-		if (VITE_DEV_SERVER_URL) {
-			this.mainWindow.loadURL(VITE_DEV_SERVER_URL);
+		if (DEV_SERVER_URL) {
+			this.mainWindow.loadURL(DEV_SERVER_URL);
 		} else {
 			this.mainWindow.loadFile(HTML_PATH);
 		}

@@ -1,11 +1,7 @@
 {
-	"include": ["vite.config.ts"],
+	"extends": "./tsconfig.base.json",
+	"include": ["electron.vite.config.ts", "src/vite-env.d.ts", "src/main", "src/preload"],
 	"compilerOptions": {
-		"composite": true,
-		"skipLibCheck": true,
-		"module": "ESNext",
-		"moduleResolution": "bundler",
-		"allowSyntheticDefaultImports": true,
-		"strict": true
+		"lib": ["es2022"]
 	}
 }

@@ -1,10 +1,8 @@
 {
-	"include": ["src", "electron"],
-	"references": [{ "path": "./tsconfig.node.json" }],
 	"compilerOptions": {
+		"noEmit": true,
 		"target": "ES2020",
 		"useDefineForClassFields": true,
-		"lib": ["ES2020", "DOM", "DOM.Iterable"],
 		"module": "ESNext",
 		"skipLibCheck": true,
 		"moduleResolution": "bundler",
@@ -12,7 +10,6 @@
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"verbatimModuleSyntax": true,
-		"noEmit": true,
 		"jsx": "react-jsx",
 		"strict": true
 	}

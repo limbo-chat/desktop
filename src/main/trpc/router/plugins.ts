@@ -1,5 +1,5 @@
 import { shell } from "electron";
-import { set, z } from "zod";
+import { z } from "zod";
 import { PLUGINS_DIR } from "../../plugins/constants";
 import {
 	downloadPluginFromGithub,

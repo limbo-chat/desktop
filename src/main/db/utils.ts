@@ -1,10 +1,7 @@
+import Sqlite from "better-sqlite3";
 import { Kysely, SqliteDialect } from "kysely";
-import { createRequire } from "node:module";
 import { DB_PATH } from "./constants";
 import type { Database } from "./types";
-
-const require = createRequire(import.meta.url);
-const Sqlite = require("better-sqlite3");
 
 export async function getDb() {
 	const sqlite = Sqlite(DB_PATH);
