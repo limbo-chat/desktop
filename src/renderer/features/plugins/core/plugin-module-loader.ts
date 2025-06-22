@@ -1,5 +1,5 @@
 import type * as limbo from "@limbo/api";
-import type { PluginManifest } from "../../../../electron/plugins/schemas";
+import type { PluginManifest } from "../../../../main/plugins/schemas";
 
 export interface LoadModuleOptions {
 	pluginManifest: PluginManifest;

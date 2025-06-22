@@ -4,7 +4,7 @@ import { createTRPCClient } from "@trpc/client";
 import { Suspense, useMemo, useRef, type PropsWithChildren } from "react";
 import { Toaster } from "sonner";
 import { ipcLink } from "trpc-electron/renderer";
-import type { MainRouter } from "../../electron/trpc/router";
+import type { MainRouter } from "../../main/trpc/router";
 import {
 	ErrorRoot,
 	ErrorContainer,

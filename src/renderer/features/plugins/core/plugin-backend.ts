@@ -1,4 +1,4 @@
-import type { PluginData, PluginManifest } from "../../../../electron/plugins/schemas";
+import type { PluginData, PluginManifest } from "../../../../main/plugins/schemas";
 
 export interface GetPluginResult {
 	manifest: PluginManifest;

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { PluginManifest } from "../../../electron/plugins/schemas";
+import type { PluginManifest } from "../../../main/plugins/schemas";
 
 export interface PluginStoreData {
 	enabled: boolean;
