@@ -5,8 +5,7 @@
 	"version": "0.0.0",
 	"main": "./dist/main/main.js",
 	"scripts": {
-		"dev": "electron-vite dev",
-		"preview": "electron-vite preview",
+		"dev": "electron-vite dev --watch",
 		"build": "pnpm typecheck && electron-vite build",
 		"build:unpack": "pnpm build && electron-builder --dir",
 		"build:win": "pnpm build && electron-builder --win",
