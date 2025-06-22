@@ -8,8 +8,8 @@ export function parseNamespacedResourceId(resourceId: string) {
 		return null;
 	}
 
-	const namespace = parts[0];
-	const resource = parts[1];
+	const namespace = parts[0]!;
+	const resource = parts[1]!;
 
 	return {
 		namespace,

@@ -67,8 +67,8 @@ const InstallPluginDialog = () => {
 
 	const onSubmit = form.handleSubmit((data) => {
 		const repoParts = data.repoUrl.split("/");
-		const repoOwner = repoParts[3];
-		const repoName = repoParts[4];
+		const repoOwner = repoParts[3]!;
+		const repoName = repoParts[4]!;
 
 		installPluginMutation.mutate(
 			{

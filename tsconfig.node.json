@@ -1,7 +1,0 @@
-{
-	"extends": "./tsconfig.base.json",
-	"include": ["electron.vite.config.ts", "src/vite-env.d.ts", "src/main", "src/preload"],
-	"compilerOptions": {
-		"lib": ["es2022"]
-	}
-}
