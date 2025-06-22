@@ -1,9 +1,10 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import {
 	Sidebar,
-	SidebarGroup,
-	SidebarGroupContent,
-	SidebarGroupTitle,
+	SidebarSection,
+	SidebarSectionHeader,
+	SidebarSectionTitle,
+	SidebarSectionContent,
 	SidebarItem,
 } from "../../components/sidebar";
 
@@ -14,9 +15,11 @@ export const Route = createFileRoute("/design-playground")({
 const DesignPlaygroundSidebar = () => {
 	return (
 		<Sidebar className="design-playground-sidebar">
-			<SidebarGroup>
-				<SidebarGroupTitle>Elements</SidebarGroupTitle>
-				<SidebarGroupContent>
+			<SidebarSection>
+				<SidebarSectionHeader>
+					<SidebarSectionTitle>Elements</SidebarSectionTitle>
+				</SidebarSectionHeader>
+				<SidebarSectionContent>
 					<Link to="/design-playground/elements/button">
 						{({ isActive }) => <SidebarItem isActive={isActive}>Button</SidebarItem>}
 					</Link>
@@ -37,8 +40,8 @@ const DesignPlaygroundSidebar = () => {
 							<SidebarItem isActive={isActive}>LLM picker</SidebarItem>
 						)}
 					</Link>
-				</SidebarGroupContent>
-			</SidebarGroup>
+				</SidebarSectionContent>
+			</SidebarSection>
 		</Sidebar>
 	);
 };

@@ -13,10 +13,12 @@ import {
 } from "../../../components/menu";
 import {
 	Sidebar,
-	SidebarGroup,
-	SidebarGroupContent,
-	SidebarGroupTitle,
+	SidebarSection,
+	SidebarSectionContent,
 	SidebarItem,
+	SidebarItemLabel,
+	SidebarSectionHeader,
+	SidebarSectionTitle,
 } from "../../../components/sidebar";
 import { RenameChatDialog } from "../../../features/chat/components/rename-chat-dialog";
 import { useDeleteChatMutation } from "../../../features/chat/hooks/queries";
@@ -55,43 +57,39 @@ const ChatItem = ({ chat }: ChatItemProps) => {
 	};
 
 	return (
-		<Link to="/chat/$id" params={{ id: chat.id }}>
-			{({ isActive }) => (
-				<SidebarItem isActive={isActive}>
-					{chat.name}
-					<MenuRoot>
-						<MenuTrigger onClick={(e) => e.stopPropagation()}>
-							<EllipsisIcon />
-						</MenuTrigger>
-						<MenuContent>
-							<MenuSection>
-								<MenuSectionContent>
-									<MenuItem
-										data-action="rename"
-										onClick={() =>
-											showDialog({
-												component: () => <RenameChatDialog chat={chat} />,
-											})
-										}
-									>
-										<MenuItemIcon>
-											<PencilIcon />
-										</MenuItemIcon>
-										<MenuItemLabel>Rename</MenuItemLabel>
-									</MenuItem>
-									<MenuItem data-action="delete" onClick={handleDelete}>
-										<MenuItemIcon>
-											<Trash2Icon />
-										</MenuItemIcon>
-										<MenuItemLabel>Delete</MenuItemLabel>
-									</MenuItem>
-								</MenuSectionContent>
-							</MenuSection>
-						</MenuContent>
-					</MenuRoot>
-				</SidebarItem>
-			)}
-		</Link>
+		<SidebarItem isActive={false}>
+			<SidebarItemLabel>{chat.name}</SidebarItemLabel>
+			<MenuRoot>
+				<MenuTrigger>
+					<EllipsisIcon />
+				</MenuTrigger>
+				<MenuContent>
+					<MenuSection>
+						<MenuSectionContent>
+							<MenuItem
+								data-action="rename"
+								onClick={() =>
+									showDialog({
+										component: () => <RenameChatDialog chat={chat} />,
+									})
+								}
+							>
+								<MenuItemIcon>
+									<PencilIcon />
+								</MenuItemIcon>
+								<MenuItemLabel>Rename</MenuItemLabel>
+							</MenuItem>
+							<MenuItem data-action="delete" onClick={handleDelete}>
+								<MenuItemIcon>
+									<Trash2Icon />
+								</MenuItemIcon>
+								<MenuItemLabel>Delete</MenuItemLabel>
+							</MenuItem>
+						</MenuSectionContent>
+					</MenuSection>
+				</MenuContent>
+			</MenuRoot>
+		</SidebarItem>
 	);
 };
 
@@ -101,20 +99,24 @@ export const ChatSidebar = () => {
 
 	return (
 		<Sidebar className="chat-sidebar">
-			<div className="chat-sidebar-actions">
-				<Link to="/chat" className="icon-button">
-					<MessageCirclePlusIcon />
-				</Link>
+			<div className="chat0-sidebar-header">
+				<div className="chat-sidebar-actions">
+					<Link to="/chat" className="icon-button">
+						<MessageCirclePlusIcon />
+					</Link>
+				</div>
 			</div>
-			<div className="chat-sidebar-main">
-				<SidebarGroup>
-					<SidebarGroupTitle>All time</SidebarGroupTitle>
-					<SidebarGroupContent>
+			<div className="chat-sidebar-content">
+				<SidebarSection>
+					<SidebarSectionHeader>
+						<SidebarSectionTitle>All time</SidebarSectionTitle>
+					</SidebarSectionHeader>
+					<SidebarSectionContent>
 						{listChatsQuery.data.map((chat) => (
 							<ChatItem chat={chat} key={chat.id} />
 						))}
-					</SidebarGroupContent>
-				</SidebarGroup>
+					</SidebarSectionContent>
+				</SidebarSection>
 			</div>
 		</Sidebar>
 	);

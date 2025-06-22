@@ -3,9 +3,10 @@ import { Suspense } from "react";
 import { Loading } from "../../components/loading";
 import {
 	Sidebar,
-	SidebarGroup,
-	SidebarGroupContent,
-	SidebarGroupTitle,
+	SidebarSection,
+	SidebarSectionHeader,
+	SidebarSectionTitle,
+	SidebarSectionContent,
 	SidebarItem,
 } from "../../components/sidebar";
 import { usePluginList } from "../../features/plugins/hooks/core";
@@ -21,9 +22,11 @@ const SettingsSidebar = () => {
 
 	return (
 		<Sidebar className="settings-sidebar">
-			<SidebarGroup>
-				<SidebarGroupTitle>Settings</SidebarGroupTitle>
-				<SidebarGroupContent>
+			<SidebarSection>
+				<SidebarSectionHeader>
+					<SidebarSectionTitle>Settings</SidebarSectionTitle>
+				</SidebarSectionHeader>
+				<SidebarSectionContent>
 					<Link to="/settings">
 						<SidebarItem isActive={location.pathname.endsWith("/settings")}>
 							General
@@ -54,12 +57,14 @@ const SettingsSidebar = () => {
 							Plugins
 						</SidebarItem>
 					</Link>
-				</SidebarGroupContent>
-			</SidebarGroup>
+				</SidebarSectionContent>
+			</SidebarSection>
 			{enabledPlugins.length > 0 && (
-				<SidebarGroup>
-					<SidebarGroupTitle>Plugins</SidebarGroupTitle>
-					<SidebarGroupContent>
+				<SidebarSection>
+					<SidebarSectionHeader>
+						<SidebarSectionTitle>Plugins</SidebarSectionTitle>
+					</SidebarSectionHeader>
+					<SidebarSectionContent>
 						{enabledPlugins.map((plugin) => (
 							<Link
 								to="/settings/plugins/$id"
@@ -75,8 +80,8 @@ const SettingsSidebar = () => {
 								</SidebarItem>
 							</Link>
 						))}
-					</SidebarGroupContent>
-				</SidebarGroup>
+					</SidebarSectionContent>
+				</SidebarSection>
 			)}
 		</Sidebar>
 	);
