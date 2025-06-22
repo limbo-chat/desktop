@@ -29,7 +29,7 @@ export function getWindowStateFromWindow(window: BrowserWindow): WindowState {
 	};
 }
 
-export function attachWindowStateEvents(window: BrowserWindow) {
+export function manageWindowState(window: BrowserWindow) {
 	window.on("close", () => {
 		const newWindowState = getWindowStateFromWindow(window);
 

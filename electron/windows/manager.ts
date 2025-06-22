@@ -1,7 +1,7 @@
 import { BrowserWindow } from "electron";
 import { HTML_PATH, ICON_PATH, PRELOAD_DIST, VITE_DEV_SERVER_URL } from "../constants";
 import { readSettings } from "../settings/utils";
-import { attachWindowStateEvents, readWindowState } from "../window-state/utils";
+import { manageWindowState, readWindowState } from "../window-state/utils";
 import { applyDefaultWindowOptions } from "./utils";
 
 export class WindowManager {
@@ -14,6 +14,8 @@ export class WindowManager {
 	public createMainWindow() {
 		const settings = readSettings();
 		const windowState = readWindowState();
+
+		console.log("Creating main window with state:", windowState);
 
 		this.mainWindow = new BrowserWindow({
 			icon: ICON_PATH,
@@ -37,7 +39,9 @@ export class WindowManager {
 		});
 
 		applyDefaultWindowOptions(this.mainWindow);
-		attachWindowStateEvents(this.mainWindow);
+
+		// we want to track the state of the main window
+		manageWindowState(this.mainWindow);
 
 		if (VITE_DEV_SERVER_URL) {
 			this.mainWindow.loadURL(VITE_DEV_SERVER_URL);
