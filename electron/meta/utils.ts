@@ -1,38 +1,50 @@
 import fs from "node:fs";
-import { LATEST_DATA_VERSION } from "../migrations/constants";
-import { META_FILE_NAME, META_FILE_PATH } from "./constants";
+import { LATEST_DATA_VERSION } from "../data/constants";
+import { META_FILE_PATH } from "./constants";
 import { metaSchema, type Meta } from "./schemas";
 
 export const defaultMeta: Meta = {
 	dataVersion: LATEST_DATA_VERSION,
 } as const;
 
-export function readMeta() {
-	let metaText;
+export function writeMeta(meta: Meta) {
+	fs.writeFileSync(META_FILE_PATH, JSON.stringify(meta));
+}
+
+export function ensureMeta() {
+	if (!fs.existsSync(META_FILE_PATH)) {
+		writeMeta(defaultMeta);
+	}
+}
+
+export function readMeta(): Meta {
+	let metaStr;
 
 	try {
-		metaText = fs.readFileSync(META_FILE_PATH, "utf8");
+		metaStr = fs.readFileSync(META_FILE_PATH, "utf8");
 	} catch {
-		return null;
+		writeMeta(defaultMeta);
+
+		return defaultMeta;
 	}
 
 	let rawMeta;
 
 	try {
-		rawMeta = JSON.parse(metaText);
+		rawMeta = JSON.parse(metaStr);
 	} catch {
-		return null;
+		writeMeta(defaultMeta);
+
+		return defaultMeta;
 	}
 
 	const metaParseResult = metaSchema.safeParse(rawMeta);
 
 	if (!metaParseResult.success) {
-		return null;
+		writeMeta(defaultMeta);
+
+		return defaultMeta;
 	}
 
 	return metaParseResult.data;
-}
-
-export function writeMeta(meta: Meta) {
-	fs.writeFileSync(META_FILE_PATH, JSON.stringify(meta));
 }

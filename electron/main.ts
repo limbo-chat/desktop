@@ -1,100 +1,49 @@
-import { app, shell, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import { createIPCHandler } from "trpc-electron/main";
-import { HTML_PATH, ICON_PATH, PRELOAD_DIST, VITE_DEV_SERVER_URL } from "./constants";
-import { ensureCustomStylesDirectory } from "./custom-styles/utils";
 import { CustomStylesWatcher } from "./custom-styles/watcher";
-import { ensureDb } from "./db/utils";
-import { defaultMeta, readMeta, writeMeta } from "./meta/utils";
-import { LATEST_DATA_VERSION } from "./migrations/constants";
-import { migrateToLatestVersion } from "./migrations/utils";
-import { ensurePluginsDir } from "./plugins/utils";
-import { ensureSettings, readSettings } from "./settings/utils";
+import { LATEST_DATA_VERSION } from "./data/constants";
+import { ensureData, migrateToLatestVersion } from "./data/utils";
+import { readMeta, writeMeta } from "./meta/utils";
+import { readSettings } from "./settings/utils";
 import { mainRouter } from "./trpc/router";
+import { WindowManager } from "./windows/manager";
 
-let mainWindow: BrowserWindow | null = null;
-
-interface CreateWindowOptions {
-	transparent: boolean;
-}
+const windowManager = new WindowManager();
 
 const trpcIpcHandler = createIPCHandler({
 	router: mainRouter,
 });
 
-function createMainWindow(opts: CreateWindowOptions) {
-	const newMainWindow = new BrowserWindow({
-		titleBarStyle: "hidden",
-		transparent: opts.transparent,
-		icon: ICON_PATH,
-		minHeight: 200,
-		minWidth: 300,
-		// expose window controls in Windows/Linux
-		...(process.platform !== "darwin" ? { titleBarOverlay: true } : {}),
-		webPreferences: {
-			preload: PRELOAD_DIST,
-		},
+function manageWindowIpc(window: BrowserWindow) {
+	trpcIpcHandler.attachWindow(window);
+
+	window.on("close", () => {
+		trpcIpcHandler.detachWindow(window);
 	});
-
-	const newMainWindowId = newMainWindow.webContents.id;
-
-	// attach the IPC handler to the new window
-	trpcIpcHandler.attachWindow(newMainWindow);
-
-	// open links externally
-	newMainWindow.webContents.setWindowOpenHandler((details) => {
-		shell.openExternal(details.url);
-
-		return { action: "deny" };
-	});
-
-	newMainWindow.on("focus", () => {
-		newMainWindow.webContents.send("focus");
-	});
-
-	newMainWindow.on("blur", () => {
-		newMainWindow.webContents.send("blur");
-	});
-
-	newMainWindow.on("closed", () => {
-		trpcIpcHandler.detachWindow(newMainWindow, newMainWindowId);
-
-		mainWindow = null;
-	});
-
-	if (VITE_DEV_SERVER_URL) {
-		newMainWindow.loadURL(VITE_DEV_SERVER_URL);
-	} else {
-		newMainWindow.loadFile(HTML_PATH);
-	}
-
-	mainWindow = newMainWindow;
-}
-
-async function ensureData() {
-	await Promise.all([
-		ensureSettings(),
-		ensurePluginsDir(),
-		ensureCustomStylesDirectory(),
-		ensureDb(),
-	]);
 }
 
 function watchCustomStyles() {
 	const customStylesWatcher = new CustomStylesWatcher();
 
 	customStylesWatcher.events.on("add", (filePath) => {
+		const mainWindow = windowManager.getMainWindow();
+
 		if (mainWindow) {
 			mainWindow.webContents.send("custom-style:add", filePath);
 		}
 	});
 
 	customStylesWatcher.events.on("change", (filePath) => {
+		const mainWindow = windowManager.getMainWindow();
+
 		if (mainWindow) {
 			mainWindow.webContents.send("custom-style:reload", filePath);
 		}
 	});
 
 	customStylesWatcher.events.on("remove", (filePath) => {
+		const mainWindow = windowManager.getMainWindow();
+
 		if (mainWindow) {
 			mainWindow.webContents.send("custom-style:remove", filePath);
 		}
@@ -103,43 +52,42 @@ function watchCustomStyles() {
 	customStylesWatcher.start();
 }
 
+function launchWindow() {
+	// currently, we only have one window type, the main window
+	const newMainWindow = windowManager.createMainWindow();
+
+	manageWindowIpc(newMainWindow);
+}
+
 async function startApp() {
-	let meta = readMeta();
+	// ensure the required data sources are as expected
+	await ensureData();
 
-	if (!meta) {
-		// fresh install
-		meta = defaultMeta;
-
-		writeMeta(defaultMeta);
-	}
+	const meta = readMeta();
 
 	// check if the user's data version is behind the latest version
 	if (meta.dataVersion < LATEST_DATA_VERSION) {
 		// if so, run migrations to bring it up to date
 		await migrateToLatestVersion(meta.dataVersion);
 
-		meta = {
+		// update the meta file with the latest data version
+		writeMeta({
 			...meta,
 			dataVersion: LATEST_DATA_VERSION,
-		};
-
-		// update the meta file with the latest data version
-		writeMeta(meta);
+		});
 	}
-
-	// ensure the required data sources are as expected
-	await ensureData();
 
 	// read the settings before creating the window
 	const settings = readSettings();
 
-	// create the main window on startup
-	createMainWindow({
-		transparent: settings.isTransparencyEnabled,
-	});
+	if (settings.isDeveloperModeEnabled) {
+		watchCustomStyles();
+	}
 
 	// the renderer has a loading process that will send a "ready" event when it is ready to show
 	ipcMain.on("renderer:ready", (e) => {
+		const mainWindow = windowManager.getMainWindow();
+
 		if (!mainWindow) {
 			return;
 		}
@@ -149,16 +97,11 @@ async function startApp() {
 		}
 	});
 
-	if (settings.isDeveloperModeEnabled) {
-		watchCustomStyles();
-	}
+	// launch a window
+	launchWindow();
 }
 
-app.whenReady().then(startApp);
-
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+// quit when all windows are closed, except on macos.
 app.on("window-all-closed", () => {
 	if (process.platform !== "darwin") {
 		app.quit();
@@ -166,11 +109,11 @@ app.on("window-all-closed", () => {
 });
 
 app.on("activate", () => {
-	// On OS X it's common to re-create a window in the app when the
-	// dock icon is clicked and there are no other windows open.
 	if (BrowserWindow.getAllWindows().length === 0) {
-		const settings = readSettings();
-
-		createMainWindow({ transparent: settings.isTransparencyEnabled });
+		// recreate a window if there are no windows open
+		launchWindow();
 	}
 });
+
+// start the app when electron is ready
+app.whenReady().then(startApp);
