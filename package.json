@@ -9,8 +9,8 @@
 		"build": "pnpm typecheck && electron-vite build",
 		"build:unpack": "pnpm build && electron-builder --dir",
 		"build:win": "pnpm build && electron-builder --win",
-		"build:mac": "electron-vite build && electron-builder --mac",
-		"build:linux": "electron-vite build && electron-builder --linux",
+		"build:mac": "pnpm build && electron-builder --mac",
+		"build:linux": "pnpm build && electron-builder --linux",
 		"typecheck": "tsc --noEmit",
 		"format": "prettier --write .",
 		"postinstall": "electron-builder install-app-deps"

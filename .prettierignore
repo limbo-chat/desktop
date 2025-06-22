@@ -1,9 +1,8 @@
+# outputs
+build
+
 # tanstack router generated file
-routeTree.gen.ts
+route-tree.gen.ts
 
 # pnpm lockfile
 pnpm-lock.yaml
-
-# outputs
-dist-electron
-build
