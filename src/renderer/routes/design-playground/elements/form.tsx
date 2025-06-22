@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "../../../components/button";
 import * as FieldController from "../../../components/field-controller";
 import * as Form from "../../../components/form-primitive";
 import { RadioOption } from "../../../components/radio-group";

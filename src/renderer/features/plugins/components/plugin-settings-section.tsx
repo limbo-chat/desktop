@@ -1,9 +1,8 @@
 import { useMemo } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import type * as limbo from "@limbo/api";
-import { Button } from "../../../components/button";
 import { Checkbox } from "../../../components/checkbox";
-import { PasswordInput } from "../../../components/inputs/password-input";
+import { PasswordInput } from "../../../components/password-input";
 import {
 	SettingItem,
 	SettingItemControl,
