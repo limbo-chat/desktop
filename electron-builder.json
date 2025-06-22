@@ -1,14 +1,15 @@
 {
 	"$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-	"appId": "YourAppID",
-	"asar": true,
+	"appId": "com.limbo.limbo",
 	"productName": "limbo",
+	"asar": true,
 	"directories": {
-		"output": "release/${version}"
+		"buildResources": "build"
 	},
-	"files": ["dist", "dist-electron"],
+	"files": ["dist", "package.json"],
 	"mac": {
 		"target": ["dmg"],
+		"category": "public.app-category.productivity",
 		"artifactName": "${productName}-Mac-${version}-Installer.${ext}"
 	},
 	"win": {
