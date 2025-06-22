@@ -33,7 +33,6 @@ interface ChatItemProps {
 	};
 }
 
-// TODO, fix the issue of the chat link navigating when the menu trigger is clicked
 const ChatItem = ({ chat }: ChatItemProps) => {
 	const router = useRouter();
 	const deleteChatMutation = useDeleteChatMutation();
@@ -74,18 +73,25 @@ const ChatItem = ({ chat }: ChatItemProps) => {
 						<MenuSectionContent>
 							<MenuItem
 								data-action="rename"
-								onClick={() =>
+								onClick={(e) => {
+									e.stopPropagation();
 									showDialog({
 										component: () => <RenameChatDialog chat={chat} />,
-									})
-								}
+									});
+								}}
 							>
 								<MenuItemIcon>
 									<PencilIcon />
 								</MenuItemIcon>
 								<MenuItemLabel>Rename</MenuItemLabel>
 							</MenuItem>
-							<MenuItem data-action="delete" onClick={handleDelete}>
+							<MenuItem
+								data-action="delete"
+								onClick={(e) => {
+									e.stopPropagation();
+									handleDelete();
+								}}
+							>
 								<MenuItemIcon>
 									<Trash2Icon />
 								</MenuItemIcon>
