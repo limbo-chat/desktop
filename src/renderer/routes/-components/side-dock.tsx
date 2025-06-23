@@ -7,12 +7,16 @@ export const SideDock = () => {
 	return (
 		<div className="side-dock">
 			<Tooltip label="Chat" contentProps={{ side: "right" }}>
-				<Link to="/chat" className="side-dock-item">
+				<Link to="/chat" className="side-dock-item" activeProps={{ "data-active": true }}>
 					<MessageSquareIcon />
 				</Link>
 			</Tooltip>
 			<Tooltip label="Settings" contentProps={{ side: "right" }}>
-				<Link to="/settings" className="side-dock-item">
+				<Link
+					to="/settings"
+					className="side-dock-item"
+					activeProps={{ "data-active": true }}
+				>
 					<SettingsIcon />
 				</Link>
 			</Tooltip>
