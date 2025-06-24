@@ -60,9 +60,6 @@ function launchWindow() {
 }
 
 async function startApp() {
-	// ensure the required data sources are as expected
-	await ensureData();
-
 	const meta = readMeta();
 
 	// check if the user's data version is behind the latest version
@@ -76,6 +73,9 @@ async function startApp() {
 			dataVersion: LATEST_DATA_VERSION,
 		});
 	}
+
+	// ensure the required data sources are as expected
+	await ensureData();
 
 	// read the settings before creating the window
 	const settings = readSettings();
