@@ -7,6 +7,7 @@ import { usePluginManager } from "../../plugins/hooks/core";
 import { ChatPromptBuilder } from "../core/chat-prompt-builder";
 import {
 	adaptChatPromptForCapabilities,
+	createStoreConnectedMessageHandle,
 	executeToolCall,
 	transformBuiltInNodesInChatPrompt,
 } from "../core/utils";
@@ -188,68 +189,11 @@ export const useSendMessage = () => {
 				}
 			}
 
-			const messageHandle: limbo.MessageHandle = {
-				getNode: (index) => {
-					return assistantMessage.getNode(index);
-				},
-				getNodes: () => {
-					return assistantMessage.getNodes();
-				},
-				prependNode: (node) => {
-					assistantMessage.prependNode(node);
-
-					chatStore.setMessageNodes(
-						chatId,
-						assistantMessageId,
-						structuredClone(assistantMessage.getNodes())
-					);
-				},
-				appendNode: (node) => {
-					assistantMessage.appendNode(node);
-
-					chatStore.setMessageNodes(
-						chatId,
-						assistantMessageId,
-						structuredClone(assistantMessage.getNodes())
-					);
-				},
-				removeNode: (node) => {
-					assistantMessage.removeNode(node);
-
-					chatStore.setMessageNodes(
-						chatId,
-						assistantMessageId,
-						structuredClone(assistantMessage.getNodes())
-					);
-				},
-				removeNodeAt: (index) => {
-					assistantMessage.removeNodeAt(index);
-
-					chatStore.setMessageNodes(
-						chatId,
-						assistantMessageId,
-						structuredClone(assistantMessage.getNodes())
-					);
-				},
-				replaceNode: (index, node) => {
-					assistantMessage.replaceNode(index, node);
-
-					chatStore.setMessageNodes(
-						chatId,
-						assistantMessageId,
-						structuredClone(assistantMessage.getNodes())
-					);
-				},
-				replaceNodeAt(index, newNodeOrNodes) {
-					assistantMessage.replaceNodeAt(index, newNodeOrNodes);
-
-					chatStore.setMessageNodes(
-						chatId,
-						assistantMessageId,
-						structuredClone(assistantMessage.getNodes())
-					);
-				},
-			};
+			const assistantMessageHandle = createStoreConnectedMessageHandle({
+				chatId,
+				messageId: assistantMessageId,
+				messageBuilder: assistantMessage,
+			});
 
 			// run the plugins on the onPrepareChatPrompt lifecycle hook
 			await pluginManager.executeOnPrepareChatPromptHooks({
@@ -257,13 +201,11 @@ export const useSendMessage = () => {
 				promptBuilder,
 			});
 
-			try {
-				// generate the assistant's response
+			// generate the assistant's response
 
-				// let shouldLoop = true;
+			try {
 				let shouldLoop = true;
 				let iterations = 0;
-
 				let hasAppendedAssistantMessage = false;
 
 				// max iterations to prevent catastrophic infinite loops
@@ -286,47 +228,46 @@ export const useSendMessage = () => {
 
 					// before passing the prompt to the LLM, adapt it for the LLM's capabilities
 
-					let currentMarkdownNode: limbo.ChatMessageNode | null = null;
+					let currentMarkdownNodeIdx: number | null = null;
+					let currentMarkdownNodeContent = "";
 
 					const toolCallPromises: Promise<limbo.LLM.ToolCall>[] = [];
 
 					await llm.chat({
 						tools: toolDefinitions,
 						messages: promptBuilder.toPromptMessages(),
-						message: messageHandle,
+						message: assistantMessageHandle,
 						abortSignal: abortSignal,
 						onText: (text) => {
-							if (currentMarkdownNode) {
-								currentMarkdownNode.data.content += text;
-							} else {
-								// create a new markdown node
-								currentMarkdownNode = {
+							currentMarkdownNodeContent += text;
+
+							if (typeof currentMarkdownNodeIdx === "number") {
+								assistantMessageHandle.replaceNodeAt(currentMarkdownNodeIdx, {
 									type: "markdown",
 									data: {
-										content: text,
+										content: currentMarkdownNodeContent,
 									},
-								};
+								});
+							} else {
+								assistantMessageHandle.appendNode({
+									type: "markdown",
+									data: {
+										content: currentMarkdownNodeContent,
+									},
+								});
 
-								// add the node to the assistant message
-								assistantMessage.appendNode(currentMarkdownNode);
+								// set the current markdown node index to the last node
+								currentMarkdownNodeIdx = assistantMessage.getNodes().length - 1;
 							}
-
-							// sync the assistant message with the chat store
-
-							chatStore.setMessageNodes(
-								chatId,
-								assistantMessageId,
-								structuredClone(assistantMessage.getNodes())
-							);
 						},
 						onToolCall: (toolCall) => {
 							shouldLoop = true;
-							currentMarkdownNode = null;
+							currentMarkdownNodeIdx = null;
 
 							const toolCallPromise = handleLLMToolCall({
 								tools: toolMap,
 								toolCall,
-								messageHandle,
+								messageHandle: assistantMessageHandle,
 								abortSignal,
 							});
 

@@ -1,5 +1,7 @@
 import Ajv from "ajv";
 import type * as limbo from "@limbo/api";
+import { useChatStore } from "../stores";
+import type { ChatMessageBuilder } from "./chat-prompt-builder";
 
 const ajv = new Ajv();
 
@@ -123,4 +125,61 @@ export async function executeToolCall({
 			error: errorMessage,
 		};
 	}
+}
+
+export interface CreateStoreConnectedMessageHandleOptions {
+	chatId: string;
+	messageId: string;
+	messageBuilder: ChatMessageBuilder;
+}
+
+export function createStoreConnectedMessageHandle({
+	chatId,
+	messageId,
+	messageBuilder,
+}: CreateStoreConnectedMessageHandleOptions): limbo.MessageHandle {
+	const syncToStore = () => {
+		const chatStore = useChatStore.getState();
+
+		chatStore.setMessageNodes(chatId, messageId, messageBuilder.getNodes());
+	};
+
+	return {
+		getNode: (index) => {
+			return messageBuilder.getNode(index);
+		},
+		getNodes: () => {
+			return messageBuilder.getNodes();
+		},
+		prependNode: (node) => {
+			messageBuilder.prependNode(node);
+
+			syncToStore();
+		},
+		appendNode: (node) => {
+			messageBuilder.appendNode(node);
+
+			syncToStore();
+		},
+		removeNode: (node) => {
+			messageBuilder.removeNode(node);
+
+			syncToStore();
+		},
+		removeNodeAt: (index) => {
+			messageBuilder.removeNodeAt(index);
+
+			syncToStore();
+		},
+		replaceNode: (index, node) => {
+			messageBuilder.replaceNode(index, node);
+
+			syncToStore();
+		},
+		replaceNodeAt(index, newNodeOrNodes) {
+			messageBuilder.replaceNodeAt(index, newNodeOrNodes);
+
+			syncToStore();
+		},
+	};
 }
