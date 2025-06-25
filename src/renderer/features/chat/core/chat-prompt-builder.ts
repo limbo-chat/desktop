@@ -207,6 +207,18 @@ export class ChatPromptBuilder implements limbo.ChatPromptBuilder {
 		];
 	}
 
+	public clone() {
+		const clonedPrompt = new ChatPromptBuilder();
+
+		clonedPrompt.setSystemPrompt(this.getSystemPrompt());
+
+		for (const message of this.getMessages()) {
+			clonedPrompt.appendMessage(new ChatMessageBuilder(message.toPromptMessage()));
+		}
+
+		return clonedPrompt;
+	}
+
 	private getMessageIndex(message: limbo.ChatMessageBuilder) {
 		return this.messages.findIndex((m) => m === message);
 	}

@@ -4,78 +4,10 @@ import type * as limbo from "@limbo/api";
 import { useMainRouterClient } from "../../../lib/trpc";
 import { buildNamespacedResourceId } from "../../../lib/utils";
 import { usePluginManager } from "../../plugins/hooks/core";
-import { ChatPromptBuilder } from "../core/chat-prompt-builder";
-import {
-	adaptChatPromptForCapabilities,
-	createStoreConnectedMessageHandle,
-	executeToolCall,
-	transformBuiltInNodesInChatPrompt,
-} from "../core/utils";
+import { handleAssistantChatLoop } from "../core/chat-loop";
+import { ChatMessageBuilder, ChatPromptBuilder } from "../core/chat-prompt-builder";
+import { createStoreConnectedMessageHandle } from "../core/utils";
 import { useChatStore } from "../stores";
-
-interface HandleLLMToolCallOptions {
-	toolCall: limbo.LLM.ToolCall;
-	tools: Map<string, limbo.Tool>;
-	messageHandle: limbo.MessageHandle;
-	abortSignal: AbortSignal;
-}
-
-async function handleLLMToolCall({
-	toolCall,
-	tools,
-	messageHandle,
-	abortSignal,
-}: HandleLLMToolCallOptions) {
-	const tool = tools.get(toolCall.toolId);
-	const toolCallId = ulid();
-
-	const pendingToolCallNode = {
-		type: "tool_call",
-		data: {
-			id: toolCallId,
-			toolId: toolCall.toolId,
-			arguments: toolCall.arguments,
-			status: "pending",
-		},
-	};
-
-	// add the tool call to the message
-	messageHandle.appendNode(pendingToolCallNode);
-
-	let finalToolCall: limbo.ToolCall;
-
-	if (tool) {
-		const toolCallResult = await executeToolCall({
-			tool,
-			args: toolCall.arguments,
-			messageHandle,
-			abortSignal: abortSignal,
-		});
-
-		finalToolCall = {
-			id: toolCallId,
-			toolId: toolCall.toolId,
-			arguments: toolCall.arguments,
-			...toolCallResult,
-		};
-	} else {
-		finalToolCall = {
-			id: toolCallId,
-			toolId: toolCall.toolId,
-			arguments: toolCall.arguments,
-			status: "error",
-			error: "Tool not found",
-		};
-	}
-
-	messageHandle.replaceNode(pendingToolCallNode, {
-		type: "tool_call",
-		// @ts-expect-error
-		data: finalToolCall,
-	});
-
-	return finalToolCall;
-}
 
 export interface SendMessageOptions {
 	llm: limbo.LLM;
@@ -127,7 +59,7 @@ export const useSendMessage = () => {
 			const userMessageId = ulid();
 			const userMessageCreatedAt = new Date().toISOString();
 
-			const userMessage = promptBuilder.createMessage({
+			const userMessage = new ChatMessageBuilder({
 				role: "user",
 				content: [
 					{
@@ -152,7 +84,7 @@ export const useSendMessage = () => {
 
 			const assistantMessageId = ulid();
 
-			const assistantMessage = promptBuilder.createMessage({
+			const assistantMessage = new ChatMessageBuilder({
 				role: "assistant",
 				content: [],
 			});
@@ -201,92 +133,17 @@ export const useSendMessage = () => {
 				promptBuilder,
 			});
 
-			// generate the assistant's response
-
 			try {
-				let shouldLoop = true;
-				let iterations = 0;
-				let hasAppendedAssistantMessage = false;
-
-				// max iterations to prevent catastrophic infinite loops
-				while (shouldLoop && iterations < 25 && !abortSignal.aborted) {
-					shouldLoop = false;
-
-					// first transform the chat prompt for core functionality
-					transformBuiltInNodesInChatPrompt(promptBuilder);
-
-					// run the plugins on the onTransformChatPrompt lifecycle hook to transform the chat prompt
-					await pluginManager.executeOnTransformChatPromptHooks({
-						chatId,
-						promptBuilder,
-					});
-
-					adaptChatPromptForCapabilities({
-						capabilities: llm.capabilities,
-						chatPromptBuilder: promptBuilder,
-					});
-
-					// before passing the prompt to the LLM, adapt it for the LLM's capabilities
-
-					let currentMarkdownNodeIdx: number | null = null;
-					let currentMarkdownNodeContent = "";
-
-					const toolCallPromises: Promise<limbo.LLM.ToolCall>[] = [];
-
-					await llm.chat({
-						tools: toolDefinitions,
-						messages: promptBuilder.toPromptMessages(),
-						message: assistantMessageHandle,
-						abortSignal: abortSignal,
-						onText: (text) => {
-							currentMarkdownNodeContent += text;
-
-							if (typeof currentMarkdownNodeIdx === "number") {
-								assistantMessageHandle.replaceNodeAt(currentMarkdownNodeIdx, {
-									type: "markdown",
-									data: {
-										content: currentMarkdownNodeContent,
-									},
-								});
-							} else {
-								assistantMessageHandle.appendNode({
-									type: "markdown",
-									data: {
-										content: currentMarkdownNodeContent,
-									},
-								});
-
-								// set the current markdown node index to the last node
-								currentMarkdownNodeIdx = assistantMessage.getNodes().length - 1;
-							}
-						},
-						onToolCall: (toolCall) => {
-							shouldLoop = true;
-							currentMarkdownNodeIdx = null;
-
-							const toolCallPromise = handleLLMToolCall({
-								tools: toolMap,
-								toolCall,
-								messageHandle: assistantMessageHandle,
-								abortSignal,
-							});
-
-							toolCallPromises.push(toolCallPromise);
-						},
-					});
-
-					if (!hasAppendedAssistantMessage) {
-						// add the assistant message to the prompt builder after the first generation
-						promptBuilder.appendMessage(assistantMessage);
-
-						hasAppendedAssistantMessage = true;
-					}
-
-					// wait for all tool calls to finish executing
-					await Promise.all(toolCallPromises);
-
-					iterations++;
-				}
+				await handleAssistantChatLoop({
+					chatId,
+					llm,
+					pluginManager,
+					chatPrompt: promptBuilder,
+					messageHandle: assistantMessageHandle,
+					tools: toolMap,
+					maxIterations: 25,
+					abortSignal,
+				});
 			} catch (error) {
 				if (!(error instanceof Error) || error.name !== "AbortError") {
 					chatStore.removeMessage(chatId, userMessageId);
