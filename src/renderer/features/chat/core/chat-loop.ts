@@ -220,6 +220,7 @@ export async function handleAssistantChatLoop({
 			},
 			onToolCall: (toolCall) => {
 				currentMarkdownNodeIdx = null;
+				currentMarkdownNodeContent = "";
 
 				const toolCallPromise = handleLLMToolCall({
 					tools,

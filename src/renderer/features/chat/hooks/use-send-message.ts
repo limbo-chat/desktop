@@ -101,7 +101,6 @@ export const useSendMessage = () => {
 			const plugins = pluginManager.getPlugins();
 
 			const toolMap = new Map<string, limbo.Tool>();
-			const toolDefinitions: limbo.LLM.Tool[] = [];
 
 			for (const plugin of plugins) {
 				const tools = plugin.context.getTools();
@@ -110,12 +109,9 @@ export const useSendMessage = () => {
 					const namespacedToolId = buildNamespacedResourceId(plugin.manifest.id, tool.id);
 
 					if (enabledToolIds.includes(namespacedToolId)) {
-						toolMap.set(namespacedToolId, tool);
-
-						toolDefinitions.push({
+						toolMap.set(namespacedToolId, {
+							...tool,
 							id: namespacedToolId,
-							description: tool.description,
-							schema: tool.schema,
 						});
 					}
 				}
