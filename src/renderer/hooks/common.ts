@@ -12,12 +12,12 @@ export const useIsAppFocused = () => {
 			setIsAppFocused(false);
 		};
 
-		window.ipcRenderer.on("focus", focusHandler);
-		window.ipcRenderer.on("blur", blurHandler);
+		window.ipcRenderer.on("window:focus", focusHandler);
+		window.ipcRenderer.on("window:blur", blurHandler);
 
 		return () => {
-			window.ipcRenderer.off("focus", focusHandler);
-			window.ipcRenderer.off("blur", blurHandler);
+			window.ipcRenderer.off("window:focus", focusHandler);
+			window.ipcRenderer.off("window:blur", blurHandler);
 		};
 	});
 

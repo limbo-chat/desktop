@@ -6,7 +6,7 @@ import { ensureData, migrateToLatestVersion } from "./data/utils";
 import { readMeta, writeMeta } from "./meta/utils";
 import { readSettings } from "./settings/utils";
 import { mainRouter } from "./trpc/router";
-import { WindowManager } from "./windows/manager";
+import { WindowManager, type WindowId } from "./windows/manager";
 
 const windowManager = new WindowManager();
 
@@ -26,37 +26,33 @@ function watchCustomStyles() {
 	const customStylesWatcher = new CustomStylesWatcher();
 
 	customStylesWatcher.events.on("add", (filePath) => {
-		const mainWindow = windowManager.getMainWindow();
-
-		if (mainWindow) {
-			mainWindow.webContents.send("custom-style:add", filePath);
-		}
+		windowManager.sendMessageToAllWindows("custom-style:add", filePath);
 	});
 
 	customStylesWatcher.events.on("change", (filePath) => {
-		const mainWindow = windowManager.getMainWindow();
-
-		if (mainWindow) {
-			mainWindow.webContents.send("custom-style:reload", filePath);
-		}
+		windowManager.sendMessageToAllWindows("custom-style:reload", filePath);
 	});
 
 	customStylesWatcher.events.on("remove", (filePath) => {
-		const mainWindow = windowManager.getMainWindow();
-
-		if (mainWindow) {
-			mainWindow.webContents.send("custom-style:remove", filePath);
-		}
+		windowManager.sendMessageToAllWindows("custom-style:remove", filePath);
 	});
 
 	customStylesWatcher.start();
 }
 
 function launchWindow() {
-	// currently, we only have one window type, the main window
-	const newMainWindow = windowManager.createMainWindow();
+	const meta = readMeta();
 
-	manageWindowIpc(newMainWindow);
+	if (meta.completedOnboarding) {
+		const newMainWindow = windowManager.createMainWindow();
+
+		manageWindowIpc(newMainWindow);
+	} else {
+		// if the user hasn't completed the onboarding, we create an onboarding window
+		const onboardingWindow = windowManager.createOnboardingWindow();
+
+		manageWindowIpc(onboardingWindow);
+	}
 }
 
 async function startApp() {
@@ -84,17 +80,15 @@ async function startApp() {
 		watchCustomStyles();
 	}
 
-	// the renderer has a loading process that will send a "ready" event when it is ready to show
-	ipcMain.on("renderer:ready", (e) => {
-		const mainWindow = windowManager.getMainWindow();
+	// the windows have a loading process that will send a "ready" event when it is ready to show
+	ipcMain.on("window:ready", (e, windowId: WindowId) => {
+		const readyWindow = windowManager.getWindow(windowId);
 
-		if (!mainWindow) {
+		if (!readyWindow) {
 			return;
 		}
 
-		if (e.sender.id === mainWindow.webContents.id) {
-			mainWindow.show();
-		}
+		readyWindow.show();
 	});
 
 	// launch a window

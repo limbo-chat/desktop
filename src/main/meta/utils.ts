@@ -5,6 +5,7 @@ import { metaSchema, type Meta } from "./schemas";
 
 export const defaultMeta: Meta = {
 	dataVersion: LATEST_DATA_VERSION,
+	completedOnboarding: false,
 } as const;
 
 export function writeMeta(meta: Meta) {

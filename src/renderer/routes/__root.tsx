@@ -14,7 +14,6 @@ import {
 	ErrorTitle,
 } from "../components/error";
 import { Loading } from "../components/loading";
-import { useOpenCommandPaletteHotkey, useRegisterCoreCommands } from "../features/commands/hooks";
 import { useCustomStylesLoader, useCustomStylesSubscriber } from "../features/custom-styles/hooks";
 import { ModalHost } from "../features/modals/components";
 import {
@@ -26,12 +25,9 @@ import type { PluginBackend } from "../features/plugins/core/plugin-backend";
 import { PluginManager } from "../features/plugins/core/plugin-manager";
 import { EvalPluginModuleLoader } from "../features/plugins/core/plugin-module-loader";
 import { PluginSystem } from "../features/plugins/core/plugin-system";
-import { usePluginHotReloader, usePluginLoader } from "../features/plugins/hooks/core";
-import { usePluginSyncLayer } from "../features/plugins/hooks/use-plugin-sync-layer";
+import { useWindowInfoContext } from "../features/window-info/hooks";
 import { useIsAppFocused } from "../hooks/common";
 import { MainRouterProvider } from "../lib/trpc";
-import { SideDock } from "./-components/side-dock";
-import { Titlebar } from "./-components/titlebar";
 
 export interface RouterContext {
 	queryClient: QueryClient;
@@ -157,6 +153,7 @@ function RootLayoutProviders({ children }: PropsWithChildren) {
 }
 
 const useRendererLoader = () => {
+	const windowInfo = useWindowInfoContext();
 	const areCutomStylesLoaded = useRef(false);
 
 	const checkLoaded = () => {
@@ -165,7 +162,7 @@ const useRendererLoader = () => {
 		}
 
 		// notify the main process that the renderer is ready
-		window.ipcRenderer.send("renderer:ready");
+		window.ipcRenderer.send("window:ready", windowInfo.id);
 	};
 
 	useCustomStylesLoader({
@@ -181,21 +178,7 @@ const MainContent = () => {
 	useRendererLoader();
 	useCustomStylesSubscriber();
 
-	usePluginSyncLayer();
-	usePluginLoader();
-	usePluginHotReloader();
-
-	useRegisterCoreCommands();
-	useOpenCommandPaletteHotkey();
-
-	return (
-		<div className="app-content">
-			<SideDock />
-			<div className="root-page">
-				<Outlet />
-			</div>
-		</div>
-	);
+	return <Outlet />;
 };
 
 function RootLayout() {
@@ -204,7 +187,6 @@ function RootLayout() {
 	return (
 		<RootLayoutProviders>
 			<div className="app" data-is-focused={isAppFocused}>
-				<Titlebar />
 				<ModalHost />
 				<Toaster />
 				<Suspense fallback={<Loading />}>
