@@ -2,10 +2,12 @@ import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 import { router } from "../trpc";
 import { chatsRouter } from "./chats";
 import { customStylesRouter } from "./custom-styles";
+import { onboardingRouter } from "./onboarding";
 import { pluginsRouter } from "./plugins";
 import { settingsRouter } from "./settings";
 
 export const mainRouter = router({
+	onboarding: onboardingRouter,
 	settings: settingsRouter,
 	customStyles: customStylesRouter,
 	plugins: pluginsRouter,

@@ -1,4 +1,5 @@
-import { BrowserWindow, ipcMain } from "electron";
+import { BrowserWindow } from "electron";
+import EventEmitter from "eventemitter3";
 import { DEV_SERVER_URL, ICON_PATH, PRELOAD_FILE_PATH, HTML_PATH } from "../constants";
 import { readSettings } from "../settings/utils";
 import { manageWindowState, readWindowState } from "../window-state/utils";
@@ -6,7 +7,12 @@ import { applyDefaultWindowOptions, sendWindowInfo } from "./utils";
 
 export type WindowId = "main" | "onboarding";
 
+export interface WindowManagerEvents {
+	"window:created": (windowId: WindowId) => void;
+}
+
 export class WindowManager {
+	public events = new EventEmitter<WindowManagerEvents>();
 	private windows = new Map<WindowId, Electron.BrowserWindow>();
 
 	public getWindow(id: WindowId) {
@@ -58,6 +64,8 @@ export class WindowManager {
 
 		this.windows.set("main", mainWindow);
 
+		this.events.emit("window:created", "main");
+
 		return mainWindow;
 	}
 
@@ -97,6 +105,7 @@ export class WindowManager {
 		}
 
 		this.windows.set("onboarding", onboardingWindow);
+		this.events.emit("window:created", "onboarding");
 
 		return onboardingWindow;
 	}

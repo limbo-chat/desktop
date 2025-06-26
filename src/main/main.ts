@@ -12,15 +12,12 @@ const windowManager = new WindowManager();
 
 const trpcIpcHandler = createIPCHandler({
 	router: mainRouter,
+	createContext: async () => {
+		return {
+			windowManager,
+		};
+	},
 });
-
-function manageWindowIpc(window: BrowserWindow) {
-	trpcIpcHandler.attachWindow(window);
-
-	window.on("close", () => {
-		trpcIpcHandler.detachWindow(window);
-	});
-}
 
 function watchCustomStyles() {
 	const customStylesWatcher = new CustomStylesWatcher();
@@ -44,14 +41,9 @@ function launchWindow() {
 	const meta = readMeta();
 
 	if (meta.completedOnboarding) {
-		const newMainWindow = windowManager.createMainWindow();
-
-		manageWindowIpc(newMainWindow);
+		windowManager.createMainWindow();
 	} else {
-		// if the user hasn't completed the onboarding, we create an onboarding window
-		const onboardingWindow = windowManager.createOnboardingWindow();
-
-		manageWindowIpc(onboardingWindow);
+		windowManager.createOnboardingWindow();
 	}
 }
 
@@ -94,6 +86,20 @@ async function startApp() {
 	// launch a window
 	launchWindow();
 }
+
+windowManager.events.on("window:created", (windowId) => {
+	const window = windowManager.getWindow(windowId);
+
+	if (!window) {
+		return;
+	}
+
+	trpcIpcHandler.attachWindow(window);
+
+	window.on("close", () => {
+		trpcIpcHandler.detachWindow(window);
+	});
+});
 
 // quit when all windows are closed, except on macos.
 app.on("window-all-closed", () => {
