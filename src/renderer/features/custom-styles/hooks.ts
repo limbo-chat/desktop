@@ -1,5 +1,7 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { useMainRouterClient } from "../../lib/trpc";
+import { useMainRouter, useMainRouterClient } from "../../lib/trpc";
+import { addCommand, removeCommand } from "../commands/utils";
 import { addCustomStyle, removeCustomStyle } from "./utils";
 
 export interface UseCustomStylesLoaderOptions {
@@ -7,38 +9,55 @@ export interface UseCustomStylesLoaderOptions {
 }
 
 export const useCustomStylesLoader = (opts?: UseCustomStylesLoaderOptions) => {
+	const mainRouter = useMainRouter();
 	const mainRouterClient = useMainRouterClient();
-
-	const loadCustomStyles = async () => {
-		const customStylePaths = await mainRouterClient.customStyles.getPaths.query();
-
-		const customStyles = await Promise.allSettled(
-			customStylePaths.map(async (path) => {
-				const styleContent = await mainRouterClient.customStyles.get.query({
-					path,
-				});
-
-				return {
-					path,
-					content: styleContent,
-				};
-			})
-		);
-
-		for (const customStyle of customStyles) {
-			if (customStyle.status === "fulfilled") {
-				addCustomStyle(customStyle.value.path, customStyle.value.content);
-			}
-		}
-
-		if (opts?.onFinished) {
-			opts.onFinished();
-		}
-	};
+	const getCustomStylesPathsQuery = useQuery(mainRouter.customStyles.getPaths.queryOptions());
+	const customStylesPaths = getCustomStylesPathsQuery.data;
 
 	useEffect(() => {
+		if (!customStylesPaths) {
+			return;
+		}
+
+		const loadedPaths = new Set<string>();
+
+		const loadCustomStyles = async () => {
+			console.log("loading custom styles");
+
+			const customStyles = await Promise.allSettled(
+				customStylesPaths.map(async (path) => {
+					const styleContent = await mainRouterClient.customStyles.get.query({
+						path,
+					});
+
+					loadedPaths.add(path);
+
+					return {
+						path,
+						content: styleContent,
+					};
+				})
+			);
+
+			for (const customStyle of customStyles) {
+				if (customStyle.status === "fulfilled") {
+					addCustomStyle(customStyle.value.path, customStyle.value.content);
+				}
+			}
+
+			if (opts?.onFinished) {
+				opts.onFinished();
+			}
+		};
+
 		loadCustomStyles();
-	}, []);
+
+		return () => {
+			for (const path of loadedPaths) {
+				removeCustomStyle(path);
+			}
+		};
+	}, [customStylesPaths]);
 };
 
 export const useCustomStylesSubscriber = () => {
@@ -74,6 +93,27 @@ export const useCustomStylesSubscriber = () => {
 			window.ipcRenderer.off("custom-style:add", onCustomStylesAdd);
 			window.ipcRenderer.off("custom-style:remove", onCustomStylesRemove);
 			window.ipcRenderer.off("custom-style:reload", onCustomStylesReload);
+		};
+	}, []);
+};
+
+export const useRegisterCustomStylesCommands = () => {
+	const mainRouter = useMainRouter();
+	const queryClient = useQueryClient();
+
+	useEffect(() => {
+		addCommand({
+			id: "custom-styles:reload",
+			name: "Reload custom styles",
+			execute: () => {
+				console.log("invalidating custom styles paths query");
+
+				queryClient.resetQueries(mainRouter.customStyles.getPaths.queryFilter());
+			},
+		});
+
+		return () => {
+			removeCommand("custom-styles:reload");
 		};
 	}, []);
 };

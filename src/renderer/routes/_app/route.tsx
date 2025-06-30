@@ -3,6 +3,7 @@ import {
 	useOpenCommandPaletteHotkey,
 	useRegisterCoreCommands,
 } from "../../features/commands/hooks";
+import { useRegisterCustomStylesCommands } from "../../features/custom-styles/hooks";
 import { usePluginHotReloader, usePluginLoader } from "../../features/plugins/hooks/core";
 import { usePluginSyncLayer } from "../../features/plugins/hooks/use-plugin-sync-layer";
 import { SideDock } from "./-components/side-dock";
@@ -18,6 +19,7 @@ function AppLayout() {
 	usePluginHotReloader();
 
 	useRegisterCoreCommands();
+	useRegisterCustomStylesCommands();
 	useOpenCommandPaletteHotkey();
 
 	return (
