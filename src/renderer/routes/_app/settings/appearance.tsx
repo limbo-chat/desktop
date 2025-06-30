@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Button } from "../../../components/button";
 import { Checkbox } from "../../../components/checkbox";
 import {
 	SettingItem,
@@ -14,6 +15,7 @@ import {
 	useGetSettingsSuspenseQuery,
 	useUpdateSettingsMutation,
 } from "../../../features/settings/hooks";
+import { useMainRouterClient } from "../../../lib/trpc";
 import { SettingsPage, SettingsPageContent } from "./-components/settings-page";
 
 export const Route = createFileRoute("/_app/settings/appearance")({
@@ -21,9 +23,14 @@ export const Route = createFileRoute("/_app/settings/appearance")({
 });
 
 function AppearanceSettingsPage() {
+	const mainRouterClient = useMainRouterClient();
 	const getSettingsQuery = useGetSettingsSuspenseQuery();
 	const updateSettingsMutation = useUpdateSettingsMutation();
 	const settings = getSettingsQuery.data;
+
+	const openCustomStylesFolder = () => {
+		mainRouterClient.customStyles.openFolder.mutate();
+	};
 
 	return (
 		<SettingsPage data-page="appearance">
@@ -70,6 +77,17 @@ function AppearanceSettingsPage() {
 										);
 									}}
 								/>
+							</SettingItemControl>
+						</SettingItem>
+						<SettingItem>
+							<SettingItemInfo>
+								<SettingItemTitle>Open custom styles</SettingItemTitle>
+								<SettingItemDescription>
+									Custom styles are CSS files stored in a folder on your computer.
+								</SettingItemDescription>
+							</SettingItemInfo>
+							<SettingItemControl>
+								<Button onClick={openCustomStylesFolder}>Open folder</Button>
 							</SettingItemControl>
 						</SettingItem>
 					</SettingsSectionContent>
