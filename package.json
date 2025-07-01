@@ -13,7 +13,6 @@
 		"build:linux": "pnpm build && electron-builder --linux",
 		"typecheck": "tsc --noEmit",
 		"format": "prettier --write .",
-		"rebild:deps": "electron-rebuild better-sqlite3",
 		"postinstall": "electron-builder install-app-deps"
 	},
 	"dependencies": {
