@@ -1,5 +1,5 @@
 import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createRootRouteWithContext, Link, Outlet } from "@tanstack/react-router";
+import { createRootRouteWithContext, Link, Outlet, useSearch } from "@tanstack/react-router";
 import { createTRPCClient } from "@trpc/client";
 import { Suspense, useMemo, useRef, type PropsWithChildren } from "react";
 import { Toaster } from "sonner";
@@ -182,11 +182,12 @@ const MainContent = () => {
 };
 
 function RootLayout() {
+	const windowInfo = useWindowInfoContext();
 	const isAppFocused = useIsAppFocused();
 
 	return (
 		<RootLayoutProviders>
-			<div className="app" data-is-focused={isAppFocused}>
+			<div className="app" data-platform={windowInfo.platform} data-is-focused={isAppFocused}>
 				<ModalHost />
 				<Toaster />
 				<Suspense fallback={<Loading />}>

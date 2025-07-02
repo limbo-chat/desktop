@@ -1,3 +1,8 @@
+import type { PlatformName } from "../utils";
+
+export type WindowId = "main" | "onboarding";
+
 export interface WindowInfo {
-	id: string;
+	id: WindowId;
+	platform: PlatformName;
 }

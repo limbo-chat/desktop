@@ -2,10 +2,10 @@ import { BrowserWindow } from "electron";
 import EventEmitter from "eventemitter3";
 import { DEV_SERVER_URL, ICON_PATH, PRELOAD_FILE_PATH, HTML_PATH } from "../constants";
 import { readSettings } from "../settings/utils";
+import { getPlatformName } from "../utils";
 import { manageWindowState, readWindowState } from "../window-state/utils";
-import { applyDefaultWindowOptions, sendWindowInfo } from "./utils";
-
-export type WindowId = "main" | "onboarding";
+import type { WindowId } from "./types";
+import { applyDefaultWindowOptions } from "./utils";
 
 export interface WindowManagerEvents {
 	"window:created": (windowId: WindowId) => void;
@@ -41,12 +41,6 @@ export class WindowManager {
 			},
 		});
 
-		mainWindow.webContents.on("did-finish-load", () => {
-			sendWindowInfo(mainWindow, {
-				id: "main",
-			});
-		});
-
 		mainWindow.on("close", () => {
 			this.clearWindow("main");
 		});
@@ -56,10 +50,15 @@ export class WindowManager {
 		// we want to track the state of the main window
 		manageWindowState(mainWindow);
 
+		const queryParams = new URLSearchParams({
+			id: "main",
+			platform: getPlatformName(),
+		});
+
 		if (DEV_SERVER_URL) {
-			mainWindow.loadURL(DEV_SERVER_URL);
+			mainWindow.loadURL(`${DEV_SERVER_URL}?${queryParams.toString()}`);
 		} else {
-			mainWindow.loadFile(HTML_PATH);
+			mainWindow.loadURL(`${HTML_PATH}?${queryParams.toString()}`);
 		}
 
 		this.windows.set("main", mainWindow);
@@ -86,17 +85,22 @@ export class WindowManager {
 			},
 		});
 
-		onboardingWindow.webContents.on("did-finish-load", () => {
-			sendWindowInfo(onboardingWindow, {
-				id: "onboarding",
-			});
-		});
-
 		onboardingWindow.on("close", () => {
 			this.clearWindow("onboarding");
 		});
 
 		applyDefaultWindowOptions(onboardingWindow);
+
+		const queryParams = new URLSearchParams({
+			id: "onboarding",
+			platform: getPlatformName(),
+		});
+
+		if (DEV_SERVER_URL) {
+			onboardingWindow.loadURL(`${DEV_SERVER_URL}?${queryParams.toString()}`);
+		} else {
+			onboardingWindow.loadURL(`${HTML_PATH}?${queryParams.toString()}`);
+		}
 
 		if (DEV_SERVER_URL) {
 			onboardingWindow.loadURL(DEV_SERVER_URL);

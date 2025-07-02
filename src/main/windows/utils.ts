@@ -1,9 +1,4 @@
 import { shell, type BrowserWindow } from "electron";
-import type { WindowInfo } from "./types";
-
-export function sendWindowInfo(window: BrowserWindow, windowInfo: WindowInfo) {
-	window.webContents.send("window:info", windowInfo);
-}
 
 export function applyDefaultWindowOptions(window: BrowserWindow) {
 	window.on("focus", () => {

@@ -1,7 +1,9 @@
 import { initTRPC } from "@trpc/server";
+import type { IpcMainInvokeEvent } from "electron";
 import type { WindowManager } from "../windows/manager";
 
 export interface TRPCContext {
+	event: IpcMainInvokeEvent;
 	windowManager: WindowManager;
 }
 

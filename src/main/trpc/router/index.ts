@@ -5,8 +5,10 @@ import { customStylesRouter } from "./custom-styles";
 import { onboardingRouter } from "./onboarding";
 import { pluginsRouter } from "./plugins";
 import { settingsRouter } from "./settings";
+import { windowRouter } from "./window";
 
 export const mainRouter = router({
+	window: windowRouter,
 	onboarding: onboardingRouter,
 	settings: settingsRouter,
 	customStyles: customStylesRouter,

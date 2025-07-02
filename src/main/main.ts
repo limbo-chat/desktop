@@ -6,14 +6,16 @@ import { ensureData, migrateToLatestVersion } from "./data/utils";
 import { readMeta, writeMeta } from "./meta/utils";
 import { readSettings } from "./settings/utils";
 import { mainRouter } from "./trpc/router";
-import { WindowManager, type WindowId } from "./windows/manager";
+import { WindowManager } from "./windows/manager";
+import type { WindowId } from "./windows/types";
 
 const windowManager = new WindowManager();
 
 const trpcIpcHandler = createIPCHandler({
 	router: mainRouter,
-	createContext: async () => {
+	createContext: async ({ event }) => {
 		return {
+			event,
 			windowManager,
 		};
 	},
