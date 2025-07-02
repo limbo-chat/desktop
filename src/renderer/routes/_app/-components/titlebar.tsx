@@ -27,19 +27,24 @@ export const Titlebar = () => {
 
 	return (
 		<div className="titlebar">
-			<div className="titlebar-actions">
+			<div className="titlebar-section" data-section="start">
 				<div className="titlebar-action-section">
-					<IconButton>
+					<IconButton action="toggle-primary-sidebar">
 						<PanelLeftIcon />
 					</IconButton>
 				</div>
+			</div>
+			<div className="titlebar-section" data-section="center">
+				{/* nothing for now */}
+			</div>
+			<div className="titlebar-section" data-section="end">
 				<div className="titlebar-action-section">
-					<IconButton>
+					<IconButton action="toggle-secondary-sidebar">
 						<PanelRightIcon />
 					</IconButton>
 				</div>
+				{shouldRenderControls && <WindowControls />}
 			</div>
-			{shouldRenderControls && <WindowControls />}
 		</div>
 	);
 };
