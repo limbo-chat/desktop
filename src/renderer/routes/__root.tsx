@@ -1,5 +1,5 @@
 import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createRootRouteWithContext, Link, Outlet, useSearch } from "@tanstack/react-router";
+import { createRootRouteWithContext, Link, Outlet } from "@tanstack/react-router";
 import { createTRPCClient } from "@trpc/client";
 import { Suspense, useMemo, useRef, type PropsWithChildren } from "react";
 import { Toaster } from "sonner";
@@ -14,7 +14,12 @@ import {
 	ErrorTitle,
 } from "../components/error";
 import { Loading } from "../components/loading";
-import { useCustomStylesLoader, useCustomStylesSubscriber } from "../features/custom-styles/hooks";
+import { useOpenCommandPaletteHotkey, useRegisterCoreCommands } from "../features/commands/hooks";
+import {
+	useCustomStylesLoader,
+	useCustomStylesSubscriber,
+	useRegisterCustomStylesCommands,
+} from "../features/custom-styles/hooks";
 import { ModalHost } from "../features/modals/components";
 import {
 	PluginBackendProvider,
@@ -25,9 +30,13 @@ import type { PluginBackend } from "../features/plugins/core/plugin-backend";
 import { PluginManager } from "../features/plugins/core/plugin-manager";
 import { EvalPluginModuleLoader } from "../features/plugins/core/plugin-module-loader";
 import { PluginSystem } from "../features/plugins/core/plugin-system";
+import { usePluginHotReloader, usePluginLoader } from "../features/plugins/hooks/core";
+import { usePluginSyncLayer } from "../features/plugins/hooks/use-plugin-sync-layer";
 import { useWindowInfoContext } from "../features/window-info/hooks";
 import { useIsAppFocused } from "../hooks/common";
 import { MainRouterProvider } from "../lib/trpc";
+import { SideDock } from "./-components/side-dock";
+import { Titlebar } from "./-components/titlebar";
 
 export interface RouterContext {
 	queryClient: QueryClient;
@@ -178,7 +187,25 @@ const MainContent = () => {
 	useRendererLoader();
 	useCustomStylesSubscriber();
 
-	return <Outlet />;
+	usePluginSyncLayer();
+	usePluginLoader();
+	usePluginHotReloader();
+
+	useRegisterCoreCommands();
+	useRegisterCustomStylesCommands();
+	useOpenCommandPaletteHotkey();
+
+	return (
+		<>
+			<Titlebar />
+			<div className="app-content">
+				<SideDock />
+				<div className="root-page">
+					<Outlet />
+				</div>
+			</div>
+		</>
+	);
 };
 
 function RootLayout() {

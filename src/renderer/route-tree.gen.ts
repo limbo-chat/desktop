@@ -11,33 +11,45 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as AppRouteImport } from './routes/_app/route'
+import { Route as SettingsRouteImport } from './routes/settings/route'
+import { Route as DesignPlaygroundRouteImport } from './routes/design-playground/route'
+import { Route as ChatRouteImport } from './routes/chat/route'
 import { Route as IndexImport } from './routes/index'
-import { Route as AppSettingsRouteImport } from './routes/_app/settings/route'
-import { Route as AppDesignPlaygroundRouteImport } from './routes/_app/design-playground/route'
-import { Route as AppChatRouteImport } from './routes/_app/chat/route'
-import { Route as AppSettingsIndexImport } from './routes/_app/settings/index'
-import { Route as AppDesignPlaygroundIndexImport } from './routes/_app/design-playground/index'
-import { Route as AppChatIndexImport } from './routes/_app/chat/index'
-import { Route as AppSettingsPersonalizationImport } from './routes/_app/settings/personalization'
-import { Route as AppSettingsDeveloperImport } from './routes/_app/settings/developer'
-import { Route as AppSettingsDataImport } from './routes/_app/settings/data'
-import { Route as AppSettingsAppearanceImport } from './routes/_app/settings/appearance'
-import { Route as AppSettingsPluginsIndexImport } from './routes/_app/settings/plugins/index'
-import { Route as AppChatIdIndexImport } from './routes/_app/chat/$id/index'
-import { Route as AppSettingsPluginsIdImport } from './routes/_app/settings/plugins/$id'
-import { Route as AppDesignPlaygroundElementsTooltipImport } from './routes/_app/design-playground/elements/tooltip'
-import { Route as AppDesignPlaygroundElementsMenuImport } from './routes/_app/design-playground/elements/menu'
-import { Route as AppDesignPlaygroundElementsMarkdownImport } from './routes/_app/design-playground/elements/markdown'
-import { Route as AppDesignPlaygroundElementsLlmPickerImport } from './routes/_app/design-playground/elements/llm-picker'
-import { Route as AppDesignPlaygroundElementsFormImport } from './routes/_app/design-playground/elements/form'
-import { Route as AppDesignPlaygroundElementsDialogImport } from './routes/_app/design-playground/elements/dialog'
-import { Route as AppDesignPlaygroundElementsButtonImport } from './routes/_app/design-playground/elements/button'
+import { Route as SettingsIndexImport } from './routes/settings/index'
+import { Route as DesignPlaygroundIndexImport } from './routes/design-playground/index'
+import { Route as ChatIndexImport } from './routes/chat/index'
+import { Route as SettingsPersonalizationImport } from './routes/settings/personalization'
+import { Route as SettingsDeveloperImport } from './routes/settings/developer'
+import { Route as SettingsDataImport } from './routes/settings/data'
+import { Route as SettingsAppearanceImport } from './routes/settings/appearance'
+import { Route as SettingsPluginsIndexImport } from './routes/settings/plugins/index'
+import { Route as ChatIdIndexImport } from './routes/chat/$id/index'
+import { Route as SettingsPluginsIdImport } from './routes/settings/plugins/$id'
+import { Route as DesignPlaygroundElementsTooltipImport } from './routes/design-playground/elements/tooltip'
+import { Route as DesignPlaygroundElementsMenuImport } from './routes/design-playground/elements/menu'
+import { Route as DesignPlaygroundElementsMarkdownImport } from './routes/design-playground/elements/markdown'
+import { Route as DesignPlaygroundElementsLlmPickerImport } from './routes/design-playground/elements/llm-picker'
+import { Route as DesignPlaygroundElementsFormImport } from './routes/design-playground/elements/form'
+import { Route as DesignPlaygroundElementsDialogImport } from './routes/design-playground/elements/dialog'
+import { Route as DesignPlaygroundElementsButtonImport } from './routes/design-playground/elements/button'
 
 // Create/Update Routes
 
-const AppRouteRoute = AppRouteImport.update({
-  id: '/_app',
+const SettingsRouteRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DesignPlaygroundRouteRoute = DesignPlaygroundRouteImport.update({
+  id: '/design-playground',
+  path: '/design-playground',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ChatRouteRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -47,133 +59,113 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const AppSettingsRouteRoute = AppSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-
-const AppDesignPlaygroundRouteRoute = AppDesignPlaygroundRouteImport.update({
-  id: '/design-playground',
-  path: '/design-playground',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-
-const AppChatRouteRoute = AppChatRouteImport.update({
-  id: '/chat',
-  path: '/chat',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-
-const AppSettingsIndexRoute = AppSettingsIndexImport.update({
+const SettingsIndexRoute = SettingsIndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AppSettingsRouteRoute,
+  getParentRoute: () => SettingsRouteRoute,
 } as any)
 
-const AppDesignPlaygroundIndexRoute = AppDesignPlaygroundIndexImport.update({
+const DesignPlaygroundIndexRoute = DesignPlaygroundIndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AppDesignPlaygroundRouteRoute,
+  getParentRoute: () => DesignPlaygroundRouteRoute,
 } as any)
 
-const AppChatIndexRoute = AppChatIndexImport.update({
+const ChatIndexRoute = ChatIndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AppChatRouteRoute,
+  getParentRoute: () => ChatRouteRoute,
 } as any)
 
-const AppSettingsPersonalizationRoute = AppSettingsPersonalizationImport.update(
-  {
-    id: '/personalization',
-    path: '/personalization',
-    getParentRoute: () => AppSettingsRouteRoute,
-  } as any,
-)
+const SettingsPersonalizationRoute = SettingsPersonalizationImport.update({
+  id: '/personalization',
+  path: '/personalization',
+  getParentRoute: () => SettingsRouteRoute,
+} as any)
 
-const AppSettingsDeveloperRoute = AppSettingsDeveloperImport.update({
+const SettingsDeveloperRoute = SettingsDeveloperImport.update({
   id: '/developer',
   path: '/developer',
-  getParentRoute: () => AppSettingsRouteRoute,
+  getParentRoute: () => SettingsRouteRoute,
 } as any)
 
-const AppSettingsDataRoute = AppSettingsDataImport.update({
+const SettingsDataRoute = SettingsDataImport.update({
   id: '/data',
   path: '/data',
-  getParentRoute: () => AppSettingsRouteRoute,
+  getParentRoute: () => SettingsRouteRoute,
 } as any)
 
-const AppSettingsAppearanceRoute = AppSettingsAppearanceImport.update({
+const SettingsAppearanceRoute = SettingsAppearanceImport.update({
   id: '/appearance',
   path: '/appearance',
-  getParentRoute: () => AppSettingsRouteRoute,
+  getParentRoute: () => SettingsRouteRoute,
 } as any)
 
-const AppSettingsPluginsIndexRoute = AppSettingsPluginsIndexImport.update({
+const SettingsPluginsIndexRoute = SettingsPluginsIndexImport.update({
   id: '/plugins/',
   path: '/plugins/',
-  getParentRoute: () => AppSettingsRouteRoute,
+  getParentRoute: () => SettingsRouteRoute,
 } as any)
 
-const AppChatIdIndexRoute = AppChatIdIndexImport.update({
+const ChatIdIndexRoute = ChatIdIndexImport.update({
   id: '/$id/',
   path: '/$id/',
-  getParentRoute: () => AppChatRouteRoute,
+  getParentRoute: () => ChatRouteRoute,
 } as any)
 
-const AppSettingsPluginsIdRoute = AppSettingsPluginsIdImport.update({
+const SettingsPluginsIdRoute = SettingsPluginsIdImport.update({
   id: '/plugins/$id',
   path: '/plugins/$id',
-  getParentRoute: () => AppSettingsRouteRoute,
+  getParentRoute: () => SettingsRouteRoute,
 } as any)
 
-const AppDesignPlaygroundElementsTooltipRoute =
-  AppDesignPlaygroundElementsTooltipImport.update({
+const DesignPlaygroundElementsTooltipRoute =
+  DesignPlaygroundElementsTooltipImport.update({
     id: '/elements/tooltip',
     path: '/elements/tooltip',
-    getParentRoute: () => AppDesignPlaygroundRouteRoute,
+    getParentRoute: () => DesignPlaygroundRouteRoute,
   } as any)
 
-const AppDesignPlaygroundElementsMenuRoute =
-  AppDesignPlaygroundElementsMenuImport.update({
+const DesignPlaygroundElementsMenuRoute =
+  DesignPlaygroundElementsMenuImport.update({
     id: '/elements/menu',
     path: '/elements/menu',
-    getParentRoute: () => AppDesignPlaygroundRouteRoute,
+    getParentRoute: () => DesignPlaygroundRouteRoute,
   } as any)
 
-const AppDesignPlaygroundElementsMarkdownRoute =
-  AppDesignPlaygroundElementsMarkdownImport.update({
+const DesignPlaygroundElementsMarkdownRoute =
+  DesignPlaygroundElementsMarkdownImport.update({
     id: '/elements/markdown',
     path: '/elements/markdown',
-    getParentRoute: () => AppDesignPlaygroundRouteRoute,
+    getParentRoute: () => DesignPlaygroundRouteRoute,
   } as any)
 
-const AppDesignPlaygroundElementsLlmPickerRoute =
-  AppDesignPlaygroundElementsLlmPickerImport.update({
+const DesignPlaygroundElementsLlmPickerRoute =
+  DesignPlaygroundElementsLlmPickerImport.update({
     id: '/elements/llm-picker',
     path: '/elements/llm-picker',
-    getParentRoute: () => AppDesignPlaygroundRouteRoute,
+    getParentRoute: () => DesignPlaygroundRouteRoute,
   } as any)
 
-const AppDesignPlaygroundElementsFormRoute =
-  AppDesignPlaygroundElementsFormImport.update({
+const DesignPlaygroundElementsFormRoute =
+  DesignPlaygroundElementsFormImport.update({
     id: '/elements/form',
     path: '/elements/form',
-    getParentRoute: () => AppDesignPlaygroundRouteRoute,
+    getParentRoute: () => DesignPlaygroundRouteRoute,
   } as any)
 
-const AppDesignPlaygroundElementsDialogRoute =
-  AppDesignPlaygroundElementsDialogImport.update({
+const DesignPlaygroundElementsDialogRoute =
+  DesignPlaygroundElementsDialogImport.update({
     id: '/elements/dialog',
     path: '/elements/dialog',
-    getParentRoute: () => AppDesignPlaygroundRouteRoute,
+    getParentRoute: () => DesignPlaygroundRouteRoute,
   } as any)
 
-const AppDesignPlaygroundElementsButtonRoute =
-  AppDesignPlaygroundElementsButtonImport.update({
+const DesignPlaygroundElementsButtonRoute =
+  DesignPlaygroundElementsButtonImport.update({
     id: '/elements/button',
     path: '/elements/button',
-    getParentRoute: () => AppDesignPlaygroundRouteRoute,
+    getParentRoute: () => DesignPlaygroundRouteRoute,
   } as any)
 
 // Populate the FileRoutesByPath interface
@@ -187,322 +179,291 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/_app': {
-      id: '/_app'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof AppRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/_app/chat': {
-      id: '/_app/chat'
+    '/chat': {
+      id: '/chat'
       path: '/chat'
       fullPath: '/chat'
-      preLoaderRoute: typeof AppChatRouteImport
-      parentRoute: typeof AppRouteImport
+      preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRoute
     }
-    '/_app/design-playground': {
-      id: '/_app/design-playground'
+    '/design-playground': {
+      id: '/design-playground'
       path: '/design-playground'
       fullPath: '/design-playground'
-      preLoaderRoute: typeof AppDesignPlaygroundRouteImport
-      parentRoute: typeof AppRouteImport
+      preLoaderRoute: typeof DesignPlaygroundRouteImport
+      parentRoute: typeof rootRoute
     }
-    '/_app/settings': {
-      id: '/_app/settings'
+    '/settings': {
+      id: '/settings'
       path: '/settings'
       fullPath: '/settings'
-      preLoaderRoute: typeof AppSettingsRouteImport
-      parentRoute: typeof AppRouteImport
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRoute
     }
-    '/_app/settings/appearance': {
-      id: '/_app/settings/appearance'
+    '/settings/appearance': {
+      id: '/settings/appearance'
       path: '/appearance'
       fullPath: '/settings/appearance'
-      preLoaderRoute: typeof AppSettingsAppearanceImport
-      parentRoute: typeof AppSettingsRouteImport
+      preLoaderRoute: typeof SettingsAppearanceImport
+      parentRoute: typeof SettingsRouteImport
     }
-    '/_app/settings/data': {
-      id: '/_app/settings/data'
+    '/settings/data': {
+      id: '/settings/data'
       path: '/data'
       fullPath: '/settings/data'
-      preLoaderRoute: typeof AppSettingsDataImport
-      parentRoute: typeof AppSettingsRouteImport
+      preLoaderRoute: typeof SettingsDataImport
+      parentRoute: typeof SettingsRouteImport
     }
-    '/_app/settings/developer': {
-      id: '/_app/settings/developer'
+    '/settings/developer': {
+      id: '/settings/developer'
       path: '/developer'
       fullPath: '/settings/developer'
-      preLoaderRoute: typeof AppSettingsDeveloperImport
-      parentRoute: typeof AppSettingsRouteImport
+      preLoaderRoute: typeof SettingsDeveloperImport
+      parentRoute: typeof SettingsRouteImport
     }
-    '/_app/settings/personalization': {
-      id: '/_app/settings/personalization'
+    '/settings/personalization': {
+      id: '/settings/personalization'
       path: '/personalization'
       fullPath: '/settings/personalization'
-      preLoaderRoute: typeof AppSettingsPersonalizationImport
-      parentRoute: typeof AppSettingsRouteImport
+      preLoaderRoute: typeof SettingsPersonalizationImport
+      parentRoute: typeof SettingsRouteImport
     }
-    '/_app/chat/': {
-      id: '/_app/chat/'
+    '/chat/': {
+      id: '/chat/'
       path: '/'
       fullPath: '/chat/'
-      preLoaderRoute: typeof AppChatIndexImport
-      parentRoute: typeof AppChatRouteImport
+      preLoaderRoute: typeof ChatIndexImport
+      parentRoute: typeof ChatRouteImport
     }
-    '/_app/design-playground/': {
-      id: '/_app/design-playground/'
+    '/design-playground/': {
+      id: '/design-playground/'
       path: '/'
       fullPath: '/design-playground/'
-      preLoaderRoute: typeof AppDesignPlaygroundIndexImport
-      parentRoute: typeof AppDesignPlaygroundRouteImport
+      preLoaderRoute: typeof DesignPlaygroundIndexImport
+      parentRoute: typeof DesignPlaygroundRouteImport
     }
-    '/_app/settings/': {
-      id: '/_app/settings/'
+    '/settings/': {
+      id: '/settings/'
       path: '/'
       fullPath: '/settings/'
-      preLoaderRoute: typeof AppSettingsIndexImport
-      parentRoute: typeof AppSettingsRouteImport
+      preLoaderRoute: typeof SettingsIndexImport
+      parentRoute: typeof SettingsRouteImport
     }
-    '/_app/design-playground/elements/button': {
-      id: '/_app/design-playground/elements/button'
+    '/design-playground/elements/button': {
+      id: '/design-playground/elements/button'
       path: '/elements/button'
       fullPath: '/design-playground/elements/button'
-      preLoaderRoute: typeof AppDesignPlaygroundElementsButtonImport
-      parentRoute: typeof AppDesignPlaygroundRouteImport
+      preLoaderRoute: typeof DesignPlaygroundElementsButtonImport
+      parentRoute: typeof DesignPlaygroundRouteImport
     }
-    '/_app/design-playground/elements/dialog': {
-      id: '/_app/design-playground/elements/dialog'
+    '/design-playground/elements/dialog': {
+      id: '/design-playground/elements/dialog'
       path: '/elements/dialog'
       fullPath: '/design-playground/elements/dialog'
-      preLoaderRoute: typeof AppDesignPlaygroundElementsDialogImport
-      parentRoute: typeof AppDesignPlaygroundRouteImport
+      preLoaderRoute: typeof DesignPlaygroundElementsDialogImport
+      parentRoute: typeof DesignPlaygroundRouteImport
     }
-    '/_app/design-playground/elements/form': {
-      id: '/_app/design-playground/elements/form'
+    '/design-playground/elements/form': {
+      id: '/design-playground/elements/form'
       path: '/elements/form'
       fullPath: '/design-playground/elements/form'
-      preLoaderRoute: typeof AppDesignPlaygroundElementsFormImport
-      parentRoute: typeof AppDesignPlaygroundRouteImport
+      preLoaderRoute: typeof DesignPlaygroundElementsFormImport
+      parentRoute: typeof DesignPlaygroundRouteImport
     }
-    '/_app/design-playground/elements/llm-picker': {
-      id: '/_app/design-playground/elements/llm-picker'
+    '/design-playground/elements/llm-picker': {
+      id: '/design-playground/elements/llm-picker'
       path: '/elements/llm-picker'
       fullPath: '/design-playground/elements/llm-picker'
-      preLoaderRoute: typeof AppDesignPlaygroundElementsLlmPickerImport
-      parentRoute: typeof AppDesignPlaygroundRouteImport
+      preLoaderRoute: typeof DesignPlaygroundElementsLlmPickerImport
+      parentRoute: typeof DesignPlaygroundRouteImport
     }
-    '/_app/design-playground/elements/markdown': {
-      id: '/_app/design-playground/elements/markdown'
+    '/design-playground/elements/markdown': {
+      id: '/design-playground/elements/markdown'
       path: '/elements/markdown'
       fullPath: '/design-playground/elements/markdown'
-      preLoaderRoute: typeof AppDesignPlaygroundElementsMarkdownImport
-      parentRoute: typeof AppDesignPlaygroundRouteImport
+      preLoaderRoute: typeof DesignPlaygroundElementsMarkdownImport
+      parentRoute: typeof DesignPlaygroundRouteImport
     }
-    '/_app/design-playground/elements/menu': {
-      id: '/_app/design-playground/elements/menu'
+    '/design-playground/elements/menu': {
+      id: '/design-playground/elements/menu'
       path: '/elements/menu'
       fullPath: '/design-playground/elements/menu'
-      preLoaderRoute: typeof AppDesignPlaygroundElementsMenuImport
-      parentRoute: typeof AppDesignPlaygroundRouteImport
+      preLoaderRoute: typeof DesignPlaygroundElementsMenuImport
+      parentRoute: typeof DesignPlaygroundRouteImport
     }
-    '/_app/design-playground/elements/tooltip': {
-      id: '/_app/design-playground/elements/tooltip'
+    '/design-playground/elements/tooltip': {
+      id: '/design-playground/elements/tooltip'
       path: '/elements/tooltip'
       fullPath: '/design-playground/elements/tooltip'
-      preLoaderRoute: typeof AppDesignPlaygroundElementsTooltipImport
-      parentRoute: typeof AppDesignPlaygroundRouteImport
+      preLoaderRoute: typeof DesignPlaygroundElementsTooltipImport
+      parentRoute: typeof DesignPlaygroundRouteImport
     }
-    '/_app/settings/plugins/$id': {
-      id: '/_app/settings/plugins/$id'
+    '/settings/plugins/$id': {
+      id: '/settings/plugins/$id'
       path: '/plugins/$id'
       fullPath: '/settings/plugins/$id'
-      preLoaderRoute: typeof AppSettingsPluginsIdImport
-      parentRoute: typeof AppSettingsRouteImport
+      preLoaderRoute: typeof SettingsPluginsIdImport
+      parentRoute: typeof SettingsRouteImport
     }
-    '/_app/chat/$id/': {
-      id: '/_app/chat/$id/'
+    '/chat/$id/': {
+      id: '/chat/$id/'
       path: '/$id'
       fullPath: '/chat/$id'
-      preLoaderRoute: typeof AppChatIdIndexImport
-      parentRoute: typeof AppChatRouteImport
+      preLoaderRoute: typeof ChatIdIndexImport
+      parentRoute: typeof ChatRouteImport
     }
-    '/_app/settings/plugins/': {
-      id: '/_app/settings/plugins/'
+    '/settings/plugins/': {
+      id: '/settings/plugins/'
       path: '/plugins'
       fullPath: '/settings/plugins'
-      preLoaderRoute: typeof AppSettingsPluginsIndexImport
-      parentRoute: typeof AppSettingsRouteImport
+      preLoaderRoute: typeof SettingsPluginsIndexImport
+      parentRoute: typeof SettingsRouteImport
     }
   }
 }
 
 // Create and export the route tree
 
-interface AppChatRouteRouteChildren {
-  AppChatIndexRoute: typeof AppChatIndexRoute
-  AppChatIdIndexRoute: typeof AppChatIdIndexRoute
+interface ChatRouteRouteChildren {
+  ChatIndexRoute: typeof ChatIndexRoute
+  ChatIdIndexRoute: typeof ChatIdIndexRoute
 }
 
-const AppChatRouteRouteChildren: AppChatRouteRouteChildren = {
-  AppChatIndexRoute: AppChatIndexRoute,
-  AppChatIdIndexRoute: AppChatIdIndexRoute,
+const ChatRouteRouteChildren: ChatRouteRouteChildren = {
+  ChatIndexRoute: ChatIndexRoute,
+  ChatIdIndexRoute: ChatIdIndexRoute,
 }
 
-const AppChatRouteRouteWithChildren = AppChatRouteRoute._addFileChildren(
-  AppChatRouteRouteChildren,
+const ChatRouteRouteWithChildren = ChatRouteRoute._addFileChildren(
+  ChatRouteRouteChildren,
 )
 
-interface AppDesignPlaygroundRouteRouteChildren {
-  AppDesignPlaygroundIndexRoute: typeof AppDesignPlaygroundIndexRoute
-  AppDesignPlaygroundElementsButtonRoute: typeof AppDesignPlaygroundElementsButtonRoute
-  AppDesignPlaygroundElementsDialogRoute: typeof AppDesignPlaygroundElementsDialogRoute
-  AppDesignPlaygroundElementsFormRoute: typeof AppDesignPlaygroundElementsFormRoute
-  AppDesignPlaygroundElementsLlmPickerRoute: typeof AppDesignPlaygroundElementsLlmPickerRoute
-  AppDesignPlaygroundElementsMarkdownRoute: typeof AppDesignPlaygroundElementsMarkdownRoute
-  AppDesignPlaygroundElementsMenuRoute: typeof AppDesignPlaygroundElementsMenuRoute
-  AppDesignPlaygroundElementsTooltipRoute: typeof AppDesignPlaygroundElementsTooltipRoute
+interface DesignPlaygroundRouteRouteChildren {
+  DesignPlaygroundIndexRoute: typeof DesignPlaygroundIndexRoute
+  DesignPlaygroundElementsButtonRoute: typeof DesignPlaygroundElementsButtonRoute
+  DesignPlaygroundElementsDialogRoute: typeof DesignPlaygroundElementsDialogRoute
+  DesignPlaygroundElementsFormRoute: typeof DesignPlaygroundElementsFormRoute
+  DesignPlaygroundElementsLlmPickerRoute: typeof DesignPlaygroundElementsLlmPickerRoute
+  DesignPlaygroundElementsMarkdownRoute: typeof DesignPlaygroundElementsMarkdownRoute
+  DesignPlaygroundElementsMenuRoute: typeof DesignPlaygroundElementsMenuRoute
+  DesignPlaygroundElementsTooltipRoute: typeof DesignPlaygroundElementsTooltipRoute
 }
 
-const AppDesignPlaygroundRouteRouteChildren: AppDesignPlaygroundRouteRouteChildren =
-  {
-    AppDesignPlaygroundIndexRoute: AppDesignPlaygroundIndexRoute,
-    AppDesignPlaygroundElementsButtonRoute:
-      AppDesignPlaygroundElementsButtonRoute,
-    AppDesignPlaygroundElementsDialogRoute:
-      AppDesignPlaygroundElementsDialogRoute,
-    AppDesignPlaygroundElementsFormRoute: AppDesignPlaygroundElementsFormRoute,
-    AppDesignPlaygroundElementsLlmPickerRoute:
-      AppDesignPlaygroundElementsLlmPickerRoute,
-    AppDesignPlaygroundElementsMarkdownRoute:
-      AppDesignPlaygroundElementsMarkdownRoute,
-    AppDesignPlaygroundElementsMenuRoute: AppDesignPlaygroundElementsMenuRoute,
-    AppDesignPlaygroundElementsTooltipRoute:
-      AppDesignPlaygroundElementsTooltipRoute,
-  }
+const DesignPlaygroundRouteRouteChildren: DesignPlaygroundRouteRouteChildren = {
+  DesignPlaygroundIndexRoute: DesignPlaygroundIndexRoute,
+  DesignPlaygroundElementsButtonRoute: DesignPlaygroundElementsButtonRoute,
+  DesignPlaygroundElementsDialogRoute: DesignPlaygroundElementsDialogRoute,
+  DesignPlaygroundElementsFormRoute: DesignPlaygroundElementsFormRoute,
+  DesignPlaygroundElementsLlmPickerRoute:
+    DesignPlaygroundElementsLlmPickerRoute,
+  DesignPlaygroundElementsMarkdownRoute: DesignPlaygroundElementsMarkdownRoute,
+  DesignPlaygroundElementsMenuRoute: DesignPlaygroundElementsMenuRoute,
+  DesignPlaygroundElementsTooltipRoute: DesignPlaygroundElementsTooltipRoute,
+}
 
-const AppDesignPlaygroundRouteRouteWithChildren =
-  AppDesignPlaygroundRouteRoute._addFileChildren(
-    AppDesignPlaygroundRouteRouteChildren,
+const DesignPlaygroundRouteRouteWithChildren =
+  DesignPlaygroundRouteRoute._addFileChildren(
+    DesignPlaygroundRouteRouteChildren,
   )
 
-interface AppSettingsRouteRouteChildren {
-  AppSettingsAppearanceRoute: typeof AppSettingsAppearanceRoute
-  AppSettingsDataRoute: typeof AppSettingsDataRoute
-  AppSettingsDeveloperRoute: typeof AppSettingsDeveloperRoute
-  AppSettingsPersonalizationRoute: typeof AppSettingsPersonalizationRoute
-  AppSettingsIndexRoute: typeof AppSettingsIndexRoute
-  AppSettingsPluginsIdRoute: typeof AppSettingsPluginsIdRoute
-  AppSettingsPluginsIndexRoute: typeof AppSettingsPluginsIndexRoute
+interface SettingsRouteRouteChildren {
+  SettingsAppearanceRoute: typeof SettingsAppearanceRoute
+  SettingsDataRoute: typeof SettingsDataRoute
+  SettingsDeveloperRoute: typeof SettingsDeveloperRoute
+  SettingsPersonalizationRoute: typeof SettingsPersonalizationRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
+  SettingsPluginsIdRoute: typeof SettingsPluginsIdRoute
+  SettingsPluginsIndexRoute: typeof SettingsPluginsIndexRoute
 }
 
-const AppSettingsRouteRouteChildren: AppSettingsRouteRouteChildren = {
-  AppSettingsAppearanceRoute: AppSettingsAppearanceRoute,
-  AppSettingsDataRoute: AppSettingsDataRoute,
-  AppSettingsDeveloperRoute: AppSettingsDeveloperRoute,
-  AppSettingsPersonalizationRoute: AppSettingsPersonalizationRoute,
-  AppSettingsIndexRoute: AppSettingsIndexRoute,
-  AppSettingsPluginsIdRoute: AppSettingsPluginsIdRoute,
-  AppSettingsPluginsIndexRoute: AppSettingsPluginsIndexRoute,
+const SettingsRouteRouteChildren: SettingsRouteRouteChildren = {
+  SettingsAppearanceRoute: SettingsAppearanceRoute,
+  SettingsDataRoute: SettingsDataRoute,
+  SettingsDeveloperRoute: SettingsDeveloperRoute,
+  SettingsPersonalizationRoute: SettingsPersonalizationRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
+  SettingsPluginsIdRoute: SettingsPluginsIdRoute,
+  SettingsPluginsIndexRoute: SettingsPluginsIndexRoute,
 }
 
-const AppSettingsRouteRouteWithChildren =
-  AppSettingsRouteRoute._addFileChildren(AppSettingsRouteRouteChildren)
-
-interface AppRouteRouteChildren {
-  AppChatRouteRoute: typeof AppChatRouteRouteWithChildren
-  AppDesignPlaygroundRouteRoute: typeof AppDesignPlaygroundRouteRouteWithChildren
-  AppSettingsRouteRoute: typeof AppSettingsRouteRouteWithChildren
-}
-
-const AppRouteRouteChildren: AppRouteRouteChildren = {
-  AppChatRouteRoute: AppChatRouteRouteWithChildren,
-  AppDesignPlaygroundRouteRoute: AppDesignPlaygroundRouteRouteWithChildren,
-  AppSettingsRouteRoute: AppSettingsRouteRouteWithChildren,
-}
-
-const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
-  AppRouteRouteChildren,
+const SettingsRouteRouteWithChildren = SettingsRouteRoute._addFileChildren(
+  SettingsRouteRouteChildren,
 )
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '': typeof AppRouteRouteWithChildren
-  '/chat': typeof AppChatRouteRouteWithChildren
-  '/design-playground': typeof AppDesignPlaygroundRouteRouteWithChildren
-  '/settings': typeof AppSettingsRouteRouteWithChildren
-  '/settings/appearance': typeof AppSettingsAppearanceRoute
-  '/settings/data': typeof AppSettingsDataRoute
-  '/settings/developer': typeof AppSettingsDeveloperRoute
-  '/settings/personalization': typeof AppSettingsPersonalizationRoute
-  '/chat/': typeof AppChatIndexRoute
-  '/design-playground/': typeof AppDesignPlaygroundIndexRoute
-  '/settings/': typeof AppSettingsIndexRoute
-  '/design-playground/elements/button': typeof AppDesignPlaygroundElementsButtonRoute
-  '/design-playground/elements/dialog': typeof AppDesignPlaygroundElementsDialogRoute
-  '/design-playground/elements/form': typeof AppDesignPlaygroundElementsFormRoute
-  '/design-playground/elements/llm-picker': typeof AppDesignPlaygroundElementsLlmPickerRoute
-  '/design-playground/elements/markdown': typeof AppDesignPlaygroundElementsMarkdownRoute
-  '/design-playground/elements/menu': typeof AppDesignPlaygroundElementsMenuRoute
-  '/design-playground/elements/tooltip': typeof AppDesignPlaygroundElementsTooltipRoute
-  '/settings/plugins/$id': typeof AppSettingsPluginsIdRoute
-  '/chat/$id': typeof AppChatIdIndexRoute
-  '/settings/plugins': typeof AppSettingsPluginsIndexRoute
+  '/chat': typeof ChatRouteRouteWithChildren
+  '/design-playground': typeof DesignPlaygroundRouteRouteWithChildren
+  '/settings': typeof SettingsRouteRouteWithChildren
+  '/settings/appearance': typeof SettingsAppearanceRoute
+  '/settings/data': typeof SettingsDataRoute
+  '/settings/developer': typeof SettingsDeveloperRoute
+  '/settings/personalization': typeof SettingsPersonalizationRoute
+  '/chat/': typeof ChatIndexRoute
+  '/design-playground/': typeof DesignPlaygroundIndexRoute
+  '/settings/': typeof SettingsIndexRoute
+  '/design-playground/elements/button': typeof DesignPlaygroundElementsButtonRoute
+  '/design-playground/elements/dialog': typeof DesignPlaygroundElementsDialogRoute
+  '/design-playground/elements/form': typeof DesignPlaygroundElementsFormRoute
+  '/design-playground/elements/llm-picker': typeof DesignPlaygroundElementsLlmPickerRoute
+  '/design-playground/elements/markdown': typeof DesignPlaygroundElementsMarkdownRoute
+  '/design-playground/elements/menu': typeof DesignPlaygroundElementsMenuRoute
+  '/design-playground/elements/tooltip': typeof DesignPlaygroundElementsTooltipRoute
+  '/settings/plugins/$id': typeof SettingsPluginsIdRoute
+  '/chat/$id': typeof ChatIdIndexRoute
+  '/settings/plugins': typeof SettingsPluginsIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '': typeof AppRouteRouteWithChildren
-  '/settings/appearance': typeof AppSettingsAppearanceRoute
-  '/settings/data': typeof AppSettingsDataRoute
-  '/settings/developer': typeof AppSettingsDeveloperRoute
-  '/settings/personalization': typeof AppSettingsPersonalizationRoute
-  '/chat': typeof AppChatIndexRoute
-  '/design-playground': typeof AppDesignPlaygroundIndexRoute
-  '/settings': typeof AppSettingsIndexRoute
-  '/design-playground/elements/button': typeof AppDesignPlaygroundElementsButtonRoute
-  '/design-playground/elements/dialog': typeof AppDesignPlaygroundElementsDialogRoute
-  '/design-playground/elements/form': typeof AppDesignPlaygroundElementsFormRoute
-  '/design-playground/elements/llm-picker': typeof AppDesignPlaygroundElementsLlmPickerRoute
-  '/design-playground/elements/markdown': typeof AppDesignPlaygroundElementsMarkdownRoute
-  '/design-playground/elements/menu': typeof AppDesignPlaygroundElementsMenuRoute
-  '/design-playground/elements/tooltip': typeof AppDesignPlaygroundElementsTooltipRoute
-  '/settings/plugins/$id': typeof AppSettingsPluginsIdRoute
-  '/chat/$id': typeof AppChatIdIndexRoute
-  '/settings/plugins': typeof AppSettingsPluginsIndexRoute
+  '/settings/appearance': typeof SettingsAppearanceRoute
+  '/settings/data': typeof SettingsDataRoute
+  '/settings/developer': typeof SettingsDeveloperRoute
+  '/settings/personalization': typeof SettingsPersonalizationRoute
+  '/chat': typeof ChatIndexRoute
+  '/design-playground': typeof DesignPlaygroundIndexRoute
+  '/settings': typeof SettingsIndexRoute
+  '/design-playground/elements/button': typeof DesignPlaygroundElementsButtonRoute
+  '/design-playground/elements/dialog': typeof DesignPlaygroundElementsDialogRoute
+  '/design-playground/elements/form': typeof DesignPlaygroundElementsFormRoute
+  '/design-playground/elements/llm-picker': typeof DesignPlaygroundElementsLlmPickerRoute
+  '/design-playground/elements/markdown': typeof DesignPlaygroundElementsMarkdownRoute
+  '/design-playground/elements/menu': typeof DesignPlaygroundElementsMenuRoute
+  '/design-playground/elements/tooltip': typeof DesignPlaygroundElementsTooltipRoute
+  '/settings/plugins/$id': typeof SettingsPluginsIdRoute
+  '/chat/$id': typeof ChatIdIndexRoute
+  '/settings/plugins': typeof SettingsPluginsIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/_app': typeof AppRouteRouteWithChildren
-  '/_app/chat': typeof AppChatRouteRouteWithChildren
-  '/_app/design-playground': typeof AppDesignPlaygroundRouteRouteWithChildren
-  '/_app/settings': typeof AppSettingsRouteRouteWithChildren
-  '/_app/settings/appearance': typeof AppSettingsAppearanceRoute
-  '/_app/settings/data': typeof AppSettingsDataRoute
-  '/_app/settings/developer': typeof AppSettingsDeveloperRoute
-  '/_app/settings/personalization': typeof AppSettingsPersonalizationRoute
-  '/_app/chat/': typeof AppChatIndexRoute
-  '/_app/design-playground/': typeof AppDesignPlaygroundIndexRoute
-  '/_app/settings/': typeof AppSettingsIndexRoute
-  '/_app/design-playground/elements/button': typeof AppDesignPlaygroundElementsButtonRoute
-  '/_app/design-playground/elements/dialog': typeof AppDesignPlaygroundElementsDialogRoute
-  '/_app/design-playground/elements/form': typeof AppDesignPlaygroundElementsFormRoute
-  '/_app/design-playground/elements/llm-picker': typeof AppDesignPlaygroundElementsLlmPickerRoute
-  '/_app/design-playground/elements/markdown': typeof AppDesignPlaygroundElementsMarkdownRoute
-  '/_app/design-playground/elements/menu': typeof AppDesignPlaygroundElementsMenuRoute
-  '/_app/design-playground/elements/tooltip': typeof AppDesignPlaygroundElementsTooltipRoute
-  '/_app/settings/plugins/$id': typeof AppSettingsPluginsIdRoute
-  '/_app/chat/$id/': typeof AppChatIdIndexRoute
-  '/_app/settings/plugins/': typeof AppSettingsPluginsIndexRoute
+  '/chat': typeof ChatRouteRouteWithChildren
+  '/design-playground': typeof DesignPlaygroundRouteRouteWithChildren
+  '/settings': typeof SettingsRouteRouteWithChildren
+  '/settings/appearance': typeof SettingsAppearanceRoute
+  '/settings/data': typeof SettingsDataRoute
+  '/settings/developer': typeof SettingsDeveloperRoute
+  '/settings/personalization': typeof SettingsPersonalizationRoute
+  '/chat/': typeof ChatIndexRoute
+  '/design-playground/': typeof DesignPlaygroundIndexRoute
+  '/settings/': typeof SettingsIndexRoute
+  '/design-playground/elements/button': typeof DesignPlaygroundElementsButtonRoute
+  '/design-playground/elements/dialog': typeof DesignPlaygroundElementsDialogRoute
+  '/design-playground/elements/form': typeof DesignPlaygroundElementsFormRoute
+  '/design-playground/elements/llm-picker': typeof DesignPlaygroundElementsLlmPickerRoute
+  '/design-playground/elements/markdown': typeof DesignPlaygroundElementsMarkdownRoute
+  '/design-playground/elements/menu': typeof DesignPlaygroundElementsMenuRoute
+  '/design-playground/elements/tooltip': typeof DesignPlaygroundElementsTooltipRoute
+  '/settings/plugins/$id': typeof SettingsPluginsIdRoute
+  '/chat/$id/': typeof ChatIdIndexRoute
+  '/settings/plugins/': typeof SettingsPluginsIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | ''
     | '/chat'
     | '/design-playground'
     | '/settings'
@@ -526,7 +487,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | ''
     | '/settings/appearance'
     | '/settings/data'
     | '/settings/developer'
@@ -547,38 +507,41 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/_app'
-    | '/_app/chat'
-    | '/_app/design-playground'
-    | '/_app/settings'
-    | '/_app/settings/appearance'
-    | '/_app/settings/data'
-    | '/_app/settings/developer'
-    | '/_app/settings/personalization'
-    | '/_app/chat/'
-    | '/_app/design-playground/'
-    | '/_app/settings/'
-    | '/_app/design-playground/elements/button'
-    | '/_app/design-playground/elements/dialog'
-    | '/_app/design-playground/elements/form'
-    | '/_app/design-playground/elements/llm-picker'
-    | '/_app/design-playground/elements/markdown'
-    | '/_app/design-playground/elements/menu'
-    | '/_app/design-playground/elements/tooltip'
-    | '/_app/settings/plugins/$id'
-    | '/_app/chat/$id/'
-    | '/_app/settings/plugins/'
+    | '/chat'
+    | '/design-playground'
+    | '/settings'
+    | '/settings/appearance'
+    | '/settings/data'
+    | '/settings/developer'
+    | '/settings/personalization'
+    | '/chat/'
+    | '/design-playground/'
+    | '/settings/'
+    | '/design-playground/elements/button'
+    | '/design-playground/elements/dialog'
+    | '/design-playground/elements/form'
+    | '/design-playground/elements/llm-picker'
+    | '/design-playground/elements/markdown'
+    | '/design-playground/elements/menu'
+    | '/design-playground/elements/tooltip'
+    | '/settings/plugins/$id'
+    | '/chat/$id/'
+    | '/settings/plugins/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppRouteRoute: typeof AppRouteRouteWithChildren
+  ChatRouteRoute: typeof ChatRouteRouteWithChildren
+  DesignPlaygroundRouteRoute: typeof DesignPlaygroundRouteRouteWithChildren
+  SettingsRouteRoute: typeof SettingsRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppRouteRoute: AppRouteRouteWithChildren,
+  ChatRouteRoute: ChatRouteRouteWithChildren,
+  DesignPlaygroundRouteRoute: DesignPlaygroundRouteRouteWithChildren,
+  SettingsRouteRoute: SettingsRouteRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -592,122 +555,113 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/_app"
+        "/chat",
+        "/design-playground",
+        "/settings"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/_app": {
-      "filePath": "_app/route.tsx",
+    "/chat": {
+      "filePath": "chat/route.tsx",
       "children": [
-        "/_app/chat",
-        "/_app/design-playground",
-        "/_app/settings"
+        "/chat/",
+        "/chat/$id/"
       ]
     },
-    "/_app/chat": {
-      "filePath": "_app/chat/route.tsx",
-      "parent": "/_app",
+    "/design-playground": {
+      "filePath": "design-playground/route.tsx",
       "children": [
-        "/_app/chat/",
-        "/_app/chat/$id/"
+        "/design-playground/",
+        "/design-playground/elements/button",
+        "/design-playground/elements/dialog",
+        "/design-playground/elements/form",
+        "/design-playground/elements/llm-picker",
+        "/design-playground/elements/markdown",
+        "/design-playground/elements/menu",
+        "/design-playground/elements/tooltip"
       ]
     },
-    "/_app/design-playground": {
-      "filePath": "_app/design-playground/route.tsx",
-      "parent": "/_app",
+    "/settings": {
+      "filePath": "settings/route.tsx",
       "children": [
-        "/_app/design-playground/",
-        "/_app/design-playground/elements/button",
-        "/_app/design-playground/elements/dialog",
-        "/_app/design-playground/elements/form",
-        "/_app/design-playground/elements/llm-picker",
-        "/_app/design-playground/elements/markdown",
-        "/_app/design-playground/elements/menu",
-        "/_app/design-playground/elements/tooltip"
+        "/settings/appearance",
+        "/settings/data",
+        "/settings/developer",
+        "/settings/personalization",
+        "/settings/",
+        "/settings/plugins/$id",
+        "/settings/plugins/"
       ]
     },
-    "/_app/settings": {
-      "filePath": "_app/settings/route.tsx",
-      "parent": "/_app",
-      "children": [
-        "/_app/settings/appearance",
-        "/_app/settings/data",
-        "/_app/settings/developer",
-        "/_app/settings/personalization",
-        "/_app/settings/",
-        "/_app/settings/plugins/$id",
-        "/_app/settings/plugins/"
-      ]
+    "/settings/appearance": {
+      "filePath": "settings/appearance.tsx",
+      "parent": "/settings"
     },
-    "/_app/settings/appearance": {
-      "filePath": "_app/settings/appearance.tsx",
-      "parent": "/_app/settings"
+    "/settings/data": {
+      "filePath": "settings/data.tsx",
+      "parent": "/settings"
     },
-    "/_app/settings/data": {
-      "filePath": "_app/settings/data.tsx",
-      "parent": "/_app/settings"
+    "/settings/developer": {
+      "filePath": "settings/developer.tsx",
+      "parent": "/settings"
     },
-    "/_app/settings/developer": {
-      "filePath": "_app/settings/developer.tsx",
-      "parent": "/_app/settings"
+    "/settings/personalization": {
+      "filePath": "settings/personalization.tsx",
+      "parent": "/settings"
     },
-    "/_app/settings/personalization": {
-      "filePath": "_app/settings/personalization.tsx",
-      "parent": "/_app/settings"
+    "/chat/": {
+      "filePath": "chat/index.tsx",
+      "parent": "/chat"
     },
-    "/_app/chat/": {
-      "filePath": "_app/chat/index.tsx",
-      "parent": "/_app/chat"
+    "/design-playground/": {
+      "filePath": "design-playground/index.tsx",
+      "parent": "/design-playground"
     },
-    "/_app/design-playground/": {
-      "filePath": "_app/design-playground/index.tsx",
-      "parent": "/_app/design-playground"
+    "/settings/": {
+      "filePath": "settings/index.tsx",
+      "parent": "/settings"
     },
-    "/_app/settings/": {
-      "filePath": "_app/settings/index.tsx",
-      "parent": "/_app/settings"
+    "/design-playground/elements/button": {
+      "filePath": "design-playground/elements/button.tsx",
+      "parent": "/design-playground"
     },
-    "/_app/design-playground/elements/button": {
-      "filePath": "_app/design-playground/elements/button.tsx",
-      "parent": "/_app/design-playground"
+    "/design-playground/elements/dialog": {
+      "filePath": "design-playground/elements/dialog.tsx",
+      "parent": "/design-playground"
     },
-    "/_app/design-playground/elements/dialog": {
-      "filePath": "_app/design-playground/elements/dialog.tsx",
-      "parent": "/_app/design-playground"
+    "/design-playground/elements/form": {
+      "filePath": "design-playground/elements/form.tsx",
+      "parent": "/design-playground"
     },
-    "/_app/design-playground/elements/form": {
-      "filePath": "_app/design-playground/elements/form.tsx",
-      "parent": "/_app/design-playground"
+    "/design-playground/elements/llm-picker": {
+      "filePath": "design-playground/elements/llm-picker.tsx",
+      "parent": "/design-playground"
     },
-    "/_app/design-playground/elements/llm-picker": {
-      "filePath": "_app/design-playground/elements/llm-picker.tsx",
-      "parent": "/_app/design-playground"
+    "/design-playground/elements/markdown": {
+      "filePath": "design-playground/elements/markdown.tsx",
+      "parent": "/design-playground"
     },
-    "/_app/design-playground/elements/markdown": {
-      "filePath": "_app/design-playground/elements/markdown.tsx",
-      "parent": "/_app/design-playground"
+    "/design-playground/elements/menu": {
+      "filePath": "design-playground/elements/menu.tsx",
+      "parent": "/design-playground"
     },
-    "/_app/design-playground/elements/menu": {
-      "filePath": "_app/design-playground/elements/menu.tsx",
-      "parent": "/_app/design-playground"
+    "/design-playground/elements/tooltip": {
+      "filePath": "design-playground/elements/tooltip.tsx",
+      "parent": "/design-playground"
     },
-    "/_app/design-playground/elements/tooltip": {
-      "filePath": "_app/design-playground/elements/tooltip.tsx",
-      "parent": "/_app/design-playground"
+    "/settings/plugins/$id": {
+      "filePath": "settings/plugins/$id.tsx",
+      "parent": "/settings"
     },
-    "/_app/settings/plugins/$id": {
-      "filePath": "_app/settings/plugins/$id.tsx",
-      "parent": "/_app/settings"
+    "/chat/$id/": {
+      "filePath": "chat/$id/index.tsx",
+      "parent": "/chat"
     },
-    "/_app/chat/$id/": {
-      "filePath": "_app/chat/$id/index.tsx",
-      "parent": "/_app/chat"
-    },
-    "/_app/settings/plugins/": {
-      "filePath": "_app/settings/plugins/index.tsx",
-      "parent": "/_app/settings"
+    "/settings/plugins/": {
+      "filePath": "settings/plugins/index.tsx",
+      "parent": "/settings"
     }
   }
 }
