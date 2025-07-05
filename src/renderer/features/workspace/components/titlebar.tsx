@@ -1,7 +1,7 @@
 import { MaximizeIcon, MinimizeIcon, PanelLeftIcon, PanelRightIcon, XIcon } from "lucide-react";
-import { IconButton } from "../../components/icon-button";
-import { useWindowInfoContext } from "../../features/window-info/hooks";
-import { useMainRouterClient } from "../../lib/trpc";
+import { IconButton } from "../../../components/icon-button";
+import { useMainRouterClient } from "../../../lib/trpc";
+import { useWindowInfoContext } from "../../window-info/hooks";
 
 const WindowControls = () => {
 	const mainRouter = useMainRouterClient();

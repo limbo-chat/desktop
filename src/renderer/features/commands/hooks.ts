@@ -1,4 +1,3 @@
-import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo } from "react";
 import { useHotkey } from "../../hooks/common";
 import { useCommandStore } from "./stores";
@@ -25,16 +24,14 @@ export const useOpenCommandPaletteHotkey = () => {
 };
 
 export const useRegisterCoreCommands = () => {
-	const navigate = useNavigate();
-
 	useEffect(() => {
 		addCommand({
 			id: "open-design-playground",
 			name: "Open design playground",
 			execute: () => {
-				navigate({
-					to: "/design-playground",
-				});
+				// navigate({
+				// 	to: "/design-playground",
+				// });
 			},
 		});
 
