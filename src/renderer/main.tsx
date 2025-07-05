@@ -177,6 +177,9 @@ const MainContent = () => {
 			<Titlebar />
 			<div className="main-content">
 				<SideDock />
+				<div className="primary-sidebar"></div>
+				<div className="main">main</div>
+				<div className="secondary-sidebar"></div>
 			</div>
 		</>
 	);
