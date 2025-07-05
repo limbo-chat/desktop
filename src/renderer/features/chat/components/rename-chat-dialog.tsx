@@ -52,11 +52,10 @@ export const RenameChatDialog = ({ chat }: RenameChatDialogProps) => {
 					<DialogInfo>
 						<DialogTitle>Rename chat</DialogTitle>
 					</DialogInfo>
-					<DialogCloseButton />
 				</DialogHeader>
 				<DialogContent>
 					<FieldController.Root id="name" name="name">
-						<FieldController.TextInput placeholder="Enter a name" />
+						<FieldController.TextInput autoFocus placeholder="Enter a name" />
 					</FieldController.Root>
 				</DialogContent>
 				<DialogFooter>

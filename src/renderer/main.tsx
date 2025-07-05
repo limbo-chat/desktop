@@ -8,6 +8,7 @@ import type { MainRouter } from "../main/trpc/router";
 import type { PlatformName } from "../main/utils";
 import type { WindowType } from "../main/windows/types";
 import { Loading } from "./components/loading";
+import { ChatView } from "./features/chat/components/chat-view";
 import { useOpenCommandPaletteHotkey, useRegisterCoreCommands } from "./features/commands/hooks";
 import {
 	useCustomStylesLoader,
@@ -178,7 +179,7 @@ const MainContent = () => {
 			<div className="main-content">
 				<SideDock />
 				<div className="primary-sidebar"></div>
-				<div className="main">main</div>
+				<div className="main">{/* <ChatView /> */}</div>
 				<div className="secondary-sidebar"></div>
 			</div>
 		</>

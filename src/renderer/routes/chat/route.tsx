@@ -2,7 +2,7 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useMeasure } from "@uidotdev/usehooks";
 import { Suspense } from "react";
 import { Loading } from "../../components/loading";
-import { ChatComposer } from "./-components/chat-composer";
+import { ChatComposer } from "../../features/chat/components/chat-composer";
 import { ChatSidebar } from "./-components/chat-sidebar";
 
 export const Route = createFileRoute("/chat")({

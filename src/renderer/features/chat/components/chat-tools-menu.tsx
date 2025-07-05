@@ -10,9 +10,9 @@ import {
 } from "../../../components/menu";
 import { Switch } from "../../../components/switch";
 import { Tooltip } from "../../../components/tooltip";
-import { useEnabledToolIds } from "../../../features/storage/hooks";
-import { setEnabledToolIds } from "../../../features/storage/utils";
-import { useToolList } from "../../../features/tools/hooks";
+import { useEnabledToolIds } from "../../storage/hooks";
+import { setEnabledToolIds } from "../../storage/utils";
+import { useToolList } from "../../tools/hooks";
 
 export const ChatToolsMenu = () => {
 	const tools = useToolList();
