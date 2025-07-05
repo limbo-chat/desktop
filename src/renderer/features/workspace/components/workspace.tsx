@@ -5,6 +5,7 @@ import { Titlebar } from "./titlebar";
 export const Workspace = () => {
 	const workspaceStore = useWorkspaceStore(
 		useShallow((state) => ({
+			activeChatId: state.workspace!.activeChatId,
 			primarySidebar: state.workspace!.layout.primarySidebar,
 			secondarySidebar: state.workspace!.layout.secondarySidebar,
 		}))

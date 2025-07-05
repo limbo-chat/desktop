@@ -11,6 +11,7 @@ const workspaceLayoutSchema = z.object({
 });
 
 export const workspaceSchema = z.object({
+	activeChatId: z.string().nullable(),
 	layout: workspaceLayoutSchema,
 });
 

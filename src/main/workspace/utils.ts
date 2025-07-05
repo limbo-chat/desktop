@@ -3,6 +3,7 @@ import { WORKSPACE_FILE_PATH } from "./constants";
 import { workspaceSchema, type Workspace } from "./schemas";
 
 export const defaultWorkspace: Workspace = {
+	activeChatId: null,
 	layout: {
 		primarySidebar: {
 			width: 300,
