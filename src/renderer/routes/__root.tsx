@@ -162,7 +162,7 @@ const useRendererLoader = () => {
 		}
 
 		// notify the main process that the renderer is ready
-		window.ipcRenderer.send("window:ready", windowInfo.id);
+		window.ipcRenderer.send("window:ready", windowInfo.type);
 	};
 
 	useCustomStylesLoader({

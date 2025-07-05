@@ -7,7 +7,7 @@ import { readMeta, writeMeta } from "./meta/utils";
 import { readSettings } from "./settings/utils";
 import { mainRouter } from "./trpc/router";
 import { WindowManager } from "./windows/manager";
-import type { WindowId } from "./windows/types";
+import type { WindowType } from "./windows/types";
 
 const windowManager = new WindowManager();
 
@@ -40,13 +40,7 @@ function watchCustomStyles() {
 }
 
 function launchWindow() {
-	const meta = readMeta();
-
-	if (meta.completedOnboarding) {
-		windowManager.createMainWindow();
-	} else {
-		windowManager.createOnboardingWindow();
-	}
+	windowManager.createMainWindow();
 }
 
 async function startApp() {
@@ -75,7 +69,7 @@ async function startApp() {
 	}
 
 	// the windows have a loading process that will send a "ready" event when it is ready to show
-	ipcMain.on("window:ready", (e, windowId: WindowId) => {
+	ipcMain.on("window:ready", (_, windowId: WindowType) => {
 		const readyWindow = windowManager.getWindow(windowId);
 
 		if (!readyWindow) {

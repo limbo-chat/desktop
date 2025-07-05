@@ -11,19 +11,14 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as OnboardingRouteImport } from './routes/onboarding/route'
 import { Route as AppRouteImport } from './routes/_app/route'
 import { Route as IndexImport } from './routes/index'
-import { Route as OnboardingIndexImport } from './routes/onboarding/index'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings/route'
 import { Route as AppDesignPlaygroundRouteImport } from './routes/_app/design-playground/route'
 import { Route as AppChatRouteImport } from './routes/_app/chat/route'
 import { Route as AppSettingsIndexImport } from './routes/_app/settings/index'
 import { Route as AppDesignPlaygroundIndexImport } from './routes/_app/design-playground/index'
 import { Route as AppChatIndexImport } from './routes/_app/chat/index'
-import { Route as OnboardingStepsThemeImport } from './routes/onboarding/_steps/theme'
-import { Route as OnboardingStepsPluginsImport } from './routes/onboarding/_steps/plugins'
-import { Route as OnboardingStepsFinishImport } from './routes/onboarding/_steps/finish'
 import { Route as AppSettingsPersonalizationImport } from './routes/_app/settings/personalization'
 import { Route as AppSettingsDeveloperImport } from './routes/_app/settings/developer'
 import { Route as AppSettingsDataImport } from './routes/_app/settings/data'
@@ -41,12 +36,6 @@ import { Route as AppDesignPlaygroundElementsButtonImport } from './routes/_app/
 
 // Create/Update Routes
 
-const OnboardingRouteRoute = OnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const AppRouteRoute = AppRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRoute,
@@ -56,12 +45,6 @@ const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
-} as any)
-
-const OnboardingIndexRoute = OnboardingIndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => OnboardingRouteRoute,
 } as any)
 
 const AppSettingsRouteRoute = AppSettingsRouteImport.update({
@@ -98,24 +81,6 @@ const AppChatIndexRoute = AppChatIndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppChatRouteRoute,
-} as any)
-
-const OnboardingStepsThemeRoute = OnboardingStepsThemeImport.update({
-  id: '/_steps/theme',
-  path: '/theme',
-  getParentRoute: () => OnboardingRouteRoute,
-} as any)
-
-const OnboardingStepsPluginsRoute = OnboardingStepsPluginsImport.update({
-  id: '/_steps/plugins',
-  path: '/plugins',
-  getParentRoute: () => OnboardingRouteRoute,
-} as any)
-
-const OnboardingStepsFinishRoute = OnboardingStepsFinishImport.update({
-  id: '/_steps/finish',
-  path: '/finish',
-  getParentRoute: () => OnboardingRouteRoute,
 } as any)
 
 const AppSettingsPersonalizationRoute = AppSettingsPersonalizationImport.update(
@@ -229,13 +194,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRoute
     }
-    '/onboarding': {
-      id: '/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof OnboardingRouteImport
-      parentRoute: typeof rootRoute
-    }
     '/_app/chat': {
       id: '/_app/chat'
       path: '/chat'
@@ -256,13 +214,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/settings'
       preLoaderRoute: typeof AppSettingsRouteImport
       parentRoute: typeof AppRouteImport
-    }
-    '/onboarding/': {
-      id: '/onboarding/'
-      path: '/'
-      fullPath: '/onboarding/'
-      preLoaderRoute: typeof OnboardingIndexImport
-      parentRoute: typeof OnboardingRouteImport
     }
     '/_app/settings/appearance': {
       id: '/_app/settings/appearance'
@@ -291,27 +242,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/settings/personalization'
       preLoaderRoute: typeof AppSettingsPersonalizationImport
       parentRoute: typeof AppSettingsRouteImport
-    }
-    '/onboarding/_steps/finish': {
-      id: '/onboarding/_steps/finish'
-      path: '/finish'
-      fullPath: '/onboarding/finish'
-      preLoaderRoute: typeof OnboardingStepsFinishImport
-      parentRoute: typeof OnboardingRouteImport
-    }
-    '/onboarding/_steps/plugins': {
-      id: '/onboarding/_steps/plugins'
-      path: '/plugins'
-      fullPath: '/onboarding/plugins'
-      preLoaderRoute: typeof OnboardingStepsPluginsImport
-      parentRoute: typeof OnboardingRouteImport
-    }
-    '/onboarding/_steps/theme': {
-      id: '/onboarding/_steps/theme'
-      path: '/theme'
-      fullPath: '/onboarding/theme'
-      preLoaderRoute: typeof OnboardingStepsThemeImport
-      parentRoute: typeof OnboardingRouteImport
     }
     '/_app/chat/': {
       id: '/_app/chat/'
@@ -495,39 +425,16 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
   AppRouteRouteChildren,
 )
 
-interface OnboardingRouteRouteChildren {
-  OnboardingIndexRoute: typeof OnboardingIndexRoute
-  OnboardingStepsFinishRoute: typeof OnboardingStepsFinishRoute
-  OnboardingStepsPluginsRoute: typeof OnboardingStepsPluginsRoute
-  OnboardingStepsThemeRoute: typeof OnboardingStepsThemeRoute
-}
-
-const OnboardingRouteRouteChildren: OnboardingRouteRouteChildren = {
-  OnboardingIndexRoute: OnboardingIndexRoute,
-  OnboardingStepsFinishRoute: OnboardingStepsFinishRoute,
-  OnboardingStepsPluginsRoute: OnboardingStepsPluginsRoute,
-  OnboardingStepsThemeRoute: OnboardingStepsThemeRoute,
-}
-
-const OnboardingRouteRouteWithChildren = OnboardingRouteRoute._addFileChildren(
-  OnboardingRouteRouteChildren,
-)
-
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AppRouteRouteWithChildren
-  '/onboarding': typeof OnboardingRouteRouteWithChildren
   '/chat': typeof AppChatRouteRouteWithChildren
   '/design-playground': typeof AppDesignPlaygroundRouteRouteWithChildren
   '/settings': typeof AppSettingsRouteRouteWithChildren
-  '/onboarding/': typeof OnboardingIndexRoute
   '/settings/appearance': typeof AppSettingsAppearanceRoute
   '/settings/data': typeof AppSettingsDataRoute
   '/settings/developer': typeof AppSettingsDeveloperRoute
   '/settings/personalization': typeof AppSettingsPersonalizationRoute
-  '/onboarding/finish': typeof OnboardingStepsFinishRoute
-  '/onboarding/plugins': typeof OnboardingStepsPluginsRoute
-  '/onboarding/theme': typeof OnboardingStepsThemeRoute
   '/chat/': typeof AppChatIndexRoute
   '/design-playground/': typeof AppDesignPlaygroundIndexRoute
   '/settings/': typeof AppSettingsIndexRoute
@@ -546,14 +453,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof AppRouteRouteWithChildren
-  '/onboarding': typeof OnboardingIndexRoute
   '/settings/appearance': typeof AppSettingsAppearanceRoute
   '/settings/data': typeof AppSettingsDataRoute
   '/settings/developer': typeof AppSettingsDeveloperRoute
   '/settings/personalization': typeof AppSettingsPersonalizationRoute
-  '/onboarding/finish': typeof OnboardingStepsFinishRoute
-  '/onboarding/plugins': typeof OnboardingStepsPluginsRoute
-  '/onboarding/theme': typeof OnboardingStepsThemeRoute
   '/chat': typeof AppChatIndexRoute
   '/design-playground': typeof AppDesignPlaygroundIndexRoute
   '/settings': typeof AppSettingsIndexRoute
@@ -573,18 +476,13 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/_app': typeof AppRouteRouteWithChildren
-  '/onboarding': typeof OnboardingRouteRouteWithChildren
   '/_app/chat': typeof AppChatRouteRouteWithChildren
   '/_app/design-playground': typeof AppDesignPlaygroundRouteRouteWithChildren
   '/_app/settings': typeof AppSettingsRouteRouteWithChildren
-  '/onboarding/': typeof OnboardingIndexRoute
   '/_app/settings/appearance': typeof AppSettingsAppearanceRoute
   '/_app/settings/data': typeof AppSettingsDataRoute
   '/_app/settings/developer': typeof AppSettingsDeveloperRoute
   '/_app/settings/personalization': typeof AppSettingsPersonalizationRoute
-  '/onboarding/_steps/finish': typeof OnboardingStepsFinishRoute
-  '/onboarding/_steps/plugins': typeof OnboardingStepsPluginsRoute
-  '/onboarding/_steps/theme': typeof OnboardingStepsThemeRoute
   '/_app/chat/': typeof AppChatIndexRoute
   '/_app/design-playground/': typeof AppDesignPlaygroundIndexRoute
   '/_app/settings/': typeof AppSettingsIndexRoute
@@ -605,18 +503,13 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | ''
-    | '/onboarding'
     | '/chat'
     | '/design-playground'
     | '/settings'
-    | '/onboarding/'
     | '/settings/appearance'
     | '/settings/data'
     | '/settings/developer'
     | '/settings/personalization'
-    | '/onboarding/finish'
-    | '/onboarding/plugins'
-    | '/onboarding/theme'
     | '/chat/'
     | '/design-playground/'
     | '/settings/'
@@ -634,14 +527,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | ''
-    | '/onboarding'
     | '/settings/appearance'
     | '/settings/data'
     | '/settings/developer'
     | '/settings/personalization'
-    | '/onboarding/finish'
-    | '/onboarding/plugins'
-    | '/onboarding/theme'
     | '/chat'
     | '/design-playground'
     | '/settings'
@@ -659,18 +548,13 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_app'
-    | '/onboarding'
     | '/_app/chat'
     | '/_app/design-playground'
     | '/_app/settings'
-    | '/onboarding/'
     | '/_app/settings/appearance'
     | '/_app/settings/data'
     | '/_app/settings/developer'
     | '/_app/settings/personalization'
-    | '/onboarding/_steps/finish'
-    | '/onboarding/_steps/plugins'
-    | '/onboarding/_steps/theme'
     | '/_app/chat/'
     | '/_app/design-playground/'
     | '/_app/settings/'
@@ -690,13 +574,11 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRouteRoute: typeof AppRouteRouteWithChildren
-  OnboardingRouteRoute: typeof OnboardingRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRouteRoute: AppRouteRouteWithChildren,
-  OnboardingRouteRoute: OnboardingRouteRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -710,8 +592,7 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/_app",
-        "/onboarding"
+        "/_app"
       ]
     },
     "/": {
@@ -723,15 +604,6 @@ export const routeTree = rootRoute
         "/_app/chat",
         "/_app/design-playground",
         "/_app/settings"
-      ]
-    },
-    "/onboarding": {
-      "filePath": "onboarding/route.tsx",
-      "children": [
-        "/onboarding/",
-        "/onboarding/_steps/finish",
-        "/onboarding/_steps/plugins",
-        "/onboarding/_steps/theme"
       ]
     },
     "/_app/chat": {
@@ -769,10 +641,6 @@ export const routeTree = rootRoute
         "/_app/settings/plugins/"
       ]
     },
-    "/onboarding/": {
-      "filePath": "onboarding/index.tsx",
-      "parent": "/onboarding"
-    },
     "/_app/settings/appearance": {
       "filePath": "_app/settings/appearance.tsx",
       "parent": "/_app/settings"
@@ -788,18 +656,6 @@ export const routeTree = rootRoute
     "/_app/settings/personalization": {
       "filePath": "_app/settings/personalization.tsx",
       "parent": "/_app/settings"
-    },
-    "/onboarding/_steps/finish": {
-      "filePath": "onboarding/_steps/finish.tsx",
-      "parent": "/onboarding"
-    },
-    "/onboarding/_steps/plugins": {
-      "filePath": "onboarding/_steps/plugins.tsx",
-      "parent": "/onboarding"
-    },
-    "/onboarding/_steps/theme": {
-      "filePath": "onboarding/_steps/theme.tsx",
-      "parent": "/onboarding"
     },
     "/_app/chat/": {
       "filePath": "_app/chat/index.tsx",

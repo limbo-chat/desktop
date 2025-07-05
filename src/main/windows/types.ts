@@ -1,8 +1,8 @@
 import type { PlatformName } from "../utils";
 
-export type WindowId = "main" | "onboarding";
+export type WindowType = "main";
 
 export interface WindowInfo {
-	id: WindowId;
+	type: WindowType;
 	platform: PlatformName;
 }
