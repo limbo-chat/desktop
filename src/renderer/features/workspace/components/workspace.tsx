@@ -1,4 +1,5 @@
 import { useShallow } from "zustand/shallow";
+import { ChatListView } from "../../chat/components/chat-list-view";
 import { useWorkspaceStore } from "../stores";
 import { Titlebar } from "./titlebar";
 
@@ -27,7 +28,7 @@ export const Workspace = () => {
 						className="primary-sidebar"
 						style={{ width: workspaceStore.primarySidebar.width }}
 					>
-						test
+						<ChatListView />
 					</div>
 				)}
 				<div className="main">{/* <ChatView /> */}</div>
