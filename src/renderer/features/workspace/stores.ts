@@ -1,38 +1,38 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import type { WorkspaceLayout } from "./types";
+import type { Workspace } from "../../../main/workspace/schemas";
 
 export interface WorkspaceStore {
-	layout: WorkspaceLayout | null;
-	setLayout: (workspace: WorkspaceLayout | null) => void;
+	workspace: Workspace | null;
+	setWorkspace: (workspace: Workspace | null) => void;
 	setIsPrimarySidebarOpen: (isOpen: boolean) => void;
 	setIsSecondarySidebarOpen: (isOpen: boolean) => void;
 }
 
 export const useWorkspaceStore = create(
 	immer<WorkspaceStore>((set) => ({
-		layout: null,
-		setLayout: (workspace) => {
+		workspace: null,
+		setWorkspace: (workspace) => {
 			set(() => ({
 				workspace,
 			}));
 		},
 		setIsPrimarySidebarOpen: (isOpen) => {
 			set((state) => {
-				if (!state.layout) {
+				if (!state.workspace) {
 					return;
 				}
 
-				state.layout.primarySidebar.isOpen = isOpen;
+				state.workspace.layout.primarySidebar.isOpen = isOpen;
 			});
 		},
 		setIsSecondarySidebarOpen: (isOpen) => {
 			set((state) => {
-				if (!state.layout) {
+				if (!state.workspace) {
 					return;
 				}
 
-				state.layout.secondarySidebar.isOpen = isOpen;
+				state.workspace.layout.secondarySidebar.isOpen = isOpen;
 			});
 		},
 	}))

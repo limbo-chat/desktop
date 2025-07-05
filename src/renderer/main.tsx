@@ -29,9 +29,9 @@ import { usePluginHotReloader, usePluginLoader } from "./features/plugins/hooks/
 import { usePluginSyncLayer } from "./features/plugins/hooks/use-plugin-sync-layer";
 import { WindowInfoProvider } from "./features/window-info/components";
 import { useWindowInfoContext } from "./features/window-info/hooks";
-import { SideDock } from "./features/workspace/components/side-dock";
-import { Titlebar } from "./features/workspace/components/titlebar";
 import { Workspace } from "./features/workspace/components/workspace";
+import { useWorkspaceLoader } from "./features/workspace/hooks/use-workspace-loader";
+import { useWorkspacePersister } from "./features/workspace/hooks/use-workspace-persister";
 import { useWorkspaceStore } from "./features/workspace/stores";
 import { useIsAppFocused } from "./hooks/common";
 import { MainRouterProvider } from "./lib/trpc";
@@ -164,10 +164,13 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 };
 
 const WorkspaceContainer = () => {
-	const workspace = useWorkspaceStore((state) => state.workspace);
+	const isWorkspaceLoaded = useWorkspaceStore((state) => !!state.workspace);
 
 	useRendererLoader();
 	useCustomStylesSubscriber();
+
+	useWorkspaceLoader();
+	useWorkspacePersister();
 
 	usePluginSyncLayer();
 	usePluginLoader();
@@ -177,7 +180,7 @@ const WorkspaceContainer = () => {
 	useRegisterCustomStylesCommands();
 	useOpenCommandPaletteHotkey();
 
-	if (!workspace) {
+	if (!isWorkspaceLoaded) {
 		return null;
 	}
 

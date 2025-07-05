@@ -5,8 +5,8 @@ import { Titlebar } from "./titlebar";
 export const Workspace = () => {
 	const workspaceStore = useWorkspaceStore(
 		useShallow((state) => ({
-			primarySidebar: state.layout!.primarySidebar,
-			secondarySidebar: state.layout!.secondarySidebar,
+			primarySidebar: state.workspace!.layout.primarySidebar,
+			secondarySidebar: state.workspace!.layout.secondarySidebar,
 		}))
 	);
 
@@ -21,9 +21,23 @@ export const Workspace = () => {
 		>
 			<Titlebar />
 			<div className="workspace-content">
-				{isPrimarySidebarOpen && <div className="primary-sidebar">test</div>}
+				{isPrimarySidebarOpen && (
+					<div
+						className="primary-sidebar"
+						style={{ width: workspaceStore.primarySidebar.width }}
+					>
+						test
+					</div>
+				)}
 				<div className="main">{/* <ChatView /> */}</div>
-				{isSecondarySidebarOpen && <div className="secondary-sidebar">test</div>}
+				{isSecondarySidebarOpen && (
+					<div
+						className="secondary-sidebar"
+						style={{ width: workspaceStore.secondarySidebar.width }}
+					>
+						test
+					</div>
+				)}
 			</div>
 		</div>
 	);

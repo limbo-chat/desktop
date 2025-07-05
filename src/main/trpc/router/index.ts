@@ -5,9 +5,11 @@ import { customStylesRouter } from "./custom-styles";
 import { pluginsRouter } from "./plugins";
 import { settingsRouter } from "./settings";
 import { windowRouter } from "./window";
+import { workspaceRouter } from "./workspace";
 
 export const mainRouter = router({
 	window: windowRouter,
+	workspace: workspaceRouter,
 	settings: settingsRouter,
 	customStyles: customStylesRouter,
 	plugins: pluginsRouter,

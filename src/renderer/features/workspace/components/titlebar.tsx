@@ -38,8 +38,8 @@ export const Titlebar = () => {
 
 	const workspaceStore = useWorkspaceStore(
 		useShallow((state) => ({
-			isPrimarySidebarOpen: state.layout!.primarySidebar.isOpen,
-			isSecondarySidebarOpen: state.layout!.secondarySidebar.isOpen,
+			isPrimarySidebarOpen: state.workspace!.layout.primarySidebar.isOpen,
+			isSecondarySidebarOpen: state.workspace!.layout.secondarySidebar.isOpen,
 		}))
 	);
 
