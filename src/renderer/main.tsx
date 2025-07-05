@@ -4,11 +4,11 @@ import { Suspense, useMemo, useRef, type PropsWithChildren } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "sonner";
 import { ipcLink } from "trpc-electron/renderer";
+import { useShallow } from "zustand/shallow";
 import type { MainRouter } from "../main/trpc/router";
 import type { PlatformName } from "../main/utils";
 import type { WindowType } from "../main/windows/types";
 import { Loading } from "./components/loading";
-import { ChatView } from "./features/chat/components/chat-view";
 import { useOpenCommandPaletteHotkey, useRegisterCoreCommands } from "./features/commands/hooks";
 import {
 	useCustomStylesLoader,
@@ -31,6 +31,8 @@ import { WindowInfoProvider } from "./features/window-info/components";
 import { useWindowInfoContext } from "./features/window-info/hooks";
 import { SideDock } from "./features/workspace/components/side-dock";
 import { Titlebar } from "./features/workspace/components/titlebar";
+import { Workspace } from "./features/workspace/components/workspace";
+import { useWorkspaceStore } from "./features/workspace/stores";
 import { useIsAppFocused } from "./hooks/common";
 import { MainRouterProvider } from "./lib/trpc";
 
@@ -161,7 +163,9 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 	);
 };
 
-const MainContent = () => {
+const WorkspaceContainer = () => {
+	const workspace = useWorkspaceStore((state) => state.workspace);
+
 	useRendererLoader();
 	useCustomStylesSubscriber();
 
@@ -173,17 +177,11 @@ const MainContent = () => {
 	useRegisterCustomStylesCommands();
 	useOpenCommandPaletteHotkey();
 
-	return (
-		<>
-			<Titlebar />
-			<div className="main-content">
-				<SideDock />
-				<div className="primary-sidebar"></div>
-				<div className="main">{/* <ChatView /> */}</div>
-				<div className="secondary-sidebar"></div>
-			</div>
-		</>
-	);
+	if (!workspace) {
+		return null;
+	}
+
+	return <Workspace />;
 };
 
 const AppContent = () => {
@@ -195,7 +193,7 @@ const AppContent = () => {
 			<ModalHost />
 			<Toaster />
 			<Suspense fallback={<Loading />}>
-				<MainContent />
+				<WorkspaceContainer />
 			</Suspense>
 		</div>
 	);
