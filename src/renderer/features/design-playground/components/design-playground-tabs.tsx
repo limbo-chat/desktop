@@ -500,7 +500,7 @@ export const DesignPlaygroundTabs = () => {
 
 	return (
 		<VerticalTabs.Root
-			defaultValue={designPlaygroundTabsStore.activeTab ?? undefined}
+			value={designPlaygroundTabsStore.activeTab ?? undefined}
 			onValueChange={designPlaygroundTabsStore.setActiveTab}
 		>
 			<VerticalTabs.List>
@@ -510,7 +510,7 @@ export const DesignPlaygroundTabs = () => {
 							<VerticalTabs.ListSectionTitle>Atoms</VerticalTabs.ListSectionTitle>
 						</VerticalTabs.ListSectionHeader>
 						<VerticalTabs.ListSectionContent>
-							<VerticalTabs.ListSectionItem value="button">
+							<VerticalTabs.ListSectionItem value="button" autoFocus>
 								Button
 							</VerticalTabs.ListSectionItem>
 							<VerticalTabs.ListSectionItem value="tooltip">

@@ -3,6 +3,7 @@ import { FolderIcon, PlusIcon, RefreshCwIcon, SettingsIcon, Trash2Icon } from "l
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
+import { useShallow } from "zustand/shallow";
 import type { PluginManifest } from "../../../../main/plugins/schemas";
 import { Anchor } from "../../../components/anchor";
 import { Button } from "../../../components/button";
@@ -74,7 +75,7 @@ import { usePluginList } from "../../plugins/hooks/core";
 import { useGetSettingsSuspenseQuery, useUpdateSettingsMutation } from "../hooks";
 import { useSettingsTabsStore } from "../stores";
 
-const GeneralContent = () => {
+const GeneralTabContent = () => {
 	return (
 		<SettingsSection>
 			<SettingsSectionHeader>
@@ -107,7 +108,7 @@ const GeneralContent = () => {
 	);
 };
 
-const PersonalizationContent = () => {
+const PersonalizationTabContent = () => {
 	const getSettingsQuery = useGetSettingsSuspenseQuery();
 	const updateSettingsMutation = useUpdateSettingsMutation();
 	const settings = getSettingsQuery.data;
@@ -172,7 +173,7 @@ const PersonalizationContent = () => {
 	);
 };
 
-const DataContent = () => {
+const DataTabContent = () => {
 	const deleteAllChatsMutation = useDeleteAllChatsMutation();
 
 	const handleDeleteAllChats = () => {
@@ -200,7 +201,7 @@ const DataContent = () => {
 	);
 };
 
-const AppearanceContent = () => {
+const AppearanceTabContent = () => {
 	const mainRouterClient = useMainRouterClient();
 	const getSettingsQuery = useGetSettingsSuspenseQuery();
 	const updateSettingsMutation = useUpdateSettingsMutation();
@@ -269,7 +270,7 @@ const AppearanceContent = () => {
 	);
 };
 
-const DeveloperContent = () => {
+const DeveloperTabContent = () => {
 	const getSettingsQuery = useGetSettingsSuspenseQuery();
 	const updateSettingsMutation = useUpdateSettingsMutation();
 	const settings = getSettingsQuery.data;
@@ -526,7 +527,7 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 	);
 };
 
-const PluginsContent = () => {
+const PluginsTabContent = () => {
 	const plugins = usePluginList();
 	const mainRouterClient = useMainRouterClient();
 
@@ -601,7 +602,7 @@ interface PluginContentProps {
 	pluginId: string;
 }
 
-const PluginContent = ({ pluginId }: PluginContentProps) => {
+const PluginTabContent = ({ pluginId }: PluginContentProps) => {
 	const plugin = useActivePlugin(pluginId);
 
 	return (
@@ -627,19 +628,20 @@ const PluginContent = ({ pluginId }: PluginContentProps) => {
 };
 
 export const SettingsTabs = () => {
-	const activeTab = useSettingsTabsStore((state) => state.activeTab);
+	const settingsTabsStore = useSettingsTabsStore(
+		useShallow((state) => ({
+			activeTab: state.activeTab,
+			setActiveTab: state.setActiveTab,
+		}))
+	);
 
 	const pluginList = usePluginList();
 	const enabledPlugins = pluginList.filter((plugin) => plugin.enabled);
 
 	return (
 		<VerticalTabs.Root
-			value={activeTab ?? undefined}
-			onValueChange={(tab) => {
-				const settingsTabsStore = useSettingsTabsStore.getState();
-
-				settingsTabsStore.setActiveTab(tab);
-			}}
+			value={settingsTabsStore.activeTab ?? undefined}
+			onValueChange={settingsTabsStore.setActiveTab}
 		>
 			<VerticalTabs.List>
 				<VerticalTabs.ListSection>
@@ -686,29 +688,29 @@ export const SettingsTabs = () => {
 				)}
 			</VerticalTabs.List>
 			<VerticalTabs.Content value="general">
-				<GeneralContent />
+				<GeneralTabContent />
 			</VerticalTabs.Content>
 			<VerticalTabs.Content value="personalization">
-				<PersonalizationContent />
+				<PersonalizationTabContent />
 			</VerticalTabs.Content>
 			<VerticalTabs.Content value="data">
-				<DataContent />
+				<DataTabContent />
 			</VerticalTabs.Content>
 			<VerticalTabs.Content value="appearance">
-				<AppearanceContent />
+				<AppearanceTabContent />
 			</VerticalTabs.Content>
 			<VerticalTabs.Content value="developer">
-				<DeveloperContent />
+				<DeveloperTabContent />
 			</VerticalTabs.Content>
 			<VerticalTabs.Content value="plugins">
-				<PluginsContent />
+				<PluginsTabContent />
 			</VerticalTabs.Content>
 			{enabledPlugins.map((plugin) => (
 				<VerticalTabs.Content
 					value={`plugin-${plugin.manifest.id}`}
 					key={plugin.manifest.id}
 				>
-					<PluginContent pluginId={plugin.manifest.id} />
+					<PluginTabContent pluginId={plugin.manifest.id} />
 				</VerticalTabs.Content>
 			))}
 		</VerticalTabs.Root>
