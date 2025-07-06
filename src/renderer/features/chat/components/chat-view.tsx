@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useMeasure } from "@uidotdev/usehooks";
 import { ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type ButtonHTMLAttributes } from "react";
@@ -8,6 +8,8 @@ import { useAnimationUnmount, useIsAtBottom } from "../../../hooks/common";
 import { useMainRouter, useMainRouterClient } from "../../../lib/trpc";
 import { usePluginManager } from "../../plugins/hooks/core";
 import { getEnabledToolIds } from "../../storage/utils";
+import { useWorkspaceStore } from "../../workspace/stores";
+import { setActiveChatId } from "../../workspace/utils";
 import { useChatState } from "../hooks/common";
 import { useDeleteChatMutation } from "../hooks/queries";
 import { useSendMessage } from "../hooks/use-send-message";
@@ -41,16 +43,14 @@ const ScrollToBottomButton = ({ state, ...props }: ScrollToBottomButtonProps) =>
 	);
 };
 
-export interface ChatViewProps {
-	chatId: string;
-}
-
-export const ChatView = ({ chatId }: ChatViewProps) => {
+export const ChatView = () => {
+	const queryClient = useQueryClient();
 	const mainRouterClient = useMainRouterClient();
 	const mainRouter = useMainRouter();
 	const pluginManager = usePluginManager();
-	const chatState = useChatState(chatId);
-	const deleteChatMutation = useDeleteChatMutation();
+
+	const activeChatId = useWorkspaceStore((state) => state.workspace?.activeChatId ?? null);
+	const chatState = useChatState(activeChatId ?? undefined);
 	const { sendMessage, cancelResponse } = useSendMessage();
 
 	const [userMessage, setUserMessage] = useState("");
@@ -60,19 +60,29 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 	const chatLogContainerRef = useRef<HTMLDivElement>(null);
 	const hasScrolledToBottomOnLoad = useRef(false);
 
-	const getChatQuery = useSuspenseQuery(
-		mainRouter.chats.get.queryOptions({
-			id: chatId,
-		})
+	const getChatQuery = useQuery(
+		mainRouter.chats.get.queryOptions(
+			{
+				id: activeChatId as string,
+			},
+			{
+				enabled: activeChatId !== null,
+			}
+		)
 	);
 
 	const chat = getChatQuery.data;
 	const messages = chatState?.messages ?? [];
 
-	const listChatMessagesQuery = useSuspenseQuery(
-		mainRouter.chats.messages.list.queryOptions({
-			chatId: chatId,
-		})
+	const listChatMessagesQuery = useQuery(
+		mainRouter.chats.messages.list.queryOptions(
+			{
+				chatId: activeChatId as string,
+			},
+			{
+				enabled: activeChatId !== null,
+			}
+		)
 	);
 
 	const isAtBottom = useIsAtBottom({
@@ -97,28 +107,34 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 			return;
 		}
 
+		const chatStore = useChatStore.getState();
+
 		// form.reset();
 
-		// old chat creation logic
+		let chatId;
 
-		// let chatId;
+		if (activeChatId !== null) {
+			chatId = activeChatId;
+		} else {
+			// create a new chat
+			const newChat = await mainRouterClient.chats.create.mutate({
+				name: "New chat",
+			});
 
-		// const newChat = await createChatMutation.mutateAsync({
-		// 	name: "New chat",
-		// });
+			chatId = newChat.id;
 
-		// add the new chat to the store
-		// chatStore.addChat(newChat.id);
-		// chatId = newChat.id;
-		// await pluginManager.executeOnChatCreatedHooks({
-		// 	chatId: newChat.id,
-		// });
-		// await router.navigate({
-		// 	to: "/chat/$id",
-		// 	params: {
-		// 		id: newChat.id.toString(),
-		// 	},
-		// });
+			// add the new chat to the store
+			chatStore.addChat(newChat.id);
+
+			// set the new chat as the active chat
+			setActiveChatId(newChat.id);
+
+			queryClient.invalidateQueries(mainRouter.chats.list.queryFilter());
+
+			await pluginManager.executeOnChatCreatedHooks({
+				chatId: newChat.id,
+			});
+		}
 
 		const userMessageCopy = userMessage;
 
@@ -150,11 +166,15 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 
 			setUserMessage(userMessageCopy);
 		}
-	}, [chatId, userMessage]);
+	}, [activeChatId, userMessage, selectedChatLLMId]);
 
 	const handleCancel = useCallback(() => {
-		cancelResponse(chatId);
-	}, [chatId]);
+		if (activeChatId === null) {
+			return;
+		}
+
+		cancelResponse(activeChatId);
+	}, [activeChatId]);
 
 	const scrollToBottom = useCallback((behavior: ScrollBehavior = "auto") => {
 		if (!chatLogContainerRef.current) {
@@ -168,7 +188,7 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 	}, []);
 
 	useEffect(() => {
-		if (chatState) {
+		if (chatState || !chat || !listChatMessagesQuery.data) {
 			return;
 		}
 
@@ -190,57 +210,16 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 	}, [chat, chatState, listChatMessagesQuery.data]);
 
 	useEffect(() => {
-		addCommand({
-			id: "rename-current-chat",
-			name: "Rename current chat",
-			execute: () => {
-				showDialog({
-					component: () => (
-						<RenameChatDialog
-							chat={{
-								id: chat.id,
-								name: chat.name,
-							}}
-						/>
-					),
-				});
-			},
-		});
-
-		addCommand({
-			id: "delete-current-chat",
-			name: "Delete current chat",
-			execute: () => {
-				deleteChatMutation.mutate(
-					{ id: chat.id },
-					{
-						onSuccess: () => {
-							// todo
-							// delete the chat
-							// clear the current chat
-						},
-					}
-				);
-			},
-		});
-
-		return () => {
-			removeCommand("rename-current-chat");
-			removeCommand("delete-current-chat");
-		};
-	}, [chatId]);
-
-	useEffect(() => {
 		if (
 			!hasScrolledToBottomOnLoad.current &&
-			messages.length > 0 &&
-			areChatComposerDimensionsAvailable
+			areChatComposerDimensionsAvailable &&
+			messages.length > 0
 		) {
 			scrollToBottom();
 
 			hasScrolledToBottomOnLoad.current = true;
 		}
-	}, [messages.length, areChatComposerDimensionsAvailable]);
+	}, [messages, areChatComposerDimensionsAvailable]);
 
 	return (
 		<div
@@ -248,18 +227,24 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 			data-is-at-bottom={isAtBottom}
 			style={{
 				// @ts-expect-error
-				"--chat-composer-height": chatComposerDimensions.height + "px",
-				"--chat-composer-width": chatComposerDimensions.width + "px",
+				"--chat-composer-height": chatComposerDimensions.height ?? 0 + "px",
+				"--chat-composer-width": chatComposerDimensions.width ?? 0 + "px",
 			}}
 		>
-			<div className="chat-log-container" ref={chatLogContainerRef}>
-				<ChatLog messages={messages} />
-				{shouldShowSpacer && <div className="chat-scroll-spacer" />}
-			</div>
-			<ScrollToBottomButton
-				state={isAtBottom ? "hidden" : "visible"}
-				onClick={() => scrollToBottom()}
-			/>
+			{activeChatId ? (
+				<>
+					<div className="chat-log-container" ref={chatLogContainerRef}>
+						<ChatLog messages={messages} />
+						{shouldShowSpacer && <div className="chat-scroll-spacer" />}
+					</div>
+					<ScrollToBottomButton
+						state={isAtBottom ? "hidden" : "visible"}
+						onClick={() => scrollToBottom()}
+					/>
+				</>
+			) : (
+				<div>new chat</div>
+			)}
 			<ChatComposer
 				isPending={false}
 				value={userMessage}

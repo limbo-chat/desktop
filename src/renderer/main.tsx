@@ -8,6 +8,7 @@ import type { MainRouter } from "../main/trpc/router";
 import type { PlatformName } from "../main/utils";
 import type { WindowType } from "../main/windows/types";
 import { Loading } from "./components/loading";
+import { useRegisterActiveChatCommands } from "./features/chat/hooks/use-register-active-chat-commands";
 import { useOpenCommandPaletteHotkey, useRegisterCoreCommands } from "./features/commands/hooks";
 import {
 	useCustomStylesLoader,
@@ -176,6 +177,7 @@ const WorkspaceContainer = () => {
 	usePluginHotReloader();
 
 	useRegisterCoreCommands();
+	useRegisterActiveChatCommands();
 	useRegisterCustomStylesCommands();
 	useOpenCommandPaletteHotkey();
 

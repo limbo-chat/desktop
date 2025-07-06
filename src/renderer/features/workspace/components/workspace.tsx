@@ -10,7 +10,6 @@ import { Titlebar } from "./titlebar";
 export const Workspace = () => {
 	const workspaceStore = useWorkspaceStore(
 		useShallow((state) => ({
-			activeChatId: state.workspace!.activeChatId,
 			primarySidebar: state.workspace!.layout.primarySidebar,
 			secondarySidebar: state.workspace!.layout.secondarySidebar,
 			setSecondarySidebarWidth: state.setSecondarySidebarWidth,
@@ -114,11 +113,7 @@ export const Workspace = () => {
 					</>
 				)}
 				<div className="main">
-					{typeof workspaceStore.activeChatId === "string" ? (
-						<ChatView chatId={workspaceStore.activeChatId ?? ""} />
-					) : (
-						<div>no active chat</div>
-					)}
+					<ChatView />
 				</div>
 				{isSecondarySidebarOpen && (
 					<>
