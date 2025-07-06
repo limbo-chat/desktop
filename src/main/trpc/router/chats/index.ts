@@ -15,6 +15,7 @@ const updateChatInputSchema = z.object({
 		.object({
 			name: z.string(),
 			userMessageDraft: z.string().nullable(),
+			llmId: z.string().nullable(),
 		})
 		.partial(),
 });

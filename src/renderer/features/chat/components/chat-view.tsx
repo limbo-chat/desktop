@@ -51,7 +51,7 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 	const { sendMessage, cancelResponse } = useSendMessage();
 
 	const [userMessage, setUserMessage] = useState("");
-	const [selectedChatLLMId, setSelectedChatLLMId] = useState<string | null>(null);
+	const [selectedLLMId, setSelectedLLMId] = useState<string | null>(null);
 
 	const [chatComposerRef, chatComposerDimensions] = useMeasure();
 	const chatLogContainerRef = useRef<HTMLDivElement>(null);
@@ -84,11 +84,11 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 		typeof chatComposerDimensions.height === "number";
 
 	const handleSend = useCallback(async () => {
-		if (!selectedChatLLMId) {
+		if (!selectedLLMId) {
 			return;
 		}
 
-		const llm = pluginManager.getLLM(selectedChatLLMId);
+		const llm = pluginManager.getLLM(selectedLLMId);
 
 		if (!llm) {
 			return;
@@ -123,7 +123,7 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 
 			setUserMessage(userMessageCopy);
 		}
-	}, [chatId, userMessage, selectedChatLLMId]);
+	}, [chatId, userMessage, selectedLLMId]);
 
 	const handleCancel = useCallback(() => {
 		cancelResponse(chatId);
@@ -155,18 +155,24 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 			if (chat.userMessageDraft) {
 				setUserMessage(chat.userMessageDraft);
 			}
+
+			if (chat.llmId) {
+				setSelectedLLMId(chat.llmId);
+			}
 		}
 
 		return () => {
 			setUserMessage("");
+			setSelectedLLMId(null);
 		};
 	}, [chat]);
 
 	useEffect(() => {
 		updateChat({
 			userMessageDraft: userMessage,
+			llmId: selectedLLMId,
 		});
-	}, [chatId, userMessage]);
+	}, [chatId, userMessage, selectedLLMId]);
 
 	useEffect(() => {
 		if (chatState || !chat || !listChatMessagesQuery.data) {
@@ -224,8 +230,8 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 				isPending={false}
 				value={userMessage}
 				onValueChange={setUserMessage}
-				selectedLLMId={selectedChatLLMId}
-				onSelectedLLMIdChange={setSelectedChatLLMId}
+				selectedLLMId={selectedLLMId}
+				onSelectedLLMIdChange={setSelectedLLMId}
 				onSend={handleSend}
 				onCancel={handleCancel}
 				ref={chatComposerRef}

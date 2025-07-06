@@ -19,6 +19,7 @@ export async function getDb() {
 		.addColumn("id", "text", (col) => col.primaryKey())
 		.addColumn("name", "text", (col) => col.notNull())
 		.addColumn("userMessageDraft", "text")
+		.addColumn("llmId", "text")
 		.addColumn("createdAt", "text", (col) => col.notNull())
 		.ifNotExists()
 		.execute();
