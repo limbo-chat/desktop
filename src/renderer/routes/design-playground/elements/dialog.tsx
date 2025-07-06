@@ -3,7 +3,6 @@ import { Button } from "../../../components/button";
 import {
 	Dialog,
 	DialogActions,
-	DialogCloseButton,
 	DialogContent,
 	DialogDescription,
 	DialogFooter,
@@ -28,7 +27,6 @@ const DemoDialog = () => {
 					<DialogTitle>Hello world!</DialogTitle>
 					<DialogDescription>This is a dialog</DialogDescription>
 				</DialogInfo>
-				<DialogCloseButton />
 			</DialogHeader>
 			<DialogContent>
 				<p>

@@ -23,7 +23,6 @@ import {
 	CardTitle,
 } from "../../../components/card";
 import {
-	DialogCloseButton,
 	DialogDescription,
 	DialogFooter,
 	DialogHeader,
@@ -92,7 +91,6 @@ const InstallPluginDialog = () => {
 							Enter the GitHub repository URL of the plugin you want to install.
 						</DialogDescription>
 					</DialogInfo>
-					<DialogCloseButton />
 				</DialogHeader>
 				<DialogContent>
 					<FieldController.Root id="repo-url" name="repoUrl">
@@ -149,7 +147,6 @@ const UninstallPluginDialog = ({ plugin }: UninstallPluginDialogProps) => {
 				<DialogInfo>
 					<DialogTitle>Uninstall {plugin.name}</DialogTitle>
 				</DialogInfo>
-				<DialogCloseButton />
 			</DialogHeader>
 			<DialogContent>
 				<p>

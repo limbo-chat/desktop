@@ -38,22 +38,6 @@ export const DialogDescription = ({ className, ...props }: DialogDescriptionProp
 	return <p className={clsx("dialog-description", className)} {...props} />;
 };
 
-export interface DialogCloseButtonProps extends IconButtonProps {}
-
-export const DialogCloseButton = ({ className, ...props }: DialogCloseButtonProps) => {
-	const modalCtx = useModalContext();
-
-	return (
-		<IconButton
-			className={clsx("dialog-close-button", className)}
-			onClick={modalCtx.close}
-			{...props}
-		>
-			<XIcon />
-		</IconButton>
-	);
-};
-
 export interface DialogContentProps extends HTMLAttributes<HTMLDivElement> {}
 
 export const DialogContent = ({ className, ...props }: DialogContentProps) => {
