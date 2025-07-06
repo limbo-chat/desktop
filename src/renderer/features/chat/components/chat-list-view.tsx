@@ -22,9 +22,10 @@ interface ChatItemProps {
 		id: string;
 		name: string;
 	};
+	isActive: boolean;
 }
 
-const ChatItem = ({ chat }: ChatItemProps) => {
+const ChatItem = ({ chat, isActive }: ChatItemProps) => {
 	const deleteChatMutation = useDeleteChatMutation();
 
 	const handleDelete = () => {
@@ -44,7 +45,15 @@ const ChatItem = ({ chat }: ChatItemProps) => {
 	};
 
 	return (
-		<div className="chat-item">
+		<div
+			className="chat-item"
+			data-is-active={isActive}
+			onClick={() => {
+				const workspaceStore = useWorkspaceStore.getState();
+
+				workspaceStore.setActiveChatId(chat.id);
+			}}
+		>
 			<div className="chat-item-name">{chat.name}</div>
 			<MenuRoot>
 				<MenuTrigger asChild>
@@ -93,6 +102,7 @@ const ChatItem = ({ chat }: ChatItemProps) => {
 export const ChatListView = () => {
 	const mainRouter = useMainRouter();
 	const listChatsQuery = useSuspenseQuery(mainRouter.chats.list.queryOptions());
+	const workspaceStore = useWorkspaceStore((state) => state.workspace?.activeChatId ?? null);
 
 	return (
 		<div className="chat-list-view">
@@ -101,7 +111,7 @@ export const ChatListView = () => {
 			</div>
 			<div className="chat-list-content">
 				{listChatsQuery.data.map((chat) => (
-					<ChatItem chat={chat} key={chat.id} />
+					<ChatItem chat={chat} isActive={workspaceStore === chat.id} key={chat.id} />
 				))}
 			</div>
 		</div>

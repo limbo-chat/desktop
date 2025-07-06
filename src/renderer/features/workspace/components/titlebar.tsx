@@ -13,6 +13,7 @@ import { IconButton } from "../../../components/icon-button";
 import { useMainRouterClient } from "../../../lib/trpc";
 import { useWindowInfoContext } from "../../window-info/hooks";
 import { useWorkspaceStore } from "../stores";
+import { setActiveChatId } from "../utils";
 
 const WindowControls = () => {
 	const mainRouter = useMainRouterClient();
@@ -69,7 +70,7 @@ export const Titlebar = () => {
 							<PanelLeftIcon />
 						)}
 					</IconButton>
-					<IconButton action="create-new-chat">
+					<IconButton action="create-new-chat" onClick={() => setActiveChatId(null)}>
 						<SquarePenIcon />
 					</IconButton>
 				</div>

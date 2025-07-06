@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/shallow";
 import { ChatListView } from "../../chat/components/chat-list-view";
+import { ChatView } from "../../chat/components/chat-view";
 import { useEphemeralWorkspaceStore, useWorkspaceStore } from "../stores";
 import { ResizeHandle } from "./resize-handle";
 import { SideDock } from "./side-dock";
@@ -112,7 +113,13 @@ export const Workspace = () => {
 						<ResizeHandle onMouseDown={() => handleMouseDown("primary")} />
 					</>
 				)}
-				<div className="main">{/* <ChatView /> */}</div>
+				<div className="main">
+					{typeof workspaceStore.activeChatId === "string" ? (
+						<ChatView chatId={workspaceStore.activeChatId ?? ""} />
+					) : (
+						<div>no active chat</div>
+					)}
+				</div>
 				{isSecondarySidebarOpen && (
 					<>
 						<ResizeHandle onMouseDown={() => handleMouseDown("secondary")} />
