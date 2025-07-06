@@ -21,7 +21,7 @@ export const useRenameChatMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation(
-		mainRouter.chats.rename.mutationOptions({
+		mainRouter.chats.update.mutationOptions({
 			onSuccess: (updatedChat) => {
 				updateChatInQueryCache(queryClient, mainRouter, updatedChat);
 			},

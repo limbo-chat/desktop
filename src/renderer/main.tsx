@@ -134,9 +134,11 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 					return await mainRouterClient.chats.messages.getMany.query(opts);
 				},
 				renameChat: async (chatId, newName) => {
-					await mainRouterClient.chats.rename.mutate({
+					await mainRouterClient.chats.update.mutate({
 						id: chatId,
-						name: newName,
+						data: {
+							name: newName,
+						},
 					});
 				},
 				showNotification: async (notification) => {

@@ -18,6 +18,7 @@ export async function getDb() {
 		.createTable("chat")
 		.addColumn("id", "text", (col) => col.primaryKey())
 		.addColumn("name", "text", (col) => col.notNull())
+		.addColumn("userMessageDraft", "text")
 		.addColumn("createdAt", "text", (col) => col.notNull())
 		.ifNotExists()
 		.execute();

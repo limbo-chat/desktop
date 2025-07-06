@@ -1,23 +1,19 @@
-import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useMeasure } from "@uidotdev/usehooks";
+import { debounce } from "es-toolkit";
 import { ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type ButtonHTMLAttributes } from "react";
-import { addCommand, removeCommand } from "../../../features/commands/utils";
-import { showDialog } from "../../../features/modals/utils";
+import type { UpdateChatInput } from "../../../../main/trpc/router/chats";
 import { useAnimationUnmount, useIsAtBottom } from "../../../hooks/common";
 import { useMainRouter, useMainRouterClient } from "../../../lib/trpc";
 import { usePluginManager } from "../../plugins/hooks/core";
 import { getEnabledToolIds } from "../../storage/utils";
-import { useWorkspaceStore } from "../../workspace/stores";
-import { setActiveChatId } from "../../workspace/utils";
 import { useChatState } from "../hooks/common";
-import { useDeleteChatMutation } from "../hooks/queries";
 import { useSendMessage } from "../hooks/use-send-message";
 import { useChatStore } from "../stores";
 import { renderSystemPrompt } from "../utils";
 import { ChatComposer } from "./chat-composer";
 import { ChatLog } from "./chat-log";
-import { RenameChatDialog } from "./rename-chat-dialog";
 
 interface ScrollToBottomButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 	state: "visible" | "hidden";
@@ -43,14 +39,15 @@ const ScrollToBottomButton = ({ state, ...props }: ScrollToBottomButtonProps) =>
 	);
 };
 
-export const ChatView = () => {
-	const queryClient = useQueryClient();
+export interface ChatViewProps {
+	chatId: string;
+}
+
+export const ChatView = ({ chatId }: ChatViewProps) => {
 	const mainRouterClient = useMainRouterClient();
 	const mainRouter = useMainRouter();
 	const pluginManager = usePluginManager();
-
-	const activeChatId = useWorkspaceStore((state) => state.workspace?.activeChatId ?? null);
-	const chatState = useChatState(activeChatId ?? undefined);
+	const chatState = useChatState(chatId);
 	const { sendMessage, cancelResponse } = useSendMessage();
 
 	const [userMessage, setUserMessage] = useState("");
@@ -61,28 +58,18 @@ export const ChatView = () => {
 	const hasScrolledToBottomOnLoad = useRef(false);
 
 	const getChatQuery = useQuery(
-		mainRouter.chats.get.queryOptions(
-			{
-				id: activeChatId as string,
-			},
-			{
-				enabled: activeChatId !== null,
-			}
-		)
+		mainRouter.chats.get.queryOptions({
+			id: chatId,
+		})
 	);
 
 	const chat = getChatQuery.data;
 	const messages = chatState?.messages ?? [];
 
 	const listChatMessagesQuery = useQuery(
-		mainRouter.chats.messages.list.queryOptions(
-			{
-				chatId: activeChatId as string,
-			},
-			{
-				enabled: activeChatId !== null,
-			}
-		)
+		mainRouter.chats.messages.list.queryOptions({
+			chatId,
+		})
 	);
 
 	const isAtBottom = useIsAtBottom({
@@ -105,35 +92,6 @@ export const ChatView = () => {
 
 		if (!llm) {
 			return;
-		}
-
-		const chatStore = useChatStore.getState();
-
-		// form.reset();
-
-		let chatId;
-
-		if (activeChatId !== null) {
-			chatId = activeChatId;
-		} else {
-			// create a new chat
-			const newChat = await mainRouterClient.chats.create.mutate({
-				name: "New chat",
-			});
-
-			chatId = newChat.id;
-
-			// add the new chat to the store
-			chatStore.addChat(newChat.id);
-
-			// set the new chat as the active chat
-			setActiveChatId(newChat.id);
-
-			queryClient.invalidateQueries(mainRouter.chats.list.queryFilter());
-
-			await pluginManager.executeOnChatCreatedHooks({
-				chatId: newChat.id,
-			});
 		}
 
 		const userMessageCopy = userMessage;
@@ -161,20 +119,25 @@ export const ChatView = () => {
 				message: userMessage,
 			});
 		} catch (err) {
-			// todo indicate error better
 			console.error("Failed to send message:", err);
 
 			setUserMessage(userMessageCopy);
 		}
-	}, [activeChatId, userMessage, selectedChatLLMId]);
+	}, [chatId, userMessage, selectedChatLLMId]);
 
 	const handleCancel = useCallback(() => {
-		if (activeChatId === null) {
-			return;
-		}
+		cancelResponse(chatId);
+	}, [chatId]);
 
-		cancelResponse(activeChatId);
-	}, [activeChatId]);
+	const updateChat = useCallback(
+		debounce(async (data: UpdateChatInput["data"]) => {
+			await mainRouterClient.chats.update.mutate({
+				id: chatId,
+				data,
+			});
+		}, 500),
+		[chatId]
+	);
 
 	const scrollToBottom = useCallback((behavior: ScrollBehavior = "auto") => {
 		if (!chatLogContainerRef.current) {
@@ -186,6 +149,24 @@ export const ChatView = () => {
 			behavior,
 		});
 	}, []);
+
+	useEffect(() => {
+		if (chat) {
+			if (chat.userMessageDraft) {
+				setUserMessage(chat.userMessageDraft);
+			}
+		}
+
+		return () => {
+			setUserMessage("");
+		};
+	}, [chat]);
+
+	useEffect(() => {
+		updateChat({
+			userMessageDraft: userMessage,
+		});
+	}, [chatId, userMessage]);
 
 	useEffect(() => {
 		if (chatState || !chat || !listChatMessagesQuery.data) {
@@ -231,20 +212,14 @@ export const ChatView = () => {
 				"--chat-composer-width": chatComposerDimensions.width ?? 0 + "px",
 			}}
 		>
-			{activeChatId ? (
-				<>
-					<div className="chat-log-container" ref={chatLogContainerRef}>
-						<ChatLog messages={messages} />
-						{shouldShowSpacer && <div className="chat-scroll-spacer" />}
-					</div>
-					<ScrollToBottomButton
-						state={isAtBottom ? "hidden" : "visible"}
-						onClick={() => scrollToBottom()}
-					/>
-				</>
-			) : (
-				<div>new chat</div>
-			)}
+			<div className="chat-log-container" ref={chatLogContainerRef}>
+				<ChatLog messages={messages} />
+				{shouldShowSpacer && <div className="chat-scroll-spacer" />}
+			</div>
+			<ScrollToBottomButton
+				state={isAtBottom ? "hidden" : "visible"}
+				onClick={() => scrollToBottom()}
+			/>
 			<ChatComposer
 				isPending={false}
 				value={userMessage}

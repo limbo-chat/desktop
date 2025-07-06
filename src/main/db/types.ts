@@ -4,6 +4,7 @@ export interface ChatTable {
 	id: string;
 	name: string;
 	createdAt: string;
+	userMessageDraft: string | null;
 }
 
 export type Chat = Selectable<ChatTable>;

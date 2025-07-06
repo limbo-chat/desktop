@@ -9,10 +9,17 @@ const createChatInputSchema = z.object({
 	name: z.string(),
 });
 
-const renameChatInputSchema = z.object({
+const updateChatInputSchema = z.object({
 	id: z.string(),
-	name: z.string(),
+	data: z
+		.object({
+			name: z.string(),
+			userMessageDraft: z.string().nullable(),
+		})
+		.partial(),
 });
+
+export type UpdateChatInput = z.infer<typeof updateChatInputSchema>;
 
 export const chatsRouter = router({
 	messages: chatMessagesRouter,
@@ -60,7 +67,7 @@ export const chatsRouter = router({
 
 		return chat;
 	}),
-	rename: publicProcedure.input(renameChatInputSchema).mutation(async ({ input }) => {
+	update: publicProcedure.input(updateChatInputSchema).mutation(async ({ input }) => {
 		const db = await getDb();
 
 		const chat = await db
@@ -79,9 +86,7 @@ export const chatsRouter = router({
 		const updatedChat = await db
 			.updateTable("chat")
 			.where("id", "=", input.id)
-			.set({
-				name: input.name,
-			})
+			.set(input.data)
 			.returningAll()
 			.executeTakeFirst();
 

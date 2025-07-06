@@ -34,7 +34,9 @@ export const RenameChatDialog = ({ chat }: RenameChatDialogProps) => {
 		renameChatMutation.mutate(
 			{
 				id: chat.id,
-				name: data.name,
+				data: {
+					name: data.name,
+				},
 			},
 			{
 				onSuccess: () => {

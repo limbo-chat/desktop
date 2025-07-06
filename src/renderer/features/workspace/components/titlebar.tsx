@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import {
 	MaximizeIcon,
 	MinimizeIcon,
@@ -10,7 +11,9 @@ import {
 } from "lucide-react";
 import { useShallow } from "zustand/shallow";
 import { IconButton } from "../../../components/icon-button";
-import { useMainRouterClient } from "../../../lib/trpc";
+import { useMainRouter, useMainRouterClient } from "../../../lib/trpc";
+import { useChatStore } from "../../chat/stores";
+import { usePluginManager } from "../../plugins/hooks/core";
 import { useWindowInfoContext } from "../../window-info/hooks";
 import { useWorkspaceStore } from "../stores";
 import { setActiveChatId } from "../utils";
@@ -34,6 +37,10 @@ const WindowControls = () => {
 };
 
 export const Titlebar = () => {
+	const mainRouter = useMainRouter();
+	const mainRouterClient = useMainRouterClient();
+	const queryClient = useQueryClient();
+	const pluginManager = usePluginManager();
 	const windowInfo = useWindowInfoContext();
 	const shouldRenderControls = windowInfo.platform !== "macos";
 
@@ -56,6 +63,27 @@ export const Titlebar = () => {
 		workspaceState.setIsSecondarySidebarOpen(!workspaceStore.isSecondarySidebarOpen);
 	};
 
+	const createNewChat = async () => {
+		const chatStore = useChatStore.getState();
+
+		// create a new chat
+		const newChat = await mainRouterClient.chats.create.mutate({
+			name: "New chat",
+		});
+
+		// add the new chat to the store
+		chatStore.addChat(newChat.id);
+
+		// set the new chat as the active chat
+		setActiveChatId(newChat.id);
+
+		queryClient.invalidateQueries(mainRouter.chats.list.queryFilter());
+
+		await pluginManager.executeOnChatCreatedHooks({
+			chatId: newChat.id,
+		});
+	};
+
 	return (
 		<div className="titlebar">
 			<div className="titlebar-section" data-section="start">
@@ -70,7 +98,7 @@ export const Titlebar = () => {
 							<PanelLeftIcon />
 						)}
 					</IconButton>
-					<IconButton action="create-new-chat" onClick={() => setActiveChatId(null)}>
+					<IconButton action="create-new-chat" onClick={createNewChat}>
 						<SquarePenIcon />
 					</IconButton>
 				</div>
