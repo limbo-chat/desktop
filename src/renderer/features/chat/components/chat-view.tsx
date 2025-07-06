@@ -151,6 +151,15 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 	}, []);
 
 	useEffect(() => {
+		return () => {
+			setUserMessage("");
+			setSelectedLLMId(null);
+
+			hasScrolledToBottomOnLoad.current = false;
+		};
+	}, [chatId]);
+
+	useEffect(() => {
 		if (chat) {
 			if (chat.userMessageDraft) {
 				setUserMessage(chat.userMessageDraft);
@@ -160,11 +169,6 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 				setSelectedLLMId(chat.llmId);
 			}
 		}
-
-		return () => {
-			setUserMessage("");
-			setSelectedLLMId(null);
-		};
 	}, [chat]);
 
 	useEffect(() => {
@@ -214,8 +218,8 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 			data-is-at-bottom={isAtBottom}
 			style={{
 				// @ts-expect-error
-				"--chat-composer-height": chatComposerDimensions.height ?? 0 + "px",
-				"--chat-composer-width": chatComposerDimensions.width ?? 0 + "px",
+				"--chat-composer-height": (chatComposerDimensions.height ?? 0) + "px",
+				"--chat-composer-width": (chatComposerDimensions.width ?? 0) + "px",
 			}}
 		>
 			<div className="chat-log-container" ref={chatLogContainerRef}>
@@ -223,7 +227,7 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 				{shouldShowSpacer && <div className="chat-scroll-spacer" />}
 			</div>
 			<ScrollToBottomButton
-				state={isAtBottom ? "hidden" : "visible"}
+				state={messages.length > 0 && !isAtBottom ? "visible" : "hidden"}
 				onClick={() => scrollToBottom()}
 			/>
 			<ChatComposer
