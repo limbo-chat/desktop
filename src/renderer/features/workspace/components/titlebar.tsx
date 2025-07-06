@@ -5,9 +5,9 @@ import {
 	PanelLeftIcon,
 	PanelRightCloseIcon,
 	PanelRightIcon,
+	SquarePenIcon,
 	XIcon,
 } from "lucide-react";
-import { useCallback } from "react";
 import { useShallow } from "zustand/shallow";
 import { IconButton } from "../../../components/icon-button";
 import { useMainRouterClient } from "../../../lib/trpc";
@@ -68,6 +68,9 @@ export const Titlebar = () => {
 						) : (
 							<PanelLeftIcon />
 						)}
+					</IconButton>
+					<IconButton action="create-new-chat">
+						<SquarePenIcon />
 					</IconButton>
 				</div>
 			</div>

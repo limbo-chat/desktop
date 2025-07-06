@@ -1,5 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { EllipsisIcon, MessageCirclePlusIcon, PencilIcon, Trash2Icon } from "lucide-react";
+import { EllipsisIcon, PencilIcon, Trash2Icon } from "lucide-react";
 import { IconButton } from "../../../components/icon-button";
 import {
 	MenuContent,
@@ -59,6 +59,7 @@ const ChatItem = ({ chat }: ChatItemProps) => {
 								data-action="rename"
 								onClick={(e) => {
 									e.stopPropagation();
+
 									showDialog({
 										component: () => <RenameChatDialog chat={chat} />,
 									});
@@ -96,11 +97,7 @@ export const ChatListView = () => {
 	return (
 		<div className="chat-list-view">
 			<div className="chat-list-header">
-				<div className="chat-list-actions">
-					<IconButton>
-						<MessageCirclePlusIcon />
-					</IconButton>
-				</div>
+				<input type="text" className="chat-list-search-input" />
 			</div>
 			<div className="chat-list-content">
 				{listChatsQuery.data.map((chat) => (

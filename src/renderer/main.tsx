@@ -4,7 +4,6 @@ import { Suspense, useMemo, useRef, type PropsWithChildren } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "sonner";
 import { ipcLink } from "trpc-electron/renderer";
-import { useShallow } from "zustand/shallow";
 import type { MainRouter } from "../main/trpc/router";
 import type { PlatformName } from "../main/utils";
 import type { WindowType } from "../main/windows/types";

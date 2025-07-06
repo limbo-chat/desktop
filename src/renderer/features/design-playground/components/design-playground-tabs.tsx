@@ -510,7 +510,7 @@ export const DesignPlaygroundTabs = () => {
 							<VerticalTabs.ListSectionTitle>Atoms</VerticalTabs.ListSectionTitle>
 						</VerticalTabs.ListSectionHeader>
 						<VerticalTabs.ListSectionContent>
-							<VerticalTabs.ListSectionItem value="button" autoFocus>
+							<VerticalTabs.ListSectionItem value="button">
 								Button
 							</VerticalTabs.ListSectionItem>
 							<VerticalTabs.ListSectionItem value="tooltip">
