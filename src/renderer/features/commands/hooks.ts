@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { useHotkey } from "../../hooks/common";
+import { showDesignPlaygroundModal } from "../design-playground/utils";
 import { useCommandStore } from "./stores";
 import { addCommand, removeCommand, showCommandPalette } from "./utils";
 
@@ -29,9 +30,7 @@ export const useRegisterCoreCommands = () => {
 			id: "open-design-playground",
 			name: "Open design playground",
 			execute: () => {
-				// navigate({
-				// 	to: "/design-playground",
-				// });
+				showDesignPlaygroundModal();
 			},
 		});
 
