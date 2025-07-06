@@ -1,6 +1,7 @@
 import { useShallow } from "zustand/shallow";
 import { ChatListView } from "../../chat/components/chat-list-view";
 import { useWorkspaceStore } from "../stores";
+import { SideDock } from "./side-dock";
 import { Titlebar } from "./titlebar";
 
 export const Workspace = () => {
@@ -23,6 +24,7 @@ export const Workspace = () => {
 		>
 			<Titlebar />
 			<div className="workspace-content">
+				<SideDock />
 				{isPrimarySidebarOpen && (
 					<div
 						className="primary-sidebar"

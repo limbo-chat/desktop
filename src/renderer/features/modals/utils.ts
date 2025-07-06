@@ -1,4 +1,3 @@
-import type { FC } from "react";
 import { useModalStore, type Modal } from "./stores";
 
 export function setActiveModal(modal: Modal | null) {
@@ -7,8 +6,12 @@ export function setActiveModal(modal: Modal | null) {
 	modalStore.setActiveModal(modal);
 }
 
+export function showModal(modal: Modal) {
+	setActiveModal(modal);
+}
+
 export function showDialog(modal: Omit<Modal, "className">) {
-	setActiveModal({
+	showModal({
 		className: "dialog-modal",
 		...modal,
 	});
