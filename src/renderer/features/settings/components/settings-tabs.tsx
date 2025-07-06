@@ -640,6 +640,7 @@ export const SettingsTabs = () => {
 
 	return (
 		<VerticalTabs.Root
+			defaultValue="general"
 			value={settingsTabsStore.activeTab ?? undefined}
 			onValueChange={settingsTabsStore.setActiveTab}
 		>

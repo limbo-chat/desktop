@@ -500,6 +500,7 @@ export const DesignPlaygroundTabs = () => {
 
 	return (
 		<VerticalTabs.Root
+			defaultValue="button"
 			value={designPlaygroundTabsStore.activeTab ?? undefined}
 			onValueChange={designPlaygroundTabsStore.setActiveTab}
 		>
