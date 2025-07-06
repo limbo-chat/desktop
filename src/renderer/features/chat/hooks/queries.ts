@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMainRouter } from "../../../lib/trpc";
 import { usePluginManager } from "../../plugins/hooks/core";
+import { setActiveChatId } from "../../workspace/utils";
 import { removeChatFromQueryCache, updateChatInQueryCache } from "../utils";
 
 export const useCreateChatMutation = () => {
@@ -53,6 +54,8 @@ export const useDeleteAllChatsMutation = () => {
 	return useMutation(
 		mainRouter.chats.deleteAll.mutationOptions({
 			onSuccess: async (deletedChatIds) => {
+				setActiveChatId(null);
+
 				queryClient.invalidateQueries(mainRouter.chats.list.queryFilter());
 
 				await pluginManager.executeOnChatsDeletedHooks(deletedChatIds);
