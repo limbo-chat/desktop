@@ -3,6 +3,7 @@ import { useMeasure } from "@uidotdev/usehooks";
 import { debounce } from "es-toolkit";
 import { ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type ButtonHTMLAttributes } from "react";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import type { UpdateChatInput } from "../../../../main/trpc/router/chats";
 import { useAnimationUnmount, useIsAtBottom } from "../../../hooks/common";
 import { useMainRouter, useMainRouterClient } from "../../../lib/trpc";
@@ -218,8 +219,9 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 	}, [messages, areChatComposerDimensionsAvailable]);
 
 	return (
-		<div
+		<PanelGroup
 			className="chat-view"
+			direction="horizontal"
 			data-is-at-bottom={isAtBottom}
 			style={{
 				// @ts-expect-error
@@ -227,26 +229,30 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 				"--chat-composer-width": (chatComposerDimensions.width ?? 0) + "px",
 			}}
 		>
-			<div className="chat-log-container" ref={chatLogContainerRef}>
-				<ChatLog messages={messages} />
-				{shouldShowSpacer && <div className="chat-scroll-spacer" />}
-			</div>
-			<ScrollToBottomButton
-				state={messages.length > 0 && !isAtBottom ? "visible" : "hidden"}
-				onClick={() => scrollToBottom()}
-			/>
-			<ChatComposer
-				isPending={false}
-				value={userMessage}
-				onValueChange={setUserMessage}
-				selectedLLMId={selectedLLMId}
-				onSelectedLLMIdChange={setSelectedLLMId}
-				enabledToolIds={enabledToolIds}
-				onEnabledToolIdsChange={setEnabledToolIds}
-				onSend={handleSend}
-				onCancel={handleCancel}
-				ref={chatComposerRef}
-			/>
-		</div>
+			<Panel className="chat-view-main">
+				<div className="chat-log-container" ref={chatLogContainerRef}>
+					<ChatLog messages={messages} />
+					{shouldShowSpacer && <div className="chat-scroll-spacer" />}
+				</div>
+				<ScrollToBottomButton
+					state={messages.length > 0 && !isAtBottom ? "visible" : "hidden"}
+					onClick={() => scrollToBottom()}
+				/>
+				<ChatComposer
+					isPending={false}
+					value={userMessage}
+					onValueChange={setUserMessage}
+					selectedLLMId={selectedLLMId}
+					onSelectedLLMIdChange={setSelectedLLMId}
+					enabledToolIds={enabledToolIds}
+					onEnabledToolIdsChange={setEnabledToolIds}
+					onSend={handleSend}
+					onCancel={handleCancel}
+					ref={chatComposerRef}
+				/>
+			</Panel>
+			<PanelResizeHandle className="resize-handle" />
+			<Panel className="chat-view-panel">test</Panel>
+		</PanelGroup>
 	);
 };
