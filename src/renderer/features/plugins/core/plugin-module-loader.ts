@@ -14,7 +14,7 @@ export interface PluginModuleLoader {
 export class EvalPluginModuleLoader implements PluginModuleLoader {
 	async loadModule(opts: LoadModuleOptions) {
 		const sandboxedImports: Record<string, any> = {
-			"limbo": opts.pluginAPI,
+			"@limbo/api": opts.pluginAPI,
 			"react": await import("react"),
 			"react/jsx-runtime": await import("react/jsx-runtime"),
 		};
