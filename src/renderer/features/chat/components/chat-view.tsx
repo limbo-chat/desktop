@@ -52,6 +52,7 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 
 	const [userMessage, setUserMessage] = useState("");
 	const [selectedLLMId, setSelectedLLMId] = useState<string | null>(null);
+	const [enabledToolIds, setEnabledToolIds] = useState<string[]>([]);
 
 	const [chatComposerRef, chatComposerDimensions] = useMeasure();
 	const chatLogContainerRef = useRef<HTMLDivElement>(null);
@@ -154,6 +155,7 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 		return () => {
 			setUserMessage("");
 			setSelectedLLMId(null);
+			setEnabledToolIds([]);
 
 			hasScrolledToBottomOnLoad.current = false;
 		};
@@ -168,6 +170,10 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 			if (chat.llmId) {
 				setSelectedLLMId(chat.llmId);
 			}
+
+			if (chat.enabledToolIds.length > 0) {
+				setEnabledToolIds(chat.enabledToolIds);
+			}
 		}
 	}, [chat]);
 
@@ -175,8 +181,9 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 		updateChat({
 			userMessageDraft: userMessage,
 			llmId: selectedLLMId,
+			enabledToolIds,
 		});
-	}, [chatId, userMessage, selectedLLMId]);
+	}, [chatId, userMessage, selectedLLMId, enabledToolIds]);
 
 	useEffect(() => {
 		if (chatState || !chat || !listChatMessagesQuery.data) {
@@ -236,6 +243,8 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 				onValueChange={setUserMessage}
 				selectedLLMId={selectedLLMId}
 				onSelectedLLMIdChange={setSelectedLLMId}
+				enabledToolIds={enabledToolIds}
+				onEnabledToolIdsChange={setEnabledToolIds}
 				onSend={handleSend}
 				onCancel={handleCancel}
 				ref={chatComposerRef}

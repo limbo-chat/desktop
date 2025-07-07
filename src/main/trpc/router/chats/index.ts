@@ -16,6 +16,7 @@ const updateChatInputSchema = z.object({
 			name: z.string(),
 			userMessageDraft: z.string().nullable(),
 			llmId: z.string().nullable(),
+			enabledToolIds: z.string().array(),
 		})
 		.partial(),
 });
@@ -29,7 +30,7 @@ export const chatsRouter = router({
 
 		const chats = await db
 			.selectFrom("chat")
-			.selectAll()
+			.select(["id", "name", "createdAt"])
 			.orderBy("createdAt", "desc")
 			.execute();
 
@@ -51,7 +52,10 @@ export const chatsRouter = router({
 			});
 		}
 
-		return chat;
+		return {
+			...chat,
+			enabledToolIds: JSON.parse(chat.enabledToolIds) as string[],
+		};
 	}),
 	create: publicProcedure.input(createChatInputSchema).mutation(async ({ input, ctx }) => {
 		const db = await getDb();
@@ -61,6 +65,9 @@ export const chatsRouter = router({
 			.values({
 				id: ulid(),
 				name: input.name,
+				llmId: null,
+				userMessageDraft: null,
+				enabledToolIds: JSON.stringify([]),
 				createdAt: new Date().toISOString(),
 			})
 			.returningAll()
@@ -84,10 +91,19 @@ export const chatsRouter = router({
 			});
 		}
 
+		let newEnabledToolIds = undefined;
+
+		if (input.data.enabledToolIds) {
+			newEnabledToolIds = JSON.stringify(input.data.enabledToolIds);
+		}
+
 		const updatedChat = await db
 			.updateTable("chat")
 			.where("id", "=", input.id)
-			.set(input.data)
+			.set({
+				...input.data,
+				enabledToolIds: newEnabledToolIds,
+			})
 			.returningAll()
 			.executeTakeFirst();
 
@@ -99,7 +115,10 @@ export const chatsRouter = router({
 			});
 		}
 
-		return updatedChat;
+		return {
+			...updatedChat,
+			enabledToolIds: JSON.parse(updatedChat.enabledToolIds) as string[],
+		};
 	}),
 	delete: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
 		const db = await getDb();

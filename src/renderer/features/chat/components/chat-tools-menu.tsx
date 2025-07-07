@@ -10,13 +10,27 @@ import {
 } from "../../../components/menu";
 import { Switch } from "../../../components/switch";
 import { Tooltip } from "../../../components/tooltip";
-import { useEnabledToolIds } from "../../storage/hooks";
-import { setEnabledToolIds } from "../../storage/utils";
 import { useToolList } from "../../tools/hooks";
 
-export const ChatToolsMenu = () => {
+export interface ChatToolsMenuProps {
+	enabledToolIds: string[];
+	onEnabledToolIdsChange: (ids: string[]) => void;
+}
+
+export const ChatToolsMenu = ({ enabledToolIds, onEnabledToolIdsChange }: ChatToolsMenuProps) => {
 	const tools = useToolList();
-	const enabledToolIds = useEnabledToolIds();
+
+	const toggleToolEnabled = (toolId: string) => {
+		let newEnabledToolIds = [...enabledToolIds];
+
+		if (enabledToolIds.includes(toolId)) {
+			newEnabledToolIds = enabledToolIds.filter((id) => id !== toolId);
+		} else {
+			newEnabledToolIds.push(toolId);
+		}
+
+		onEnabledToolIdsChange(newEnabledToolIds);
+	};
 
 	return (
 		<MenuRoot>
@@ -41,17 +55,7 @@ export const ChatToolsMenu = () => {
 								</div>
 								<Switch
 									checked={enabledToolIds.includes(tool.id)}
-									onCheckedChange={(isChecked) => {
-										if (isChecked) {
-											setEnabledToolIds([...enabledToolIds, tool.id]);
-										} else {
-											const newEnabledToolIds = enabledToolIds.filter(
-												(enabledToolid) => enabledToolid !== tool.id
-											);
-
-											setEnabledToolIds(newEnabledToolIds);
-										}
-									}}
+									onCheckedChange={() => toggleToolEnabled(tool.id)}
 								/>
 							</MenuItem>
 						))}

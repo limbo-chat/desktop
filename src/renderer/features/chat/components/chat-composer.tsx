@@ -15,6 +15,8 @@ export interface ChatComposerProps {
 	onValueChange: (value: string) => void;
 	selectedLLMId: string | null;
 	onSelectedLLMIdChange: (id: string) => void;
+	enabledToolIds: string[];
+	onEnabledToolIdsChange: (ids: string[]) => void;
 	onSend: () => void;
 	onCancel: () => void;
 }
@@ -25,6 +27,8 @@ export const ChatComposer = ({
 	onValueChange,
 	selectedLLMId,
 	onSelectedLLMIdChange,
+	enabledToolIds,
+	onEnabledToolIdsChange,
 	onSend,
 	onCancel,
 	ref,
@@ -98,7 +102,10 @@ export const ChatComposer = ({
 						/>
 					</PopoverContent>
 				</PopoverRoot>
-				<ChatToolsMenu />
+				<ChatToolsMenu
+					enabledToolIds={enabledToolIds}
+					onEnabledToolIdsChange={onEnabledToolIdsChange}
+				/>
 			</div>
 		</div>
 	);

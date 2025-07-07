@@ -21,6 +21,7 @@ export async function getDb() {
 		.addColumn("userMessageDraft", "text")
 		.addColumn("llmId", "text")
 		.addColumn("createdAt", "text", (col) => col.notNull())
+		.addColumn("enabledToolIds", "text", (col) => col.notNull())
 		.ifNotExists()
 		.execute();
 
