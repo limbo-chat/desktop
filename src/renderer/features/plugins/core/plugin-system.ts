@@ -14,6 +14,7 @@ export interface PluginSystemAPIBridge {
 	getChat: limbo.API["chats"]["get"];
 	getChatMessages: limbo.API["chats"]["getMessages"];
 	renameChat: limbo.API["chats"]["rename"];
+	showChatPanel: limbo.API["ui"]["showChatPanel"];
 }
 
 export interface PluginSystemOptions {
@@ -69,7 +70,7 @@ export class PluginSystem {
 					return this.pluginAPIBridge.showNotification(notification);
 				},
 				showChatPanel: (args) => {
-					// TODO: wire up showChatPanel
+					return this.pluginAPIBridge.showChatPanel(args);
 				},
 			},
 		});

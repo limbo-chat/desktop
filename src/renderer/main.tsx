@@ -8,6 +8,7 @@ import type { MainRouter } from "../main/trpc/router";
 import type { PlatformName } from "../main/utils";
 import type { WindowType } from "../main/windows/types";
 import { Loading } from "./components/loading";
+import { useActiveChatPanelStore } from "./features/chat-panels/stores";
 import { useRegisterActiveChatCommands } from "./features/chat/hooks/use-register-active-chat-commands";
 import { useOpenCommandPaletteHotkey, useRegisterCoreCommands } from "./features/commands/hooks";
 import {
@@ -143,6 +144,20 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 				},
 				showNotification: async (notification) => {
 					// todo show notification for real
+				},
+				showChatPanel: (panel) => {
+					const workspaceStore = useWorkspaceStore.getState();
+
+					if (!workspaceStore.workspace?.activeChatId) {
+						return;
+					}
+
+					const activeChatPanelStore = useActiveChatPanelStore.getState();
+
+					activeChatPanelStore.setActiveChatPanel({
+						id: panel.id,
+						data: panel.data ?? null,
+					});
 				},
 			},
 		});

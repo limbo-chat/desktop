@@ -28,3 +28,20 @@ export const useChatPanelStore = create<ChatPanelStore>((set) => ({
 		});
 	},
 }));
+
+export interface ActiveChatPanel {
+	id: string;
+	data: limbo.JsonObject | null;
+}
+
+export interface ActiveChatPanelStore {
+	activeChatPanel: ActiveChatPanel | null;
+	setActiveChatPanel: (panel: ActiveChatPanel) => void;
+	clearActiveChatPanel: () => void;
+}
+
+export const useActiveChatPanelStore = create<ActiveChatPanelStore>((set) => ({
+	activeChatPanel: null,
+	setActiveChatPanel: (panel) => set({ activeChatPanel: panel }),
+	clearActiveChatPanel: () => set({ activeChatPanel: null }),
+}));

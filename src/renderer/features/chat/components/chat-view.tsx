@@ -7,6 +7,9 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import type { UpdateChatInput } from "../../../../main/trpc/router/chats";
 import { useAnimationUnmount, useIsAtBottom } from "../../../hooks/common";
 import { useMainRouter, useMainRouterClient } from "../../../lib/trpc";
+import { ChatPanelRenderer } from "../../chat-panels/components/chat-panel-renderer";
+import { useActiveChatPanel } from "../../chat-panels/hooks";
+import { useActiveChatPanelStore } from "../../chat-panels/stores";
 import { usePluginManager } from "../../plugins/hooks/core";
 import { useChatState } from "../hooks/common";
 import { useSendMessage } from "../hooks/use-send-message";
@@ -48,6 +51,7 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 	const mainRouter = useMainRouter();
 	const pluginManager = usePluginManager();
 	const chatState = useChatState(chatId);
+	const activeChatPanel = useActiveChatPanel();
 	const { sendMessage, cancelResponse } = useSendMessage();
 
 	const [userMessage, setUserMessage] = useState("");
@@ -157,6 +161,13 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 			setEnabledToolIds([]);
 
 			hasScrolledToBottomOnLoad.current = false;
+
+			const activeChatPanelStore = useActiveChatPanelStore.getState();
+
+			// if this chat has a panel open, close it
+			if (activeChatPanelStore.activeChatPanel) {
+				activeChatPanelStore.clearActiveChatPanel();
+			}
 		};
 	}, [chatId]);
 
@@ -251,8 +262,17 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 					ref={chatComposerRef}
 				/>
 			</Panel>
-			<PanelResizeHandle className="resize-handle" />
-			<Panel className="chat-view-panel">test</Panel>
+			{activeChatPanel && (
+				<>
+					<PanelResizeHandle className="resize-handle" />
+					<Panel className="chat-view-panel">
+						<ChatPanelRenderer
+							chatPanelId={activeChatPanel.id}
+							chatPanelData={activeChatPanel.data ?? {}}
+						/>
+					</Panel>
+				</>
+			)}
 		</PanelGroup>
 	);
 };
