@@ -7,9 +7,9 @@ export const useChatNodes = () => {
 };
 
 export const useChatNode = (chatNodeId: string) => {
-	const tools = useChatNodes();
+	const chatNodes = useChatNodes();
 
-	return tools.get(chatNodeId);
+	return chatNodes.get(chatNodeId);
 };
 
 export const useCollatedChatNodeComponents = () => {
