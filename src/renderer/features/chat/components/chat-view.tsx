@@ -7,7 +7,6 @@ import type { UpdateChatInput } from "../../../../main/trpc/router/chats";
 import { useAnimationUnmount, useIsAtBottom } from "../../../hooks/common";
 import { useMainRouter, useMainRouterClient } from "../../../lib/trpc";
 import { usePluginManager } from "../../plugins/hooks/core";
-import { getEnabledToolIds } from "../../storage/utils";
 import { useChatState } from "../hooks/common";
 import { useSendMessage } from "../hooks/use-send-message";
 import { useChatStore } from "../stores";
@@ -103,7 +102,6 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 			// get the settings frmo the main process
 			const settings = await mainRouterClient.settings.get.query();
 			const systemPromptTemplate = settings.systemPrompt;
-			const enabledToolIds = getEnabledToolIds();
 
 			// reconsider whether it should be trimmed or not
 			const systemPrompt = renderSystemPrompt(systemPromptTemplate, {
