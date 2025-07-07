@@ -240,7 +240,7 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 				"--chat-composer-width": (chatComposerDimensions.width ?? 0) + "px",
 			}}
 		>
-			<Panel className="chat-view-main">
+			<Panel className="chat-view-main" id="main" order={1} minSize={25}>
 				<div className="chat-log-container" ref={chatLogContainerRef}>
 					<ChatLog messages={messages} />
 					{shouldShowSpacer && <div className="chat-scroll-spacer" />}
@@ -265,7 +265,7 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 			{activeChatPanel && (
 				<>
 					<PanelResizeHandle className="resize-handle" />
-					<Panel className="chat-view-panel">
+					<Panel className="chat-view-panel" id="panel" order={2} minSize={25}>
 						<ChatPanelRenderer
 							chatPanelId={activeChatPanel.id}
 							chatPanelData={activeChatPanel.data ?? {}}
