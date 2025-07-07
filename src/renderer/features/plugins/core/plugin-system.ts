@@ -68,6 +68,9 @@ export class PluginSystem {
 				showNotification: (notification) => {
 					return this.pluginAPIBridge.showNotification(notification);
 				},
+				showChatPanel: (args) => {
+					// TODO: wire up showChatPanel
+				},
 			},
 		});
 

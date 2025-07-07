@@ -7,6 +7,7 @@ export interface PluginAPIHostBridge {
 	renameChat: limbo.API["chats"]["rename"];
 	getChat: limbo.API["chats"]["get"];
 	getChatMessages: limbo.API["chats"]["getMessages"];
+	showChatPanel: limbo.API["chats"]["showPanel"];
 }
 
 export interface CreatePluginAPIOptions {
@@ -91,6 +92,13 @@ export function createPluginAPI({ hostBridge, pluginContext }: CreatePluginAPIOp
 					throw new Error("Failed to get chat messages");
 				}
 			},
+			showPanel: (args) => {
+				try {
+					hostBridge.showChatPanel(args);
+				} catch {
+					throw new Error("Failed to show chat panel");
+				}
+			},
 		},
 		ui: {
 			registerMarkdownElement: (element) => {
@@ -104,6 +112,12 @@ export function createPluginAPI({ hostBridge, pluginContext }: CreatePluginAPIOp
 			},
 			unregisterChatNode: (nodeId) => {
 				pluginContext.unregisterChatNode(nodeId);
+			},
+			registerChatPanel: (chatPanel) => {
+				pluginContext.registerChatPanel(chatPanel);
+			},
+			unregisterChatPanel: (chatPanelId) => {
+				pluginContext.unregisterChatPanel(chatPanelId);
 			},
 		},
 	};

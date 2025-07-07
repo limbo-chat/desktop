@@ -15,6 +15,7 @@ export class PluginContext {
 	private tools = new Map<string, limbo.Tool>();
 	private markdownElements = new Map<string, limbo.ui.MarkdownElement>();
 	private chatNodes = new Map<string, limbo.ui.ChatNode>();
+	private chatPanels = new Map<string, limbo.ui.ChatPanel>();
 
 	private settingsCache = new Map<string, any>();
 
@@ -164,6 +165,28 @@ export class PluginContext {
 
 	public unregisterChatNode(nodeId: string) {
 		this.chatNodes.delete(nodeId);
+
+		this.notifyStateChanged();
+	}
+
+	// chat panels
+
+	public getChatPanel(chatPanelId: string) {
+		return this.chatPanels.get(chatPanelId);
+	}
+
+	public getChatPanels() {
+		return [...this.chatPanels.values()];
+	}
+
+	public registerChatPanel(chatPanel: limbo.ui.ChatPanel) {
+		this.chatPanels.set(chatPanel.id, chatPanel);
+
+		this.notifyStateChanged();
+	}
+
+	public unregisterChatPanel(chatPanelId: string) {
+		this.chatPanels.delete(chatPanelId);
 
 		this.notifyStateChanged();
 	}
