@@ -3,6 +3,7 @@ import { z } from "zod";
 import { PLUGINS_DIR } from "../../plugins/constants";
 import {
 	downloadPluginFromGithub,
+	getPluginDatabase,
 	installPlugin,
 	readPlugin,
 	readPluginData,
@@ -25,6 +26,18 @@ const updatePluginEnabledInputSchema = z.object({
 const updatePluginSettingsInputSchema = z.object({
 	id: z.string(),
 	settings: z.record(z.string(), z.unknown()),
+});
+
+const executePluginDatabaseStatementInputSchema = z.object({
+	id: z.string(),
+	sql: z.string(),
+	params: z.array(z.any()).optional(),
+});
+
+const executePluginDatabaseQueryInputSchema = z.object({
+	id: z.string(),
+	sql: z.string(),
+	params: z.array(z.any()).optional(),
 });
 
 const installPluginInputSchema = z.object({
@@ -59,6 +72,30 @@ export const pluginsRouter = router({
 			settings: input.settings,
 		});
 	}),
+	executeDatabaseStatement: publicProcedure
+		.input(executePluginDatabaseStatementInputSchema)
+		.mutation(({ input }) => {
+			const db = getPluginDatabase(input.id);
+			const stmt = db.prepare(input.sql);
+
+			if (input.params) {
+				stmt.bind(...input.params);
+			}
+
+			stmt.run();
+		}),
+	executeDatabaseQuery: publicProcedure
+		.input(executePluginDatabaseQueryInputSchema)
+		.mutation(({ input }) => {
+			const db = getPluginDatabase(input.id);
+			const stmt = db.prepare(input.sql);
+
+			if (input.params) {
+				stmt.bind(...input.params);
+			}
+
+			return stmt.all();
+		}),
 	install: publicProcedure.input(installPluginInputSchema).mutation(async ({ input }) => {
 		const downloadResult = await downloadPluginFromGithub(input);
 

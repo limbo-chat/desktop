@@ -1,7 +1,14 @@
 import { Octokit } from "@octokit/rest";
+import Sqlite from "better-sqlite3";
 import fs from "node:fs";
 import path from "node:path";
-import { PLUGINS_DIR, PLUGIN_DATA_FILE, PLUGIN_JS_FILE, PLUGIN_MANIFEST_FILE } from "./constants";
+import {
+	PLUGINS_DIR,
+	PLUGIN_DATABASE_FILE,
+	PLUGIN_DATA_FILE,
+	PLUGIN_JS_FILE,
+	PLUGIN_MANIFEST_FILE,
+} from "./constants";
 import {
 	pluginDataSchema,
 	pluginManifestSchema,
@@ -25,6 +32,10 @@ function buildPluginJsPath(pluginId: string) {
 
 function buildPluginDataPath(pluginId: string) {
 	return path.join(buildPluginPath(pluginId), PLUGIN_DATA_FILE);
+}
+
+function buildPluginDatabasePath(pluginId: string) {
+	return path.join(buildPluginPath(pluginId), PLUGIN_DATABASE_FILE);
 }
 
 export function readPluginManifest(pluginId: string) {
@@ -97,6 +108,10 @@ export function updatePluginData(pluginId: string, updatedData: Partial<PluginDa
 	const data = readPluginData(pluginId);
 
 	writePluginData(pluginId, { ...data, ...updatedData });
+}
+
+export function getPluginDatabase(pluginId: string) {
+	return new Sqlite(buildPluginDatabasePath(pluginId));
 }
 
 export function ensurePluginsDir() {
