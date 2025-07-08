@@ -1,11 +1,40 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/shallow";
+import { Button } from "../../../components/button";
+import {
+	EmptyState,
+	EmptyStateActions,
+	EmptyStateHeader,
+	EmptyStateTitle,
+} from "../../../components/empty-state";
 import { ChatListView } from "../../chat/components/chat-list-view";
 import { ChatView } from "../../chat/components/chat-view";
+import { useCreateChatMutation } from "../../chat/hooks/queries";
 import { useEphemeralWorkspaceStore, useWorkspaceStore } from "../stores";
 import { ResizeHandle } from "./resize-handle";
 import { SideDock } from "./side-dock";
 import { Titlebar } from "./titlebar";
+
+const EmptyChatState = () => {
+	const createChatMutation = useCreateChatMutation();
+
+	const createNewChat = () => {
+		createChatMutation.mutate({
+			name: "New chat",
+		});
+	};
+
+	return (
+		<EmptyState className="empty-chat-state">
+			<EmptyStateHeader>
+				<EmptyStateTitle>No chat is open</EmptyStateTitle>
+			</EmptyStateHeader>
+			<EmptyStateActions>
+				<Button onClick={createNewChat}>Create chat</Button>
+			</EmptyStateActions>
+		</EmptyState>
+	);
+};
 
 export const Workspace = () => {
 	const workspaceStore = useWorkspaceStore(
@@ -114,8 +143,10 @@ export const Workspace = () => {
 					</>
 				)}
 				<div className="main">
-					{workspaceStore.activeChatId && (
+					{workspaceStore.activeChatId ? (
 						<ChatView chatId={workspaceStore.activeChatId} />
+					) : (
+						<EmptyChatState />
 					)}
 				</div>
 				{isSecondarySidebarOpen && (
