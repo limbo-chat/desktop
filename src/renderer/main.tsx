@@ -159,13 +159,6 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 						data: panel.data ?? null,
 					});
 				},
-				executeDatabaseStatement: async (pluginId, sql, params) => {
-					return await mainRouterClient.plugins.executeDatabaseStatement.mutate({
-						id: pluginId,
-						sql,
-						params,
-					});
-				},
 				executeDatabaseQuery: async (pluginId, sql, params) => {
 					return await mainRouterClient.plugins.executeDatabaseQuery.mutate({
 						id: pluginId,

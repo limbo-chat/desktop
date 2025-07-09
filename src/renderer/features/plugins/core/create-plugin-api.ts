@@ -9,7 +9,6 @@ export interface PluginAPIHostBridge {
 	getChatMessages: limbo.API["chats"]["getMessages"];
 	showChatPanel: limbo.API["ui"]["showChatPanel"];
 	executeDatabaseQuery: limbo.API["database"]["query"];
-	executeDatabaseStatement: limbo.API["database"]["execute"];
 }
 
 export interface CreatePluginAPIOptions {
@@ -39,18 +38,12 @@ export function createPluginAPI({ hostBridge, pluginContext }: CreatePluginAPIOp
 			},
 		},
 		database: {
-			execute: async (sql, params) => {
-				try {
-					return await hostBridge.executeDatabaseStatement(sql, params);
-				} catch {
-					throw new Error("Failed to get chat");
-				}
-			},
 			query: async (sql, params) => {
 				try {
 					return await hostBridge.executeDatabaseQuery(sql, params);
-				} catch {
-					throw new Error("Failed to get chat");
+				} catch (err) {
+					console.error(err);
+					throw new Error("Failed to execute database query");
 				}
 			},
 		},

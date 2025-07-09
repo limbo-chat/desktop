@@ -1,5 +1,6 @@
 import { shell } from "electron";
 import { z } from "zod";
+import type * as limbo from "@limbo/api";
 import { PLUGINS_DIR } from "../../plugins/constants";
 import {
 	downloadPluginFromGithub,
@@ -26,12 +27,6 @@ const updatePluginEnabledInputSchema = z.object({
 const updatePluginSettingsInputSchema = z.object({
 	id: z.string(),
 	settings: z.record(z.string(), z.unknown()),
-});
-
-const executePluginDatabaseStatementInputSchema = z.object({
-	id: z.string(),
-	sql: z.string(),
-	params: z.array(z.any()).optional(),
 });
 
 const executePluginDatabaseQueryInputSchema = z.object({
@@ -72,18 +67,6 @@ export const pluginsRouter = router({
 			settings: input.settings,
 		});
 	}),
-	executeDatabaseStatement: publicProcedure
-		.input(executePluginDatabaseStatementInputSchema)
-		.mutation(({ input }) => {
-			const db = getPluginDatabase(input.id);
-			const stmt = db.prepare(input.sql);
-
-			if (input.params) {
-				stmt.bind(...input.params);
-			}
-
-			stmt.run();
-		}),
 	executeDatabaseQuery: publicProcedure
 		.input(executePluginDatabaseQueryInputSchema)
 		.mutation(({ input }) => {
@@ -94,7 +77,25 @@ export const pluginsRouter = router({
 				stmt.bind(...input.params);
 			}
 
-			return stmt.all();
+			const queryResult: limbo.database.QueryResult = {
+				rows: [],
+			};
+
+			if (stmt.reader) {
+				queryResult.rows = stmt.all();
+			} else {
+				const res = stmt.run();
+
+				queryResult.rowsAffected = res.changes;
+
+				if (typeof res.lastInsertRowid === "bigint") {
+					queryResult.lastInsertId = res.lastInsertRowid;
+				} else {
+					queryResult.lastInsertId = BigInt(res.lastInsertRowid);
+				}
+			}
+
+			return queryResult;
 		}),
 	install: publicProcedure.input(installPluginInputSchema).mutation(async ({ input }) => {
 		const downloadResult = await downloadPluginFromGithub(input);

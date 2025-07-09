@@ -15,8 +15,11 @@ export interface PluginSystemAPIBridge {
 	getChatMessages: limbo.API["chats"]["getMessages"];
 	renameChat: limbo.API["chats"]["rename"];
 	showChatPanel: limbo.API["ui"]["showChatPanel"];
-	executeDatabaseStatement: (pluginId: string, sql: string, params?: any[]) => Promise<void>;
-	executeDatabaseQuery: (pluginId: string, sql: string, params?: any[]) => Promise<any[]>;
+	executeDatabaseQuery: (
+		pluginId: string,
+		sql: string,
+		params?: any[]
+	) => Promise<limbo.database.QueryResult>;
 }
 
 export interface PluginSystemOptions {
@@ -76,13 +79,6 @@ export class PluginSystem {
 				},
 				executeDatabaseQuery: (sql, params) => {
 					return this.pluginAPIBridge.executeDatabaseQuery(
-						plugin.manifest.id,
-						sql,
-						params
-					);
-				},
-				executeDatabaseStatement: (sql, params) => {
-					return this.pluginAPIBridge.executeDatabaseStatement(
 						plugin.manifest.id,
 						sql,
 						params
