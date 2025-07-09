@@ -1,8 +1,8 @@
 import { LoadingIcon } from "./loading-icon";
 
-export const Loading = () => {
+export const LoadingState = () => {
 	return (
-		<div className="loading">
+		<div className="loading-state">
 			<LoadingIcon />
 		</div>
 	);

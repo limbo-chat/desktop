@@ -7,7 +7,7 @@ import { ipcLink } from "trpc-electron/renderer";
 import type { MainRouter } from "../main/trpc/router";
 import type { PlatformName } from "../main/utils";
 import type { WindowType } from "../main/windows/types";
-import { Loading } from "./components/loading";
+import { LoadingState } from "./components/loading-state";
 import { useActiveChatPanelStore } from "./features/chat-panels/stores";
 import { useRegisterActiveChatCommands } from "./features/chat/hooks/use-register-active-chat-commands";
 import { useOpenCommandPaletteHotkey, useRegisterCoreCommands } from "./features/commands/hooks";
@@ -220,7 +220,7 @@ const AppContent = () => {
 		<div className="app" data-platform={windowInfo.platform} data-is-focused={isAppFocused}>
 			<ModalHost />
 			<Toaster />
-			<Suspense fallback={<Loading />}>
+			<Suspense fallback={<LoadingState />}>
 				<WorkspaceContainer />
 			</Suspense>
 		</div>
