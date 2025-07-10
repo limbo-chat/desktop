@@ -1,8 +1,8 @@
-export interface PluginDatabaseSettingsTable {
+export interface PluginDatabaseSettingTable {
 	id: string;
 	value: string;
 }
 
 export interface PluginDatabase {
-	settings: PluginDatabaseSettingsTable;
+	setting: PluginDatabaseSettingTable;
 }

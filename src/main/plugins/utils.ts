@@ -122,7 +122,7 @@ export async function getPluginDatabase(pluginId: string) {
 	});
 
 	await db.schema
-		.createTable("settings")
+		.createTable("setting")
 		.addColumn("id", "text", (col) => col.primaryKey())
 		.addColumn("value", "text", (col) => col.notNull())
 		.ifNotExists()

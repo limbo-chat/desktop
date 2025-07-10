@@ -65,7 +65,7 @@ export const pluginsRouter = router({
 	getSettings: publicProcedure.input(getPluginInputSchema).query(async ({ input }) => {
 		const { db } = await getPluginDatabase(input.id);
 
-		const rawSettings = await db.selectFrom("settings").selectAll().execute();
+		const rawSettings = await db.selectFrom("setting").selectAll().execute();
 
 		const parsedSettings = rawSettings.map((setting) => {
 			return {
@@ -83,7 +83,7 @@ export const pluginsRouter = router({
 
 			for (const setting of input.settings) {
 				await db
-					.insertInto("settings")
+					.insertInto("setting")
 					.values({
 						id: setting.id,
 						value: JSON.stringify(setting.value),
