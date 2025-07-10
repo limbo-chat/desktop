@@ -172,6 +172,30 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 						params,
 					});
 				},
+				getStorageValue: async (pluginId, key) => {
+					return await mainRouterClient.plugins.getStorageValue.query({
+						pluginId,
+						key,
+					});
+				},
+				setStorageValue: async (pluginId, key, value) => {
+					return await mainRouterClient.plugins.setStorageValue.mutate({
+						pluginId,
+						key,
+						value,
+					});
+				},
+				removeStorageValue: async (pluginId, key) => {
+					return await mainRouterClient.plugins.removeStorageValue.mutate({
+						pluginId,
+						key,
+					});
+				},
+				clearStorage: async (pluginId) => {
+					return await mainRouterClient.plugins.clearStorage.mutate({
+						pluginId,
+					});
+				},
 			},
 		});
 	}, []);

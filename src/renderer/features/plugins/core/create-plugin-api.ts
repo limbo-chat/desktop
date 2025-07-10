@@ -9,6 +9,10 @@ export interface PluginAPIHostBridge {
 	getChatMessages: limbo.API["chats"]["getMessages"];
 	showChatPanel: limbo.API["ui"]["showChatPanel"];
 	executeDatabaseQuery: limbo.API["database"]["query"];
+	getStorageValue: limbo.API["storage"]["get"];
+	setStorageValue: limbo.API["storage"]["set"];
+	removeStorageValue: limbo.API["storage"]["remove"];
+	clearStorage: limbo.API["storage"]["clear"];
 }
 
 export interface CreatePluginAPIOptions {
@@ -18,6 +22,36 @@ export interface CreatePluginAPIOptions {
 
 export function createPluginAPI({ hostBridge, pluginContext }: CreatePluginAPIOptions): limbo.API {
 	return {
+		storage: {
+			set: async (key, value) => {
+				try {
+					await hostBridge.setStorageValue(key, value);
+				} catch (err) {
+					throw new Error("Failed to set storage value");
+				}
+			},
+			get: async (key) => {
+				try {
+					return await hostBridge.getStorageValue(key);
+				} catch (err) {
+					throw new Error("Failed to get storage value");
+				}
+			},
+			remove: async (key) => {
+				try {
+					await hostBridge.removeStorageValue(key);
+				} catch (err) {
+					throw new Error("Failed to remove storage value");
+				}
+			},
+			clear: async () => {
+				try {
+					await hostBridge.clearStorage();
+				} catch (err) {
+					throw new Error("Failed to clear storage");
+				}
+			},
+		},
 		settings: {
 			register: (setting) => {
 				pluginContext.registerSetting(setting);

@@ -109,6 +109,10 @@ export const pluginsRouter = router({
 
 			const jsonValue = JSON.stringify(input.value);
 
+			console.log(
+				`Setting storage value for plugin ${input.pluginId}: ${input.key} = ${jsonValue}`
+			);
+
 			await db
 				.insertInto("storage")
 				.values({ key: input.key, value: jsonValue })
@@ -116,7 +120,8 @@ export const pluginsRouter = router({
 					return oc.doUpdateSet({
 						value: jsonValue,
 					});
-				});
+				})
+				.execute();
 		}),
 	removeStorageValue: publicProcedure
 		.input(removeStorageValueInputSchema)

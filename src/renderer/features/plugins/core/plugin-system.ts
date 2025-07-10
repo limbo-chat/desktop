@@ -20,6 +20,10 @@ export interface PluginSystemAPIBridge {
 		sql: string,
 		params?: any[]
 	) => Promise<limbo.database.QueryResult>;
+	getStorageValue: (pluginId: string, key: string) => Promise<limbo.JsonValue | undefined>;
+	setStorageValue: (pluginId: string, key: string, value: limbo.JsonValue) => Promise<void>;
+	removeStorageValue: (pluginId: string, key: string) => Promise<void>;
+	clearStorage: (pluginId: string) => Promise<void>;
 }
 
 export interface PluginSystemOptions {
@@ -86,6 +90,19 @@ export class PluginSystem {
 						sql,
 						params
 					);
+				},
+				// @ts-expect-error, not sure what the error is at the moment, will likely be resolved when the plugin system is cleaned up
+				getStorageValue: async (key) => {
+					return await this.pluginAPIBridge.getStorageValue(plugin.manifest.id, key);
+				},
+				setStorageValue: async (key, value) => {
+					return this.pluginAPIBridge.setStorageValue(plugin.manifest.id, key, value);
+				},
+				removeStorageValue: async (key) => {
+					return this.pluginAPIBridge.removeStorageValue(plugin.manifest.id, key);
+				},
+				clearStorage: async () => {
+					return this.pluginAPIBridge.clearStorage(plugin.manifest.id);
 				},
 			},
 		});
