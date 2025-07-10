@@ -1,12 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/shallow";
 import { Button } from "../../../components/button";
-import {
-	EmptyState,
-	EmptyStateActions,
-	EmptyStateHeader,
-	EmptyStateTitle,
-} from "../../../components/empty-state";
+import { EmptyState, EmptyStateActions, EmptyStateTitle } from "../../../components/empty-state";
 import { ChatListView } from "../../chat/components/chat-list-view";
 import { ChatView } from "../../chat/components/chat-view";
 import { useCreateChatMutation } from "../../chat/hooks/queries";
@@ -26,9 +21,7 @@ const EmptyChatState = () => {
 
 	return (
 		<EmptyState className="empty-chat-state">
-			<EmptyStateHeader>
-				<EmptyStateTitle>No chat is open</EmptyStateTitle>
-			</EmptyStateHeader>
+			<EmptyStateTitle>No chat is open</EmptyStateTitle>
 			<EmptyStateActions>
 				<Button onClick={createNewChat}>Create chat</Button>
 			</EmptyStateActions>

@@ -7,12 +7,6 @@ export const EmptyState = ({ className, ...props }: EmptyStateProps) => {
 	return <div className={clsx("empty-state", className)} {...props} />;
 };
 
-export interface EmptyStateHeaderProps extends HTMLAttributes<HTMLDivElement> {}
-
-export const EmptyStateHeader = ({ className, ...props }: EmptyStateHeaderProps) => {
-	return <div className={clsx("empty-state-header", className)} {...props} />;
-};
-
 export interface EmptyStateTitleProps extends HTMLAttributes<HTMLDivElement> {}
 
 export const EmptyStateTitle = ({ className, ...props }: EmptyStateTitleProps) => {
