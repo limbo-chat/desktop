@@ -122,6 +122,13 @@ export async function getPluginDatabase(pluginId: string) {
 	});
 
 	await db.schema
+		.createTable("storage")
+		.addColumn("key", "text", (col) => col.primaryKey())
+		.addColumn("value", "text", (col) => col.notNull())
+		.ifNotExists()
+		.execute();
+
+	await db.schema
 		.createTable("setting")
 		.addColumn("id", "text", (col) => col.primaryKey())
 		.addColumn("value", "text", (col) => col.notNull())

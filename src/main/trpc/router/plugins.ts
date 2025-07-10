@@ -22,6 +22,26 @@ const updatePluginEnabledInputSchema = z.object({
 	enabled: z.boolean(),
 });
 
+const getStorageValueInputSchema = z.object({
+	pluginId: z.string(),
+	key: z.string(),
+});
+
+const setStorageValueInputSchema = z.object({
+	pluginId: z.string(),
+	key: z.string(),
+	value: z.any(),
+});
+
+const removeStorageValueInputSchema = z.object({
+	pluginId: z.string(),
+	key: z.string(),
+});
+
+const clearStorageInputSchema = z.object({
+	pluginId: z.string(),
+});
+
 const updatePluginSettingsInputSchema = z.object({
 	id: z.string(),
 	settings: z.array(
@@ -61,6 +81,54 @@ export const pluginsRouter = router({
 		updatePluginMeta(input.id, {
 			enabled: input.enabled,
 		});
+	}),
+	getStorageValue: publicProcedure.input(getStorageValueInputSchema).query(async ({ input }) => {
+		const { db } = await getPluginDatabase(input.pluginId);
+
+		const rawStorageValue = await db
+			.selectFrom("storage")
+			.selectAll()
+			.where("key", "=", input.key)
+			.executeTakeFirst();
+
+		if (!rawStorageValue) {
+			return null;
+		}
+
+		try {
+			return JSON.parse(rawStorageValue.value);
+		} catch (error) {
+			// If the value isn't valid JSON, return it as a string
+			return rawStorageValue.value;
+		}
+	}),
+	setStorageValue: publicProcedure
+		.input(setStorageValueInputSchema)
+		.mutation(async ({ input }) => {
+			const { db } = await getPluginDatabase(input.pluginId);
+
+			const jsonValue = JSON.stringify(input.value);
+
+			await db
+				.insertInto("storage")
+				.values({ key: input.key, value: jsonValue })
+				.onConflict((oc) => {
+					return oc.doUpdateSet({
+						value: jsonValue,
+					});
+				});
+		}),
+	removeStorageValue: publicProcedure
+		.input(removeStorageValueInputSchema)
+		.mutation(async ({ input }) => {
+			const { db } = await getPluginDatabase(input.pluginId);
+
+			await db.deleteFrom("storage").where("key", "=", input.key).execute();
+		}),
+	clearStorage: publicProcedure.input(clearStorageInputSchema).mutation(async ({ input }) => {
+		const { db } = await getPluginDatabase(input.pluginId);
+
+		await db.deleteFrom("storage").execute();
 	}),
 	getSettings: publicProcedure.input(getPluginInputSchema).query(async ({ input }) => {
 		const { db } = await getPluginDatabase(input.id);
