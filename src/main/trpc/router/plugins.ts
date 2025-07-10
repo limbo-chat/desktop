@@ -92,7 +92,7 @@ export const pluginsRouter = router({
 			.executeTakeFirst();
 
 		if (!rawStorageValue) {
-			return null;
+			return undefined;
 		}
 
 		try {
@@ -108,10 +108,6 @@ export const pluginsRouter = router({
 			const { db } = await getPluginDatabase(input.pluginId);
 
 			const jsonValue = JSON.stringify(input.value);
-
-			console.log(
-				`Setting storage value for plugin ${input.pluginId}: ${input.key} = ${jsonValue}`
-			);
 
 			await db
 				.insertInto("storage")
