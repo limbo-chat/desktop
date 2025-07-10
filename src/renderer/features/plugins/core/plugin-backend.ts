@@ -1,9 +1,9 @@
-import type { PluginData, PluginManifest } from "../../../../main/plugins/schemas";
+import type { PluginMeta, PluginManifest } from "../../../../main/plugins/schemas";
 
 export interface GetPluginResult {
 	manifest: PluginManifest;
 	js: string;
-	data: PluginData;
+	meta: PluginMeta;
 }
 
 export interface PluginBackend {

@@ -4,15 +4,15 @@ import fs from "node:fs";
 import path from "node:path";
 import {
 	PLUGINS_DIR,
-	PLUGIN_DATABASE_FILE,
-	PLUGIN_DATA_FILE,
 	PLUGIN_JS_FILE,
 	PLUGIN_MANIFEST_FILE,
+	PLUGIN_META_FILE,
+	PLUGIN_DATABASE_FILE,
 } from "./constants";
 import {
-	pluginDataSchema,
+	pluginMetaSchema,
 	pluginManifestSchema,
-	type PluginData,
+	type PluginMeta,
 	type PluginManifest,
 } from "./schemas";
 
@@ -30,8 +30,8 @@ function buildPluginJsPath(pluginId: string) {
 	return path.join(buildPluginPath(pluginId), PLUGIN_JS_FILE);
 }
 
-function buildPluginDataPath(pluginId: string) {
-	return path.join(buildPluginPath(pluginId), PLUGIN_DATA_FILE);
+function buildPluginMetaPath(pluginId: string) {
+	return path.join(buildPluginPath(pluginId), PLUGIN_META_FILE);
 }
 
 function buildPluginDatabasePath(pluginId: string) {
@@ -61,53 +61,53 @@ export function readPluginJs(pluginId: string) {
 	return fs.readFileSync(jsPath, "utf8");
 }
 
-export function writePluginData(pluginId: string, data: PluginData) {
-	const pluginDataPath = buildPluginDataPath(pluginId);
+export function writePluginMeta(pluginId: string, meta: PluginMeta) {
+	const pluginMetaPath = buildPluginMetaPath(pluginId);
 
-	fs.writeFileSync(pluginDataPath, JSON.stringify(data));
+	fs.writeFileSync(pluginMetaPath, JSON.stringify(meta));
 }
 
-const defaultPluginData: PluginData = { enabled: false, settings: {} };
+const defaultPluginMeta: PluginMeta = { enabled: false };
 
-export function readPluginData(pluginId: string) {
-	const dataPath = buildPluginDataPath(pluginId);
+export function readPluginMeta(pluginId: string) {
+	const metaPath = buildPluginMetaPath(pluginId);
 
-	if (!fs.existsSync(dataPath)) {
-		writePluginData(pluginId, defaultPluginData);
+	if (!fs.existsSync(metaPath)) {
+		writePluginMeta(pluginId, defaultPluginMeta);
 
-		return defaultPluginData;
+		return defaultPluginMeta;
 	}
 
-	const dataStr = fs.readFileSync(dataPath, "utf8");
-	const dataObj = JSON.parse(dataStr);
+	const metaStr = fs.readFileSync(metaPath, "utf8");
+	const rawMeta = JSON.parse(metaStr);
 
-	const pluginDataParseResult = pluginDataSchema.safeParse(dataObj);
+	const pluginMetaParseResult = pluginMetaSchema.safeParse(rawMeta);
 
-	if (!pluginDataParseResult.success) {
-		writePluginData(pluginId, defaultPluginData);
+	if (!pluginMetaParseResult.success) {
+		writePluginMeta(pluginId, defaultPluginMeta);
 
-		return defaultPluginData;
+		return defaultPluginMeta;
 	}
 
-	return pluginDataParseResult.data;
+	return pluginMetaParseResult.data;
 }
 
 export function readPlugin(pluginId: string) {
 	const manifest = readPluginManifest(pluginId);
 	const js = readPluginJs(pluginId);
-	const data = readPluginData(pluginId);
+	const meta = readPluginMeta(pluginId);
 
 	return {
 		manifest,
 		js,
-		data,
+		meta,
 	};
 }
 
-export function updatePluginData(pluginId: string, updatedData: Partial<PluginData>) {
-	const data = readPluginData(pluginId);
+export function updatePluginMeta(pluginId: string, updatedMeta: Partial<PluginMeta>) {
+	const meta = readPluginMeta(pluginId);
 
-	writePluginData(pluginId, { ...data, ...updatedData });
+	writePluginMeta(pluginId, { ...meta, ...updatedMeta });
 }
 
 export function getPluginDatabase(pluginId: string) {
@@ -149,8 +149,8 @@ export function installPlugin({ manifest, js }: InstallPluginOptions) {
 	// write js file
 	fs.writeFileSync(buildPluginJsPath(manifest.id), js);
 
-	// write the default data file
-	fs.writeFileSync(buildPluginDataPath(manifest.id), JSON.stringify(defaultPluginData));
+	// write the default meta file
+	fs.writeFileSync(buildPluginMetaPath(manifest.id), JSON.stringify(defaultPluginMeta));
 }
 
 export interface DownloadPluginFromGithubOptions {

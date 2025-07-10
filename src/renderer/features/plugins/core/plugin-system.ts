@@ -44,7 +44,7 @@ export class PluginSystem {
 
 	public async loadPlugin(plugin: GetPluginResult) {
 		// don't do anything if the plugin is not enabled
-		if (!plugin.data.enabled) {
+		if (!plugin.meta.enabled) {
 			return;
 		}
 
@@ -52,9 +52,10 @@ export class PluginSystem {
 
 		// load settings into the settings cache
 
-		for (const [settingId, settingValue] of Object.entries(plugin.data.settings)) {
-			pluginContext.setCachedSettingValue(settingId, settingValue);
-		}
+		// TODO, rethink settings cache. this no longer is possible since the plugin settings are no longer part of GetPluginResult
+		// for (const [settingId, settingValue] of Object.entries(plugin.data.settings)) {
+		// 	pluginContext.setCachedSettingValue(settingId, settingValue);
+		// }
 
 		const pluginAPI = createPluginAPI({
 			pluginContext,

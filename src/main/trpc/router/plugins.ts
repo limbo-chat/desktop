@@ -7,11 +7,11 @@ import {
 	getPluginDatabase,
 	installPlugin,
 	readPlugin,
-	readPluginData,
+	readPluginMeta,
 	readPlugins,
 	uninstallPlugin,
-	updatePluginData,
-	writePluginData,
+	updatePluginMeta,
+	writePluginMeta,
 } from "../../plugins/utils";
 import { publicProcedure, router } from "../trpc";
 
@@ -55,17 +55,15 @@ export const pluginsRouter = router({
 		return readPlugins();
 	}),
 	updateEnabled: publicProcedure.input(updatePluginEnabledInputSchema).mutation(({ input }) => {
-		const prevData = readPluginData(input.id);
+		const prevData = readPluginMeta(input.id);
 
-		writePluginData(input.id, {
+		writePluginMeta(input.id, {
 			...prevData,
 			enabled: input.enabled,
 		});
 	}),
 	updateSettings: publicProcedure.input(updatePluginSettingsInputSchema).mutation(({ input }) => {
-		updatePluginData(input.id, {
-			settings: input.settings,
-		});
+		// TODO, new settings logic
 	}),
 	executeDatabaseQuery: publicProcedure
 		.input(executePluginDatabaseQueryInputSchema)

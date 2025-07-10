@@ -51,7 +51,7 @@ export const usePluginLoader = () => {
 
 			for (const plugin of allPlugins) {
 				pluginStore.setPlugin(plugin.manifest.id, {
-					enabled: plugin.data.enabled,
+					enabled: plugin.meta.enabled,
 					manifest: plugin.manifest,
 				});
 			}
@@ -85,7 +85,7 @@ export const usePluginHotReloader = () => {
 
 			pluginStore.setPlugin(pluginId, {
 				manifest: freshPluginData.manifest,
-				enabled: freshPluginData.data.enabled,
+				enabled: freshPluginData.meta.enabled,
 			});
 
 			await pluginSystem.unloadPlugin(pluginId);

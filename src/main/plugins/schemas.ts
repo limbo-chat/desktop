@@ -19,9 +19,8 @@ export const pluginManifestSchema = z.object({
 
 export type PluginManifest = z.infer<typeof pluginManifestSchema>;
 
-export const pluginDataSchema = z.object({
+export const pluginMetaSchema = z.object({
 	enabled: z.boolean(),
-	settings: z.record(z.any()),
 });
 
-export type PluginData = z.infer<typeof pluginDataSchema>;
+export type PluginMeta = z.infer<typeof pluginMetaSchema>;
