@@ -1,5 +1,6 @@
 import { Octokit } from "@octokit/rest";
 import Sqlite from "better-sqlite3";
+import { Kysely, SqliteDialect } from "kysely";
 import fs from "node:fs";
 import path from "node:path";
 import {
@@ -15,6 +16,7 @@ import {
 	type PluginMeta,
 	type PluginManifest,
 } from "./schemas";
+import type { PluginDatabase } from "./types";
 
 const octokit = new Octokit();
 
@@ -110,8 +112,26 @@ export function updatePluginMeta(pluginId: string, updatedMeta: Partial<PluginMe
 	writePluginMeta(pluginId, { ...meta, ...updatedMeta });
 }
 
-export function getPluginDatabase(pluginId: string) {
-	return new Sqlite(buildPluginDatabasePath(pluginId));
+export async function getPluginDatabase(pluginId: string) {
+	const sqlite = Sqlite(buildPluginDatabasePath(pluginId));
+
+	const db = new Kysely<PluginDatabase>({
+		dialect: new SqliteDialect({
+			database: sqlite,
+		}),
+	});
+
+	await db.schema
+		.createTable("settings")
+		.addColumn("id", "text", (col) => col.primaryKey())
+		.addColumn("value", "text", (col) => col.notNull())
+		.ifNotExists()
+		.execute();
+
+	return {
+		db,
+		sqlite,
+	};
 }
 
 export function ensurePluginsDir() {

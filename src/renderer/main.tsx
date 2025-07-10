@@ -22,7 +22,7 @@ import {
 	PluginManagerProvider,
 	PluginSystemProvider,
 } from "./features/plugins/components/providers";
-import type { PluginBackend } from "./features/plugins/core/plugin-backend";
+import type { PluginBackend, SettingEntry } from "./features/plugins/core/plugin-backend";
 import { PluginManager } from "./features/plugins/core/plugin-manager";
 import { EvalPluginModuleLoader } from "./features/plugins/core/plugin-module-loader";
 import { PluginSystem } from "./features/plugins/core/plugin-system";
@@ -101,6 +101,11 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 					enabled: false,
 				});
 			},
+			getPluginSettings: async (pluginId) => {
+				return (await mainRouterClient.plugins.getSettings.query({
+					id: pluginId,
+				})) as SettingEntry[];
+			},
 			updatePluginSettings: async (pluginId, settings) => {
 				return await mainRouterClient.plugins.updateSettings.mutate({
 					id: pluginId,
@@ -118,6 +123,7 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 	const pluginSystem = useMemo(() => {
 		return new PluginSystem({
 			pluginManager,
+			pluginBackend,
 			pluginModuleLoader: new EvalPluginModuleLoader(),
 			hostBridge: {
 				onActivatePluginError: (pluginId, errorMsg) => {

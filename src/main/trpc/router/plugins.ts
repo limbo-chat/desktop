@@ -7,11 +7,9 @@ import {
 	getPluginDatabase,
 	installPlugin,
 	readPlugin,
-	readPluginMeta,
 	readPlugins,
 	uninstallPlugin,
 	updatePluginMeta,
-	writePluginMeta,
 } from "../../plugins/utils";
 import { publicProcedure, router } from "../trpc";
 
@@ -26,7 +24,12 @@ const updatePluginEnabledInputSchema = z.object({
 
 const updatePluginSettingsInputSchema = z.object({
 	id: z.string(),
-	settings: z.record(z.string(), z.unknown()),
+	settings: z.array(
+		z.object({
+			id: z.string(),
+			value: z.any(),
+		})
+	),
 });
 
 const executePluginDatabaseQueryInputSchema = z.object({
@@ -55,21 +58,50 @@ export const pluginsRouter = router({
 		return readPlugins();
 	}),
 	updateEnabled: publicProcedure.input(updatePluginEnabledInputSchema).mutation(({ input }) => {
-		const prevData = readPluginMeta(input.id);
-
-		writePluginMeta(input.id, {
-			...prevData,
+		updatePluginMeta(input.id, {
 			enabled: input.enabled,
 		});
 	}),
-	updateSettings: publicProcedure.input(updatePluginSettingsInputSchema).mutation(({ input }) => {
-		// TODO, new settings logic
+	getSettings: publicProcedure.input(getPluginInputSchema).query(async ({ input }) => {
+		const { db } = await getPluginDatabase(input.id);
+
+		const rawSettings = await db.selectFrom("settings").selectAll().execute();
+
+		const parsedSettings = rawSettings.map((setting) => {
+			return {
+				id: setting.id,
+				value: JSON.parse(setting.value),
+			};
+		});
+
+		return parsedSettings;
 	}),
+	updateSettings: publicProcedure
+		.input(updatePluginSettingsInputSchema)
+		.mutation(async ({ input }) => {
+			const { db } = await getPluginDatabase(input.id);
+
+			for (const setting of input.settings) {
+				await db
+					.insertInto("settings")
+					.values({
+						id: setting.id,
+						value: JSON.stringify(setting.value),
+					})
+					.onConflict((oc) => {
+						return oc.doUpdateSet({
+							value: JSON.stringify(setting.value),
+						});
+					})
+					.execute();
+			}
+		}),
 	executeDatabaseQuery: publicProcedure
 		.input(executePluginDatabaseQueryInputSchema)
-		.mutation(({ input }) => {
-			const db = getPluginDatabase(input.id);
-			const stmt = db.prepare(input.sql);
+		.mutation(async ({ input }) => {
+			const { sqlite } = await getPluginDatabase(input.id);
+
+			const stmt = sqlite.prepare(input.sql);
 
 			if (input.params) {
 				stmt.bind(...input.params);

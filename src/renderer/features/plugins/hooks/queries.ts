@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useMainRouter } from "../../../lib/trpc";
+import type { SettingEntry } from "../core/plugin-backend";
 import { usePluginStore } from "../stores";
 import { usePluginBackend, usePluginManager, usePluginSystem } from "./core";
 
@@ -63,7 +64,7 @@ export const useDisablePluginMutation = () => {
 
 export interface UpdatePluginSettingsMutationFnOpts {
 	id: string;
-	settings: Record<string, any>;
+	settings: SettingEntry[];
 }
 
 export const useUpdatePluginSettingsMutation = () => {

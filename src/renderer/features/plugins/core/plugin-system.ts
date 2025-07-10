@@ -1,6 +1,6 @@
 import type * as limbo from "@limbo/api";
 import { createPluginAPI } from "./create-plugin-api";
-import type { GetPluginResult } from "./plugin-backend";
+import type { GetPluginResult, PluginBackend } from "./plugin-backend";
 import { PluginContext } from "./plugin-context";
 import type { PluginManager } from "./plugin-manager";
 import type { PluginModuleLoader } from "./plugin-module-loader";
@@ -24,6 +24,7 @@ export interface PluginSystemAPIBridge {
 
 export interface PluginSystemOptions {
 	hostBridge: PluginSystemBridge;
+	pluginBackend: PluginBackend;
 	pluginAPIBridge: PluginSystemAPIBridge;
 	pluginManager: PluginManager;
 	pluginModuleLoader: PluginModuleLoader;
@@ -31,12 +32,14 @@ export interface PluginSystemOptions {
 
 export class PluginSystem {
 	private hostBridge: PluginSystemBridge;
+	private pluginBackend: PluginBackend;
 	private pluginAPIBridge: PluginSystemAPIBridge;
 	private pluginModuleLoader: PluginModuleLoader;
 	private pluginManager: PluginManager;
 
 	constructor(opts: PluginSystemOptions) {
 		this.hostBridge = opts.hostBridge;
+		this.pluginBackend = opts.pluginBackend;
 		this.pluginAPIBridge = opts.pluginAPIBridge;
 		this.pluginManager = opts.pluginManager;
 		this.pluginModuleLoader = opts.pluginModuleLoader;
@@ -50,12 +53,11 @@ export class PluginSystem {
 
 		const pluginContext = new PluginContext();
 
-		// load settings into the settings cache
+		const settings = await this.pluginBackend.getPluginSettings(plugin.manifest.id);
 
-		// TODO, rethink settings cache. this no longer is possible since the plugin settings are no longer part of GetPluginResult
-		// for (const [settingId, settingValue] of Object.entries(plugin.data.settings)) {
-		// 	pluginContext.setCachedSettingValue(settingId, settingValue);
-		// }
+		for (const setting of settings) {
+			pluginContext.setCachedSettingValue(setting.id, setting.value);
+		}
 
 		const pluginAPI = createPluginAPI({
 			pluginContext,

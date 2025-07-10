@@ -71,6 +71,7 @@ import { usePluginContextSettings } from "../../../features/plugins/hooks/use-pl
 import { useMainRouterClient } from "../../../lib/trpc";
 import { useDeleteAllChatsMutation } from "../../chat/hooks/queries";
 import { showNotification } from "../../notifications/utils";
+import type { SettingEntry } from "../../plugins/core/plugin-backend";
 import { usePluginList } from "../../plugins/hooks/core";
 import { useGetSettingsSuspenseQuery, useUpdateSettingsMutation } from "../hooks";
 import { useSettingsTabsStore } from "../stores";
@@ -575,15 +576,22 @@ const PluginSettingsFormContainer = ({ plugin }: PluginSettingsFormContainerProp
 	const onSubmit = (values: Record<string, any>) => {
 		setSettingsValues(values);
 
-		// update the cached settings values
-		for (const [key, value] of Object.entries(values)) {
-			plugin.context.setCachedSettingValue(key, value);
+		const settingEntries: SettingEntry[] = [];
+
+		for (const [id, value] of Object.entries(values)) {
+			// update the cached settings values
+			plugin.context.setCachedSettingValue(id, value);
+
+			settingEntries.push({
+				id,
+				value,
+			});
 		}
 
 		// update the plugin settings
 		updatePluginSettingsMutation.mutate({
 			id: plugin.manifest.id,
-			settings: values,
+			settings: settingEntries,
 		});
 	};
 
