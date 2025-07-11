@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import type * as limbo from "@limbo/api";
 import { getDb } from "../../../db/utils";
 import { publicProcedure, router } from "../../trpc";
 
@@ -73,7 +74,7 @@ export const chatMessagesRouter = router({
 		const chatMessages = await chatMessagesQuery.execute();
 
 		const chatMessagesWithParsedContent = chatMessages.map((chatMessage) => {
-			const parsedContent = JSON.parse(chatMessage.content);
+			const parsedContent = JSON.parse(chatMessage.content) as limbo.ChatMessageNode[];
 
 			return {
 				...chatMessage,

@@ -1,5 +1,4 @@
-import type * as limbo from "@limbo/api";
-import { createPluginAPI } from "./create-plugin-api";
+import type { PluginAPIFactory } from "./plugin-api-factory";
 import type { GetPluginResult, PluginBackend } from "./plugin-backend";
 import { PluginContext } from "./plugin-context";
 import type { PluginManager } from "./plugin-manager";
@@ -9,42 +8,25 @@ export interface PluginSystemBridge {
 	onActivatePluginError: (pluginId: string, message: string | null) => void | Promise<void>;
 }
 
-export interface PluginSystemAPIBridge {
-	showNotification: limbo.API["notifications"]["show"];
-	getChat: limbo.API["chats"]["get"];
-	getChatMessages: limbo.API["chats"]["getMessages"];
-	renameChat: limbo.API["chats"]["rename"];
-	showChatPanel: limbo.API["ui"]["showChatPanel"];
-	executeDatabaseQuery: (
-		pluginId: string,
-		sql: string,
-		params?: any[]
-	) => Promise<limbo.database.QueryResult>;
-	getStorageValue: (pluginId: string, key: string) => Promise<limbo.JsonValue | undefined>;
-	setStorageValue: (pluginId: string, key: string, value: limbo.JsonValue) => Promise<void>;
-	removeStorageValue: (pluginId: string, key: string) => Promise<void>;
-	clearStorage: (pluginId: string) => Promise<void>;
-}
-
 export interface PluginSystemOptions {
 	hostBridge: PluginSystemBridge;
 	pluginBackend: PluginBackend;
-	pluginAPIBridge: PluginSystemAPIBridge;
+	pluginAPIFactory: PluginAPIFactory;
 	pluginManager: PluginManager;
 	pluginModuleLoader: PluginModuleLoader;
 }
 
 export class PluginSystem {
 	private hostBridge: PluginSystemBridge;
+	private pluginAPIFactory: PluginAPIFactory;
 	private pluginBackend: PluginBackend;
-	private pluginAPIBridge: PluginSystemAPIBridge;
 	private pluginModuleLoader: PluginModuleLoader;
 	private pluginManager: PluginManager;
 
 	constructor(opts: PluginSystemOptions) {
 		this.hostBridge = opts.hostBridge;
 		this.pluginBackend = opts.pluginBackend;
-		this.pluginAPIBridge = opts.pluginAPIBridge;
+		this.pluginAPIFactory = opts.pluginAPIFactory;
 		this.pluginManager = opts.pluginManager;
 		this.pluginModuleLoader = opts.pluginModuleLoader;
 	}
@@ -63,48 +45,9 @@ export class PluginSystem {
 			pluginContext.setCachedSettingValue(setting.id, setting.value);
 		}
 
-		const pluginAPI = createPluginAPI({
+		const pluginAPI = this.pluginAPIFactory.create({
+			pluginId: plugin.manifest.id,
 			pluginContext,
-			hostBridge: {
-				getLLM: (llmId) => {
-					return this.pluginManager.getLLM(llmId) ?? undefined;
-				},
-				getChat: (chatId) => {
-					return this.pluginAPIBridge.getChat(chatId);
-				},
-				getChatMessages: (opts) => {
-					return this.pluginAPIBridge.getChatMessages(opts);
-				},
-				renameChat: (chatId, newName) => {
-					return this.pluginAPIBridge.renameChat(chatId, newName);
-				},
-				showNotification: (notification) => {
-					return this.pluginAPIBridge.showNotification(notification);
-				},
-				showChatPanel: (args) => {
-					return this.pluginAPIBridge.showChatPanel(args);
-				},
-				executeDatabaseQuery: (sql, params) => {
-					return this.pluginAPIBridge.executeDatabaseQuery(
-						plugin.manifest.id,
-						sql,
-						params
-					);
-				},
-				// @ts-expect-error, not sure what the error is at the moment, will likely be resolved when the plugin system is cleaned up
-				getStorageValue: async (key) => {
-					return await this.pluginAPIBridge.getStorageValue(plugin.manifest.id, key);
-				},
-				setStorageValue: async (key, value) => {
-					return this.pluginAPIBridge.setStorageValue(plugin.manifest.id, key, value);
-				},
-				removeStorageValue: async (key) => {
-					return this.pluginAPIBridge.removeStorageValue(plugin.manifest.id, key);
-				},
-				clearStorage: async () => {
-					return this.pluginAPIBridge.clearStorage(plugin.manifest.id);
-				},
-			},
 		});
 
 		let pluginModule;

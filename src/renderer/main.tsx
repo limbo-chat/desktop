@@ -22,7 +22,9 @@ import {
 	PluginManagerProvider,
 	PluginSystemProvider,
 } from "./features/plugins/components/providers";
+import { PluginAPIFactory } from "./features/plugins/core/plugin-api-factory";
 import type { PluginBackend, SettingEntry } from "./features/plugins/core/plugin-backend";
+import type { PluginEnvironment } from "./features/plugins/core/plugin-environment";
 import { PluginManager } from "./features/plugins/core/plugin-manager";
 import { EvalPluginModuleLoader } from "./features/plugins/core/plugin-module-loader";
 import { PluginSystem } from "./features/plugins/core/plugin-system";
@@ -120,27 +122,58 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 		};
 	}, []);
 
-	const pluginSystem = useMemo(() => {
-		return new PluginSystem({
-			pluginManager,
-			pluginBackend,
-			pluginModuleLoader: new EvalPluginModuleLoader(),
-			hostBridge: {
-				onActivatePluginError: (pluginId, errorMsg) => {
-					console.error(`Failed to activate plugin ${pluginId}: Error: ${errorMsg}`);
+	const pluginEnvironment = useMemo<PluginEnvironment>(() => {
+		return {
+			notifications: {
+				show: (opts) => {
+					// todo wire up plugin notifications
 				},
 			},
-			pluginAPIBridge: {
-				getChat: async (chatId) => {
+			storage: {
+				get: async (opts) => {
+					return await mainRouterClient.plugins.getStorageValue.query({
+						pluginId: opts.pluginId,
+						key: opts.key,
+					});
+				},
+				set: async (opts) => {
+					return await mainRouterClient.plugins.setStorageValue.mutate({
+						pluginId: opts.pluginId,
+						key: opts.key,
+						value: opts.value,
+					});
+				},
+				remove: async (opts) => {
+					return await mainRouterClient.plugins.removeStorageValue.mutate({
+						pluginId: opts.pluginId,
+						key: opts.key,
+					});
+				},
+				clear: async (opts) => {
+					return await mainRouterClient.plugins.clearStorage.mutate({
+						pluginId: opts.pluginId,
+					});
+				},
+			},
+			database: {
+				query: async (opts) => {
+					return await mainRouterClient.plugins.executeDatabaseQuery.mutate({
+						id: opts.pluginId,
+						sql: opts.sql,
+						params: opts.params,
+					});
+				},
+			},
+			chats: {
+				get: async (chatId) => {
 					return await mainRouterClient.chats.get.query({
 						id: chatId,
 					});
 				},
-				// @ts-expect-error, types are actually correct, some trpc incompatibility for some reason
-				getChatMessages: async (opts) => {
+				getMessages: async (opts) => {
 					return await mainRouterClient.chats.messages.getMany.query(opts);
 				},
-				renameChat: async (chatId, newName) => {
+				rename: async (chatId, newName) => {
 					await mainRouterClient.chats.update.mutate({
 						id: chatId,
 						data: {
@@ -148,10 +181,14 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 						},
 					});
 				},
-				showNotification: async (notification) => {
-					// todo show notification for real
+			},
+			models: {
+				getLLM: (llmId) => {
+					return pluginManager.getLLM(llmId) ?? undefined;
 				},
-				showChatPanel: (panel) => {
+			},
+			ui: {
+				showChatPanel: (opts) => {
 					const workspaceStore = useWorkspaceStore.getState();
 
 					if (!workspaceStore.workspace?.activeChatId) {
@@ -161,40 +198,29 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 					const activeChatPanelStore = useActiveChatPanelStore.getState();
 
 					activeChatPanelStore.setActiveChatPanel({
-						id: panel.id,
-						data: panel.data ?? null,
+						id: opts.id,
+						data: opts.data ?? null,
 					});
 				},
-				executeDatabaseQuery: async (pluginId, sql, params) => {
-					return await mainRouterClient.plugins.executeDatabaseQuery.mutate({
-						id: pluginId,
-						sql,
-						params,
-					});
-				},
-				getStorageValue: async (pluginId, key) => {
-					return await mainRouterClient.plugins.getStorageValue.query({
-						pluginId,
-						key,
-					});
-				},
-				setStorageValue: async (pluginId, key, value) => {
-					return await mainRouterClient.plugins.setStorageValue.mutate({
-						pluginId,
-						key,
-						value,
-					});
-				},
-				removeStorageValue: async (pluginId, key) => {
-					return await mainRouterClient.plugins.removeStorageValue.mutate({
-						pluginId,
-						key,
-					});
-				},
-				clearStorage: async (pluginId) => {
-					return await mainRouterClient.plugins.clearStorage.mutate({
-						pluginId,
-					});
+			},
+		};
+	}, []);
+
+	const pluginAPIFactory = useMemo(() => {
+		return new PluginAPIFactory({
+			environment: pluginEnvironment,
+		});
+	}, []);
+
+	const pluginSystem = useMemo(() => {
+		return new PluginSystem({
+			pluginManager,
+			pluginBackend,
+			pluginAPIFactory,
+			pluginModuleLoader: new EvalPluginModuleLoader(),
+			hostBridge: {
+				onActivatePluginError: (pluginId, errorMsg) => {
+					console.error(`Failed to activate plugin ${pluginId}: Error: ${errorMsg}`);
 				},
 			},
 		});
