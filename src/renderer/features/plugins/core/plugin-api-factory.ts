@@ -14,10 +14,10 @@ export interface PluginAPIFactoryOptions {
 }
 
 export class PluginAPIFactory {
-	private environment: PluginEnvironment;
+	private pluginEnvironment: PluginEnvironment;
 
 	constructor(opts: PluginAPIFactoryOptions) {
-		this.environment = opts.environment;
+		this.pluginEnvironment = opts.environment;
 	}
 
 	public create({ pluginId, pluginContext }: CreatePluginAPIOptions): limbo.API {
@@ -26,7 +26,7 @@ export class PluginAPIFactory {
 				// @ts-expect-error
 				get: async (key) => {
 					try {
-						return await this.environment.storage.get({
+						return await this.pluginEnvironment.storage.get({
 							pluginId,
 							key,
 						});
@@ -36,7 +36,7 @@ export class PluginAPIFactory {
 				},
 				set: async (key, value) => {
 					try {
-						await this.environment.storage.set({
+						await this.pluginEnvironment.storage.set({
 							pluginId,
 							key,
 							value,
@@ -47,7 +47,7 @@ export class PluginAPIFactory {
 				},
 				remove: async (key) => {
 					try {
-						await this.environment.storage.remove({
+						await this.pluginEnvironment.storage.remove({
 							pluginId,
 							key,
 						});
@@ -57,7 +57,7 @@ export class PluginAPIFactory {
 				},
 				clear: async () => {
 					try {
-						await this.environment.storage.clear({
+						await this.pluginEnvironment.storage.clear({
 							pluginId,
 						});
 					} catch (err) {
@@ -87,7 +87,7 @@ export class PluginAPIFactory {
 			database: {
 				query: async (sql, params) => {
 					try {
-						return await this.environment.database.query({
+						return await this.pluginEnvironment.database.query({
 							pluginId,
 							sql,
 							params,
@@ -100,7 +100,7 @@ export class PluginAPIFactory {
 			models: {
 				getLLM: (llmId: string) => {
 					try {
-						return this.environment.models.getLLM(llmId);
+						return this.pluginEnvironment.models.getLLM(llmId);
 					} catch {
 						throw new Error("Failed to get LLM");
 					}
@@ -131,21 +131,21 @@ export class PluginAPIFactory {
 			chats: {
 				get: async (chatId) => {
 					try {
-						return this.environment.chats.get(chatId);
+						return this.pluginEnvironment.chats.get(chatId);
 					} catch {
 						throw new Error("Failed to get chat");
 					}
 				},
 				rename: async (chatId, newName) => {
 					try {
-						return this.environment.chats.rename(chatId, newName);
+						return this.pluginEnvironment.chats.rename(chatId, newName);
 					} catch {
 						throw new Error("Failed to rename chat");
 					}
 				},
 				getMessages: async (args) => {
 					try {
-						return this.environment.chats.getMessages(args);
+						return this.pluginEnvironment.chats.getMessages(args);
 					} catch {
 						throw new Error("Failed to get chat messages");
 					}
@@ -172,7 +172,7 @@ export class PluginAPIFactory {
 				},
 				showChatPanel: (args) => {
 					try {
-						this.environment.ui.showChatPanel(args);
+						this.pluginEnvironment.ui.showChatPanel(args);
 					} catch {
 						throw new Error("Failed to show chat panel");
 					}

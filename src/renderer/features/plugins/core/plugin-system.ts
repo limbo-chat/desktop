@@ -5,7 +5,7 @@ import type { PluginManager } from "./plugin-manager";
 import type { PluginModuleLoader } from "./plugin-module-loader";
 
 export interface PluginSystemBridge {
-	onActivatePluginError: (pluginId: string, message: string | null) => void | Promise<void>;
+	onActivatePluginError: (pluginId: string, message: string | null) => void;
 }
 
 export interface PluginSystemOptions {
@@ -80,7 +80,7 @@ export class PluginSystem {
 					errMessage = err.message;
 				}
 
-				await this.hostBridge.onActivatePluginError(plugin.manifest.id, errMessage);
+				this.hostBridge.onActivatePluginError(plugin.manifest.id, errMessage);
 
 				throw err;
 			}

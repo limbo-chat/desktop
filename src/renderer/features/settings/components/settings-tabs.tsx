@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { debounce } from "es-toolkit";
 import { FolderIcon, PlusIcon, RefreshCwIcon, SettingsIcon, Trash2Icon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/shallow";
@@ -59,7 +60,7 @@ import { useModalContext } from "../../../features/modals/hooks";
 import { showDialog } from "../../../features/modals/utils";
 import { PluginSettingsSection } from "../../../features/plugins/components/plugin-settings-section";
 import type { ActivePlugin } from "../../../features/plugins/core/plugin-manager";
-import { useActivePlugin } from "../../../features/plugins/hooks/core";
+import { useActivePlugin, usePluginBackend } from "../../../features/plugins/hooks/core";
 import {
 	useDisablePluginMutation,
 	useEnablePluginMutation,
@@ -569,40 +570,61 @@ interface PluginSettingsFormContainerProps {
 }
 
 const PluginSettingsFormContainer = ({ plugin }: PluginSettingsFormContainerProps) => {
-	const updatePluginSettingsMutation = useUpdatePluginSettingsMutation();
 	const settings = usePluginContextSettings(plugin.context);
+	const pluginBackend = usePluginBackend();
+	const pendingSettingUpdates = useRef<Map<string, any>>(new Map());
 	const [settingsValues, setSettingsValues] = useState({});
 
-	const onSubmit = (values: Record<string, any>) => {
-		setSettingsValues(values);
+	const updatePendingSettings = useCallback(
+		debounce(async () => {
+			const settingEntries: SettingEntry[] = [];
 
-		const settingEntries: SettingEntry[] = [];
+			for (const [settingId, value] of pendingSettingUpdates.current) {
+				settingEntries.push({
+					id: settingId,
+					value,
+				});
+			}
 
-		for (const [id, value] of Object.entries(values)) {
-			// update the cached settings values
+			pendingSettingUpdates.current.clear();
+
+			await pluginBackend.updatePluginSettings(plugin.manifest.id, settingEntries);
+		}, 500),
+		[plugin]
+	);
+
+	const handleSettingChange = useCallback(
+		(id: string, value: any) => {
+			setSettingsValues((prev) => ({
+				...prev,
+				[id]: value,
+			}));
+
 			plugin.context.setCachedSettingValue(id, value);
 
-			settingEntries.push({
-				id,
-				value,
-			});
-		}
+			pendingSettingUpdates.current.set(id, value);
 
-		// update the plugin settings
-		updatePluginSettingsMutation.mutate({
-			id: plugin.manifest.id,
-			settings: settingEntries,
-		});
-	};
+			updatePendingSettings();
+		},
+		[plugin, updatePendingSettings]
+	);
 
 	useEffect(() => {
 		const cachedSettings = plugin.context.getCachedSettingValues();
 
 		setSettingsValues(cachedSettings);
-	}, [plugin.context]);
+
+		return () => {
+			updatePendingSettings.flush();
+		};
+	}, [plugin]);
 
 	return (
-		<PluginSettingsSection values={settingsValues} settings={settings} onSubmit={onSubmit} />
+		<PluginSettingsSection
+			settings={settings}
+			settingValues={settingsValues}
+			onSettingChange={handleSettingChange}
+		/>
 	);
 };
 

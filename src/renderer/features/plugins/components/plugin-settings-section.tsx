@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { Controller, FormProvider, useForm } from "react-hook-form";
 import type * as limbo from "@limbo/api";
 import { Checkbox } from "../../../components/checkbox";
 import { PasswordInput } from "../../../components/password-input";
@@ -18,69 +17,53 @@ import { useLLMList } from "../../llms/hooks";
 
 interface TextSettingRendererProps {
 	setting: limbo.TextSetting;
+	value: string;
+	onChange: (value: string) => void;
 }
 
-const TextSettingRenderer = ({ setting }: TextSettingRendererProps) => {
+const TextSettingRenderer = ({ setting, value, onChange }: TextSettingRendererProps) => {
 	if (setting.variant === "password") {
 		return (
-			<Controller
-				name={setting.id}
-				render={({ field }) => (
-					<PasswordInput
-						ref={field.ref}
-						placeholder={setting.placeholder}
-						disabled={field.disabled}
-						value={field.value ?? ""}
-						onChange={(e) => field.onChange(e.target.value)}
-						onBlur={field.onBlur}
-					/>
-				)}
+			<PasswordInput
+				placeholder={setting.placeholder}
+				value={value ?? ""}
+				onChange={(e) => onChange(e.target.value)}
 			/>
 		);
 	}
 
 	return (
-		<Controller
-			name={setting.id}
-			render={({ field }) => (
-				<input
-					type="text"
-					ref={field.ref}
-					placeholder={setting.placeholder}
-					disabled={field.disabled}
-					value={field.value ?? ""}
-					onChange={(e) => field.onChange(e.target.value)}
-					onBlur={field.onBlur}
-				/>
-			)}
+		<input
+			type="text"
+			placeholder={setting.placeholder}
+			value={value ?? ""}
+			onChange={(e) => onChange(e.target.value)}
 		/>
 	);
 };
 
 interface BooleanSettingRendererProps {
 	setting: limbo.BooleanSetting;
+	value: boolean;
+	onChange: (value: boolean) => void;
 }
 
-const BooleanSettingRenderer = ({ setting }: BooleanSettingRendererProps) => {
+const BooleanSettingRenderer = ({ setting, value, onChange }: BooleanSettingRendererProps) => {
 	return (
-		<Controller
-			name={setting.id}
-			render={({ field }) => (
-				<Checkbox
-					checked={field.value || false}
-					onCheckedChange={(isChecked) => field.onChange(isChecked as boolean)}
-					disabled={field.disabled}
-				/>
-			)}
+		<Checkbox
+			checked={value ?? false}
+			onCheckedChange={(isChecked) => onChange(isChecked as boolean)}
 		/>
 	);
 };
 
 interface LLMSettingRendererProps {
 	setting: limbo.LLMSetting;
+	value: string;
+	onChange: (llmId: string) => void;
 }
 
-const LLMSettingRenderer = ({ setting }: LLMSettingRendererProps) => {
+const LLMSettingRenderer = ({ setting, value, onChange }: LLMSettingRendererProps) => {
 	const llms = useLLMList();
 
 	const filteredLLMs = useMemo(() => {
@@ -100,19 +83,13 @@ const LLMSettingRenderer = ({ setting }: LLMSettingRendererProps) => {
 	}, [llms, setting.capabilities]);
 
 	return (
-		<Controller
-			name={setting.id}
-			render={({ field }) => (
-				// placeholder until a better llm selector is implemented for plugin settings
-				<select onChange={(e) => field.onChange(e.target.value)} value={field.value || ""}>
-					{filteredLLMs.map((llm) => (
-						<option value={llm.id} key={llm.id}>
-							{llm.name}
-						</option>
-					))}
-				</select>
-			)}
-		/>
+		<select onChange={(e) => onChange(e.target.value)} value={value ?? ""}>
+			{filteredLLMs.map((llm) => (
+				<option value={llm.id} key={llm.id}>
+					{llm.name}
+				</option>
+			))}
+		</select>
 	);
 };
 
@@ -124,9 +101,11 @@ const settingRendererMap = {
 
 interface SettingRendererProps {
 	setting: limbo.Setting;
+	value: any;
+	onChange: (value: any) => void;
 }
 
-const SettingRenderer = ({ setting }: SettingRendererProps) => {
+const SettingRenderer = ({ setting, value, onChange }: SettingRendererProps) => {
 	const Renderer = settingRendererMap[setting.type];
 
 	return (
@@ -137,42 +116,35 @@ const SettingRenderer = ({ setting }: SettingRendererProps) => {
 			</SettingItemInfo>
 			<SettingItemControl>
 				{/* @ts-expect-error idk */}
-				<Renderer setting={setting} />
+				<Renderer setting={setting} value={value} onChange={onChange} />
 			</SettingItemControl>
 		</SettingItem>
 	);
 };
 
 export interface PluginSettingsSectionProps {
-	values: Record<string, any>;
 	settings: limbo.Setting[];
-	onSubmit: (data: Record<string, any>) => void;
+	settingValues: Record<string, any>;
+	onSettingChange: (id: string, value: any) => void;
 }
 
 export const PluginSettingsSection = ({
 	settings,
-	values,
-	onSubmit,
+	settingValues,
+	onSettingChange,
 }: PluginSettingsSectionProps) => {
-	const form = useForm({
-		values,
-	});
-
-	const handleSubmit = form.handleSubmit((data) => {
-		onSubmit(data);
-	});
-
 	return (
-		<FormProvider {...form}>
-			<form onBlur={handleSubmit} onSubmit={handleSubmit}>
-				<SettingsSection>
-					<SettingsSectionContent>
-						{settings.map((setting) => (
-							<SettingRenderer setting={setting} key={setting.id} />
-						))}
-					</SettingsSectionContent>
-				</SettingsSection>
-			</form>
-		</FormProvider>
+		<SettingsSection>
+			<SettingsSectionContent>
+				{settings.map((setting) => (
+					<SettingRenderer
+						setting={setting}
+						value={settingValues[setting.id]}
+						onChange={(value) => onSettingChange(setting.id, value)}
+						key={setting.id}
+					/>
+				))}
+			</SettingsSectionContent>
+		</SettingsSection>
 	);
 };
