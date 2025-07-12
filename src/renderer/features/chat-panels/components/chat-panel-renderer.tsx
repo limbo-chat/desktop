@@ -77,7 +77,7 @@ export const ChatPanelRenderer = ({ chatPanelId, chatPanelData }: ChatPanelRende
 			)}
 		>
 			<Suspense fallback={<LoadingState />}>
-				<Component data={chatPanelData} />;
+				<Component data={chatPanelData} />
 			</Suspense>
 		</ErrorBoundary>
 	);
