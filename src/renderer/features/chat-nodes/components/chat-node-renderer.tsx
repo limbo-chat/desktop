@@ -10,10 +10,10 @@ import {
 } from "../../../components/error-state";
 import { LoadingState } from "../../../components/loading-state";
 import { useCollatedChatNodeComponents } from "../../chat-nodes/hooks";
-import { MarkdownNodeRenderer } from "./markdown";
-import { TextNodeRenderer } from "./text";
-import { ToolCallNodeRenderer } from "./tool-call";
-import { UnknownNodeRenderer } from "./unknown";
+import { MarkdownNodeRenderer } from "../core-renderers/markdown";
+import { TextNodeRenderer } from "../core-renderers/text";
+import { ToolCallNodeRenderer } from "../core-renderers/tool-call";
+import { UnknownNodeRenderer } from "../core-renderers/unknown";
 
 interface ErrorBoundaryFallbackProps extends FallbackProps {
 	node: limbo.ChatMessageNode;
@@ -33,17 +33,17 @@ const ErrorBoundaryFallback = ({ node, error, resetErrorBoundary }: ErrorBoundar
 	);
 };
 
-export interface NodeRendererProps {
-	node: limbo.ChatMessageNode;
-}
-
 const coreRenderers: Record<string, limbo.ui.ChatNodeComponent> = {
 	text: TextNodeRenderer,
 	markdown: MarkdownNodeRenderer,
 	tool_call: ToolCallNodeRenderer,
 } as const;
 
-export const NodeRenderer = ({ node }: NodeRendererProps) => {
+export interface ChatNodeRendererProps {
+	node: limbo.ChatMessageNode;
+}
+
+export const ChatNodeRenderer = ({ node }: ChatNodeRendererProps) => {
 	const collatedChatNodeComponents = useCollatedChatNodeComponents();
 
 	const renderers = useMemo(() => {

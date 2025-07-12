@@ -1,5 +1,5 @@
 import { memo, type HTMLAttributes } from "react";
-import { NodeRenderer } from "../renderers/node-renderer";
+import { ChatNodeRenderer } from "../../chat-nodes/components/chat-node-renderer";
 import type {
 	AssistantChatMessage as AssistantChatMessageRenderer,
 	ChatMessageType,
@@ -22,7 +22,7 @@ const UserChatMessageRenderer = ({ message }: UserChatMessageRendererProps) => {
 	return (
 		<ChatMessageContainer message={message}>
 			{message.content.map((node, idx) => (
-				<NodeRenderer node={node} key={idx} />
+				<ChatNodeRenderer node={node} key={idx} />
 			))}
 		</ChatMessageContainer>
 	);
@@ -36,7 +36,7 @@ const AssistantChatMessageRenderer = ({ message }: AssistantChatMessageRendererP
 	return (
 		<ChatMessageContainer message={message} data-status={message.status}>
 			{message.content.map((node, idx) => (
-				<NodeRenderer node={node} key={idx} />
+				<ChatNodeRenderer node={node} key={idx} />
 			))}
 		</ChatMessageContainer>
 	);
