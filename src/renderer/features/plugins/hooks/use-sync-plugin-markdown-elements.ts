@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { buildNamespacedResourceId } from "../../../lib/utils";
-import { addMarkdownElement, removeMarkdownElement } from "../utils";
+import { addMarkdownElement, removeMarkdownElement } from "../../markdown/utils";
 import { usePluginManager } from "./core";
 
 export const useSyncPluginMarkdownElements = () => {
