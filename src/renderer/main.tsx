@@ -1,12 +1,20 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, QueryErrorResetBoundary } from "@tanstack/react-query";
 import { createTRPCClient } from "@trpc/client";
 import { Suspense, useMemo, useRef, type PropsWithChildren } from "react";
 import { createRoot } from "react-dom/client";
+import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import { Toaster } from "sonner";
 import { ipcLink } from "trpc-electron/renderer";
 import type { MainRouter } from "../main/trpc/router";
 import type { PlatformName } from "../main/utils";
 import type { WindowType } from "../main/windows/types";
+import { Button } from "./components/button";
+import {
+	ErrorState,
+	ErrorStateActions,
+	ErrorStateDescription,
+	ErrorStateTitle,
+} from "./components/error-state";
 import { LoadingState } from "./components/loading-state";
 import { useActiveChatPanelStore } from "./features/chat-panels/stores";
 import { useRegisterActiveChatCommands } from "./features/chat/hooks/use-register-active-chat-commands";
@@ -243,23 +251,23 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 	);
 };
 
+const ErrorFallback = ({ error, resetErrorBoundary }: FallbackProps) => {
+	return (
+		<ErrorState>
+			<ErrorStateTitle>Something went wrong</ErrorStateTitle>
+			{error.message && <ErrorStateDescription>{error.message}</ErrorStateDescription>}
+			<ErrorStateActions>
+				<Button onClick={() => resetErrorBoundary()}>Try again</Button>
+			</ErrorStateActions>
+		</ErrorState>
+	);
+};
+
 const WorkspaceContainer = () => {
 	const isWorkspaceLoaded = useWorkspaceStore((state) => !!state.workspace);
 
-	useRendererLoader();
-	useCustomStylesSubscriber();
-
 	useWorkspaceLoader();
 	useWorkspacePersister();
-
-	usePluginSyncLayer();
-	usePluginLoader();
-	usePluginHotReloader();
-
-	useRegisterCoreCommands();
-	useRegisterActiveChatCommands();
-	useRegisterCustomStylesCommands();
-	useOpenCommandPaletteHotkey();
 
 	if (!isWorkspaceLoaded) {
 		return null;
@@ -272,13 +280,30 @@ const AppContent = () => {
 	const isAppFocused = useIsAppFocused();
 	const windowInfo = useWindowInfoContext();
 
+	useRendererLoader();
+	useCustomStylesSubscriber();
+	usePluginSyncLayer();
+	usePluginLoader();
+	usePluginHotReloader();
+
+	useRegisterCoreCommands();
+	useRegisterActiveChatCommands();
+	useRegisterCustomStylesCommands();
+	useOpenCommandPaletteHotkey();
+
 	return (
 		<div className="app" data-platform={windowInfo.platform} data-is-focused={isAppFocused}>
 			<ModalHost />
 			<Toaster />
-			<Suspense fallback={<LoadingState />}>
-				<WorkspaceContainer />
-			</Suspense>
+			<QueryErrorResetBoundary>
+				{(queryBoundary) => (
+					<ErrorBoundary FallbackComponent={ErrorFallback} onReset={queryBoundary.reset}>
+						<Suspense fallback={<LoadingState />}>
+							<WorkspaceContainer />
+						</Suspense>
+					</ErrorBoundary>
+				)}
+			</QueryErrorResetBoundary>
 		</div>
 	);
 };
