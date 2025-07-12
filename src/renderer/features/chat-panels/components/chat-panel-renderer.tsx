@@ -18,13 +18,23 @@ import { LoadingState } from "../../../components/loading-state";
 import { useChatPanel } from "../hooks";
 import { useChatPanelStore } from "../stores";
 
-const ErrorBoundaryFallback = ({ error, resetErrorBoundary }: FallbackProps) => {
+interface ErrorBoundaryFallbackProps extends FallbackProps {
+	chatPanelId: string;
+}
+
+const ErrorBoundaryFallback = ({
+	chatPanelId,
+	error,
+	resetErrorBoundary,
+}: ErrorBoundaryFallbackProps) => {
 	return (
 		<ErrorState>
-			<ErrorStateTitle>Something went wrong</ErrorStateTitle>
+			<ErrorStateTitle>
+				Failed to render <code>{chatPanelId}</code>
+			</ErrorStateTitle>
 			{error.message && <ErrorStateDescription>{error.message}</ErrorStateDescription>}
 			<ErrorStateActions>
-				<Button onClick={() => resetErrorBoundary()}>Reload</Button>
+				<Button onClick={() => resetErrorBoundary()}>Try again</Button>
 			</ErrorStateActions>
 		</ErrorState>
 	);
@@ -61,7 +71,11 @@ export const ChatPanelRenderer = ({ chatPanelId, chatPanelData }: ChatPanelRende
 	const Component = chatPanel.component;
 
 	return (
-		<ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
+		<ErrorBoundary
+			fallbackRender={(fallbackProps) => (
+				<ErrorBoundaryFallback chatPanelId={chatPanelId} {...fallbackProps} />
+			)}
+		>
 			<Suspense fallback={<LoadingState />}>
 				<Component data={chatPanelData} />;
 			</Suspense>

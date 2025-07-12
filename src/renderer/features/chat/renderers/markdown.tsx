@@ -8,10 +8,8 @@ export interface MarkdownNodeRendererProps {
 
 export const MarkdownNodeRenderer = ({ node }: MarkdownNodeRendererProps) => {
 	return (
-		<div className="node" data-type={node.type}>
-			<MarkdownContainer>
-				<MarkdownRenderer content={node.data.content as string} />
-			</MarkdownContainer>
-		</div>
+		<MarkdownContainer>
+			<MarkdownRenderer content={node.data.content as string} />
+		</MarkdownContainer>
 	);
 };

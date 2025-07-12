@@ -1,8 +1,17 @@
 import * as RadixCollapsible from "@radix-ui/react-collapsible";
 import { ChevronDown, ClipboardIcon } from "lucide-react";
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
+import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import type * as limbo from "@limbo/api";
+import { Button } from "../../../components/button";
+import {
+	ErrorState,
+	ErrorStateActions,
+	ErrorStateDescription,
+	ErrorStateTitle,
+} from "../../../components/error-state";
 import { IconButton } from "../../../components/icon-button";
+import { LoadingState } from "../../../components/loading-state";
 import { parseNamespacedResourceId } from "../../../lib/utils";
 import { useTool } from "../../tools/hooks";
 
@@ -65,6 +74,28 @@ export const DefaultToolCallRenderer = ({ toolCall }: limbo.ToolRendererProps) =
 	);
 };
 
+interface ToolCallRendererErrorFallbackProps extends FallbackProps {
+	toolCall: limbo.ToolCall;
+}
+
+const ToolCallRendererErrorFallback = ({
+	toolCall,
+	error,
+	resetErrorBoundary,
+}: ToolCallRendererErrorFallbackProps) => {
+	return (
+		<ErrorState>
+			<ErrorStateTitle>
+				Failed to render tool call <code>{toolCall.id}</code>
+			</ErrorStateTitle>
+			{error.message && <ErrorStateDescription>{error.message}</ErrorStateDescription>}
+			<ErrorStateActions>
+				<Button onClick={() => resetErrorBoundary()}>Try again</Button>
+			</ErrorStateActions>
+		</ErrorState>
+	);
+};
+
 interface ToolCallRendererProps {
 	toolCall: limbo.ToolCall;
 }
@@ -73,19 +104,24 @@ const ToolCallRenderer = ({ toolCall }: ToolCallRendererProps) => {
 	const tool = useTool(toolCall.toolId);
 	const Renderer = tool?.renderer ?? DefaultToolCallRenderer;
 
-	return <Renderer toolCall={toolCall} />;
+	return (
+		<ErrorBoundary
+			fallbackRender={(fallbackProps) => (
+				<ToolCallRendererErrorFallback {...fallbackProps} toolCall={toolCall} />
+			)}
+		>
+			<Suspense fallback={<LoadingState />}>
+				<Renderer toolCall={toolCall} />
+			</Suspense>
+		</ErrorBoundary>
+	);
 };
 
 export const ToolCallNodeRenderer = ({ node }: limbo.ui.ChatNodeComponentProps) => {
 	const toolCall = node.data as any as limbo.ToolCall;
 
 	return (
-		<div
-			className="node"
-			data-type={node.type}
-			data-tool-id={toolCall.id}
-			data-status={toolCall.status}
-		>
+		<div className="tool-call-wrapper" data-tool-id={toolCall.id} data-status={toolCall.status}>
 			<ToolCallRenderer toolCall={toolCall} />
 		</div>
 	);

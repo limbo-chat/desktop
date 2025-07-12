@@ -1,4 +1,9 @@
 import type * as limbo from "@limbo/api";
+import {
+	EmptyState,
+	EmptyStateDescription,
+	EmptyStateTitle,
+} from "../../../components/empty-state";
 
 export interface UnknownNodeRendererProps {
 	node: limbo.ChatMessageNode;
@@ -6,8 +11,11 @@ export interface UnknownNodeRendererProps {
 
 export const UnknownNodeRenderer = ({ node }: UnknownNodeRendererProps) => {
 	return (
-		<div className="node" data-type="unknown">
-			<span>WARNING: UNKNOWN NODE FOUND "{node.type}"</span>
-		</div>
+		<EmptyState>
+			<EmptyStateTitle>Unknown node</EmptyStateTitle>
+			<EmptyStateDescription>
+				The node type "{node.type}" is not recognized.
+			</EmptyStateDescription>
+		</EmptyState>
 	);
 };

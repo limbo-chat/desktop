@@ -1,10 +1,37 @@
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
+import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import type * as limbo from "@limbo/api";
+import { Button } from "../../../components/button";
+import {
+	ErrorState,
+	ErrorStateActions,
+	ErrorStateDescription,
+	ErrorStateTitle,
+} from "../../../components/error-state";
+import { LoadingState } from "../../../components/loading-state";
 import { useCollatedChatNodeComponents } from "../../chat-nodes/hooks";
 import { MarkdownNodeRenderer } from "./markdown";
 import { TextNodeRenderer } from "./text";
 import { ToolCallNodeRenderer } from "./tool-call";
 import { UnknownNodeRenderer } from "./unknown";
+
+interface ErrorBoundaryFallbackProps extends FallbackProps {
+	node: limbo.ChatMessageNode;
+}
+
+const ErrorBoundaryFallback = ({ node, error, resetErrorBoundary }: ErrorBoundaryFallbackProps) => {
+	return (
+		<ErrorState>
+			<ErrorStateTitle>
+				Failed to render <code>{node.type}</code>
+			</ErrorStateTitle>
+			{error.message && <ErrorStateDescription>{error.message}</ErrorStateDescription>}
+			<ErrorStateActions>
+				<Button onClick={() => resetErrorBoundary()}>Try again</Button>
+			</ErrorStateActions>
+		</ErrorState>
+	);
+};
 
 export interface NodeRendererProps {
 	node: limbo.ChatMessageNode;
@@ -28,9 +55,17 @@ export const NodeRenderer = ({ node }: NodeRendererProps) => {
 
 	const Renderer = renderers[node.type];
 
-	if (!Renderer) {
-		return <UnknownNodeRenderer node={node} />;
-	}
-
-	return <Renderer node={node} />;
+	return (
+		<div className="node" data-type={node.type}>
+			<ErrorBoundary
+				fallbackRender={(fallbackProps) => (
+					<ErrorBoundaryFallback node={node} {...fallbackProps} />
+				)}
+			>
+				<Suspense fallback={<LoadingState />}>
+					{Renderer ? <Renderer node={node} /> : <UnknownNodeRenderer node={node} />}
+				</Suspense>
+			</ErrorBoundary>
+		</div>
+	);
 };
