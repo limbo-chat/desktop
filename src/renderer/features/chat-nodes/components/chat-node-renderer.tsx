@@ -1,3 +1,4 @@
+import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { Suspense, useMemo } from "react";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import type * as limbo from "@limbo/api";
@@ -57,15 +58,24 @@ export const ChatNodeRenderer = ({ node }: ChatNodeRendererProps) => {
 
 	return (
 		<div className="node" data-type={node.type}>
-			<ErrorBoundary
-				fallbackRender={(fallbackProps) => (
-					<ErrorBoundaryFallback node={node} {...fallbackProps} />
+			<QueryErrorResetBoundary>
+				{(queryBoundary) => (
+					<ErrorBoundary
+						onReset={queryBoundary.reset}
+						fallbackRender={(fallbackProps) => (
+							<ErrorBoundaryFallback node={node} {...fallbackProps} />
+						)}
+					>
+						<Suspense fallback={<LoadingState />}>
+							{Renderer ? (
+								<Renderer node={node} />
+							) : (
+								<UnknownNodeRenderer node={node} />
+							)}
+						</Suspense>
+					</ErrorBoundary>
 				)}
-			>
-				<Suspense fallback={<LoadingState />}>
-					{Renderer ? <Renderer node={node} /> : <UnknownNodeRenderer node={node} />}
-				</Suspense>
-			</ErrorBoundary>
+			</QueryErrorResetBoundary>
 		</div>
 	);
 };

@@ -1,4 +1,5 @@
 import * as RadixCollapsible from "@radix-ui/react-collapsible";
+import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { ChevronDown, ClipboardIcon } from "lucide-react";
 import { Suspense, useMemo } from "react";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
@@ -105,15 +106,20 @@ const ToolCallRenderer = ({ toolCall }: ToolCallRendererProps) => {
 	const Renderer = tool?.renderer ?? DefaultToolCallRenderer;
 
 	return (
-		<ErrorBoundary
-			fallbackRender={(fallbackProps) => (
-				<ToolCallRendererErrorFallback {...fallbackProps} toolCall={toolCall} />
+		<QueryErrorResetBoundary>
+			{(queryBoundary) => (
+				<ErrorBoundary
+					onReset={queryBoundary.reset}
+					fallbackRender={(fallbackProps) => (
+						<ToolCallRendererErrorFallback {...fallbackProps} toolCall={toolCall} />
+					)}
+				>
+					<Suspense fallback={<LoadingState />}>
+						<Renderer toolCall={toolCall} />
+					</Suspense>
+				</ErrorBoundary>
 			)}
-		>
-			<Suspense fallback={<LoadingState />}>
-				<Renderer toolCall={toolCall} />
-			</Suspense>
-		</ErrorBoundary>
+		</QueryErrorResetBoundary>
 	);
 };
 

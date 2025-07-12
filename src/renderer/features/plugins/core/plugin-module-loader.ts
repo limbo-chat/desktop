@@ -17,6 +17,7 @@ export class EvalPluginModuleLoader implements PluginModuleLoader {
 			"@limbo/api": opts.pluginAPI,
 			"react": await import("react"),
 			"react/jsx-runtime": await import("react/jsx-runtime"),
+			"@tanstack/react-query": await import("@tanstack/react-query"),
 		};
 
 		const sandboxedRequire = (moduleId: string) => {
