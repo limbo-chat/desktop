@@ -25,6 +25,7 @@ import {
 	useRegisterCustomStylesCommands,
 } from "./features/custom-styles/hooks";
 import { ModalHost } from "./features/modals/components";
+import { showNotification } from "./features/notifications/utils";
 import {
 	PluginBackendProvider,
 	PluginManagerProvider,
@@ -133,8 +134,21 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 	const pluginEnvironment = useMemo<PluginEnvironment>(() => {
 		return {
 			notifications: {
-				show: (opts) => {
-					// todo wire up plugin notifications
+				show: ({ pluginId, notification }) => {
+					const plugin = pluginManager.getPlugin(pluginId);
+
+					if (!plugin) {
+						console.warn(`Plugin with ID ${pluginId} not found for notification.`);
+
+						return;
+					}
+
+					showNotification({
+						level: notification.type,
+						title: "Plugin Notification",
+						message: notification.message,
+						source: plugin.manifest.name,
+					});
 				},
 			},
 			storage: {
@@ -229,6 +243,13 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 			hostBridge: {
 				onActivatePluginError: (pluginId, errorMsg) => {
 					console.error(`Failed to activate plugin ${pluginId}: Error: ${errorMsg}`);
+
+					showNotification({
+						level: "error",
+						title: "Failed to activate plugin",
+						message: `Error: ${errorMsg}`,
+						source: pluginId,
+					});
 				},
 			},
 		});
