@@ -49,6 +49,7 @@ import { MarkdownContainer } from "../../markdown/components/markdown-container"
 import { MarkdownRenderer } from "../../markdown/components/markdown-renderer";
 import { useModalContext } from "../../modals/hooks";
 import { showDialog } from "../../modals/utils";
+import { Notification, type NotificationLevel } from "../../notifications/components";
 import { useDesignPlaygroundTabsStore } from "../stores";
 import {
 	ComponentPreview,
@@ -107,6 +108,41 @@ const TooltipTabContent = () => {
 							<SelectItem value="right">Right</SelectItem>
 							<SelectItem value="bottom">Bottom</SelectItem>
 							<SelectItem value="left">Left</SelectItem>
+						</SelectContent>
+					</SelectRoot>
+				</Field>
+			</ComponentPreviewPanel>
+		</ComponentPreview>
+	);
+};
+
+const NotificationTabContent = () => {
+	const [level, setLevel] = useState<NotificationLevel>("info");
+
+	return (
+		<ComponentPreview>
+			<ComponentPreviewContent>
+				<Notification
+					level={level}
+					title="Notification title"
+					message={"This is a notification"}
+					onClose={() => {}}
+				/>
+			</ComponentPreviewContent>
+			<ComponentPreviewPanel>
+				<Field id="level" label="Level">
+					<SelectRoot
+						value={level}
+						onValueChange={(value) => setLevel(value as NotificationLevel)}
+					>
+						<SelectTrigger>
+							<SelectValue />
+							<SelectIcon />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="info">Info</SelectItem>
+							<SelectItem value="warning">Warning</SelectItem>
+							<SelectItem value="error">Error</SelectItem>
 						</SelectContent>
 					</SelectRoot>
 				</Field>
@@ -517,6 +553,9 @@ export const DesignPlaygroundTabs = () => {
 							<VerticalTabs.ListSectionItem value="tooltip">
 								Tooltip
 							</VerticalTabs.ListSectionItem>
+							<VerticalTabs.ListSectionItem value="notification">
+								Notification
+							</VerticalTabs.ListSectionItem>
 							<VerticalTabs.ListSectionItem value="menu">
 								Menu
 							</VerticalTabs.ListSectionItem>
@@ -541,6 +580,9 @@ export const DesignPlaygroundTabs = () => {
 			</VerticalTabs.Content>
 			<VerticalTabs.Content value="tooltip">
 				<TooltipTabContent />
+			</VerticalTabs.Content>
+			<VerticalTabs.Content value="notification">
+				<NotificationTabContent />
 			</VerticalTabs.Content>
 			<VerticalTabs.Content value="menu">
 				<MenuTabContent />
