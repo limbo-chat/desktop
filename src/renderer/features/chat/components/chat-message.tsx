@@ -1,5 +1,6 @@
-import { memo, type HTMLAttributes } from "react";
+import { memo, useMemo, type HTMLAttributes } from "react";
 import { AppIcon } from "../../../components/app-icon";
+import { CopyIconButton } from "../../../components/copy-icon-button";
 import { IconButton } from "../../../components/icon-button";
 import { Tooltip } from "../../../components/tooltip";
 import { ChatNodeRenderer } from "../../chat-nodes/components/chat-node-renderer";
@@ -34,6 +35,18 @@ interface UserChatMessageRendererProps {
 }
 
 const UserChatMessageRenderer = ({ message }: UserChatMessageRendererProps) => {
+	const gatheredText = useMemo(() => {
+		let text = "";
+
+		for (const node of message.content) {
+			if (node.type === "text") {
+				text += node.data.content;
+			}
+		}
+
+		return text;
+	}, [message.content]);
+
 	return (
 		<ChatMessageContainer message={message}>
 			<ChatMessageContent>
@@ -44,9 +57,7 @@ const UserChatMessageRenderer = ({ message }: UserChatMessageRendererProps) => {
 			<ChatMessageFooter>
 				<ChatMessageActions>
 					<Tooltip label="Copy message">
-						<IconButton action="copy-message">
-							<AppIcon icon="copy" />
-						</IconButton>
+						<CopyIconButton content={gatheredText} />
 					</Tooltip>
 				</ChatMessageActions>
 			</ChatMessageFooter>
@@ -59,6 +70,18 @@ interface AssistantChatMessageRendererProps {
 }
 
 const AssistantChatMessageRenderer = ({ message }: AssistantChatMessageRendererProps) => {
+	const textContent = useMemo(() => {
+		let gatheredText = "";
+
+		for (const node of message.content) {
+			if (node.type === "markdown") {
+				gatheredText += node.data.content;
+			}
+		}
+
+		return gatheredText;
+	}, [message.content]);
+
 	return (
 		<ChatMessageContainer message={message} data-status={message.status}>
 			<ChatMessageContent>
@@ -69,9 +92,7 @@ const AssistantChatMessageRenderer = ({ message }: AssistantChatMessageRendererP
 			<ChatMessageFooter>
 				<ChatMessageActions>
 					<Tooltip label="Copy message">
-						<IconButton action="copy-message">
-							<AppIcon icon="copy" />
-						</IconButton>
+						<CopyIconButton content={textContent} />
 					</Tooltip>
 				</ChatMessageActions>
 			</ChatMessageFooter>

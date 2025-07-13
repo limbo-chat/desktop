@@ -2,6 +2,7 @@ import { toJsxRuntime } from "hast-util-to-jsx-runtime";
 import { useMemo, useState } from "react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 import { AppIcon } from "../../../components/app-icon";
+import { CopyIconButton } from "../../../components/copy-icon-button";
 import { IconButton, type IconButtonProps } from "../../../components/icon-button";
 import { Tooltip } from "../../../components/tooltip";
 import { lowlight } from "../lib";
@@ -10,36 +11,6 @@ export interface CodeBlockProps {
 	lang: string;
 	content: string;
 }
-
-interface CopyButtonProps extends Omit<IconButtonProps, "children"> {
-	content: string;
-}
-
-const CopyButton = ({ content, ...props }: CopyButtonProps) => {
-	const [copied, setCopied] = useState(false);
-
-	const handleClick = () => {
-		navigator.clipboard.writeText(content);
-
-		setCopied(true);
-
-		setTimeout(() => {
-			setCopied(false);
-		}, 1000);
-	};
-
-	return (
-		<IconButton
-			action="copy"
-			className="copy-button"
-			data-is-copied={copied ?? undefined}
-			onClick={handleClick}
-			{...props}
-		>
-			{copied ? <AppIcon icon="check" /> : <AppIcon icon="copy" />}
-		</IconButton>
-	);
-};
 
 export const CodeBlock = ({ lang, content }: CodeBlockProps) => {
 	const [isTextWrapEnabled, setIsTextWrapEnabled] = useState(false);
@@ -79,7 +50,7 @@ export const CodeBlock = ({ lang, content }: CodeBlockProps) => {
 							)}
 						</IconButton>
 					</Tooltip>
-					<CopyButton content={content} />
+					<CopyIconButton content={content} />
 				</div>
 			</div>
 			<div className="code-block-body">
