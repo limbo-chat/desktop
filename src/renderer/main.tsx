@@ -138,14 +138,12 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 					const plugin = pluginManager.getPlugin(pluginId);
 
 					if (!plugin) {
-						console.warn(`Plugin with ID ${pluginId} not found for notification.`);
-
 						return;
 					}
 
 					showNotification({
-						level: notification.type,
-						title: "Plugin Notification",
+						level: notification.level,
+						title: notification.title,
 						message: notification.message,
 						source: plugin.manifest.name,
 					});
@@ -247,7 +245,7 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 					showNotification({
 						level: "error",
 						title: "Failed to activate plugin",
-						message: `Error: ${errorMsg}`,
+						message: errorMsg ?? "Unknown error",
 						source: pluginId,
 					});
 				},

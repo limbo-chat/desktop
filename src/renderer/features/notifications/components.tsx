@@ -7,7 +7,7 @@ export type NotificationLevel = "info" | "warning" | "error";
 export interface NotificationProps {
 	level: NotificationLevel;
 	title: string;
-	message: string;
+	message?: string;
 	source?: string;
 	onClose: () => void;
 }
@@ -32,13 +32,17 @@ export const Notification = ({ level, title, message, source, onClose }: Notific
 					<XIcon />
 				</IconButton>
 			</div>
-			<div className="notification-content">
-				<div className="notification-message">{message}</div>
-			</div>
-			<div className="notification-footer">
-				{source && <div className="notification-source">{source}</div>}
-				{/* <div className="notification-actions"></div> */}
-			</div>
+			{message && (
+				<div className="notification-content">
+					<div className="notification-message">{message}</div>
+				</div>
+			)}
+			{source && (
+				<div className="notification-footer">
+					<div className="notification-source">{source}</div>
+					{/* <div className="notification-actions"></div> */}
+				</div>
+			)}
 		</div>
 	);
 };

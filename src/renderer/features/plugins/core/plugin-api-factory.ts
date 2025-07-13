@@ -115,6 +115,10 @@ export class PluginAPIFactory {
 			notifications: {
 				show: (notification) => {
 					try {
+						this.pluginEnvironment.notifications.show({
+							pluginId,
+							notification,
+						});
 					} catch {
 						throw new Error("Failed to show notification");
 					}
