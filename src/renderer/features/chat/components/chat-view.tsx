@@ -11,6 +11,7 @@ import { ChatPanelRenderer } from "../../chat-panels/components/chat-panel-rende
 import { useActiveChatPanel } from "../../chat-panels/hooks";
 import { useActiveChatPanelStore } from "../../chat-panels/stores";
 import { usePluginManager } from "../../plugins/hooks/core";
+import { ChatMessageBuilder } from "../core/chat-prompt-builder";
 import { useChatState } from "../hooks/common";
 import { useSendMessage } from "../hooks/use-send-message";
 import { useChatStore } from "../stores";
@@ -68,6 +69,9 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 		})
 	);
 
+	const getSettingsQuery = useQuery(mainRouter.settings.get.queryOptions());
+	const settings = getSettingsQuery.data;
+
 	const chat = getChatQuery.data;
 	const messages = chatState?.messages ?? [];
 
@@ -89,7 +93,7 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 		typeof chatComposerDimensions.height === "number";
 
 	const handleSend = useCallback(async () => {
-		if (!selectedLLMId) {
+		if (!selectedLLMId || !settings) {
 			return;
 		}
 
@@ -99,35 +103,39 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 			return;
 		}
 
-		const userMessageCopy = userMessage;
-
 		setUserMessage("");
 
-		try {
-			// get the settings frmo the main process
-			const settings = await mainRouterClient.settings.get.query();
-			const systemPromptTemplate = settings.systemPrompt;
+		// reconsider whether it should be trimmed or not
+		const systemPrompt = renderSystemPrompt(settings.systemPrompt, {
+			user: {
+				username: settings.username,
+			},
+		}).trim();
 
-			// reconsider whether it should be trimmed or not
-			const systemPrompt = renderSystemPrompt(systemPromptTemplate, {
-				user: {
-					username: settings.username,
+		const userMessageBuilder = new ChatMessageBuilder({
+			role: "user",
+			content: [
+				{
+					type: "text",
+					data: {
+						content: userMessage,
+					},
 				},
-			}).trim();
+			],
+		});
 
+		try {
 			await sendMessage({
 				chatId: chatId,
 				llm,
 				systemPrompt,
 				enabledToolIds,
-				message: userMessage,
+				userMessage: userMessageBuilder,
 			});
 		} catch (err) {
 			console.error("Failed to send message:", err);
-
-			setUserMessage(userMessageCopy);
 		}
-	}, [chatId, userMessage, selectedLLMId]);
+	}, [chatId, settings, selectedLLMId, userMessage]);
 
 	const handleCancel = useCallback(() => {
 		cancelResponse(chatId);

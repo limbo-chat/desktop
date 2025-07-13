@@ -21,6 +21,15 @@ const createChatMessageInputSchema = z.object({
 	createdAt: z.string().datetime(),
 });
 
+const updateChatMessageInputSchema = z.object({
+	id: z.string(),
+	data: z
+		.object({
+			content: z.array(chatNodeSchema),
+		})
+		.partial(),
+});
+
 const getManyChatMessagesInputSchema = z.object({
 	chatId: z.string(),
 	role: z.enum(["user", "assistant"]).optional(),
@@ -104,5 +113,17 @@ export const chatMessagesRouter = router({
 		}
 
 		return chatMessage;
+	}),
+	update: publicProcedure.input(updateChatMessageInputSchema).mutation(async ({ input }) => {
+		const db = await getDb();
+
+		await db
+			.updateTable("chatMessage")
+			.set({
+				...input.data,
+				content: input.data.content ? JSON.stringify(input.data.content) : undefined,
+			})
+			.where("id", "=", input.id)
+			.execute();
 	}),
 });

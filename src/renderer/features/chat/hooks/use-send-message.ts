@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import { ulid } from "ulid";
 import type * as limbo from "@limbo/api";
 import { useMainRouterClient } from "../../../lib/trpc";
@@ -14,16 +14,15 @@ export interface SendMessageOptions {
 	chatId: string;
 	systemPrompt: string;
 	enabledToolIds: string[];
-	message: string;
+	userMessage: ChatMessageBuilder;
 }
 
 export const useSendMessage = () => {
 	const pluginManager = usePluginManager();
-	const mainRouter = useMainRouterClient();
-	const abortControllers = useRef<Map<string, AbortController>>(new Map());
+	const mainRouterClient = useMainRouterClient();
 
 	const sendMessage = useCallback(
-		async ({ llm, chatId, systemPrompt, message, enabledToolIds }: SendMessageOptions) => {
+		async ({ llm, chatId, systemPrompt, userMessage, enabledToolIds }: SendMessageOptions) => {
 			const chatStore = useChatStore.getState();
 			const chatState = chatStore.chats[chatId];
 
@@ -35,73 +34,22 @@ export const useSendMessage = () => {
 				return;
 			}
 
-			// create a new abort controller for this chat
-			const abortController = new AbortController();
-
 			// store the abort controller in the map
-			abortControllers.current.set(chatId, abortController);
-
-			const abortSignal = abortController.signal;
-
 			if (!chatState.userHasSentMessage) {
 				chatStore.setUserHasSentMessage(chatId, true);
 			}
 
+			const abortController = new AbortController();
+
+			chatStore.setAbortController(chatId, abortController);
+
 			// trigger the loading state
 			chatStore.setIsResponsePending(chatId, true);
 
-			// create a new prompt builder
-			const promptBuilder = new ChatPromptBuilder();
-
-			// set the default chat system prompt
-			promptBuilder.setSystemPrompt(systemPrompt);
-
-			const userMessageId = ulid();
-			const userMessageCreatedAt = new Date().toISOString();
-
-			const userMessage = new ChatMessageBuilder({
-				role: "user",
-				content: [
-					{
-						type: "text",
-						data: {
-							content: message,
-						},
-					},
-				],
-			});
-
-			// add the user message to the prompt builder
-			promptBuilder.appendMessage(userMessage);
-
-			// add user message to the chat store
-			chatStore.addMessage(chatId, {
-				role: "user",
-				id: userMessageId,
-				content: userMessage.getNodes(),
-				createdAt: userMessageCreatedAt,
-			});
-
-			const assistantMessageId = ulid();
-
-			const assistantMessage = new ChatMessageBuilder({
-				role: "assistant",
-				content: [],
-			});
-
-			// add the assistant message to the chat store
-			chatStore.addMessage(chatId, {
-				id: assistantMessageId,
-				role: "assistant",
-				status: "pending",
-				content: assistantMessage.getNodes(),
-				createdAt: new Date().toISOString(),
-			});
-
 			const plugins = pluginManager.getPlugins();
-
 			const toolMap = new Map<string, limbo.Tool>();
 
+			// gather tools from plugins
 			for (const plugin of plugins) {
 				const tools = plugin.context.getTools();
 
@@ -117,6 +65,59 @@ export const useSendMessage = () => {
 				}
 			}
 
+			const userMessageId = ulid();
+			const userMessageCreatedAt = new Date().toISOString();
+
+			// add user message to the chat store
+			chatStore.addMessage(chatId, {
+				role: "user",
+				id: userMessageId,
+				content: userMessage.getNodes(),
+				createdAt: userMessageCreatedAt,
+			});
+
+			await mainRouterClient.chats.messages.create.mutate({
+				id: userMessageId,
+				chatId: chatId,
+				role: "user",
+				content: userMessage.getNodes(),
+				createdAt: userMessageCreatedAt,
+			});
+
+			const assistantMessageId = ulid();
+			const assistantMessageCreatedAt = new Date().toISOString();
+
+			chatStore.addMessage(chatId, {
+				id: assistantMessageId,
+				role: "assistant",
+				status: "pending",
+				content: [],
+				createdAt: assistantMessageCreatedAt,
+			});
+
+			await mainRouterClient.chats.messages.create.mutate({
+				id: assistantMessageId,
+				chatId: chatId,
+				role: "assistant",
+				content: [],
+				createdAt: assistantMessageCreatedAt,
+			});
+
+			// create a new prompt builder
+			const promptBuilder = new ChatPromptBuilder();
+
+			// set the default chat system prompt
+			promptBuilder.setSystemPrompt(systemPrompt);
+
+			// add the user message to the prompt builder
+			promptBuilder.appendMessage(userMessage);
+
+			const assistantMessage = new ChatMessageBuilder({
+				role: "assistant",
+				content: [],
+			});
+
+			// add the assistant message to the chat store
 			const assistantMessageHandle = createStoreConnectedMessageHandle({
 				chatId,
 				messageId: assistantMessageId,
@@ -138,65 +139,38 @@ export const useSendMessage = () => {
 					messageHandle: assistantMessageHandle,
 					tools: toolMap,
 					maxIterations: 25,
-					abortSignal,
+					abortSignal: abortController.signal,
 				});
-			} catch (error) {
-				if (!(error instanceof Error) || error.name !== "AbortError") {
-					chatStore.removeMessage(chatId, userMessageId);
-					chatStore.removeMessage(chatId, assistantMessageId);
+			} finally {
+				chatStore.updateMessage(chatId, assistantMessageId, {
+					role: "assistant",
+					status: "complete",
+					createdAt: new Date().toISOString(),
+				});
 
-					chatStore.setIsResponsePending(chatId, false);
+				chatStore.setIsResponsePending(chatId, false);
 
-					throw error;
-				}
+				chatStore.setAbortController(chatId, null);
 
-				// otherwise, swallow the abort error
+				// update the final assistant message content
+				await mainRouterClient.chats.messages.update.mutate({
+					id: assistantMessageId,
+					data: {
+						content: assistantMessage.getNodes(),
+					},
+				});
 			}
-
-			// mark the assistant message as complete
-			chatStore.updateMessage(chatId, assistantMessageId, {
-				role: "assistant",
-				status: "complete",
-				createdAt: new Date().toISOString(),
-			});
-
-			// save the user message and final assistant message to the database
-			// note: we wait to do this until the end to avoid saving incomplete messages
-			await mainRouter.chats.messages.create.mutate({
-				id: userMessageId,
-				chatId: chatId,
-				role: "user",
-				content: userMessage.getNodes(),
-				createdAt: userMessageCreatedAt,
-			});
-
-			// save the assistant message
-			await mainRouter.chats.messages.create.mutate({
-				id: assistantMessageId,
-				chatId: chatId,
-				role: "assistant",
-				content: assistantMessage.getNodes(),
-				createdAt: new Date().toISOString(),
-			});
-
-			// remove the abort controller from the map
-			abortControllers.current.delete(chatId);
-
-			// remove the pending state
-			chatStore.setIsResponsePending(chatId, false);
 		},
 		[]
 	);
 
 	const cancelResponse = useCallback((chatId: string) => {
-		const abortController = abortControllers.current.get(chatId);
+		const chatStore = useChatStore.getState();
+		const chatState = chatStore.chats[chatId];
 
-		if (!abortController) {
-			return;
+		if (chatState?.abortController) {
+			chatState.abortController.abort();
 		}
-
-		// abort the controller and remove it from the map
-		abortController.abort();
 	}, []);
 
 	return {

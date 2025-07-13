@@ -6,6 +6,7 @@ import type { ChatMessageType } from "./types";
 export interface ChatState {
 	messages: ChatMessageType[];
 	userHasSentMessage: boolean;
+	abortController: AbortController | null;
 	isAssistantResponsePending: boolean;
 }
 
@@ -16,6 +17,7 @@ export interface ChatStore {
 	removeChat: (chatId: string) => void;
 	setIsResponsePending: (chatId: string, isPending: boolean) => void;
 	setUserHasSentMessage: (chatId: string, hasSent: boolean) => void;
+	setAbortController: (chatId: string, abortController: AbortController | null) => void;
 	addMessage: (chatId: string, message: ChatMessageType) => void;
 	updateMessage: (
 		chatId: string,
@@ -37,6 +39,7 @@ export const useChatStore = create(
 				state.chats[chatId] = {
 					isAssistantResponsePending: false,
 					userHasSentMessage: false,
+					abortController: null,
 					messages: [],
 				};
 
@@ -76,6 +79,17 @@ export const useChatStore = create(
 				}
 
 				chat.isAssistantResponsePending = isPending;
+			});
+		},
+		setAbortController: (chatId, abortController) => {
+			set((state) => {
+				const chat = state.chats[chatId];
+
+				if (!chat) {
+					return;
+				}
+
+				chat.abortController = abortController;
 			});
 		},
 		addMessage: (chatId, message) => {
