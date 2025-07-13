@@ -1,25 +1,101 @@
 // hopefully this still gets tree shaken
 import * as lucide from "lucide-react";
+import type { FC } from "react";
 import type * as limbo from "@limbo/api";
 
-const appIcons: Record<limbo.AppIcon, any> = {
-	file: lucide.FileIcon,
-	folder: lucide.FolderIcon,
-	search: lucide.SearchIcon,
-	check: lucide.CheckIcon,
-	info: lucide.InfoIcon,
-	person: lucide.UserIcon,
-	warning: lucide.AlertTriangleIcon,
+const appIconMap: Record<limbo.AppIcon, FC> = {
+	"add": lucide.Plus,
+	"remove": lucide.Trash,
+	"close": lucide.X,
+	"search": lucide.Search,
+	"filter": lucide.Filter,
+	"sort": lucide.ArrowUpDown,
+	"save": lucide.Save,
+	"edit": lucide.Edit,
+	"delete": lucide.Trash2,
+	"refresh": lucide.RefreshCcw,
+	"download": lucide.Download,
+	"upload": lucide.Upload,
+	"share": lucide.Share2,
+	"undo": lucide.Undo,
+	"redo": lucide.Redo,
+	"lock": lucide.Lock,
+	"unlock": lucide.Unlock,
+	"archive": lucide.Archive,
+	"menu": lucide.EllipsisVertical,
+	"copy": lucide.Copy,
+	"check": lucide.Check,
+	"collapse": lucide.ChevronUp,
+	"expand": lucide.ChevronDown,
+	"reply": lucide.Reply,
+	"print": lucide.Printer,
+	"help": lucide.HelpCircle,
+	"visibility": lucide.Eye,
+	"visibility-off": lucide.EyeOff,
+	"volume": lucide.Volume2,
+	"volume-off": lucide.VolumeX,
+	"bell": lucide.Bell,
+	"bell-off": lucide.BellOff,
+	"power": lucide.Power,
+	"power-off": lucide.PowerOff,
+	"wifi": lucide.Wifi,
+	"wifi-off": lucide.WifiOff,
+	"heart": lucide.Heart,
+	"heart-off": lucide.HeartOff,
+	"user": lucide.User,
+	"group": lucide.Users,
+	"file": lucide.File,
+	"folder": lucide.Folder,
+	"document": lucide.FileText,
+	"link": lucide.Link,
+	"image": lucide.Image,
+	"video": lucide.Video,
+	"home": lucide.Home,
+	"settings": lucide.Settings,
+	"terminal": lucide.Terminal,
+	"code": lucide.Code,
+	"bug": lucide.Bug,
+	"calendar": lucide.Calendar,
+	"clock": lucide.Clock,
+	"clipboard": lucide.Clipboard,
+	"bolt": lucide.Bolt,
+	"key": lucide.Key,
+	"tag": lucide.Tag,
+	"flag": lucide.Flag,
+	"location": lucide.MapPin,
+	"bookmark": lucide.Bookmark,
+	"activity": lucide.Activity,
+	"success": lucide.CheckCircle,
+	"error": lucide.XCircle,
+	"warning": lucide.AlertTriangle,
+	"info": lucide.Info,
+	"loading": lucide.Loader2Icon,
+	"arrow-left": lucide.ArrowLeft,
+	"arrow-right": lucide.ArrowRight,
+	"arrow-up": lucide.ArrowUp,
+	"arrow-down": lucide.ArrowDown,
+	"back": lucide.ChevronLeft,
+	"forward": lucide.ChevronRight,
 } as const;
 
-// for now its fine to extend the LucideProps as we only have LucideIcons in here
-
-export interface AppIconProps extends lucide.LucideProps {
+export interface AppIconProps {
 	icon: limbo.AppIcon;
 }
 
 export const AppIcon = ({ icon, ...props }: AppIconProps) => {
-	const Icon = appIcons[icon];
+	const Icon = appIconMap[icon];
 
 	return <Icon {...props} />;
+};
+
+export interface ImageLikeRendererProps {
+	imageLike: limbo.ImageLike;
+}
+
+export const ImageLikeRenderer = ({ imageLike }: ImageLikeRendererProps) => {
+	if (typeof imageLike === "string") {
+		return <AppIcon icon={imageLike} />;
+	}
+
+	return <img src={imageLike.source} alt={imageLike.alt} />;
 };

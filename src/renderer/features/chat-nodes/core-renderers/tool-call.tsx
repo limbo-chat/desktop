@@ -4,6 +4,7 @@ import { ChevronDown, ClipboardIcon } from "lucide-react";
 import { Suspense, useMemo } from "react";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import type * as limbo from "@limbo/api";
+import { ImageLikeRenderer } from "../../../components/app-icon";
 import { Button } from "../../../components/button";
 import {
 	ErrorState,
@@ -39,11 +40,20 @@ export const DefaultToolCallRenderer = ({ toolCall }: limbo.ToolRendererProps) =
 	const tool = useTool(toolCall.toolId);
 
 	const icon = useMemo(() => {
-		// TODO handle tool icons
+		if (!tool) {
+			return;
+		}
+
+		if (tool.icon) {
+			const imageLike = typeof tool.icon === "function" ? tool.icon({ toolCall }) : tool.icon;
+
+			return <ImageLikeRenderer imageLike={imageLike} />;
+		}
+
 		const toolName = parseNamespacedResourceId(toolCall.toolId)?.resource ?? toolCall.toolId;
 
 		return toolName.charAt(0).toUpperCase();
-	}, [tool, toolCall.toolId]);
+	}, [tool, toolCall]);
 
 	return (
 		<RadixCollapsible.Root className="tool-call">
