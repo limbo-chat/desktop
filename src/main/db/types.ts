@@ -3,10 +3,11 @@ import type { Insertable, Selectable } from "kysely";
 export interface ChatTable {
 	id: string;
 	name: string;
-	createdAt: string;
 	userMessageDraft: string | null;
 	llmId: string | null;
 	enabledToolIds: string;
+	createdAt: string;
+	lastActivityAt: string | null;
 }
 
 export type Chat = Selectable<ChatTable>;

@@ -20,8 +20,9 @@ export async function getDb() {
 		.addColumn("name", "text", (col) => col.notNull())
 		.addColumn("userMessageDraft", "text")
 		.addColumn("llmId", "text")
-		.addColumn("createdAt", "text", (col) => col.notNull())
 		.addColumn("enabledToolIds", "text", (col) => col.notNull())
+		.addColumn("createdAt", "text", (col) => col.notNull())
+		.addColumn("lastActivityAt", "text")
 		.ifNotExists()
 		.execute();
 

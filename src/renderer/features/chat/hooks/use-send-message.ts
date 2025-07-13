@@ -1,7 +1,8 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { ulid } from "ulid";
 import type * as limbo from "@limbo/api";
-import { useMainRouterClient } from "../../../lib/trpc";
+import { useMainRouter, useMainRouterClient } from "../../../lib/trpc";
 import { buildNamespacedResourceId } from "../../../lib/utils";
 import { usePluginManager } from "../../plugins/hooks/core";
 import { handleAssistantChatLoop } from "../core/chat-loop";
@@ -19,7 +20,9 @@ export interface SendMessageOptions {
 
 export const useSendMessage = () => {
 	const pluginManager = usePluginManager();
+	const mainRouter = useMainRouter();
 	const mainRouterClient = useMainRouterClient();
+	const queryClient = useQueryClient();
 
 	const sendMessage = useCallback(
 		async ({ llm, chatId, systemPrompt, userMessage, enabledToolIds }: SendMessageOptions) => {
@@ -102,6 +105,15 @@ export const useSendMessage = () => {
 				content: [],
 				createdAt: assistantMessageCreatedAt,
 			});
+
+			await mainRouterClient.chats.update.mutate({
+				id: chatId,
+				data: {
+					lastActivityAt: assistantMessageCreatedAt,
+				},
+			});
+
+			queryClient.invalidateQueries(mainRouter.chats.list.queryFilter());
 
 			// create a new prompt builder
 			const promptBuilder = new ChatPromptBuilder();

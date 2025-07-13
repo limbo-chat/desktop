@@ -17,6 +17,7 @@ const updateChatInputSchema = z.object({
 			userMessageDraft: z.string().nullable(),
 			llmId: z.string().nullable(),
 			enabledToolIds: z.string().array(),
+			lastActivityAt: z.string().nullable(),
 		})
 		.partial(),
 });
@@ -31,6 +32,7 @@ export const chatsRouter = router({
 		const chats = await db
 			.selectFrom("chat")
 			.select(["id", "name", "createdAt"])
+			.orderBy("lastActivityAt", "desc")
 			.orderBy("createdAt", "desc")
 			.execute();
 
@@ -65,8 +67,6 @@ export const chatsRouter = router({
 			.values({
 				id: ulid(),
 				name: input.name,
-				llmId: null,
-				userMessageDraft: null,
 				enabledToolIds: JSON.stringify([]),
 				createdAt: new Date().toISOString(),
 			})
@@ -77,19 +77,6 @@ export const chatsRouter = router({
 	}),
 	update: publicProcedure.input(updateChatInputSchema).mutation(async ({ input }) => {
 		const db = await getDb();
-
-		const chat = await db
-			.selectFrom("chat")
-			.selectAll()
-			.where("id", "=", input.id)
-			.executeTakeFirst();
-
-		if (!chat) {
-			throw new TRPCError({
-				code: "NOT_FOUND",
-				message: `Chat with id ${input.id} not found`,
-			});
-		}
 
 		let newEnabledToolIds = undefined;
 

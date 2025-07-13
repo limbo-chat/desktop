@@ -105,6 +105,7 @@ export const chatMessagesRouter = router({
 			.returningAll()
 			.executeTakeFirst();
 
+		// this should never happen, but just in case
 		if (!chatMessage) {
 			throw new TRPCError({
 				code: "INTERNAL_SERVER_ERROR",
