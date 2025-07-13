@@ -105,6 +105,7 @@ export const CommandPaletteModal = () => {
 			}
 
 			showNotification({
+				level: "error",
 				title: "Command failed",
 				message: errorMessage,
 			});
