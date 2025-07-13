@@ -1,14 +1,5 @@
-import {
-	MaximizeIcon,
-	MinimizeIcon,
-	PanelLeftCloseIcon,
-	PanelLeftIcon,
-	PanelRightCloseIcon,
-	PanelRightIcon,
-	SquarePenIcon,
-	XIcon,
-} from "lucide-react";
 import { useShallow } from "zustand/shallow";
+import { AppIcon } from "../../../components/app-icon";
 import { IconButton } from "../../../components/icon-button";
 import { useMainRouterClient } from "../../../lib/trpc";
 import { useCreateChatMutation } from "../../chat/hooks/queries";
@@ -21,13 +12,13 @@ const WindowControls = () => {
 	return (
 		<div className="window-controls">
 			<IconButton action="minimize" onClick={() => mainRouter.window.minimize.mutate()}>
-				<MinimizeIcon />
+				<AppIcon icon="minimize" />
 			</IconButton>
 			<IconButton action="maximize" onClick={() => mainRouter.window.maximize.mutate()}>
-				<MaximizeIcon />
+				<AppIcon icon="maximize" />
 			</IconButton>
 			<IconButton action="close" onClick={() => mainRouter.window.close.mutate()}>
-				<XIcon />
+				<AppIcon icon="close" />
 			</IconButton>
 		</div>
 	);
@@ -72,13 +63,13 @@ export const Titlebar = () => {
 						onClick={togglePrimarySidebarIsOpen}
 					>
 						{workspaceStore.isPrimarySidebarOpen ? (
-							<PanelLeftCloseIcon />
+							<AppIcon icon="panel-left-close" />
 						) : (
-							<PanelLeftIcon />
+							<AppIcon icon="panel-left" />
 						)}
 					</IconButton>
 					<IconButton action="create-new-chat" onClick={createNewChat}>
-						<SquarePenIcon />
+						<AppIcon icon="compose" />
 					</IconButton>
 				</div>
 			</div>
@@ -92,9 +83,9 @@ export const Titlebar = () => {
 						onClick={toggleSecondarySidebarIsOpen}
 					>
 						{workspaceStore.isSecondarySidebarOpen ? (
-							<PanelRightCloseIcon />
+							<AppIcon icon="panel-right-close" />
 						) : (
-							<PanelRightIcon />
+							<AppIcon icon="panel-right" />
 						)}
 					</IconButton>
 				</div>

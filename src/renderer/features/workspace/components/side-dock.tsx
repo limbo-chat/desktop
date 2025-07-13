@@ -1,4 +1,4 @@
-import { SettingsIcon, TerminalIcon } from "lucide-react";
+import { AppIcon } from "../../../components/app-icon";
 import { IconButton } from "../../../components/icon-button";
 import { Tooltip } from "../../../components/tooltip";
 import { showCommandPalette } from "../../commands/utils";
@@ -10,14 +10,14 @@ export const SideDock = () => {
 			<div className="side-dock-section">
 				<Tooltip label="Open command palette" contentProps={{ side: "right" }}>
 					<IconButton action="open-command-palette" onClick={showCommandPalette}>
-						<TerminalIcon />
+						<AppIcon icon="terminal" />
 					</IconButton>
 				</Tooltip>
 			</div>
 			<div className="side-dock-section">
 				<Tooltip label="Settings" contentProps={{ side: "right" }}>
 					<IconButton action="open-settings" onClick={showSettingsModal}>
-						<SettingsIcon />
+						<AppIcon icon="settings" />
 					</IconButton>
 				</Tooltip>
 			</div>

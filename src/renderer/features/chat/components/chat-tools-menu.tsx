@@ -1,4 +1,4 @@
-import { HammerIcon, InfoIcon } from "lucide-react";
+import { AppIcon } from "../../../components/app-icon";
 import { IconButton } from "../../../components/icon-button";
 import {
 	MenuRoot,
@@ -36,7 +36,7 @@ export const ChatToolsMenu = ({ enabledToolIds, onEnabledToolIdsChange }: ChatTo
 		<MenuRoot>
 			<MenuTrigger asChild>
 				<IconButton>
-					<HammerIcon />
+					<AppIcon icon="hammer" />
 				</IconButton>
 			</MenuTrigger>
 			<MenuContent>
@@ -50,7 +50,7 @@ export const ChatToolsMenu = ({ enabledToolIds, onEnabledToolIdsChange }: ChatTo
 										label={tool.description}
 										contentProps={{ side: "top" }}
 									>
-										<InfoIcon />
+										<AppIcon icon="info" />
 									</Tooltip>
 								</div>
 								<Switch

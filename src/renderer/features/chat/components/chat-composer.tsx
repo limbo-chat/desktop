@@ -1,6 +1,6 @@
-import { ArrowUpIcon, CircleStopIcon } from "lucide-react";
 import { useState, type Ref } from "react";
 import TextareaAutosize from "react-textarea-autosize";
+import { AppIcon } from "../../../components/app-icon";
 import { Button } from "../../../components/button";
 import { IconButton } from "../../../components/icon-button";
 import { PopoverContent, PopoverRoot, PopoverTrigger } from "../../../components/popover";
@@ -85,7 +85,7 @@ export const ChatComposer = ({
 						handleSubmitClick();
 					}}
 				>
-					{isPending ? <CircleStopIcon /> : <ArrowUpIcon />}
+					{isPending ? <AppIcon icon="stop" /> : <AppIcon icon="send" />}
 				</IconButton>
 			</form>
 			<div className="chat-composer-accessories">

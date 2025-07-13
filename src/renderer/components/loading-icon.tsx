@@ -1,5 +1,5 @@
-import { Loader2Icon } from "lucide-react";
+import { AppIcon } from "./app-icon";
 
 export const LoadingIcon = () => {
-	return <Loader2Icon className="loading-icon" />;
+	return <AppIcon icon="loading" className="loading-icon" />;
 };

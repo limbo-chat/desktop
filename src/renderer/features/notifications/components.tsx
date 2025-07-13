@@ -1,5 +1,5 @@
-import { CircleXIcon, InfoIcon, TriangleAlertIcon, XIcon } from "lucide-react";
 import type { FC } from "react";
+import { AppIcon } from "../../components/app-icon";
 import { IconButton } from "../../components/icon-button";
 
 export type NotificationLevel = "info" | "warning" | "error";
@@ -13,9 +13,9 @@ export interface NotificationProps {
 }
 
 const notificationLevelIconMap: Record<NotificationLevel, FC> = {
-	info: InfoIcon,
-	warning: TriangleAlertIcon,
-	error: CircleXIcon,
+	info: () => <AppIcon icon="info" />,
+	warning: () => <AppIcon icon="warning" />,
+	error: () => <AppIcon icon="error" />,
 } as const;
 
 export const Notification = ({ level, title, message, source, onClose }: NotificationProps) => {
@@ -29,7 +29,7 @@ export const Notification = ({ level, title, message, source, onClose }: Notific
 				</div>
 				<div className="notification-title">{title}</div>
 				<IconButton className="notification-close-button" onClick={() => onClose()}>
-					<XIcon />
+					<AppIcon icon="close" />
 				</IconButton>
 			</div>
 			{message && (

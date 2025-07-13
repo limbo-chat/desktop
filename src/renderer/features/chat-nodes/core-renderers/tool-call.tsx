@@ -1,10 +1,9 @@
 import * as RadixCollapsible from "@radix-ui/react-collapsible";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
-import { ChevronDown, ClipboardIcon } from "lucide-react";
 import { Suspense, useMemo } from "react";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import type * as limbo from "@limbo/api";
-import { ImageLikeRenderer } from "../../../components/app-icon";
+import { AppIcon, ImageLikeRenderer } from "../../../components/app-icon";
 import { Button } from "../../../components/button";
 import {
 	ErrorState,
@@ -28,7 +27,7 @@ const ToolCallDataContainer = ({ title, content }: ToolCallDataContainerProps) =
 			<div className="tool-call-data-header">
 				<span className="tool-call-data-title">{title}</span>
 				<IconButton>
-					<ClipboardIcon />
+					<AppIcon icon="clipboard" />
 				</IconButton>
 			</div>
 			<div className="tool-call-data-content">{content}</div>
@@ -63,7 +62,7 @@ export const DefaultToolCallRenderer = ({ toolCall }: limbo.ToolRendererProps) =
 						<div className="tool-call-icon-container">{icon}</div>
 						<span className="tool-call-id">{toolCall.toolId}</span>
 					</div>
-					<ChevronDown className="tool-call-collapse-icon" />
+					<AppIcon icon="expand" className="tool-call-collapse-icon" />
 				</button>
 			</RadixCollapsible.Trigger>
 			<RadixCollapsible.Content className="tool-call-body">

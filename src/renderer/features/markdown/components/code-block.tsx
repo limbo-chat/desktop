@@ -1,7 +1,7 @@
 import { toJsxRuntime } from "hast-util-to-jsx-runtime";
-import { CheckIcon, CopyIcon, TextIcon, WrapTextIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+import { AppIcon } from "../../../components/app-icon";
 import { IconButton, type IconButtonProps } from "../../../components/icon-button";
 import { Tooltip } from "../../../components/tooltip";
 import { lowlight } from "../lib";
@@ -30,12 +30,13 @@ const CopyButton = ({ content, ...props }: CopyButtonProps) => {
 
 	return (
 		<IconButton
+			action="copy"
 			className="copy-button"
 			data-is-copied={copied ?? undefined}
 			onClick={handleClick}
 			{...props}
 		>
-			{copied ? <CheckIcon /> : <CopyIcon />}
+			{copied ? <AppIcon icon="check" /> : <AppIcon icon="copy" />}
 		</IconButton>
 	);
 };
@@ -72,13 +73,13 @@ export const CodeBlock = ({ lang, content }: CodeBlockProps) => {
 							onClick={() => setIsTextWrapEnabled((prev) => !prev)}
 						>
 							{isTextWrapEnabled ? (
-								<TextIcon className="text-icon" />
+								<AppIcon icon="text" />
 							) : (
-								<WrapTextIcon className="wrap-text-icon" />
+								<AppIcon icon="text-wrap" />
 							)}
 						</IconButton>
 					</Tooltip>
-					<CopyButton action="copy" content={content} />
+					<CopyButton content={content} />
 				</div>
 			</div>
 			<div className="code-block-body">

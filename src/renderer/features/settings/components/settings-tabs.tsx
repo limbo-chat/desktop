@@ -1,12 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { debounce } from "es-toolkit";
-import { FolderIcon, PlusIcon, RefreshCwIcon, SettingsIcon, Trash2Icon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/shallow";
 import type { PluginManifest } from "../../../../main/plugins/schemas";
 import { Anchor } from "../../../components/anchor";
+import { AppIcon } from "../../../components/app-icon";
 import { Button } from "../../../components/button";
 import {
 	Card,
@@ -240,11 +240,13 @@ const AppearanceTabContent = () => {
 										onSuccess: (newSettings) => {
 											if (newSettings.isTransparencyEnabled) {
 												showNotification({
+													level: "info",
 													title: "Transparency enabled",
 													message: "Restart the app to apply changes",
 												});
 											} else {
 												showNotification({
+													level: "info",
 													title: "Transparency disabled",
 													message: "Restart the app to apply changes",
 												});
@@ -303,11 +305,13 @@ const DeveloperTabContent = () => {
 										onSuccess: (newSettings) => {
 											if (newSettings.isDeveloperModeEnabled) {
 												showNotification({
+													level: "info",
 													title: "Developer mode enabled",
 													message: "Restart the app to apply changes",
 												});
 											} else {
 												showNotification({
+													level: "info",
 													title: "Developer mode disabled",
 													message: "Restart the app to apply changes",
 												});
@@ -496,12 +500,12 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 				<CardActions>
 					<Tooltip label="Settings">
 						<IconButton data-action="open-settings" onClick={openSettings}>
-							<SettingsIcon />
+							<AppIcon icon="settings" />
 						</IconButton>
 					</Tooltip>
 					<Tooltip label="Reload">
 						<IconButton action="reload">
-							<RefreshCwIcon />
+							<AppIcon icon="refresh" />
 						</IconButton>
 					</Tooltip>
 					<Tooltip label="Uninstall">
@@ -520,7 +524,7 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 								})
 							}
 						>
-							<Trash2Icon />
+							<AppIcon icon="delete" />
 						</IconButton>
 					</Tooltip>
 				</CardActions>
@@ -544,12 +548,12 @@ const PluginsTabContent = () => {
 				<div className="plugins-actions">
 					<Tooltip label="Open plugins folder">
 						<IconButton onClick={openPluginsFolder}>
-							<FolderIcon />
+							<AppIcon icon="folder" />
 						</IconButton>
 					</Tooltip>
 					<Tooltip label="Install plugin">
 						<IconButton onClick={() => showDialog({ component: InstallPluginDialog })}>
-							<PlusIcon />
+							<AppIcon icon="add" />
 						</IconButton>
 					</Tooltip>
 				</div>

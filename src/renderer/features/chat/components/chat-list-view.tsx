@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { differenceInDays } from "date-fns";
-import { EllipsisIcon, PencilIcon, Trash2Icon } from "lucide-react";
 import { useMemo } from "react";
+import { AppIcon } from "../../../components/app-icon";
 import { IconButton } from "../../../components/icon-button";
 import {
 	MenuContent,
@@ -59,7 +59,7 @@ const ChatItem = ({ chat, isActive }: ChatItemProps) => {
 			<MenuRoot>
 				<MenuTrigger asChild>
 					<IconButton>
-						<EllipsisIcon />
+						<AppIcon icon="menu" />
 					</IconButton>
 				</MenuTrigger>
 				<MenuContent className="chat-menu">
@@ -76,7 +76,7 @@ const ChatItem = ({ chat, isActive }: ChatItemProps) => {
 								}}
 							>
 								<MenuItemIcon>
-									<PencilIcon />
+									<AppIcon icon="edit" />
 								</MenuItemIcon>
 								<MenuItemLabel>Rename</MenuItemLabel>
 							</MenuItem>
@@ -88,7 +88,7 @@ const ChatItem = ({ chat, isActive }: ChatItemProps) => {
 								}}
 							>
 								<MenuItemIcon>
-									<Trash2Icon />
+									<AppIcon icon="delete" />
 								</MenuItemIcon>
 								<MenuItemLabel>Delete</MenuItemLabel>
 							</MenuItem>

@@ -1,8 +1,8 @@
 import { Command } from "cmdk";
 import Fuse from "fuse.js";
-import { SearchIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import type * as limbo from "@limbo/api";
+import { AppIcon } from "../../../components/app-icon";
 import { useLLMList } from "../hooks";
 
 interface LLMPickerItemProps {
@@ -48,7 +48,7 @@ export const LLMPicker = ({ llms, onChange }: LLMPickerProps) => {
 		<Command className="llm-picker" loop shouldFilter={false}>
 			<div className="llm-picker-search-container">
 				<div className="llm-picker-search-icon">
-					<SearchIcon />
+					<AppIcon icon="search" />
 				</div>
 				<Command.Input
 					className="llm-picker-search-input"

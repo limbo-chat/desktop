@@ -1,8 +1,5 @@
 import clsx from "clsx";
-import { XIcon } from "lucide-react";
 import type { HTMLAttributes } from "react";
-import { useModalContext } from "../features/modals/hooks";
-import { IconButton, type IconButtonProps } from "./icon-button";
 
 export interface DialogProps extends HTMLAttributes<HTMLDivElement> {
 	component?: React.ElementType;

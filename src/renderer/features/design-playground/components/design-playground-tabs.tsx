@@ -1,9 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BellIcon, CreditCardIcon, SettingsIcon, UserIcon } from "lucide-react";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/shallow";
+import { AppIcon } from "../../../components/app-icon";
 import { Button } from "../../../components/button";
 import { Checkbox } from "../../../components/checkbox";
 import {
@@ -165,25 +165,25 @@ const MenuTabContent = () => {
 					<MenuSectionContent>
 						<MenuItem>
 							<MenuItemIcon>
-								<UserIcon />
+								<AppIcon icon="user" />
 							</MenuItemIcon>
 							<MenuItemLabel>Profile</MenuItemLabel>
 						</MenuItem>
 						<MenuItem>
 							<MenuItemIcon>
-								<CreditCardIcon />
+								<AppIcon icon="credit-card" />
 							</MenuItemIcon>
 							<MenuItemLabel>Billing</MenuItemLabel>
 						</MenuItem>
 						<MenuItem>
 							<MenuItemIcon>
-								<SettingsIcon />
+								<AppIcon icon="settings" />
 							</MenuItemIcon>
 							<MenuItemLabel>Settings</MenuItemLabel>
 						</MenuItem>
 						<MenuItem>
 							<MenuItemIcon>
-								<BellIcon />
+								<AppIcon icon="bell" />
 							</MenuItemIcon>
 							<MenuItemLabel>Notifications</MenuItemLabel>
 						</MenuItem>

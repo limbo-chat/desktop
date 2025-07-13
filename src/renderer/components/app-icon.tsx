@@ -6,7 +6,14 @@ import type * as limbo from "@limbo/api";
 const appIconMap: Record<limbo.AppIcon, FC> = {
 	"add": lucide.Plus,
 	"remove": lucide.Trash,
+	"minimize": lucide.Minimize2,
+	"maximize": lucide.Maximize2,
+	"panel-left": lucide.PanelLeft,
+	"panel-left-close": lucide.PanelLeftClose,
+	"panel-right": lucide.PanelRight,
+	"panel-right-close": lucide.PanelRightClose,
 	"close": lucide.X,
+	"compose": lucide.PenSquare,
 	"search": lucide.Search,
 	"filter": lucide.Filter,
 	"sort": lucide.ArrowUpDown,
@@ -14,6 +21,8 @@ const appIconMap: Record<limbo.AppIcon, FC> = {
 	"edit": lucide.Edit,
 	"delete": lucide.Trash2,
 	"refresh": lucide.RefreshCcw,
+	"send": lucide.ArrowUp,
+	"stop": lucide.StopCircle,
 	"download": lucide.Download,
 	"upload": lucide.Upload,
 	"share": lucide.Share2,
@@ -30,6 +39,8 @@ const appIconMap: Record<limbo.AppIcon, FC> = {
 	"reply": lucide.Reply,
 	"print": lucide.Printer,
 	"help": lucide.HelpCircle,
+	"text": lucide.Text,
+	"text-wrap": lucide.WrapText,
 	"visibility": lucide.Eye,
 	"visibility-off": lucide.EyeOff,
 	"volume": lucide.Volume2,
@@ -65,6 +76,8 @@ const appIconMap: Record<limbo.AppIcon, FC> = {
 	"location": lucide.MapPin,
 	"bookmark": lucide.Bookmark,
 	"activity": lucide.Activity,
+	"hammer": lucide.Hammer,
+	"credit-card": lucide.CreditCard,
 	"success": lucide.CheckCircle,
 	"error": lucide.XCircle,
 	"warning": lucide.AlertTriangle,
@@ -78,14 +91,14 @@ const appIconMap: Record<limbo.AppIcon, FC> = {
 	"forward": lucide.ChevronRight,
 } as const;
 
-export interface AppIconProps {
+export interface AppIconProps extends React.HTMLAttributes<HTMLElement> {
 	icon: limbo.AppIcon;
 }
 
 export const AppIcon = ({ icon, ...props }: AppIconProps) => {
 	const Icon = appIconMap[icon];
 
-	return <Icon {...props} />;
+	return <Icon data-icon={icon} {...props} />;
 };
 
 export interface ImageLikeRendererProps {

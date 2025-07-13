@@ -1,7 +1,7 @@
 import * as RadixSelect from "@radix-ui/react-select";
 import clsx from "clsx";
-import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import type { PropsWithChildren } from "react";
+import { AppIcon } from "./app-icon";
 
 export interface SelectRootProps extends RadixSelect.SelectProps {}
 
@@ -30,7 +30,7 @@ export interface SelectIconProps extends RadixSelect.SelectIconProps {}
 export const SelectIcon = ({ className, ...props }: SelectIconProps) => {
 	return (
 		<RadixSelect.SelectIcon className={clsx("select-icon", className)} {...props}>
-			<ChevronDownIcon />
+			<AppIcon icon="expand" />
 		</RadixSelect.SelectIcon>
 	);
 };
@@ -52,7 +52,7 @@ export const SelectItem = ({ className, children, ...props }: SelectItemProps) =
 		<RadixSelect.Item className={clsx("select-item", className)} {...props}>
 			<RadixSelect.ItemText className="select-item-text">{children}</RadixSelect.ItemText>
 			<RadixSelect.ItemIndicator className="select-item-indicator">
-				<CheckIcon className="select-item-indicator-icon" />
+				<AppIcon icon="check" className="select-item-indicator-icon" />
 			</RadixSelect.ItemIndicator>
 		</RadixSelect.Item>
 	);

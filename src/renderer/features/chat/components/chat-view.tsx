@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMeasure } from "@uidotdev/usehooks";
 import { debounce } from "es-toolkit";
-import { ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type ButtonHTMLAttributes } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import type { UpdateChatInput } from "../../../../main/trpc/router/chats";
+import { AppIcon } from "../../../components/app-icon";
 import { useAnimationUnmount, useIsAtBottom } from "../../../hooks/common";
 import { useMainRouter, useMainRouterClient } from "../../../lib/trpc";
 import { ChatPanelRenderer } from "../../chat-panels/components/chat-panel-renderer";
@@ -38,7 +38,7 @@ const ScrollToBottomButton = ({ state, ...props }: ScrollToBottomButtonProps) =>
 			{...props}
 		>
 			<span className="scroll-to-bottom-button-text">Scroll to bottom</span>
-			<ChevronDown className="scroll-to-bottom-button-icon" />
+			<AppIcon icon="arrow-down" className="scroll-to-bottom-button-icon" />
 		</button>
 	);
 };
