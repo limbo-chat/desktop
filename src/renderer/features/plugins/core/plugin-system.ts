@@ -70,6 +70,12 @@ export class PluginSystem {
 			throw err;
 		}
 
+		this.pluginManager.addPlugin(plugin.manifest.id, {
+			manifest: plugin.manifest,
+			module: pluginModule,
+			context: pluginContext,
+		});
+
 		if (typeof pluginModule.onActivate === "function") {
 			try {
 				await pluginModule.onActivate();
@@ -85,12 +91,6 @@ export class PluginSystem {
 				throw err;
 			}
 		}
-
-		this.pluginManager.addPlugin(plugin.manifest.id, {
-			manifest: plugin.manifest,
-			module: pluginModule,
-			context: pluginContext,
-		});
 	}
 
 	public async unloadPlugin(pluginId: string) {
