@@ -1,9 +1,10 @@
+import { formatRelative } from "date-fns";
+import { enUS } from "date-fns/locale";
 import { memo, useMemo, type HTMLAttributes } from "react";
-import { AppIcon } from "../../../components/app-icon";
 import { CopyIconButton } from "../../../components/copy-icon-button";
-import { IconButton } from "../../../components/icon-button";
 import { Tooltip } from "../../../components/tooltip";
 import { ChatNodeRenderer } from "../../chat-nodes/components/chat-node-renderer";
+// Example: English locale
 import type {
 	AssistantChatMessage as AssistantChatMessageRenderer,
 	ChatMessageType,
@@ -30,11 +31,31 @@ const ChatMessageActions = (props: HTMLAttributes<HTMLDivElement>) => {
 	return <div className="chat-message-actions" {...props} />;
 };
 
+const ChatMessageInfo = (props: HTMLAttributes<HTMLDivElement>) => {
+	return <div className="chat-message-info" {...props} />;
+};
+
+interface ChatMessageDateProps extends HTMLAttributes<HTMLDivElement> {
+	date: Date;
+}
+
+const ChatMessageDate = ({ date, ...props }: ChatMessageDateProps) => {
+	const relativeText = useMemo(() => formatRelative(date, new Date()), [date]);
+
+	return (
+		<div className="chat-message-date" {...props}>
+			{relativeText}
+		</div>
+	);
+};
+
 interface UserChatMessageRendererProps {
 	message: UserChatMessageRenderer;
 }
 
 const UserChatMessageRenderer = ({ message }: UserChatMessageRendererProps) => {
+	const createdAt = useMemo(() => new Date(message.createdAt), [message.createdAt]);
+
 	const gatheredText = useMemo(() => {
 		let text = "";
 
@@ -55,6 +76,9 @@ const UserChatMessageRenderer = ({ message }: UserChatMessageRendererProps) => {
 				))}
 			</ChatMessageContent>
 			<ChatMessageFooter>
+				<ChatMessageInfo>
+					<ChatMessageDate date={createdAt} />
+				</ChatMessageInfo>
 				<ChatMessageActions>
 					<Tooltip label="Copy message">
 						<CopyIconButton content={gatheredText} />
@@ -70,6 +94,8 @@ interface AssistantChatMessageRendererProps {
 }
 
 const AssistantChatMessageRenderer = ({ message }: AssistantChatMessageRendererProps) => {
+	const createdAt = useMemo(() => new Date(message.createdAt), [message.createdAt]);
+
 	const textContent = useMemo(() => {
 		let gatheredText = "";
 
@@ -90,6 +116,9 @@ const AssistantChatMessageRenderer = ({ message }: AssistantChatMessageRendererP
 				))}
 			</ChatMessageContent>
 			<ChatMessageFooter>
+				<ChatMessageInfo>
+					<ChatMessageDate date={createdAt} />
+				</ChatMessageInfo>
 				<ChatMessageActions>
 					<Tooltip label="Copy message">
 						<CopyIconButton content={textContent} />
