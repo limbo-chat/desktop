@@ -5,7 +5,7 @@ import type * as limbo from "@limbo/api";
 
 const appIconMap: Record<limbo.AppIcon, FC> = {
 	"add": lucide.Plus,
-	"remove": lucide.Trash,
+	"remove": lucide.Minus,
 	"minimize": lucide.Minimize2,
 	"maximize": lucide.Maximize2,
 	"panel-left": lucide.PanelLeft,
