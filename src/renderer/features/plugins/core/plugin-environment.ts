@@ -1,16 +1,5 @@
 import type * as limbo from "@limbo/api";
 
-// notifications
-
-export interface PluginNotificationShowOptions {
-	pluginId: string;
-	notification: limbo.Notification;
-}
-
-export interface PluginEnvironmentNotifications {
-	show: (opts: PluginNotificationShowOptions) => void;
-}
-
 // storage
 
 export interface PluginStorageGetOptions {
@@ -68,12 +57,19 @@ export interface PluginEnvironmentModels {
 
 // ui
 
+// notifications
+
+export interface PluginShowNotificationOptions {
+	pluginId: string;
+	notification: limbo.Notification;
+}
+
 export interface PluginEnvironmentUI {
+	showNotification: (opts: PluginShowNotificationOptions) => void;
 	showChatPanel: typeof limbo.ui.showChatPanel;
 }
 
 export interface PluginEnvironment {
-	notifications: PluginEnvironmentNotifications;
 	storage: PluginEnvironmentStorage;
 	database: PluginEnvironmentDatabase;
 	chats: PluginEnvironmentChats;

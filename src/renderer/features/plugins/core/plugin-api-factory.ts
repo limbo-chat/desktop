@@ -112,18 +112,6 @@ export class PluginAPIFactory {
 					pluginContext.unregisterLLM(llmId);
 				},
 			},
-			notifications: {
-				show: (notification) => {
-					try {
-						this.pluginEnvironment.notifications.show({
-							pluginId,
-							notification,
-						});
-					} catch {
-						throw new Error("Failed to show notification");
-					}
-				},
-			},
 			tools: {
 				register: (tool) => {
 					pluginContext.registerTool(tool);
@@ -156,6 +144,16 @@ export class PluginAPIFactory {
 				},
 			},
 			ui: {
+				showNotification: (notification) => {
+					try {
+						this.pluginEnvironment.ui.showNotification({
+							pluginId,
+							notification,
+						});
+					} catch {
+						throw new Error("Failed to show notification");
+					}
+				},
 				registerMarkdownElement: (element) => {
 					pluginContext.registerMarkdownElement(element);
 				},

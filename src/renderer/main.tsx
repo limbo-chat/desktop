@@ -133,22 +133,6 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 
 	const pluginEnvironment = useMemo<PluginEnvironment>(() => {
 		return {
-			notifications: {
-				show: ({ pluginId, notification }) => {
-					const plugin = pluginManager.getPlugin(pluginId);
-
-					if (!plugin) {
-						return;
-					}
-
-					showNotification({
-						level: notification.level,
-						title: notification.title,
-						message: notification.message,
-						source: plugin.manifest.name,
-					});
-				},
-			},
 			storage: {
 				get: async (opts) => {
 					return await mainRouterClient.plugins.getStorageValue.query({
@@ -208,6 +192,20 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 				},
 			},
 			ui: {
+				showNotification: ({ pluginId, notification }) => {
+					const plugin = pluginManager.getPlugin(pluginId);
+
+					if (!plugin) {
+						return;
+					}
+
+					showNotification({
+						level: notification.level,
+						title: notification.title,
+						message: notification.message,
+						source: plugin.manifest.name,
+					});
+				},
 				showChatPanel: (opts) => {
 					const workspaceStore = useWorkspaceStore.getState();
 
