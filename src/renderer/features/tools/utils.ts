@@ -12,3 +12,19 @@ export function removeTool(toolId: string) {
 
 	toolStore.removeTool(toolId);
 }
+
+export function getToolDefinitionsFromToolMap(
+	tools: Map<string, limbo.Tool>
+): limbo.ToolDefinition[] {
+	const toolDefinitions: limbo.ToolDefinition[] = [];
+
+	for (const tool of tools.values()) {
+		toolDefinitions.push({
+			id: tool.id,
+			description: tool.description,
+			schema: tool.schema,
+		});
+	}
+
+	return toolDefinitions;
+}

@@ -5,17 +5,16 @@ import type * as limbo from "@limbo/api";
 import { useMainRouter, useMainRouterClient } from "../../../lib/trpc";
 import { buildNamespacedResourceId } from "../../../lib/utils";
 import { usePluginManager } from "../../plugins/hooks/core";
-import { handleAssistantChatLoop } from "../core/chat-loop";
-import { ChatMessageBuilder, ChatPromptBuilder } from "../core/chat-prompt-builder";
-import { createStoreConnectedMessageHandle } from "../core/utils";
+import { runChatGeneration } from "../core/chat-generation";
+import { ChatPrompt, ChatMessage } from "../core/chat-prompt";
+import { createStoreConnectedMessage } from "../core/utils";
 import { useChatStore } from "../stores";
 
 export interface SendMessageOptions {
 	llm: limbo.LLM;
 	chatId: string;
-	systemPrompt: string;
 	enabledToolIds: string[];
-	userMessage: ChatMessageBuilder;
+	userMessage: ChatMessage;
 }
 
 export const useSendMessage = () => {
@@ -25,7 +24,7 @@ export const useSendMessage = () => {
 	const queryClient = useQueryClient();
 
 	const sendMessage = useCallback(
-		async ({ llm, chatId, systemPrompt, userMessage, enabledToolIds }: SendMessageOptions) => {
+		async ({ llm, chatId, userMessage, enabledToolIds }: SendMessageOptions) => {
 			const chatStore = useChatStore.getState();
 			const chatState = chatStore.chats[chatId];
 
@@ -115,40 +114,37 @@ export const useSendMessage = () => {
 
 			queryClient.invalidateQueries(mainRouter.chats.list.queryFilter());
 
-			// create a new prompt builder
-			const promptBuilder = new ChatPromptBuilder();
+			// create a new prompt
+			const prompt = new ChatPrompt();
 
-			// set the default chat system prompt
-			promptBuilder.setSystemPrompt(systemPrompt);
+			// add the user message to the prompt
+			prompt.appendMessage(userMessage);
 
-			// add the user message to the prompt builder
-			promptBuilder.appendMessage(userMessage);
+			// create the empty assistant message
+			const assistantMessage = new ChatMessage("assistant");
 
-			const assistantMessage = new ChatMessageBuilder({
-				role: "assistant",
-				content: [],
-			});
+			prompt.appendMessage(assistantMessage);
 
 			// add the assistant message to the chat store
-			const assistantMessageHandle = createStoreConnectedMessageHandle({
+			const statefulAssistantMessage = createStoreConnectedMessage({
 				chatId,
 				messageId: assistantMessageId,
-				messageBuilder: assistantMessage,
+				message: assistantMessage,
 			});
 
-			// run the plugins on the onPrepareChatPrompt lifecycle hook
-			await pluginManager.executeOnPrepareChatPromptHooks({
+			// create the generation object
+			const generation: limbo.ChatGeneration = {
 				chatId,
-				promptBuilder,
-			});
+				llm,
+				prompt,
+				assistantMessage: statefulAssistantMessage,
+				iterations: [],
+			};
 
 			try {
-				await handleAssistantChatLoop({
-					chatId,
-					llm,
+				await runChatGeneration({
+					generation,
 					pluginManager,
-					chatPrompt: promptBuilder,
-					messageHandle: assistantMessageHandle,
 					tools: toolMap,
 					maxIterations: 25,
 					abortSignal: abortController.signal,
@@ -159,6 +155,8 @@ export const useSendMessage = () => {
 					status: "complete",
 					createdAt: new Date().toISOString(),
 				});
+
+				console.log("done");
 
 				chatStore.setIsResponsePending(chatId, false);
 

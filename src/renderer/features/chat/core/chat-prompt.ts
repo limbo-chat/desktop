@@ -5,20 +5,19 @@ export interface PromptBuilderOptions {
 	userPrompt?: string;
 }
 
-export class ChatMessageBuilder implements limbo.ChatMessageBuilder {
-	private role: limbo.ChatPromptMessageRole;
-	private nodes: limbo.ChatMessageNode[];
+export class ChatMessage implements limbo.ChatMessage {
+	private role: limbo.ChatMessageRole;
+	private nodes: limbo.ChatMessageNode[] = [];
 
-	constructor(chatMessage: limbo.ChatPromptMessage) {
-		this.role = chatMessage.role;
-		this.nodes = chatMessage.content;
+	constructor(role: limbo.ChatMessageRole) {
+		this.role = role;
 	}
 
 	getRole() {
 		return this.role;
 	}
 
-	setRole(role: limbo.ChatPromptMessageRole) {
+	setRole(role: limbo.ChatMessageRole) {
 		this.role = role;
 	}
 
@@ -28,6 +27,10 @@ export class ChatMessageBuilder implements limbo.ChatMessageBuilder {
 
 	getNodes() {
 		return [...this.nodes];
+	}
+
+	setNodes(nodes: limbo.ChatMessageNode[]): void {
+		this.nodes = [...nodes];
 	}
 
 	prependNode(node: limbo.ChatMessageNode) {
@@ -89,11 +92,14 @@ export class ChatMessageBuilder implements limbo.ChatMessageBuilder {
 		this.nodes = [];
 	}
 
-	public toPromptMessage(): limbo.ChatPromptMessage {
-		return {
-			role: this.role,
-			content: this.nodes,
-		};
+	clone() {
+		const newMessage = new ChatMessage(this.role);
+
+		for (const node of this.nodes) {
+			newMessage.appendNode(structuredClone(node));
+		}
+
+		return newMessage;
 	}
 
 	private getNodeIndex(node: limbo.ChatMessageNode) {
@@ -101,25 +107,8 @@ export class ChatMessageBuilder implements limbo.ChatMessageBuilder {
 	}
 }
 
-export class ChatPromptBuilder implements limbo.ChatPromptBuilder {
-	private systemPrompt = "";
-	private messages: ChatMessageBuilder[] = [];
-
-	getSystemPrompt() {
-		return this.systemPrompt;
-	}
-
-	setSystemPrompt(text: string) {
-		this.systemPrompt = text;
-	}
-
-	prependToSystemPrompt(text: string) {
-		this.systemPrompt = text + this.systemPrompt;
-	}
-
-	appendToSystemPrompt(text: string) {
-		this.systemPrompt = this.systemPrompt + text;
-	}
+export class ChatPrompt implements limbo.ChatPrompt {
+	private messages: limbo.ChatMessage[] = [];
 
 	getMessage(index: number) {
 		return this.messages[index];
@@ -129,15 +118,19 @@ export class ChatPromptBuilder implements limbo.ChatPromptBuilder {
 		return [...this.messages];
 	}
 
-	appendMessage(message: ChatMessageBuilder) {
+	setMessages(messages: limbo.ChatMessage[]) {
+		this.messages = [...messages];
+	}
+
+	appendMessage(message: limbo.ChatMessage) {
 		this.messages.push(message);
 	}
 
-	prependMessage(message: ChatMessageBuilder) {
+	prependMessage(message: limbo.ChatMessage) {
 		this.messages.unshift(message);
 	}
 
-	insertMessage(index: number, newMessageOrMessages: ChatMessageBuilder | ChatMessageBuilder[]) {
+	insertMessage(index: number, newMessageOrMessages: limbo.ChatMessage | limbo.ChatMessage[]) {
 		if (Array.isArray(newMessageOrMessages)) {
 			this.messages.splice(index, 0, ...newMessageOrMessages);
 		} else {
@@ -145,16 +138,13 @@ export class ChatPromptBuilder implements limbo.ChatPromptBuilder {
 		}
 	}
 
-	replaceMessage(
-		oldMessage: ChatMessageBuilder,
-		newMessageOrMessages: ChatMessageBuilder | ChatMessageBuilder[]
-	) {
+	replaceMessage(oldMessage: ChatMessage, newMessageOrMessages: ChatMessage | ChatMessage[]) {
 		const index = this.messages.indexOf(oldMessage);
 
 		this.replaceMessageAt(index, newMessageOrMessages);
 	}
 
-	replaceMessageAt(index: number, messageOrMessages: ChatMessageBuilder | ChatMessageBuilder[]) {
+	replaceMessageAt(index: number, messageOrMessages: limbo.ChatMessage | limbo.ChatMessage[]) {
 		if (index < 0 || index >= this.messages.length) {
 			return;
 		}
@@ -166,7 +156,7 @@ export class ChatPromptBuilder implements limbo.ChatPromptBuilder {
 		}
 	}
 
-	removeMessage(message: ChatMessageBuilder) {
+	removeMessage(message: limbo.ChatMessage) {
 		const index = this.getMessageIndex(message);
 
 		this.removeMessageAt(index);
@@ -184,42 +174,21 @@ export class ChatPromptBuilder implements limbo.ChatPromptBuilder {
 		this.messages = [];
 	}
 
-	createMessage(message: limbo.ChatPromptMessage) {
-		return new ChatMessageBuilder(message);
+	createMessage(role: limbo.ChatMessageRole = "assistant") {
+		return new ChatMessage(role);
 	}
 
-	public toPromptMessages(): limbo.ChatPromptMessage[] {
-		const messages = this.getMessages().map((m) => m.toPromptMessage());
+	clone() {
+		const newPrompt = new ChatPrompt();
 
-		return [
-			{
-				role: "system",
-				content: [
-					{
-						type: "text",
-						data: {
-							content: this.getSystemPrompt(),
-						},
-					},
-				],
-			},
-			...messages,
-		];
-	}
-
-	public clone() {
-		const clonedPrompt = new ChatPromptBuilder();
-
-		clonedPrompt.setSystemPrompt(this.getSystemPrompt());
-
-		for (const message of this.getMessages()) {
-			clonedPrompt.appendMessage(new ChatMessageBuilder(message.toPromptMessage()));
+		for (const message of this.messages) {
+			newPrompt.appendMessage(message.clone());
 		}
 
-		return clonedPrompt;
+		return newPrompt;
 	}
 
-	private getMessageIndex(message: limbo.ChatMessageBuilder) {
+	private getMessageIndex(message: limbo.ChatMessage) {
 		return this.messages.findIndex((m) => m === message);
 	}
 }

@@ -1,11 +1,7 @@
-import Ajv from "ajv";
 import type * as limbo from "@limbo/api";
 import { useChatStore } from "../stores";
-import type { ChatMessageBuilder } from "./chat-prompt-builder";
 
-const ajv = new Ajv();
-
-export function convertMarkdownNodesToTextInMessage(message: limbo.ChatMessageBuilder) {
+export function convertMarkdownNodesToTextInMessage(message: limbo.ChatMessage) {
 	for (const node of message.getNodes()) {
 		if (node.type === "markdown") {
 			message.replaceNode(node, {
@@ -18,13 +14,13 @@ export function convertMarkdownNodesToTextInMessage(message: limbo.ChatMessageBu
 	}
 }
 
-export function convertMarkdownNodesToTextInChatPrompt(chatPrompt: limbo.ChatPromptBuilder) {
-	for (const message of chatPrompt.getMessages()) {
+export function convertMarkdownNodesToTextInPrompt(prompt: limbo.ChatPrompt) {
+	for (const message of prompt.getMessages()) {
 		convertMarkdownNodesToTextInMessage(message);
 	}
 }
 
-export function serializeToolCallNodesInMessage(message: limbo.ChatMessageBuilder) {
+export function serializeToolCallNodesInMessage(message: limbo.ChatMessage) {
 	for (const node of message.getNodes()) {
 		if (node.type === "tool_call") {
 			const toolCallData = node.data;
@@ -47,83 +43,107 @@ export function serializeToolCallNodesInMessage(message: limbo.ChatMessageBuilde
 	}
 }
 
-export function serializeToolCallNodesInChatPrompt(chatPrompt: limbo.ChatPromptBuilder) {
-	for (const message of chatPrompt.getMessages()) {
+export function serializeToolCallNodesInPrompt(prompt: limbo.ChatPrompt) {
+	for (const message of prompt.getMessages()) {
 		serializeToolCallNodesInMessage(message);
 	}
 }
 
-export function transformBuiltInNodesInChatPrompt(chatPrompt: limbo.ChatPromptBuilder) {
-	convertMarkdownNodesToTextInChatPrompt(chatPrompt);
+export function transformBuiltInNodesInPrompt(prompt: limbo.ChatPrompt) {
+	convertMarkdownNodesToTextInPrompt(prompt);
 }
 
 export interface AdaptPromptForCapabilitiesOptions {
 	capabilities: limbo.LLM.Capability[];
-	chatPromptBuilder: limbo.ChatPromptBuilder;
+	prompt: limbo.ChatPrompt;
 }
 
-export function adaptChatPromptForCapabilities({
+export function adaptPromptForCapabilities({
 	capabilities,
-	chatPromptBuilder,
+	prompt,
 }: AdaptPromptForCapabilitiesOptions) {
 	if (!capabilities.includes("tool_calling")) {
-		serializeToolCallNodesInChatPrompt(chatPromptBuilder);
+		serializeToolCallNodesInPrompt(prompt);
 	}
 }
 
 export interface CreateStoreConnectedMessageHandleOptions {
 	chatId: string;
 	messageId: string;
-	messageBuilder: ChatMessageBuilder;
+	message: limbo.ChatMessage;
 }
 
-export function createStoreConnectedMessageHandle({
+export function createStoreConnectedMessage({
 	chatId,
 	messageId,
-	messageBuilder,
-}: CreateStoreConnectedMessageHandleOptions): limbo.MessageHandle {
+	message,
+}: CreateStoreConnectedMessageHandleOptions): limbo.ChatMessage {
 	const syncToStore = () => {
 		const chatStore = useChatStore.getState();
 
-		chatStore.setMessageNodes(chatId, messageId, messageBuilder.getNodes());
+		chatStore.setMessageNodes(chatId, messageId, message.getNodes());
 	};
 
 	return {
+		getRole: () => {
+			return message.getRole();
+		},
+		setRole: () => {
+			// noop
+		},
 		getNode: (index) => {
-			return messageBuilder.getNode(index);
+			return message.getNode(index);
 		},
 		getNodes: () => {
-			return messageBuilder.getNodes();
+			return message.getNodes();
 		},
-		prependNode: (node) => {
-			messageBuilder.prependNode(node);
+		setNodes: (nodes) => {
+			message.setNodes(nodes);
 
 			syncToStore();
 		},
 		appendNode: (node) => {
-			messageBuilder.appendNode(node);
+			message.appendNode(node);
+
+			syncToStore();
+		},
+		prependNode: (node) => {
+			message.prependNode(node);
 
 			syncToStore();
 		},
 		removeNode: (node) => {
-			messageBuilder.removeNode(node);
+			message.removeNode(node);
 
 			syncToStore();
 		},
 		removeNodeAt: (index) => {
-			messageBuilder.removeNodeAt(index);
+			message.removeNodeAt(index);
+
+			syncToStore();
+		},
+		insertNode: (index, newNodeOrNodes) => {
+			message.insertNode(index, newNodeOrNodes);
 
 			syncToStore();
 		},
 		replaceNode: (index, node) => {
-			messageBuilder.replaceNode(index, node);
+			message.replaceNode(index, node);
 
 			syncToStore();
 		},
 		replaceNodeAt(index, newNodeOrNodes) {
-			messageBuilder.replaceNodeAt(index, newNodeOrNodes);
+			message.replaceNodeAt(index, newNodeOrNodes);
 
 			syncToStore();
+		},
+		clearNodes: () => {
+			message.clearNodes();
+
+			syncToStore();
+		},
+		clone: () => {
+			return message.clone();
 		},
 	};
 }

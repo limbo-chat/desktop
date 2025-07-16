@@ -11,7 +11,7 @@ import { ChatPanelRenderer } from "../../chat-panels/components/chat-panel-rende
 import { useActiveChatPanel } from "../../chat-panels/hooks";
 import { useActiveChatPanelStore } from "../../chat-panels/stores";
 import { usePluginManager } from "../../plugins/hooks/core";
-import { ChatMessageBuilder } from "../core/chat-prompt-builder";
+import { ChatMessage } from "../core/chat-prompt";
 import { useChatState } from "../hooks/common";
 import { useSendMessage } from "../hooks/use-send-message";
 import { useChatStore } from "../stores";
@@ -112,25 +112,21 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 			},
 		}).trim();
 
-		const userMessageBuilder = new ChatMessageBuilder({
-			role: "user",
-			content: [
-				{
-					type: "text",
-					data: {
-						content: userMessage,
-					},
-				},
-			],
+		const userMessageObj = new ChatMessage("user");
+
+		userMessageObj.appendNode({
+			type: "text",
+			data: {
+				content: userMessage,
+			},
 		});
 
 		try {
 			await sendMessage({
 				chatId: chatId,
 				llm,
-				systemPrompt,
 				enabledToolIds,
-				userMessage: userMessageBuilder,
+				userMessage: userMessageObj,
 			});
 		} catch (err) {
 			console.error("Failed to send message:", err);
@@ -258,7 +254,7 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 					onClick={() => scrollToBottom()}
 				/>
 				<ChatComposer
-					isPending={false}
+					isPending={chatState?.isAssistantResponsePending ?? false}
 					value={userMessage}
 					onValueChange={setUserMessage}
 					selectedLLMId={selectedLLMId}

@@ -85,34 +85,6 @@ export class PluginManager {
 		);
 	}
 
-	public async executeOnPrepareChatPromptHooks(args: limbo.OnPrepareChatPromptArgs) {
-		const plugins = [...this.plugins.values()];
-
-		await Promise.allSettled(
-			plugins.map(async (plugin) => {
-				if (typeof plugin.module.onPrepareChatPrompt !== "function") {
-					return;
-				}
-
-				await plugin.module.onPrepareChatPrompt(args);
-			})
-		);
-	}
-
-	public async executeOnTransformChatPromptHooks(args: limbo.OnTransformChatPromptArgs) {
-		const plugins = [...this.plugins.values()];
-
-		await Promise.allSettled(
-			plugins.map(async (plugin) => {
-				if (typeof plugin.module.onTransformChatPrompt !== "function") {
-					return;
-				}
-
-				await plugin.module.onTransformChatPrompt(args);
-			})
-		);
-	}
-
 	public async executeOnChatDeletedHooks(chatId: string) {
 		const plugins = [...this.plugins.values()];
 
@@ -137,6 +109,62 @@ export class PluginManager {
 				}
 
 				await plugin.module.onChatsDeleted(chatIds);
+			})
+		);
+	}
+
+	public async executeOnBeforeChatGenerationHooks(args: limbo.OnBeforeChatGenerationArgs) {
+		const plugins = [...this.plugins.values()];
+
+		await Promise.allSettled(
+			plugins.map(async (plugin) => {
+				if (typeof plugin.module.onBeforeChatGeneration !== "function") {
+					return;
+				}
+
+				await plugin.module.onBeforeChatGeneration(args);
+			})
+		);
+	}
+
+	public async executeOnBeforeChatIterationHooks(args: limbo.OnBeforeChatIterationArgs) {
+		const plugins = [...this.plugins.values()];
+
+		await Promise.allSettled(
+			plugins.map(async (plugin) => {
+				if (typeof plugin.module.onBeforeChatIteration !== "function") {
+					return;
+				}
+
+				await plugin.module.onBeforeChatIteration(args);
+			})
+		);
+	}
+
+	public async executeOnAfterChatIterationHooks(args: limbo.OnAfterChatIterationArgs) {
+		const plugins = [...this.plugins.values()];
+
+		await Promise.allSettled(
+			plugins.map(async (plugin) => {
+				if (typeof plugin.module.onAfterChatIteration !== "function") {
+					return;
+				}
+
+				await plugin.module.onAfterChatIteration(args);
+			})
+		);
+	}
+
+	public async executeOnAfterChatGenerationHooks(args: limbo.OnAfterChatGenerationArgs) {
+		const plugins = [...this.plugins.values()];
+
+		await Promise.allSettled(
+			plugins.map(async (plugin) => {
+				if (typeof plugin.module.onAfterChatGeneration !== "function") {
+					return;
+				}
+
+				await plugin.module.onAfterChatGeneration(args);
 			})
 		);
 	}
