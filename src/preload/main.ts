@@ -5,6 +5,7 @@ exposeElectronTRPC();
 
 contextBridge.exposeInMainWorld("env", {
 	LIMBO_API_VERSION: import.meta.env.VITE_LIMBO_API_VERSION,
+	DISCORD_INVITE_URL: import.meta.env.VITE_DISCORD_INVITE_URL,
 });
 
 contextBridge.exposeInMainWorld("ipcRenderer", {

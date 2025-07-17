@@ -48,6 +48,8 @@ import { useWorkspaceStore } from "./features/workspace/stores";
 import { useIsAppFocused } from "./hooks/common";
 import { MainRouterProvider } from "./lib/trpc";
 
+console.log(window.env.DISCORD_INVITE_URL);
+
 // parse the window params defined from the main process
 const windowParams = new URLSearchParams(window.location.search);
 const type = windowParams.get("type") as WindowType;
