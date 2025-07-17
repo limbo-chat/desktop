@@ -17,6 +17,7 @@ export class EvalPluginModuleLoader implements PluginModuleLoader {
 			"@limbo/api": opts.pluginAPI,
 			"react": await import("react"),
 			"react/jsx-runtime": await import("react/jsx-runtime"),
+			"@sinclair/typebox": await import("@sinclair/typebox"),
 			"@tanstack/react-query": await import("@tanstack/react-query"),
 		};
 
