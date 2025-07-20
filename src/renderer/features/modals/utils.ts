@@ -9,10 +9,3 @@ export function setActiveModal(modal: Modal | null) {
 export function showModal(modal: Modal) {
 	setActiveModal(modal);
 }
-
-export function showDialog(modal: Omit<Modal, "className">) {
-	showModal({
-		className: "dialog-modal",
-		...modal,
-	});
-}

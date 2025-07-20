@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useMainRouter, useMainRouterClient } from "../../../lib/trpc";
 import { addCommand, removeCommand } from "../../commands/utils";
-import { showDialog } from "../../modals/utils";
+import { showModal } from "../../modals/utils";
 import { useWorkspaceStore } from "../../workspace/stores";
 import { RenameChatDialog } from "../components/rename-chat-dialog";
 
@@ -33,7 +33,8 @@ export const useRegisterActiveChatCommands = () => {
 			id: "rename-current-chat",
 			name: "Rename current chat",
 			execute: () => {
-				showDialog({
+				showModal({
+					id: "rename-chat",
 					component: () => (
 						<RenameChatDialog
 							chat={{

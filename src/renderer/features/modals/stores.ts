@@ -2,7 +2,7 @@ import type { FC } from "react";
 import { create } from "zustand";
 
 export interface Modal {
-	className?: string;
+	id: string;
 	component: FC;
 }
 

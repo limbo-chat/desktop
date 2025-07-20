@@ -48,7 +48,7 @@ import { useLLMList } from "../../llms/hooks";
 import { MarkdownContainer } from "../../markdown/components/markdown-container";
 import { MarkdownRenderer } from "../../markdown/components/markdown-renderer";
 import { useModalContext } from "../../modals/hooks";
-import { showDialog } from "../../modals/utils";
+import { showModal } from "../../modals/utils";
 import { Notification, type NotificationLevel } from "../../notifications/components";
 import { useDesignPlaygroundTabsStore } from "../stores";
 import {
@@ -357,7 +357,8 @@ const DialogTabContent = () => {
 	return (
 		<Button
 			onClick={() =>
-				showDialog({
+				showModal({
+					id: "demo-dialog",
 					component: DemoDialog,
 				})
 			}

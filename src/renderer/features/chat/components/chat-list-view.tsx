@@ -15,8 +15,8 @@ import {
 } from "../../../components/menu";
 import { RenameChatDialog } from "../../../features/chat/components/rename-chat-dialog";
 import { useDeleteChatMutation } from "../../../features/chat/hooks/queries";
-import { showDialog } from "../../../features/modals/utils";
 import { useMainRouter } from "../../../lib/trpc";
+import { showModal } from "../../modals/utils";
 import { useWorkspaceStore } from "../../workspace/stores";
 import { setActiveChatId } from "../../workspace/utils";
 
@@ -70,7 +70,8 @@ const ChatItem = ({ chat, isActive }: ChatItemProps) => {
 								onClick={(e) => {
 									e.stopPropagation();
 
-									showDialog({
+									showModal({
+										id: "rename-chat",
 										component: () => <RenameChatDialog chat={chat} />,
 									});
 								}}

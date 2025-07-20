@@ -38,9 +38,9 @@ export const ModalHost = () => {
 
 	return (
 		<modalContext.Provider value={{ close: handleClose }}>
-			<div className={clsx("modal", activeModal.className)}>
+			<div className={clsx("modal")} data-modal={activeModal.id}>
 				<div className="modal-overlay" onClick={handleClose} />
-				<FocusScope className="modal-content" trapped loop>
+				<FocusScope className="modal-content" trapped loop key={activeModal.id}>
 					<ModalComponent />
 				</FocusScope>
 			</div>

@@ -57,7 +57,7 @@ import { Switch } from "../../../components/switch";
 import { Tooltip } from "../../../components/tooltip";
 import * as VerticalTabs from "../../../components/vertical-tabs-primitive";
 import { useModalContext } from "../../../features/modals/hooks";
-import { showDialog } from "../../../features/modals/utils";
+import { showModal } from "../../../features/modals/utils";
 import { PluginSettingsSection } from "../../../features/plugins/components/plugin-settings-section";
 import type { ActivePlugin } from "../../../features/plugins/core/plugin-manager";
 import { useActivePlugin, usePluginBackend } from "../../../features/plugins/hooks/core";
@@ -401,10 +401,7 @@ const InstallPluginDialog = () => {
 				</DialogHeader>
 				<DialogContent>
 					<FieldController.Root id="repo-url" name="repoUrl">
-						<FieldController.TextInput
-							autoFocus
-							placeholder="https://github.com/limbo-llm/plugin-ollama"
-						/>
+						<FieldController.TextInput placeholder="https://github.com/limbo-llm/plugin-ollama" />
 					</FieldController.Root>
 				</DialogContent>
 				<DialogFooter>
@@ -537,7 +534,8 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 						<IconButton
 							action="uninstall"
 							onClick={() =>
-								showDialog({
+								showModal({
+									id: "uninstall-plugin",
 									component: () => (
 										<UninstallPluginDialog
 											plugin={{
@@ -577,7 +575,11 @@ const PluginsTabContent = () => {
 						</IconButton>
 					</Tooltip>
 					<Tooltip label="Install plugin">
-						<IconButton onClick={() => showDialog({ component: InstallPluginDialog })}>
+						<IconButton
+							onClick={() =>
+								showModal({ id: "install-plugin", component: InstallPluginDialog })
+							}
+						>
 							<AppIcon icon="add" />
 						</IconButton>
 					</Tooltip>

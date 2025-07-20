@@ -17,7 +17,7 @@ export function removeCommand(commandId: string) {
 
 export function showCommandPalette() {
 	showModal({
-		className: "command-palette-modal",
+		id: "command-palette",
 		component: CommandPaletteModal,
 	});
 }
