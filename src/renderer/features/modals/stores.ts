@@ -7,11 +7,27 @@ export interface Modal {
 }
 
 export interface ModalStore {
-	activeModal: Modal | null;
-	setActiveModal: (modal: Modal | null) => void;
+	modals: Modal[];
+	addModal: (modal: Modal) => void;
+	removeModal: (id: string) => void;
+	removeTopModal: () => void;
 }
 
 export const useModalStore = create<ModalStore>((set) => ({
-	activeModal: null,
-	setActiveModal: (modal) => set({ activeModal: modal }),
+	modals: [],
+	addModal: (modal) => {
+		set((state) => ({
+			modals: [...state.modals, modal],
+		}));
+	},
+	removeModal: (id) => {
+		set((state) => ({
+			modals: state.modals.filter((modal) => modal.id !== id),
+		}));
+	},
+	removeTopModal: () => {
+		set((state) => ({
+			modals: state.modals.slice(0, -1),
+		}));
+	},
 }));

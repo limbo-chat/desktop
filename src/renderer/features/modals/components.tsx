@@ -2,20 +2,17 @@ import { FocusScope } from "@radix-ui/react-focus-scope";
 import clsx from "clsx";
 import { useEffect } from "react";
 import { modalContext } from "./contexts";
-import { useActiveModal } from "./hooks";
-import { setActiveModal } from "./utils";
+import { useModalStore } from "./stores";
 
 export const ModalHost = () => {
-	const activeModal = useActiveModal();
+	const modals = useModalStore((state) => state.modals);
 
 	useEffect(() => {
-		if (!activeModal) {
-			return;
-		}
-
 		const handleKeyDown = (e: KeyboardEvent) => {
+			const modalStore = useModalStore.getState();
+
 			if (e.key === "Escape") {
-				setActiveModal(null);
+				modalStore.removeTopModal();
 			}
 		};
 
@@ -24,26 +21,26 @@ export const ModalHost = () => {
 		return () => {
 			window.removeEventListener("keydown", handleKeyDown);
 		};
-	}, [activeModal]);
+	}, []);
 
-	if (!activeModal) {
-		return null;
-	}
+	const closeModal = (modalId: string) => {
+		const modalStore = useModalStore.getState();
 
-	const handleClose = () => {
-		setActiveModal(null);
+		modalStore.removeModal(modalId);
 	};
 
-	const ModalComponent = activeModal.component;
-
 	return (
-		<modalContext.Provider value={{ close: handleClose }}>
-			<div className={clsx("modal")} data-modal={activeModal.id}>
-				<div className="modal-overlay" onClick={handleClose} />
-				<FocusScope className="modal-content" trapped loop key={activeModal.id}>
-					<ModalComponent />
-				</FocusScope>
-			</div>
-		</modalContext.Provider>
+		<>
+			{modals.map((modal) => (
+				<modalContext.Provider value={{ close: () => closeModal(modal.id) }} key={modal.id}>
+					<div className={clsx("modal")} data-modal={modal.id}>
+						<div className="modal-overlay" onClick={() => closeModal(modal.id)} />
+						<FocusScope className="modal-content" trapped loop>
+							<modal.component />
+						</FocusScope>
+					</div>
+				</modalContext.Provider>
+			))}
+		</>
 	);
 };

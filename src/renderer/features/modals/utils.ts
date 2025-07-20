@@ -1,11 +1,7 @@
 import { useModalStore, type Modal } from "./stores";
 
-export function setActiveModal(modal: Modal | null) {
+export function showModal(modal: Modal) {
 	const modalStore = useModalStore.getState();
 
-	modalStore.setActiveModal(modal);
-}
-
-export function showModal(modal: Modal) {
-	setActiveModal(modal);
+	modalStore.addModal(modal);
 }
