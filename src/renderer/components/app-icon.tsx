@@ -78,6 +78,7 @@ const appIconMap: Record<limbo.AppIcon, FC> = {
 	"activity": lucide.Activity,
 	"hammer": lucide.Hammer,
 	"credit-card": lucide.CreditCard,
+	"paperclip": lucide.Paperclip,
 	"success": lucide.CheckCircle,
 	"error": lucide.XCircle,
 	"warning": lucide.AlertTriangle,
