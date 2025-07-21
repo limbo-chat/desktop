@@ -1,11 +1,12 @@
-import type { Insertable, Selectable } from "kysely";
+import type { Insertable, JSONColumnType, Selectable } from "kysely";
+import type { ChatMessageNode } from "@limbo/api";
 
 export interface ChatTable {
 	id: string;
 	name: string;
 	userMessageDraft: string | null;
 	llmId: string | null;
-	enabledToolIds: string;
+	enabledToolIds: JSONColumnType<string[]>;
 	createdAt: string;
 	lastActivityAt: string | null;
 }
@@ -17,7 +18,7 @@ export interface ChatMessageTable {
 	id: string;
 	chatId: string;
 	role: "user" | "assistant";
-	content: string;
+	content: JSONColumnType<ChatMessageNode[]>;
 	createdAt: string;
 }
 

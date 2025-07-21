@@ -1,11 +1,13 @@
+import type { JSONColumnType } from "kysely";
+
 export interface PluginDatabaseSettingTable {
 	id: string;
-	value: string;
+	value: JSONColumnType<any>;
 }
 
 export interface PluginDatabaseStorageTable {
 	key: string;
-	value: string;
+	value: JSONColumnType<any>;
 }
 
 export interface PluginDatabase {

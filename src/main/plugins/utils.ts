@@ -1,6 +1,6 @@
 import { Octokit } from "@octokit/rest";
 import Sqlite from "better-sqlite3";
-import { Kysely, SqliteDialect } from "kysely";
+import { Kysely, ParseJSONResultsPlugin, SqliteDialect } from "kysely";
 import fs from "node:fs";
 import path from "node:path";
 import {

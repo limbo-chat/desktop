@@ -108,6 +108,8 @@ interface SettingRendererProps {
 const SettingRenderer = ({ setting, value, onChange }: SettingRendererProps) => {
 	const Renderer = settingRendererMap[setting.type];
 
+	console.log(setting, value);
+
 	return (
 		<SettingItem>
 			<SettingItemInfo>

@@ -1,6 +1,5 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import type * as limbo from "@limbo/api";
 import { getDb } from "../../../db/utils";
 import { publicProcedure, router } from "../../trpc";
 
@@ -47,16 +46,7 @@ export const chatMessagesRouter = router({
 			.where("chatId", "=", input.chatId)
 			.execute();
 
-		const chatMessagesWithParsedContent = chatMessages.map((chatMessage) => {
-			const parsedContent = JSON.parse(chatMessage.content);
-
-			return {
-				...chatMessage,
-				content: parsedContent,
-			};
-		});
-
-		return chatMessagesWithParsedContent;
+		return chatMessages;
 	}),
 	getMany: publicProcedure.input(getManyChatMessagesInputSchema).query(async ({ input }) => {
 		const db = await getDb();
@@ -80,18 +70,7 @@ export const chatMessagesRouter = router({
 			chatMessagesQuery.limit(input.limit);
 		}
 
-		const chatMessages = await chatMessagesQuery.execute();
-
-		const chatMessagesWithParsedContent = chatMessages.map((chatMessage) => {
-			const parsedContent = JSON.parse(chatMessage.content) as limbo.ChatMessageNode[];
-
-			return {
-				...chatMessage,
-				content: parsedContent,
-			};
-		});
-
-		return chatMessagesWithParsedContent;
+		return await chatMessagesQuery.execute();
 	}),
 	create: publicProcedure.input(createChatMessageInputSchema).mutation(async ({ input }) => {
 		const db = await getDb();

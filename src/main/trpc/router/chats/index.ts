@@ -54,10 +54,7 @@ export const chatsRouter = router({
 			});
 		}
 
-		return {
-			...chat,
-			enabledToolIds: JSON.parse(chat.enabledToolIds) as string[],
-		};
+		return chat;
 	}),
 	create: publicProcedure.input(createChatInputSchema).mutation(async ({ input, ctx }) => {
 		const db = await getDb();
@@ -102,10 +99,7 @@ export const chatsRouter = router({
 			});
 		}
 
-		return {
-			...updatedChat,
-			enabledToolIds: JSON.parse(updatedChat.enabledToolIds) as string[],
-		};
+		return updatedChat;
 	}),
 	delete: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
 		const db = await getDb();
