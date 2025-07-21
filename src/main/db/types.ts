@@ -82,6 +82,22 @@ export interface ChatMessageTable {
 export type ChatMessage = Selectable<ChatMessageTable>;
 export type NewChatMessage = Insertable<ChatMessageTable>;
 
+export interface AssistantTable {
+	id: string;
+	name: string;
+	description: string;
+	recommendedPlugins: JSONColumnType<string[]>;
+	recommendedTools: JSONColumnType<string[]>;
+}
+
+export interface AssistantTable {
+	id: string;
+	name: string;
+	description: string;
+	recommendedPlugins: JSONColumnType<string[]>;
+	recommendedTools: JSONColumnType<string[]>;
+}
+
 export interface AppDatabase {
 	oauth_client: OAuthClientTable;
 	oauth_client_scope: OAuthClientScopeTable;
@@ -91,6 +107,7 @@ export interface AppDatabase {
 	oauth_token_request_session_scope: OAuthTokenRequestSessionScopeTable;
 	chat: ChatTable;
 	chat_message: ChatMessageTable;
+	assistant: AssistantTable;
 }
 
 export type AppDatabaseClient = Kysely<AppDatabase>;

@@ -1,5 +1,6 @@
 import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 import { router } from "../trpc";
+import { assistantsRouter } from "./assistants";
 import { authRouter } from "./auth";
 import { chatsRouter } from "./chats";
 import { commonRouter } from "./common";
@@ -18,6 +19,7 @@ export const mainRouter = router({
 	customStyles: customStylesRouter,
 	plugins: pluginsRouter,
 	chats: chatsRouter,
+	assistants: assistantsRouter,
 });
 
 export type MainRouter = typeof mainRouter;

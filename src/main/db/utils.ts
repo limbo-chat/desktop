@@ -103,6 +103,15 @@ export async function getDb(): Promise<AppDatabaseClient> {
 		.ifNotExists()
 		.execute();
 
+	await db.schema
+		.createTable("assistant")
+		.addColumn("id", "text", (col) => col.primaryKey())
+		.addColumn("name", "text", (col) => col.notNull())
+		.addColumn("description", "text", (col) => col.notNull())
+		.addColumn("systemPrompt", "text", (col) => col.notNull())
+		.addColumn("recommendedPlugins", "text", (col) => col.notNull())
+		.addColumn("recommendedTools", "text", (col) => col.notNull());
+
 	return db;
 }
 
