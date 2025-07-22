@@ -65,6 +65,7 @@ import {
 } from "../../../features/plugins/hooks/queries";
 import { usePluginContextSettings } from "../../../features/plugins/hooks/use-plugin-context-settings";
 import { useMainRouterClient } from "../../../lib/trpc";
+import { AssistantViewStack } from "../../assistants/components/assistant-view-stack";
 import { AssistantsView } from "../../assistants/components/views/assistants";
 import { useDeleteAllChatsMutation } from "../../chat/hooks/queries";
 import { showNotification } from "../../notifications/utils";
@@ -350,7 +351,7 @@ const DeveloperTabContent = () => {
 };
 
 const AssistantsTabContent = () => {
-	return <AssistantsView />;
+	return <AssistantViewStack />;
 };
 
 const installPluginFormSchema = z.object({

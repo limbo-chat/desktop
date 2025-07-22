@@ -12,17 +12,9 @@ import {
 	SettingItemTitle,
 } from "../../../../components/settings";
 import { Switch } from "../../../../components/switch";
-import {
-	View,
-	ViewBackIconButton,
-	ViewContent,
-	ViewFooter,
-	ViewFooterActions,
-	ViewHeader,
-	ViewTitle,
-} from "../../../../components/view";
 import { usePluginList } from "../../../plugins/hooks/core";
 import { useToolList } from "../../../tools/hooks";
+import * as View from "../../../view-stack/components/view";
 import { useCreateAssistantMutation } from "../../hooks/queries";
 
 interface PluginToggleListProps {
@@ -141,12 +133,12 @@ export const CreateAssistantView = () => {
 
 	return (
 		<FormProvider {...form}>
-			<View id="create-assistant" as="form" onSubmit={handleSubmit}>
-				<ViewHeader>
-					<ViewBackIconButton type="button" />
-					<ViewTitle>Create assistant</ViewTitle>
-				</ViewHeader>
-				<ViewContent>
+			<View.Root as="form" onSubmit={handleSubmit}>
+				<View.Header>
+					<View.BackButton type="button" />
+					<View.TitleProps>Create assistant</View.TitleProps>
+				</View.Header>
+				<View.Content>
 					<Form.Root as="div" onSubmit={handleSubmit}>
 						<Form.Content>
 							<FieldController.Root
@@ -213,13 +205,13 @@ export const CreateAssistantView = () => {
 							/>
 						</Form.Content>
 					</Form.Root>
-				</ViewContent>
-				<ViewFooter>
-					<ViewFooterActions>
+				</View.Content>
+				<View.Footer>
+					<View.FooterActions>
 						<Button type="submit">Create</Button>
-					</ViewFooterActions>
-				</ViewFooter>
-			</View>
+					</View.FooterActions>
+				</View.Footer>
+			</View.Root>
 		</FormProvider>
 	);
 };
