@@ -65,6 +65,7 @@ import {
 } from "../../../features/plugins/hooks/queries";
 import { usePluginContextSettings } from "../../../features/plugins/hooks/use-plugin-context-settings";
 import { useMainRouterClient } from "../../../lib/trpc";
+import { AssistantsView } from "../../assistants/components/views/assistants";
 import { useDeleteAllChatsMutation } from "../../chat/hooks/queries";
 import { showNotification } from "../../notifications/utils";
 import type { SettingEntry } from "../../plugins/core/plugin-backend";
@@ -348,6 +349,10 @@ const DeveloperTabContent = () => {
 	);
 };
 
+const AssistantsTabContent = () => {
+	return <AssistantsView />;
+};
+
 const installPluginFormSchema = z.object({
 	repoUrl: z.string().regex(/^https:\/\/github\.com\/[^/]+\/[^/]+$/, {
 		message: "Please enter a valid GitHub repo URL",
@@ -556,7 +561,7 @@ const PluginsTabContent = () => {
 	};
 
 	return (
-		<div>
+		<>
 			<div>
 				<div>Plugins</div>
 				<div className="plugins-actions">
@@ -583,7 +588,7 @@ const PluginsTabContent = () => {
 					))}
 				</div>
 			</div>
-		</div>
+		</>
 	);
 };
 
@@ -657,22 +662,18 @@ interface PluginContentProps {
 const PluginTabContent = ({ pluginId }: PluginContentProps) => {
 	const plugin = useActivePlugin(pluginId);
 
-	return (
-		<div className="plugin-settings-page">
-			<div>
-				{plugin ? (
-					<PluginSettingsFormContainer plugin={plugin} />
-				) : (
-					<ErrorState>
-						<ErrorStateTitle>Plugin not found</ErrorStateTitle>
-						<ErrorStateDescription>
-							The plugin you are trying to access is not active.
-						</ErrorStateDescription>
-					</ErrorState>
-				)}
-			</div>
-		</div>
-	);
+	if (!plugin) {
+		return (
+			<ErrorState>
+				<ErrorStateTitle>Plugin not found</ErrorStateTitle>
+				<ErrorStateDescription>
+					The plugin you are trying to access is not active.
+				</ErrorStateDescription>
+			</ErrorState>
+		);
+	}
+
+	return <PluginSettingsFormContainer plugin={plugin} />;
 };
 
 export const SettingsTabs = () => {
@@ -713,6 +714,9 @@ export const SettingsTabs = () => {
 						<VerticalTabs.ListSectionItem value="developer">
 							Developer
 						</VerticalTabs.ListSectionItem>
+						<VerticalTabs.ListSectionItem value="assistants">
+							Assistants
+						</VerticalTabs.ListSectionItem>
 						<VerticalTabs.ListSectionItem value="plugins">
 							Plugins
 						</VerticalTabs.ListSectionItem>
@@ -750,6 +754,9 @@ export const SettingsTabs = () => {
 			</VerticalTabs.Content>
 			<VerticalTabs.Content value="developer">
 				<DeveloperTabContent />
+			</VerticalTabs.Content>
+			<VerticalTabs.Content value="assistants">
+				<AssistantsTabContent />
 			</VerticalTabs.Content>
 			<VerticalTabs.Content value="plugins">
 				<PluginsTabContent />

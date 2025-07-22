@@ -52,5 +52,11 @@ export const ListSectionItem = ({ className, ...props }: ListSectionItemProps) =
 export interface ContentProps extends RadixTabs.TabsContentProps {}
 
 export const Content = ({ className, ...props }: ContentProps) => {
-	return <RadixTabs.Content className={clsx("vertical-tabs-content", className)} {...props} />;
+	return (
+		<RadixTabs.Content
+			className={clsx("vertical-tabs-content", className)}
+			data-tab={props.value}
+			{...props}
+		/>
+	);
 };

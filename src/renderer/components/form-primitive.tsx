@@ -4,10 +4,12 @@ import { Button, type ButtonProps } from "./button";
 export interface RootProps extends React.ComponentProps<"form"> {
 	/** an identifier for the form */
 	id?: string;
+
+	as?: React.ElementType;
 }
 
-export const Root = ({ id, className, ...props }: RootProps) => {
-	return <form className={clsx("form", className)} data-form={id} {...props} />;
+export const Root = ({ id, as: Component = "form", className, ...props }: RootProps) => {
+	return <Component className={clsx("form", className)} data-form={id} {...props} />;
 };
 
 // form header

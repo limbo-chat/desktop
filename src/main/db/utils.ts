@@ -110,7 +110,9 @@ export async function getDb(): Promise<AppDatabaseClient> {
 		.addColumn("description", "text", (col) => col.notNull())
 		.addColumn("systemPrompt", "text", (col) => col.notNull())
 		.addColumn("recommendedPlugins", "text", (col) => col.notNull())
-		.addColumn("recommendedTools", "text", (col) => col.notNull());
+		.addColumn("recommendedTools", "text", (col) => col.notNull())
+		.ifNotExists()
+		.execute();
 
 	return db;
 }
