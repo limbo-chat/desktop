@@ -1,5 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { AppIcon } from "../../../../components/app-icon";
+import { Button } from "../../../../components/button";
+import { EmptyState, EmptyStateActions, EmptyStateTitle } from "../../../../components/empty-state";
 import { IconButton } from "../../../../components/icon-button";
 import { Tooltip } from "../../../../components/tooltip";
 import { useMainRouter } from "../../../../lib/trpc";
@@ -30,6 +32,16 @@ export const AssistantsView = () => {
 				</View.HeaderActions>
 			</View.Header>
 			<View.Content>
+				{assistants.length === 0 && (
+					<EmptyState>
+						<EmptyStateTitle>No assistants found</EmptyStateTitle>
+						<EmptyStateActions>
+							<Button onClick={() => viewStack.push({ id: "create-assistant" })}>
+								Create assistant
+							</Button>
+						</EmptyStateActions>
+					</EmptyState>
+				)}
 				{assistants.map((assistant) => (
 					<div className="assistant" key={assistant.id}>
 						<div className="assistant-name">{assistant.name}</div>
