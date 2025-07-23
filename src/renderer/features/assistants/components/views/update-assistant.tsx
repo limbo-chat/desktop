@@ -1,40 +1,52 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
-import { z } from "zod";
 import { Button } from "../../../../components/button";
-import * as FieldController from "../../../../components/field-controller";
 import * as Form from "../../../../components/form-primitive";
+import { useMainRouter } from "../../../../lib/trpc";
 import * as View from "../../../view-stack/components/view";
 import { useViewStackContext } from "../../../view-stack/hooks";
-import { useCreateAssistantMutation } from "../../hooks/queries";
+import type { ViewComponentProps } from "../../../view-stack/types";
+import { useUpdateAssistantMutation } from "../../hooks/queries";
 import { baseAssistantFormSchema } from "../../schemas";
 import { BaseAssistantFormFields } from "../assistant-form-fields";
 
-const createAssistantFormSchema = baseAssistantFormSchema.extend({
-	id: z.string().min(1, "An ID is required"),
-});
+export interface UpdateAssistantViewData {
+	assistantId: string;
+}
 
-export const CreateAssistantView = () => {
-	const createAssistantMutation = useCreateAssistantMutation();
+export const UpdateAssistantView = ({ view }: ViewComponentProps<UpdateAssistantViewData>) => {
+	const mainRouter = useMainRouter();
+	const updateAssistantMutation = useUpdateAssistantMutation();
 	const viewStack = useViewStackContext();
 
+	const getAssitantQuery = useSuspenseQuery(
+		mainRouter.assistants.get.queryOptions({
+			id: view.data.assistantId,
+		})
+	);
+
+	const assistant = getAssitantQuery.data;
+
 	const form = useForm({
-		resolver: zodResolver(createAssistantFormSchema),
+		resolver: zodResolver(baseAssistantFormSchema),
 		mode: "onChange",
-		defaultValues: {
-			id: "",
-			name: "",
-			description: "",
-			systemPrompt: "",
-			recommendedPlugins: [],
-			recommendedTools: [],
+		values: {
+			name: assistant.name,
+			description: assistant.description,
+			systemPrompt: assistant.systemPrompt,
+			recommendedPlugins: assistant.recommendedPlugins,
+			recommendedTools: assistant.recommendedTools,
 		},
 	});
 
+	const { isValid, isDirty } = form.formState;
+
 	const handleSubmit = form.handleSubmit((data) => {
-		createAssistantMutation.mutate(
+		updateAssistantMutation.mutate(
 			{
-				assistant: data,
+				id: assistant.id,
+				data,
 			},
 			{
 				onSuccess: () => {
@@ -49,19 +61,11 @@ export const CreateAssistantView = () => {
 			<View.Root as="form" onSubmit={handleSubmit}>
 				<View.Header>
 					<View.BackButton type="button" />
-					<View.TitleProps>Create assistant</View.TitleProps>
+					<View.TitleProps>Update assistant</View.TitleProps>
 				</View.Header>
 				<View.Content>
 					<Form.Root as="div">
 						<Form.Content>
-							<FieldController.Root
-								id="id"
-								name="id"
-								label="ID"
-								description="Enter a unique ID for your assistant"
-							>
-								<FieldController.TextInput placeholder="my-assistant" />
-							</FieldController.Root>
 							<BaseAssistantFormFields />
 						</Form.Content>
 					</Form.Root>
@@ -70,10 +74,10 @@ export const CreateAssistantView = () => {
 					<View.FooterActions>
 						<Button
 							type="submit"
-							disabled={!form.formState.isValid}
-							isLoading={createAssistantMutation.isPending}
+							disabled={!isDirty || !isValid}
+							isLoading={updateAssistantMutation.isPending}
 						>
-							Create
+							Save changes
 						</Button>
 					</View.FooterActions>
 				</View.Footer>

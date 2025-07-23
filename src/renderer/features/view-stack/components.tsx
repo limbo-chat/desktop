@@ -3,7 +3,7 @@ import { useViewStackState } from "./hooks";
 import type { View, ViewComponentProps } from "./types";
 
 export interface ViewStackProps {
-	views: Record<string, React.FunctionComponent<ViewComponentProps>>;
+	views: Record<string, React.FunctionComponent<ViewComponentProps<any>>>;
 	defaultView: View;
 }
 

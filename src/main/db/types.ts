@@ -86,6 +86,7 @@ export interface AssistantTable {
 	id: string;
 	name: string;
 	description: string;
+	systemPrompt: string;
 	recommendedPlugins: JSONColumnType<string[]>;
 	recommendedTools: JSONColumnType<string[]>;
 }

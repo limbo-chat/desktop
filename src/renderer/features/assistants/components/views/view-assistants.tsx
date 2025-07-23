@@ -25,7 +25,9 @@ export const AssistantsView = () => {
 						</IconButton>
 					</Tooltip>
 					<Tooltip label="Create assistant">
-						<IconButton onClick={() => viewStack.push({ id: "create-assistant" })}>
+						<IconButton
+							onClick={() => viewStack.push({ id: "create-assistant", data: null })}
+						>
 							<AppIcon icon="add" />
 						</IconButton>
 					</Tooltip>
@@ -36,14 +38,27 @@ export const AssistantsView = () => {
 					<EmptyState>
 						<EmptyStateTitle>No assistants found</EmptyStateTitle>
 						<EmptyStateActions>
-							<Button onClick={() => viewStack.push({ id: "create-assistant" })}>
+							<Button
+								onClick={() =>
+									viewStack.push({ id: "create-assistant", data: null })
+								}
+							>
 								Create assistant
 							</Button>
 						</EmptyStateActions>
 					</EmptyState>
 				)}
 				{assistants.map((assistant) => (
-					<div className="assistant" key={assistant.id}>
+					<div
+						className="assistant"
+						key={assistant.id}
+						onClick={() =>
+							viewStack.push({
+								id: "update-assistant",
+								data: { assistantId: assistant.id },
+							})
+						}
+					>
 						<div className="assistant-name">{assistant.name}</div>
 						<p className="assistant-description">{assistant.description}</p>
 					</div>

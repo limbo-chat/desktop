@@ -12,6 +12,19 @@ const createAssistantInputSchema = z.object({
 	assistant: assistantSchema,
 });
 
+const updateAssistantInputSchema = z.object({
+	id: z.string(),
+	data: assistantSchema
+		.pick({
+			name: true,
+			description: true,
+			systemPrompt: true,
+			recommendedPlugins: true,
+			recommendedTools: true,
+		})
+		.partial(),
+});
+
 const deleteAssistantInputSchema = z.object({
 	id: z.string(),
 });
@@ -25,7 +38,11 @@ export const assistantsRouter = router({
 	get: publicProcedure.input(getAssistantInputSchema).query(async ({ input }) => {
 		const db = await getDb();
 
-		const assistant = await db.selectFrom("assistant").selectAll().execute();
+		const assistant = await db
+			.selectFrom("assistant")
+			.selectAll()
+			.where("id", "=", input.id)
+			.executeTakeFirst();
 
 		if (!assistant) {
 			throw new TRPCError({
@@ -49,6 +66,23 @@ export const assistantsRouter = router({
 			.execute();
 
 		return assistant;
+	}),
+	update: publicProcedure.input(updateAssistantInputSchema).mutation(async ({ input }) => {
+		const db = await getDb();
+
+		await db
+			.updateTable("assistant")
+			.set({
+				...input.data,
+				recommendedPlugins: input.data.recommendedPlugins
+					? JSON.stringify(input.data.recommendedPlugins)
+					: undefined,
+				recommendedTools: input.data.recommendedTools
+					? JSON.stringify(input.data.recommendedTools)
+					: undefined,
+			})
+			.where("id", "=", input.id)
+			.executeTakeFirst();
 	}),
 	delete: publicProcedure.input(deleteAssistantInputSchema).mutation(async ({ input }) => {
 		const db = await getDb();

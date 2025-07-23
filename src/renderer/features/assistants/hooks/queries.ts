@@ -14,6 +14,19 @@ export const useCreateAssistantMutation = () => {
 	);
 };
 
+export const useUpdateAssistantMutation = () => {
+	const queryClient = useQueryClient();
+	const mainRouter = useMainRouter();
+
+	return useMutation(
+		mainRouter.assistants.update.mutationOptions({
+			onSuccess: () => {
+				queryClient.invalidateQueries(mainRouter.assistants.getAll.queryFilter());
+			},
+		})
+	);
+};
+
 export const useDeleteAssistantMutation = () => {
 	const queryClient = useQueryClient();
 	const mainRouter = useMainRouter();

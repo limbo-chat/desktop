@@ -1,6 +1,6 @@
-export interface View<TData = unknown> {
+export interface View<TData = unknown | null> {
 	id: string;
-	data?: TData;
+	data: TData;
 }
 
 export interface ViewStackState {
@@ -20,6 +20,6 @@ export interface ViewStackState {
 	replace: (view: View) => void;
 }
 
-export interface ViewComponentProps<TData = unknown> {
+export interface ViewComponentProps<TData = unknown | null> {
 	view: View<TData>;
 }
