@@ -70,6 +70,9 @@ export const CreateAssistantView = () => {
 				</View.Content>
 				<View.Footer>
 					<View.FooterActions>
+						<Button disabled={!form.formState.isDirty} onClick={() => form.reset()}>
+							Reset
+						</Button>
 						<Button
 							type="submit"
 							disabled={!form.formState.isValid}

@@ -85,6 +85,7 @@ export type NewChatMessage = Insertable<ChatMessageTable>;
 export interface AssistantTable {
 	id: string;
 	name: string;
+	tagline: string;
 	description: string;
 	systemPrompt: string;
 	recommendedPlugins: JSONColumnType<string[]>;

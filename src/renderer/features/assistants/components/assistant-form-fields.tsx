@@ -103,12 +103,20 @@ export const BaseAssistantFormFields = () => {
 				<FieldController.TextInput placeholder="My Assistant" />
 			</FieldController.Root>
 			<FieldController.Root
+				id="tagline"
+				name="tagline"
+				label="Tagline"
+				description="A tag line is a short description of your assistant's purpose"
+			>
+				<FieldController.TextInput placeholder="The coolest assistant" />
+			</FieldController.Root>
+			<FieldController.Root
 				id="description"
 				name="description"
 				label="Description"
-				description="Enter a description"
+				description="A brief description of your assistant. Supports markdown."
 			>
-				<FieldController.TextInput placeholder="A brief description of your assistant" />
+				<FieldController.Textarea placeholder="This assistant helps you with..." />
 			</FieldController.Root>
 			<FieldController.Root
 				id="system-prompt"

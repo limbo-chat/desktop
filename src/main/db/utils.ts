@@ -107,6 +107,7 @@ export async function getDb(): Promise<AppDatabaseClient> {
 		.createTable("assistant")
 		.addColumn("id", "text", (col) => col.primaryKey())
 		.addColumn("name", "text", (col) => col.notNull())
+		.addColumn("tagline", "text", (col) => col.notNull())
 		.addColumn("description", "text", (col) => col.notNull())
 		.addColumn("systemPrompt", "text", (col) => col.notNull())
 		.addColumn("recommendedPlugins", "text", (col) => col.notNull())

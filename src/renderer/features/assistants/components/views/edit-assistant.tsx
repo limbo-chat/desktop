@@ -33,6 +33,7 @@ export const EditAssistantView = ({ view }: ViewComponentProps<EditAssistantView
 		mode: "onChange",
 		values: {
 			name: assistant.name,
+			tagline: assistant.tagline,
 			description: assistant.description,
 			systemPrompt: assistant.systemPrompt,
 			recommendedPlugins: assistant.recommendedPlugins,

@@ -18,6 +18,7 @@ export const Button = ({
 	return (
 		<button
 			className={clsx("button", className)}
+			type="button"
 			disabled={disabled || isLoading}
 			data-action={action}
 			data-loading={isLoading || undefined}

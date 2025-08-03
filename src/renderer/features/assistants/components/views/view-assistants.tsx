@@ -106,7 +106,7 @@ export const AssistantsView = () => {
 							}
 						>
 							<div className="assistant-name">{assistant.name}</div>
-							<p className="assistant-description">{assistant.description}</p>
+							<p className="assistant-tagline">{assistant.tagline}</p>
 						</div>
 					))}
 				</div>
