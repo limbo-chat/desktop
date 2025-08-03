@@ -11,22 +11,22 @@ import { useUpdateAssistantMutation } from "../../hooks/queries";
 import { baseAssistantFormSchema } from "../../schemas";
 import { BaseAssistantFormFields } from "../assistant-form-fields";
 
-export interface UpdateAssistantViewData {
+export interface EditAssistantViewData {
 	assistantId: string;
 }
 
-export const UpdateAssistantView = ({ view }: ViewComponentProps<UpdateAssistantViewData>) => {
+export const EditAssistantView = ({ view }: ViewComponentProps<EditAssistantViewData>) => {
 	const mainRouter = useMainRouter();
 	const updateAssistantMutation = useUpdateAssistantMutation();
 	const viewStack = useViewStackContext();
 
-	const getAssitantQuery = useSuspenseQuery(
+	const getAssistantQuery = useSuspenseQuery(
 		mainRouter.assistants.get.queryOptions({
 			id: view.data.assistantId,
 		})
 	);
 
-	const assistant = getAssitantQuery.data;
+	const assistant = getAssistantQuery.data;
 
 	const form = useForm({
 		resolver: zodResolver(baseAssistantFormSchema),
@@ -60,8 +60,10 @@ export const UpdateAssistantView = ({ view }: ViewComponentProps<UpdateAssistant
 		<FormProvider {...form}>
 			<View.Root as="form" onSubmit={handleSubmit}>
 				<View.Header>
-					<View.BackButton type="button" />
-					<View.TitleProps>Update assistant</View.TitleProps>
+					<View.HeaderStart>
+						<View.BackButton type="button" />
+						<View.TitleProps>Edit assistant</View.TitleProps>
+					</View.HeaderStart>
 				</View.Header>
 				<View.Content>
 					<Form.Root as="div">

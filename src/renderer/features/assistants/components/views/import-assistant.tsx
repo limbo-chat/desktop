@@ -1,47 +1,51 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
+import { assistantSchema } from "../../../../../main/assistants/schemas";
 import { Button } from "../../../../components/button";
 import * as FieldController from "../../../../components/field-controller";
 import * as Form from "../../../../components/form-primitive";
 import * as View from "../../../view-stack/components/view";
-import { useViewStackContext } from "../../../view-stack/hooks";
 import { useCreateAssistantMutation } from "../../hooks/queries";
-import { baseAssistantFormSchema } from "../../schemas";
-import { BaseAssistantFormFields } from "../assistant-form-fields";
 
-const createAssistantFormSchema = baseAssistantFormSchema.extend({
-	id: z.string().min(1, "An ID is required"),
+const importAssistantFormSchema = z.object({
+	payload: z.string().min(1, "An assistant payload is required"),
 });
 
-export const CreateAssistantView = () => {
+export const ImportAssistantView = () => {
 	const createAssistantMutation = useCreateAssistantMutation();
-	const viewStack = useViewStackContext();
 
 	const form = useForm({
-		resolver: zodResolver(createAssistantFormSchema),
 		mode: "onChange",
-		defaultValues: {
-			id: "",
-			name: "",
-			description: "",
-			systemPrompt: "",
-			recommendedPlugins: [],
-			recommendedTools: [],
-		},
+		resolver: zodResolver(importAssistantFormSchema),
 	});
 
 	const handleSubmit = form.handleSubmit((data) => {
-		createAssistantMutation.mutate(
-			{
-				assistant: data,
-			},
-			{
-				onSuccess: () => {
-					viewStack.pop();
-				},
-			}
-		);
+		let rawAssistant;
+
+		try {
+			rawAssistant = JSON.parse(data.payload);
+		} catch (error) {
+			form.setError("payload", {
+				type: "manual",
+				message: "Invalid JSON format",
+			});
+
+			return;
+		}
+
+		const parsedAssistant = assistantSchema.safeParse(rawAssistant);
+
+		if (!parsedAssistant.success) {
+			form.setError("payload", {
+				type: "manual",
+				message: "Invalid assistant structure",
+			});
+
+			return;
+		}
+
+		console.log("Parsed assistant:", parsedAssistant.data);
 	});
 
 	return (
@@ -50,21 +54,20 @@ export const CreateAssistantView = () => {
 				<View.Header>
 					<View.HeaderStart>
 						<View.BackButton type="button" />
-						<View.TitleProps>Create assistant</View.TitleProps>
+						<View.TitleProps>Import assistant</View.TitleProps>
 					</View.HeaderStart>
 				</View.Header>
 				<View.Content>
 					<Form.Root as="div">
 						<Form.Content>
 							<FieldController.Root
-								id="id"
-								name="id"
-								label="ID"
-								description="Enter a unique ID for your assistant"
+								id="payload"
+								name="payload"
+								label="Assistant JSON"
+								description="Paste the assistant JSON payload here."
 							>
-								<FieldController.TextInput placeholder="my-assistant" />
+								<FieldController.Textarea placeholder="{}" />
 							</FieldController.Root>
-							<BaseAssistantFormFields />
 						</Form.Content>
 					</Form.Root>
 				</View.Content>
@@ -75,7 +78,7 @@ export const CreateAssistantView = () => {
 							disabled={!form.formState.isValid}
 							isLoading={createAssistantMutation.isPending}
 						>
-							Create
+							Import
 						</Button>
 					</View.FooterActions>
 				</View.Footer>

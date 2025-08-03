@@ -48,15 +48,24 @@ export const AssistantsView = () => {
 	return (
 		<View.Root>
 			<View.Header>
-				<SearchInput
-					placeholder="Search assistants..."
-					value={search}
-					onChange={setSearch}
-					ref={searchInputRef}
-				/>
+				<View.HeaderStart>
+					<SearchInput
+						placeholder="Search assistants..."
+						value={search}
+						onChange={setSearch}
+						ref={searchInputRef}
+					/>
+				</View.HeaderStart>
 				<View.HeaderActions>
-					<Tooltip label="Download assistant">
-						<IconButton onClick={() => {}}>
+					<Tooltip label="Import assistant">
+						<IconButton
+							onClick={() => {
+								viewStack.push({
+									id: "import-assistant",
+									data: null,
+								});
+							}}
+						>
 							<AppIcon icon="download" />
 						</IconButton>
 					</Tooltip>
@@ -91,7 +100,7 @@ export const AssistantsView = () => {
 							key={assistant.id}
 							onClick={() =>
 								viewStack.push({
-									id: "update-assistant",
+									id: "view-assistant",
 									data: { assistantId: assistant.id },
 								})
 							}

@@ -18,6 +18,12 @@ export const Header = ({ className, ...props }: HeaderProps) => {
 	return <div className={clsx("view-header", className)} {...props} />;
 };
 
+export interface StartSectionProps extends HTMLAttributes<HTMLDivElement> {}
+
+export const HeaderStart = ({ className, ...props }: StartSectionProps) => {
+	return <div className={clsx("view-header-start", className)} {...props} />;
+};
+
 export interface ViewTitleProps extends HTMLAttributes<HTMLDivElement> {}
 
 export const TitleProps = ({ className, ...props }: ViewTitleProps) => {
