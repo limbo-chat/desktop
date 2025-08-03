@@ -23,7 +23,7 @@ export const AssistantsView = () => {
 		return new Fuse(assistants, {
 			threshold: 0.3,
 			ignoreLocation: true,
-			keys: ["id", "name", "description"],
+			keys: ["id", "name", "tagline"],
 		});
 	}, [assistants]);
 
