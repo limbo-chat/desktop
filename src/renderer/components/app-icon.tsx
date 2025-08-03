@@ -18,7 +18,7 @@ const appIconMap: Record<limbo.AppIcon, FC> = {
 	"filter": lucide.Filter,
 	"sort": lucide.ArrowUpDown,
 	"save": lucide.Save,
-	"edit": lucide.Edit,
+	"edit": lucide.Pencil,
 	"delete": lucide.Trash2,
 	"refresh": lucide.RefreshCcw,
 	"send": lucide.ArrowUp,

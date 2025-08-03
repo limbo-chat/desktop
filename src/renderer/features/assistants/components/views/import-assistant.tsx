@@ -6,6 +6,7 @@ import { Button } from "../../../../components/button";
 import * as FieldController from "../../../../components/field-controller";
 import * as Form from "../../../../components/form-primitive";
 import * as View from "../../../view-stack/components/view";
+import { useViewStackContext } from "../../../view-stack/hooks";
 import { useCreateAssistantMutation } from "../../hooks/queries";
 
 const importAssistantFormSchema = z.object({
@@ -14,6 +15,7 @@ const importAssistantFormSchema = z.object({
 
 export const ImportAssistantView = () => {
 	const createAssistantMutation = useCreateAssistantMutation();
+	const viewStack = useViewStackContext();
 
 	const form = useForm({
 		mode: "onChange",
@@ -45,7 +47,16 @@ export const ImportAssistantView = () => {
 			return;
 		}
 
-		console.log("Parsed assistant:", parsedAssistant.data);
+		createAssistantMutation.mutate(
+			{
+				assistant: parsedAssistant.data,
+			},
+			{
+				onSuccess: () => {
+					viewStack.pop();
+				},
+			}
+		);
 	});
 
 	return (
