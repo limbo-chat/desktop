@@ -57,7 +57,7 @@ export const DefaultToolCallRenderer = ({ toolCall }: limbo.ToolRendererProps) =
 	return (
 		<RadixCollapsible.Root className="tool-call">
 			<RadixCollapsible.Trigger asChild>
-				<button className="tool-call-header">
+				<button type="button" className="tool-call-header">
 					<div className="tool-call-info">
 						<div className="tool-call-icon-container">{icon}</div>
 						<span className="tool-call-id">{toolCall.toolId}</span>

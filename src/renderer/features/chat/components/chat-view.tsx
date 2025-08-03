@@ -33,6 +33,7 @@ const ScrollToBottomButton = ({ state, ...props }: ScrollToBottomButtonProps) =>
 
 	return (
 		<button
+			type="button"
 			className="scroll-to-bottom-button"
 			data-state={state}
 			{...animationUnmount.props}

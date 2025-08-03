@@ -6,5 +6,12 @@ export interface IconButtonProps extends React.ComponentProps<"button"> {
 }
 
 export const IconButton = ({ action, className, ...props }: IconButtonProps) => {
-	return <button className={clsx("icon-button", className)} data-action={action} {...props} />;
+	return (
+		<button
+			type="button"
+			className={clsx("icon-button", className)}
+			data-action={action}
+			{...props}
+		/>
+	);
 };
