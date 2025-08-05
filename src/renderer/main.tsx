@@ -222,7 +222,9 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 				},
 			},
 			auth: {
-				authenticate: (opts) => {},
+				authenticate: async (opts) => {
+					// TODO, wire up
+				},
 			},
 		};
 	}, []);
