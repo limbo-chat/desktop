@@ -2,8 +2,6 @@ import type * as limbo from "@limbo/api";
 import type { PluginContext } from "./plugin-context";
 import type { PluginEnvironment } from "./plugin-environment";
 
-export interface PluginAPIEnvironment {}
-
 export interface CreatePluginAPIOptions {
 	pluginId: string;
 	pluginContext: PluginContext;
@@ -177,6 +175,15 @@ export class PluginAPIFactory {
 						this.pluginEnvironment.ui.showChatPanel(args);
 					} catch {
 						throw new Error("Failed to show chat panel");
+					}
+				},
+			},
+			auth: {
+				authenticate: (opts) => {
+					try {
+						return this.pluginEnvironment.auth.authenticate(opts);
+					} catch {
+						throw new Error("Failed to authenticate");
 					}
 				},
 			},

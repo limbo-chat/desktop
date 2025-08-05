@@ -221,6 +221,9 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 					});
 				},
 			},
+			auth: {
+				authenticate: (opts) => {},
+			},
 		};
 	}, []);
 

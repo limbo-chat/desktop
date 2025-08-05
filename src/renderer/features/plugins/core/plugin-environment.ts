@@ -69,10 +69,15 @@ export interface PluginEnvironmentUI {
 	showChatPanel: typeof limbo.ui.showChatPanel;
 }
 
+export interface PluginEnvironmentAuth {
+	authenticate: typeof limbo.auth.authenticate;
+}
+
 export interface PluginEnvironment {
 	storage: PluginEnvironmentStorage;
 	database: PluginEnvironmentDatabase;
 	chats: PluginEnvironmentChats;
 	models: PluginEnvironmentModels;
 	ui: PluginEnvironmentUI;
+	auth: PluginEnvironmentAuth;
 }
