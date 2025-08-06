@@ -14,6 +14,55 @@ export async function getDb() {
 	});
 
 	await db.schema
+		.createTable("oauth_provider")
+		.addColumn("id", "integer", (col) => col.primaryKey().autoIncrement())
+		.addColumn("issuer_url", "text", (col) => col.notNull())
+		.addColumn("auth_url", "text", (col) => col.notNull())
+		.addColumn("token_url", "text", (col) => col.notNull())
+		.ifNotExists()
+		.execute();
+
+	await db.schema
+		.createTable("oauth_client")
+		.addColumn("id", "integer", (col) => col.primaryKey().autoIncrement())
+		.addColumn("provider_id", "integer", (col) =>
+			col.references("oauth_provider.id").onDelete("cascade")
+		)
+		.addColumn("remote_client_id", "text", (col) => col.notNull())
+		.ifNotExists()
+		.execute();
+
+	await db.schema
+		.createTable("oauth_token")
+		.addColumn("id", "integer", (col) => col.primaryKey().autoIncrement())
+		.addColumn("client_id", "integer", (col) =>
+			col.references("oauth_client.id").onDelete("cascade")
+		)
+		.addColumn("access_token", "text", (col) => col.notNull())
+		.addColumn("expires_at", "text", (col) => col.notNull())
+		.addColumn("refresh_token", "text")
+		.ifNotExists()
+		.execute();
+
+	await db.schema
+		.createTable("oauth_token_scope")
+		.addColumn("token_id", "integer", (col) =>
+			col.references("oauth_token.id").onDelete("cascade").notNull()
+		)
+		.addColumn("scope", "text", (col) => col.notNull())
+		.ifNotExists()
+		.execute();
+
+	await db.schema
+		.createTable("oauth_token_request_session")
+		.addColumn("id", "integer", (col) => col.primaryKey().autoIncrement())
+		.addColumn("client_id", "text", (col) => col.notNull().references("oauth_client.id"))
+		.addColumn("code_verifier", "text", (col) => col.notNull())
+		.addColumn("created_at", "text", (col) => col.notNull())
+		.ifNotExists()
+		.execute();
+
+	await await db.schema
 		.createTable("chat")
 		.addColumn("id", "text", (col) => col.primaryKey())
 		.addColumn("name", "text", (col) => col.notNull())

@@ -1,5 +1,53 @@
-import type { Insertable, JSONColumnType, Selectable } from "kysely";
+import type { Generated, Insertable, JSONColumnType, Selectable } from "kysely";
 import type { ChatMessageNode } from "@limbo/api";
+
+export interface OAuthProviderTable {
+	id: Generated<number>;
+	issuer_url: string;
+	auth_url: string;
+	token_url: string;
+}
+
+export type OAuthProvider = Selectable<OAuthProviderTable>;
+export type NewOAuthProvider = Insertable<OAuthProviderTable>;
+
+export interface OAuthClientTable {
+	id: Generated<number>;
+	provider_id: string;
+	remote_client_id: string;
+}
+
+export type OAuthClient = Selectable<OAuthClientTable>;
+export type NewOAuthClient = Insertable<OAuthClientTable>;
+
+export interface OAuthTokenTable {
+	id: Generated<number>;
+	client_id: string;
+	access_token: string;
+	refresh_token: string | null;
+	expires_at: string | null;
+}
+
+export type OAuthToken = Selectable<OAuthTokenTable>;
+export type NewOAuthToken = Insertable<OAuthTokenTable>;
+
+export interface OAuthTokenScopeTable {
+	token_id: number;
+	scope: string;
+}
+
+export type OAuthTokenScope = Selectable<OAuthTokenScopeTable>;
+export type NewOAuthTokenScope = Insertable<OAuthTokenScopeTable>;
+
+export interface OAuthTokenRequestSessionTable {
+	id: Generated<number>;
+	client_id: string;
+	code_verifier: string;
+	created_at: string;
+}
+
+export type OAuthTokenRequestSession = Selectable<OAuthTokenRequestSessionTable>;
+export type NewOAuthTokenRequestSession = Insertable<OAuthTokenRequestSessionTable>;
 
 export interface ChatTable {
 	id: string;
@@ -26,6 +74,9 @@ export type ChatMessage = Selectable<ChatMessageTable>;
 export type NewChatMessage = Insertable<ChatMessageTable>;
 
 export interface Database {
+	oauthProvider: OAuthProviderTable;
+	oauthClient: OAuthClientTable;
+	oauthToken: OAuthTokenTable;
 	chat: ChatTable;
 	chatMessage: ChatMessageTable;
 }
