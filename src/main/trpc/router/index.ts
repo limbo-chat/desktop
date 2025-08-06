@@ -1,5 +1,6 @@
 import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 import { router } from "../trpc";
+import { authRouter } from "./auth";
 import { chatsRouter } from "./chats";
 import { customStylesRouter } from "./custom-styles";
 import { pluginsRouter } from "./plugins";
@@ -9,6 +10,7 @@ import { workspaceRouter } from "./workspace";
 
 export const mainRouter = router({
 	window: windowRouter,
+	auth: authRouter,
 	workspace: workspaceRouter,
 	settings: settingsRouter,
 	customStyles: customStylesRouter,

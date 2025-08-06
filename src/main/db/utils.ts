@@ -1,12 +1,12 @@
 import Sqlite from "better-sqlite3";
 import { Kysely, SqliteDialect, ParseJSONResultsPlugin } from "kysely";
 import { DB_PATH } from "./constants";
-import type { Database } from "./types";
+import type { AppDatabase, AppDatabaseClient } from "./types";
 
-export async function getDb() {
+export async function getDb(): Promise<AppDatabaseClient> {
 	const sqlite = Sqlite(DB_PATH);
 
-	const db = new Kysely<Database>({
+	const db = new Kysely<AppDatabase>({
 		dialect: new SqliteDialect({
 			database: sqlite,
 		}),
@@ -90,5 +90,5 @@ export async function getDb() {
 }
 
 export async function ensureDb() {
-	getDb();
+	await getDb();
 }
