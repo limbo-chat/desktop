@@ -16,7 +16,7 @@ export async function getDb(): Promise<AppDatabaseClient> {
 	await db.schema
 		.createTable("oauth_provider")
 		.addColumn("id", "integer", (col) => col.primaryKey().autoIncrement())
-		.addColumn("issuer_url", "text", (col) => col.notNull())
+		.addColumn("issuer_url", "text", (col) => col.notNull().unique())
 		.addColumn("auth_url", "text", (col) => col.notNull())
 		.addColumn("token_url", "text", (col) => col.notNull())
 		.ifNotExists()
@@ -26,9 +26,24 @@ export async function getDb(): Promise<AppDatabaseClient> {
 		.createTable("oauth_client")
 		.addColumn("id", "integer", (col) => col.primaryKey().autoIncrement())
 		.addColumn("provider_id", "integer", (col) =>
-			col.references("oauth_provider.id").onDelete("cascade")
+			col.notNull().references("oauth_provider.id").onDelete("cascade")
 		)
 		.addColumn("remote_client_id", "text", (col) => col.notNull())
+		.addColumn("created_at", "text", (col) => col.notNull())
+		.addUniqueConstraint("oauth_client_provider_remote_client_id_unique", [
+			"provider_id",
+			"remote_client_id",
+		])
+		.ifNotExists()
+		.execute();
+
+	await db.schema
+		.createTable("oauth_client_scope")
+		.addColumn("client_id", "integer", (col) =>
+			col.notNull().references("oauth_client.id").onDelete("cascade")
+		)
+		.addColumn("scope", "text", (col) => col.notNull())
+		.addUniqueConstraint("oauth_client_scope_client_id_scope_unique", ["client_id", "scope"])
 		.ifNotExists()
 		.execute();
 
@@ -36,7 +51,7 @@ export async function getDb(): Promise<AppDatabaseClient> {
 		.createTable("oauth_token")
 		.addColumn("id", "integer", (col) => col.primaryKey().autoIncrement())
 		.addColumn("client_id", "integer", (col) =>
-			col.references("oauth_client.id").onDelete("cascade")
+			col.notNull().references("oauth_client.id").onDelete("cascade")
 		)
 		.addColumn("access_token", "text", (col) => col.notNull())
 		.addColumn("expires_at", "text", (col) => col.notNull())
@@ -47,16 +62,19 @@ export async function getDb(): Promise<AppDatabaseClient> {
 	await db.schema
 		.createTable("oauth_token_scope")
 		.addColumn("token_id", "integer", (col) =>
-			col.references("oauth_token.id").onDelete("cascade").notNull()
+			col.notNull().references("oauth_token.id").onDelete("cascade")
 		)
 		.addColumn("scope", "text", (col) => col.notNull())
+		.addUniqueConstraint("oauth_token_scope_token_id_scope_unique", ["token_id", "scope"])
 		.ifNotExists()
 		.execute();
 
 	await db.schema
 		.createTable("oauth_token_request_session")
 		.addColumn("id", "integer", (col) => col.primaryKey().autoIncrement())
-		.addColumn("client_id", "text", (col) => col.notNull().references("oauth_client.id"))
+		.addColumn("client_id", "text", (col) =>
+			col.notNull().references("oauth_client.id").onDelete("cascade")
+		)
 		.addColumn("code_verifier", "text", (col) => col.notNull())
 		.addColumn("created_at", "text", (col) => col.notNull())
 		.ifNotExists()

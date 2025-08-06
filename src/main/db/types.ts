@@ -16,10 +16,19 @@ export interface OAuthClientTable {
 	id: Generated<number>;
 	provider_id: number;
 	remote_client_id: string;
+	created_at: string;
 }
 
 export type OAuthClient = Selectable<OAuthClientTable>;
 export type NewOAuthClient = Insertable<OAuthClientTable>;
+
+export interface OAuthClientScopeTable {
+	client_id: number;
+	scope: string;
+}
+
+export type OAuthClientScope = Selectable<OAuthClientScopeTable>;
+export type NewOAuthClientScope = Insertable<OAuthClientScopeTable>;
 
 export interface OAuthTokenTable {
 	id: Generated<number>;
@@ -77,6 +86,7 @@ export type NewChatMessage = Insertable<ChatMessageTable>;
 export interface AppDatabase {
 	oauth_provider: OAuthProviderTable;
 	oauth_client: OAuthClientTable;
+	oauth_client_scope: OAuthClientScopeTable;
 	oauth_token: OAuthTokenTable;
 	oauth_token_scope: OAuthTokenScopeTable;
 	oauth_token_request_session: OAuthTokenRequestSessionTable;
