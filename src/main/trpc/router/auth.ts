@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { AUTH_REDIRECT_URI } from "../../auth/constants";
 import {
 	createOAuthClient,
 	findOAuthToken,
@@ -15,7 +16,7 @@ export const startOAuthTokenRequestInputSchema = z.object({
 	tokenUrl: z.string(),
 	registrationUrl: z.string().optional(),
 	clientId: z.string().optional(),
-	scopes: z.array(z.string()).optional(),
+	scopes: z.array(z.string()),
 });
 
 export const authRouter = router({
@@ -42,6 +43,8 @@ export const authRouter = router({
 					const registeredOAuthClient = await registerClient({
 						registrationUrl: input.registrationUrl,
 						clientName: "Limbo Desktop", // TODO: use plugin provided name
+						redirectUris: [AUTH_REDIRECT_URI],
+						scopes: input.scopes,
 					});
 
 					newRemoteClientId = registeredOAuthClient.client_id;

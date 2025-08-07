@@ -13,7 +13,7 @@ export interface BuildOAuthAuthorizationUrlOptions {
 	redirectUri: string;
 	codeChallenge: string;
 	state?: string;
-	scopes?: string[];
+	scopes: string[];
 }
 
 export function buildOAuthAuthorizationUrl(opts: BuildOAuthAuthorizationUrlOptions): URL {
@@ -22,12 +22,9 @@ export function buildOAuthAuthorizationUrl(opts: BuildOAuthAuthorizationUrlOptio
 	authUrl.searchParams.set("response_type", "code");
 	authUrl.searchParams.set("client_id", opts.clientId);
 	authUrl.searchParams.set("redirect_uri", opts.redirectUri);
+	authUrl.searchParams.set("scope", formatScopes(opts.scopes));
 	authUrl.searchParams.set("code_challenge", opts.codeChallenge);
 	authUrl.searchParams.set("code_challenge_method", "S256");
-
-	if (opts.scopes && opts.scopes.length > 0) {
-		authUrl.searchParams.set("scope", formatScopes(opts.scopes));
-	}
 
 	if (opts.state) {
 		authUrl.searchParams.set("state", opts.state);
@@ -41,6 +38,8 @@ export function buildOAuthAuthorizationUrl(opts: BuildOAuthAuthorizationUrlOptio
 export interface RegisterClientOptions {
 	registrationUrl: string;
 	clientName: string;
+	redirectUris: string[];
+	scopes: string[];
 }
 
 export async function registerClient(opts: RegisterClientOptions) {
@@ -52,7 +51,8 @@ export async function registerClient(opts: RegisterClientOptions) {
 		},
 		body: JSON.stringify({
 			client_name: opts.clientName,
-			redirect_uris: [AUTH_REDIRECT_URI],
+			redirect_uris: opts.redirectUris,
+			scope: formatScopes(opts.scopes),
 			grant_types: ["authorization_code"],
 			response_types: ["code"],
 			token_endpoint_auth_method: "none",

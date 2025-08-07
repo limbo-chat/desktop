@@ -65,7 +65,7 @@ export interface CreateOAuthClientOptions {
 	authUrl: string;
 	tokenUrl: string;
 	remoteClientId: string;
-	scopes?: string[];
+	scopes: string[];
 }
 
 export async function createOAuthClient(db: AppDatabaseClient, opts: CreateOAuthClientOptions) {
@@ -84,14 +84,12 @@ export async function createOAuthClient(db: AppDatabaseClient, opts: CreateOAuth
 		throw new Error("Failed to create OAuth client");
 	}
 
-	if (opts.scopes && opts.scopes.length > 0) {
-		const newScopes = opts.scopes.map((scope) => ({
-			client_id: newClient.id,
-			scope,
-		}));
+	const newScopes = opts.scopes.map((scope) => ({
+		client_id: newClient.id,
+		scope,
+	}));
 
-		await db.insertInto("oauth_client_scope").values(newScopes).execute();
-	}
+	await db.insertInto("oauth_client_scope").values(newScopes).execute();
 
 	return newClient;
 }
@@ -101,7 +99,7 @@ export interface CreateOAuthTokenOptions {
 	accessToken: string;
 	refreshToken?: string;
 	expiresAt: Date;
-	scopes?: string[];
+	scopes: string[];
 }
 
 export async function createOAuthToken(db: AppDatabaseClient, opts: CreateOAuthTokenOptions) {
@@ -120,14 +118,12 @@ export async function createOAuthToken(db: AppDatabaseClient, opts: CreateOAuthT
 		throw new Error("Failed to create OAuth token");
 	}
 
-	if (opts.scopes && opts.scopes.length > 0) {
-		const newScopes = opts.scopes.map((scope) => ({
-			token_id: newToken.id,
-			scope,
-		}));
+	const newScopes = opts.scopes.map((scope) => ({
+		token_id: newToken.id,
+		scope,
+	}));
 
-		await db.insertInto("oauth_token_scope").values(newScopes).execute();
-	}
+	await db.insertInto("oauth_token_scope").values(newScopes).execute();
 
 	return newToken;
 }
@@ -227,7 +223,7 @@ export async function deleteExpiredOAuthTokens(db: AppDatabaseClient) {
 
 export interface StartOAuthTokenRequestSessionOptions {
 	client: OAuthClient;
-	scopes?: string[];
+	scopes: string[];
 }
 
 export async function startOAuthTokenRequestSession(
