@@ -147,7 +147,7 @@ export async function refreshAccessToken(opts: RefreshAccessTokenOptions) {
 	const responseParseResult = tokenResponseSchema.safeParse(body);
 
 	if (!responseParseResult.success) {
-		throw new Error("Received invalid client registration response");
+		throw new Error("Received invalid token refresh response");
 	}
 
 	return responseParseResult.data;

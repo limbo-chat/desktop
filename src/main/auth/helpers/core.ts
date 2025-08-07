@@ -1,4 +1,4 @@
-import { addMinutes, addSeconds, isBefore, isFuture, isPast, subMinutes } from "date-fns";
+import { addMinutes, addSeconds, isFuture, isPast, subMinutes } from "date-fns";
 import pkceChallenge from "pkce-challenge";
 import type {
 	AppDatabaseClient,
@@ -10,6 +10,7 @@ import { TOKEN_REFRESH_THRESHOLD_MINUTES } from "../constants";
 import {
 	buildOAuthAuthorizationUrl,
 	exchangeCodeForAccessToken,
+	InvalidRefreshTokenError,
 	refreshAccessToken,
 } from "./oauth";
 
@@ -200,10 +201,10 @@ export interface RefreshOAuthTokenIfNeededOptions {
 	token: OAuthToken;
 }
 
-export async function refreshOAuthTokenIfNeeded(
+export async function refreshOrDeleteAuthTokenIfNeeded(
 	db: AppDatabaseClient,
 	{ client, token }: RefreshOAuthTokenIfNeededOptions
-) {
+): Promise<OAuthToken | null> {
 	const tokenExpiresAt = new Date(token.expires_at);
 	const refreshThreshold = subMinutes(tokenExpiresAt, TOKEN_REFRESH_THRESHOLD_MINUTES);
 
@@ -212,13 +213,25 @@ export async function refreshOAuthTokenIfNeeded(
 		return token;
 	}
 
-	return await refreshOAuthToken(db, { token, client });
-}
+	// if there is no refresh token, we cannot refresh the token
+	if (!token.refresh_token) {
+		await db.deleteFrom("oauth_token").where("id", "=", token.id).execute();
 
-export async function deleteExpiredOAuthTokens(db: AppDatabaseClient) {
-	const now = new Date().toISOString();
+		return null;
+	}
 
-	await db.deleteFrom("oauth_token").where("expires_at", "<", now).execute();
+	try {
+		return await refreshOAuthToken(db, { token, client });
+	} catch (error) {
+		if (error instanceof InvalidRefreshTokenError) {
+			// If the refresh token is invalid, delete the token
+			await db.deleteFrom("oauth_token").where("id", "=", token.id).execute();
+
+			return null;
+		}
+
+		throw error; // rethrow other errors
+	}
 }
 
 export interface StartOAuthTokenRequestSessionOptions {
