@@ -241,7 +241,43 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 						throw new Error("Authentication cancelled by user");
 					}
 
-					return "";
+					const response =
+						await mainRouterClient.auth.startPluginOAuthTokenRequest.mutate({
+							pluginId,
+							options: {
+								issuerUrl: options.issuerUrl,
+								authUrl: options.authUrl,
+								tokenUrl: options.tokenUrl,
+								registrationUrl: options.registrationUrl,
+								clientId: options.clientId,
+								scopes: options.scopes,
+							},
+						});
+
+					if ("accessToken" in response) {
+						return response.accessToken;
+					}
+
+					// open the auth URL in the browser
+					await mainRouterClient.common.openUrl.mutate({
+						url: response.authUrl,
+					});
+
+					// wait for the token request to complete
+					return new Promise((resolve) => {
+						const handleTokenRequestDone = ({ sessionId, accessToken }: any) => {
+							if (sessionId === response.sessionId) {
+								window.ipcRenderer.removeListener(
+									"oauth_token_request:done",
+									handleTokenRequestDone
+								);
+
+								resolve(accessToken);
+							}
+						};
+
+						window.ipcRenderer.on("oauth_token_request:done", handleTokenRequestDone);
+					});
 				},
 			},
 		};

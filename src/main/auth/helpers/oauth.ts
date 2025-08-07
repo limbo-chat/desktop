@@ -14,6 +14,7 @@ export function formatScopes(scopes: string[]) {
 export interface BuildOAuthAuthorizationUrlOptions {
 	authUrl: string;
 	clientId: string;
+	redirectUri: string;
 	codeChallenge: string;
 	state?: string;
 	scopes?: string[];
@@ -24,7 +25,7 @@ export function buildOAuthAuthorizationUrl(opts: BuildOAuthAuthorizationUrlOptio
 
 	authUrl.searchParams.set("response_type", "code");
 	authUrl.searchParams.set("client_id", opts.clientId);
-	authUrl.searchParams.set("redirect_uri", "limbo://auth/callback");
+	authUrl.searchParams.set("redirect_uri", opts.redirectUri);
 	authUrl.searchParams.set("code_challenge", opts.codeChallenge);
 	authUrl.searchParams.set("code_challenge_method", "S256");
 

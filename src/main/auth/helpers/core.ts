@@ -3,6 +3,42 @@ import pkceChallenge from "pkce-challenge";
 import type { AppDatabaseClient } from "../../db/types";
 import { buildOAuthAuthorizationUrl, exchangeCodeForAccessToken } from "./oauth";
 
+export async function getOAuthProviderByIssuerUrl(db: AppDatabaseClient, issuerUrl: string) {
+	const provider = await db
+		.selectFrom("oauth_provider")
+		.selectAll()
+		.where("issuer_url", "=", issuerUrl)
+		.executeTakeFirst();
+
+	return provider ?? null;
+}
+
+export interface FindOAuthClientByProviderOptions {
+	providerId: number;
+	scopes?: string[];
+}
+
+export async function findOAuthClientByProvider(
+	db: AppDatabaseClient,
+	opts: FindOAuthClientByProviderOptions
+) {
+	const getClientQuery = await db
+		.selectFrom("oauth_client")
+		.selectAll()
+		.where("provider_id", "=", opts.providerId);
+
+	if (opts.scopes) {
+		getClientQuery
+			.innerJoin("oauth_client_scope", "oauth_client.id", "oauth_client_scope.client_id")
+			.where("oauth_client_scope.scope", "in", opts.scopes)
+			.having((eb) => eb.fn.count("oauth_client_scope.scope"), "=", opts.scopes.length);
+	}
+
+	const client = await getClientQuery.executeTakeFirst();
+
+	return client ?? null;
+}
+
 export interface FindAccessTokenOptions {
 	clientId: number;
 	scopes?: string[];
@@ -17,7 +53,8 @@ export async function findOAuthToken(db: AppDatabaseClient, opts: FindAccessToke
 	if (opts.scopes && opts.scopes.length > 0) {
 		getTokenQuery
 			.innerJoin("oauth_token_scope", "oauth_token.id", "oauth_token_scope.token_id")
-			.where("oauth_token_scope.scope", "in", opts.scopes);
+			.where("oauth_token_scope.scope", "in", opts.scopes)
+			.having((eb) => eb.fn.count("oauth_token_scope.scope"), "=", opts.scopes.length);
 	}
 
 	const tokenResult = await getTokenQuery.executeTakeFirst();
@@ -25,23 +62,128 @@ export async function findOAuthToken(db: AppDatabaseClient, opts: FindAccessToke
 	return tokenResult ?? null;
 }
 
-// core oauth flow
+export interface CreateOAuthProviderOptions {
+	issuerUrl: string;
+	authUrl: string;
+	tokenUrl: string;
+	registrationUrl?: string;
+}
 
-export interface StartOAuthTokenRequestOptions {}
+export async function createOAuthProvider(db: AppDatabaseClient, opts: CreateOAuthProviderOptions) {
+	const newProvider = await db
+		.insertInto("oauth_provider")
+		.values({
+			issuer_url: opts.issuerUrl,
+			auth_url: opts.authUrl,
+			token_url: opts.tokenUrl,
+			registration_url: opts.registrationUrl,
+		})
+		.returningAll()
+		.executeTakeFirst();
 
-export async function startOAuthTokenRequest(
+	if (!newProvider) {
+		throw new Error("Failed to create OAuth provider");
+	}
+
+	return newProvider;
+}
+
+export async function findOrCreateOAuthProvider(
 	db: AppDatabaseClient,
-	opts: StartOAuthTokenRequestOptions
+	opts: CreateOAuthProviderOptions
 ) {
-	// step 1: create the authentication url given the client id, redirect uri, scopes, state, code challenge, etc.
-	const challenge = await pkceChallenge();
+	const provider = await getOAuthProviderByIssuerUrl(db, opts.issuerUrl);
 
+	if (provider) {
+		return provider;
+	}
+
+	return await createOAuthProvider(db, opts);
+}
+
+export interface CreateOAuthClientOptions {
+	providerId: number;
+	remoteClientId: string;
+	scopes?: string[];
+}
+
+export async function createOAuthClient(db: AppDatabaseClient, opts: CreateOAuthClientOptions) {
+	const newClient = await db
+		.insertInto("oauth_client")
+		.values({
+			provider_id: opts.providerId,
+			remote_client_id: opts.remoteClientId,
+			created_at: new Date().toISOString(),
+		})
+		.returningAll()
+		.executeTakeFirst();
+
+	if (!newClient) {
+		throw new Error("Failed to create OAuth client");
+	}
+
+	if (opts.scopes && opts.scopes.length > 0) {
+		const newScopes = opts.scopes.map((scope) => ({
+			client_id: newClient.id,
+			scope,
+		}));
+
+		await db.insertInto("oauth_client_scope").values(newScopes).execute();
+	}
+
+	return newClient;
+}
+
+export interface CreateOAuthTokenOptions {
+	clientId: number;
+	accessToken: string;
+	refreshToken?: string;
+	expiresAt: Date;
+	scopes?: string[];
+}
+
+export async function createOAuthToken(db: AppDatabaseClient, opts: CreateOAuthTokenOptions) {
+	const newToken = await db
+		.insertInto("oauth_token")
+		.values({
+			client_id: opts.clientId,
+			access_token: opts.accessToken,
+			refresh_token: opts.refreshToken,
+			expires_at: opts.expiresAt.toISOString(),
+		})
+		.returningAll()
+		.executeTakeFirst();
+
+	if (!newToken) {
+		throw new Error("Failed to create OAuth token");
+	}
+
+	if (opts.scopes && opts.scopes.length > 0) {
+		const newScopes = opts.scopes.map((scope) => ({
+			token_id: newToken.id,
+			scope,
+		}));
+
+		await db.insertInto("oauth_token_scope").values(newScopes).execute();
+	}
+
+	return newToken;
+}
+
+export interface CreateTokenRequestSessionOptions {
+	clientId: number;
+	codeVerifier: string;
+}
+
+export async function createTokenRequestSession(
+	db: AppDatabaseClient,
+	opts: CreateTokenRequestSessionOptions
+) {
 	const tokenRequestSession = await db
 		.insertInto("oauth_token_request_session")
 		.values({
-			// TODO, get the values
-			client_id: null,
-			code_verifier: challenge.code_verifier,
+			client_id: opts.clientId,
+			code_verifier: opts.codeVerifier,
 			created_at: new Date().toISOString(),
 		})
 		.returningAll()
@@ -51,34 +193,76 @@ export async function startOAuthTokenRequest(
 		throw new Error("Failed to create OAuth token request session");
 	}
 
+	return tokenRequestSession;
+}
+
+// core oauth flow
+
+export interface StartOAuthTokenRequestSessionOptions {
+	clientId: number;
+	scopes?: string[];
+}
+
+export async function startOAuthTokenRequestSession(
+	db: AppDatabaseClient,
+	opts: StartOAuthTokenRequestSessionOptions
+) {
+	const client = await db
+		.selectFrom("oauth_client")
+		.selectAll()
+		.where("id", "=", opts.clientId)
+		.executeTakeFirst();
+
+	if (!client) {
+		throw new Error("OAuth client not found");
+	}
+
+	const provider = await db
+		.selectFrom("oauth_provider")
+		.selectAll()
+		.where("id", "=", client.provider_id)
+		.executeTakeFirst();
+
+	// should not happen, but just in case
+	if (!provider) {
+		throw new Error("OAuth provider not found");
+	}
+
+	const challenge = await pkceChallenge();
+
+	const tokenRequestSession = await createTokenRequestSession(db, {
+		clientId: client.id,
+		codeVerifier: challenge.code_verifier,
+	});
+
 	const authUrl = buildOAuthAuthorizationUrl({
-		// TODO, fill in the values
-		authUrl: null,
-		clientId: null,
-		scopes: [],
+		authUrl: provider.auth_url,
+		clientId: client.remote_client_id,
+		redirectUri: "limbo://auth/callback",
 		state: tokenRequestSession.id.toString(),
 		codeChallenge: challenge.code_challenge,
+		scopes: opts.scopes,
 	});
 
 	return {
+		sessionId: tokenRequestSession.id,
 		authUrl: authUrl.toString(),
-		tokenRequestSession,
 	};
 }
 
-export async function handleOAuthRedirect(db: AppDatabaseClient, uri: string) {
-	const url = new URL(uri);
-	const code = url.searchParams.get("code");
-	const state = url.searchParams.get("state");
+export interface EndOAuthTokenRequestSessionOptions {
+	sessionId: number;
+	code: string;
+}
 
-	if (!code || !state) {
-		throw new Error("Missing code or state in OAuth redirect");
-	}
-
+export async function endOAuthTokenRequestSession(
+	db: AppDatabaseClient,
+	{ sessionId, code }: EndOAuthTokenRequestSessionOptions
+) {
 	const tokenRequestSession = await db
 		.selectFrom("oauth_token_request_session")
 		.selectAll()
-		.where("id", "=", Number(state))
+		.where("id", "=", sessionId)
 		.executeTakeFirst();
 
 	if (!tokenRequestSession) {
@@ -119,6 +303,9 @@ export async function handleOAuthRedirect(db: AppDatabaseClient, uri: string) {
 		tokenUrl: provider.token_url,
 		codeVerifier: tokenRequestSession.code_verifier,
 	});
+
+	// delete the token request session
+	await db.deleteFrom("oauth_token_request_session").where("id", "=", sessionId).execute();
 
 	return tokenResponse;
 }
