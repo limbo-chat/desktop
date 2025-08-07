@@ -1,7 +1,11 @@
-import { addMinutes, isPast } from "date-fns";
+import { addMinutes, addSeconds, isPast } from "date-fns";
 import pkceChallenge from "pkce-challenge";
 import type { AppDatabaseClient } from "../../db/types";
-import { buildOAuthAuthorizationUrl, exchangeCodeForAccessToken } from "./oauth";
+import {
+	buildOAuthAuthorizationUrl,
+	exchangeCodeForAccessToken,
+	refreshAccessToken,
+} from "./oauth";
 
 export interface FindOAuthClientOptions {
 	authUrl: string;
@@ -149,6 +153,61 @@ export async function createTokenRequestSession(
 }
 
 // core oauth flow
+
+export interface RefreshOAuthTokenOptions {
+	tokenId: number;
+}
+
+export async function refreshOAuthToken(db: AppDatabaseClient, opts: RefreshOAuthTokenOptions) {
+	const token = await db
+		.selectFrom("oauth_token")
+		.selectAll()
+		.where("id", "=", opts.tokenId)
+		.executeTakeFirst();
+
+	if (!token) {
+		throw new Error("OAuth token not found");
+	}
+
+	if (!token.refresh_token) {
+		throw new Error("OAuth token does not have a refresh token");
+	}
+
+	const client = await db
+		.selectFrom("oauth_client")
+		.selectAll()
+		.where("id", "=", token.client_id)
+		.executeTakeFirst();
+
+	// this should never happen
+	if (!client) {
+		throw new Error("OAuth client not found");
+	}
+
+	const result = await refreshAccessToken({
+		clientId: client.remote_client_id,
+		refreshToken: token.refresh_token,
+		tokenUrl: client.token_url,
+	});
+
+	const expiresAt = addSeconds(new Date(), result.expires_in);
+
+	await db
+		.updateTable("oauth_token")
+		.set({
+			access_token: result.access_token,
+			refresh_token: result.refresh_token, // a refresh token may be returned
+			expires_at: expiresAt.toISOString(),
+		})
+		.where("id", "=", opts.tokenId)
+		.execute();
+}
+
+export async function deleteExpiredOAuthTokens(db: AppDatabaseClient) {
+	const now = new Date().toISOString();
+
+	await db.deleteFrom("oauth_token").where("expires_at", "<", now).execute();
+}
 
 export interface StartOAuthTokenRequestSessionOptions {
 	clientId: number;
