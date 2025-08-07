@@ -4,8 +4,9 @@ import {
 	findOAuthToken,
 	findOAuthClient,
 	startOAuthTokenRequestSession,
+	refreshOAuthTokenIfNeeded,
 } from "../../auth/helpers/core";
-import { registerClient } from "../../auth/helpers/oauth";
+import { InvalidRefreshTokenError, registerClient } from "../../auth/helpers/oauth";
 import { getDb } from "../../db/utils";
 import { publicProcedure, router } from "../trpc";
 
@@ -54,19 +55,36 @@ export const authRouter = router({
 				});
 			}
 
+			// look for an existing token for this client and scopes
 			const token = await findOAuthToken(db, {
 				clientId: client.id,
 				scopes: input.scopes,
 			});
 
 			if (token) {
-				return {
-					accessToken: token.access_token,
-				};
+				try {
+					const maybeRefreshedToken = await refreshOAuthTokenIfNeeded(db, {
+						client,
+						token,
+					});
+
+					return {
+						accessToken: maybeRefreshedToken.access_token,
+					};
+				} catch (error) {
+					if (error instanceof InvalidRefreshTokenError) {
+						// If the token is invalid, we need to delete it and start a new session
+						await db.deleteFrom("oauth_token").where("id", "=", token.id).execute();
+					} else {
+						// If it's a different error, rethrow it
+						throw error;
+					}
+				}
 			}
 
+			// if no token exists, start a new token request session
 			const result = await startOAuthTokenRequestSession(db, {
-				clientId: client.id,
+				client: client,
 				scopes: input.scopes,
 			});
 

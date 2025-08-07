@@ -1,6 +1,12 @@
-import { addMinutes, addSeconds, isPast } from "date-fns";
+import { addMinutes, addSeconds, isBefore, isFuture, isPast, subMinutes } from "date-fns";
 import pkceChallenge from "pkce-challenge";
-import type { AppDatabaseClient } from "../../db/types";
+import type {
+	AppDatabaseClient,
+	OAuthClient,
+	OAuthToken,
+	OAuthTokenRequestSession,
+} from "../../db/types";
+import { TOKEN_REFRESH_THRESHOLD_MINUTES } from "../constants";
 import {
 	buildOAuthAuthorizationUrl,
 	exchangeCodeForAccessToken,
@@ -155,33 +161,16 @@ export async function createTokenRequestSession(
 // core oauth flow
 
 export interface RefreshOAuthTokenOptions {
-	tokenId: number;
+	token: OAuthToken;
+	client: OAuthClient;
 }
 
-export async function refreshOAuthToken(db: AppDatabaseClient, opts: RefreshOAuthTokenOptions) {
-	const token = await db
-		.selectFrom("oauth_token")
-		.selectAll()
-		.where("id", "=", opts.tokenId)
-		.executeTakeFirst();
-
-	if (!token) {
-		throw new Error("OAuth token not found");
-	}
-
+export async function refreshOAuthToken(
+	db: AppDatabaseClient,
+	{ token, client }: RefreshOAuthTokenOptions
+) {
 	if (!token.refresh_token) {
 		throw new Error("OAuth token does not have a refresh token");
-	}
-
-	const client = await db
-		.selectFrom("oauth_client")
-		.selectAll()
-		.where("id", "=", token.client_id)
-		.executeTakeFirst();
-
-	// this should never happen
-	if (!client) {
-		throw new Error("OAuth client not found");
 	}
 
 	const result = await refreshAccessToken({
@@ -192,15 +181,42 @@ export async function refreshOAuthToken(db: AppDatabaseClient, opts: RefreshOAut
 
 	const expiresAt = addSeconds(new Date(), result.expires_in);
 
-	await db
+	const updatedToken = await db
 		.updateTable("oauth_token")
 		.set({
 			access_token: result.access_token,
 			refresh_token: result.refresh_token, // a refresh token may be returned
 			expires_at: expiresAt.toISOString(),
 		})
-		.where("id", "=", opts.tokenId)
-		.execute();
+		.where("id", "=", token.id)
+		.returningAll()
+		.executeTakeFirst();
+
+	if (!updatedToken) {
+		throw new Error("Failed to update OAuth token");
+	}
+
+	return updatedToken;
+}
+
+export interface RefreshOAuthTokenIfNeededOptions {
+	client: OAuthClient;
+	token: OAuthToken;
+}
+
+export async function refreshOAuthTokenIfNeeded(
+	db: AppDatabaseClient,
+	{ client, token }: RefreshOAuthTokenIfNeededOptions
+) {
+	const tokenExpiresAt = new Date(token.expires_at);
+	const refreshThreshold = subMinutes(tokenExpiresAt, TOKEN_REFRESH_THRESHOLD_MINUTES);
+
+	if (isFuture(refreshThreshold)) {
+		// Token is still valid beyond the threshold, no need to refresh
+		return token;
+	}
+
+	return await refreshOAuthToken(db, { token, client });
 }
 
 export async function deleteExpiredOAuthTokens(db: AppDatabaseClient) {
@@ -210,24 +226,14 @@ export async function deleteExpiredOAuthTokens(db: AppDatabaseClient) {
 }
 
 export interface StartOAuthTokenRequestSessionOptions {
-	clientId: number;
+	client: OAuthClient;
 	scopes?: string[];
 }
 
 export async function startOAuthTokenRequestSession(
 	db: AppDatabaseClient,
-	opts: StartOAuthTokenRequestSessionOptions
+	{ client, scopes }: StartOAuthTokenRequestSessionOptions
 ) {
-	const client = await db
-		.selectFrom("oauth_client")
-		.selectAll()
-		.where("id", "=", opts.clientId)
-		.executeTakeFirst();
-
-	if (!client) {
-		throw new Error("OAuth client not found");
-	}
-
 	const challenge = await pkceChallenge();
 
 	const tokenRequestSession = await createTokenRequestSession(db, {
@@ -241,7 +247,7 @@ export async function startOAuthTokenRequestSession(
 		redirectUri: "limbo://auth/callback",
 		state: tokenRequestSession.id.toString(),
 		codeChallenge: challenge.code_challenge,
-		scopes: opts.scopes,
+		scopes,
 	});
 
 	return {
@@ -251,25 +257,15 @@ export async function startOAuthTokenRequestSession(
 }
 
 export interface EndOAuthTokenRequestSessionOptions {
-	sessionId: number;
+	session: OAuthTokenRequestSession;
 	code: string;
 }
 
 export async function endOAuthTokenRequestSession(
 	db: AppDatabaseClient,
-	{ sessionId, code }: EndOAuthTokenRequestSessionOptions
+	{ session, code }: EndOAuthTokenRequestSessionOptions
 ) {
-	const tokenRequestSession = await db
-		.selectFrom("oauth_token_request_session")
-		.selectAll()
-		.where("id", "=", sessionId)
-		.executeTakeFirst();
-
-	if (!tokenRequestSession) {
-		throw new Error("OAuth token request session not found");
-	}
-
-	const tokenRequestSessionCreatedAt = new Date(tokenRequestSession.created_at);
+	const tokenRequestSessionCreatedAt = new Date(session.created_at);
 	const tokenRequestSessionExpiresAt = addMinutes(tokenRequestSessionCreatedAt, 10);
 
 	if (isPast(tokenRequestSessionExpiresAt)) {
@@ -279,7 +275,7 @@ export async function endOAuthTokenRequestSession(
 	const client = await db
 		.selectFrom("oauth_client")
 		.selectAll()
-		.where("id", "=", tokenRequestSession.client_id)
+		.where("id", "=", session.client_id)
 		.executeTakeFirst();
 
 	if (!client) {
@@ -291,11 +287,11 @@ export async function endOAuthTokenRequestSession(
 		code,
 		clientId: client.remote_client_id,
 		tokenUrl: client.token_url,
-		codeVerifier: tokenRequestSession.code_verifier,
+		codeVerifier: session.code_verifier,
 	});
 
 	// delete the token request session
-	await db.deleteFrom("oauth_token_request_session").where("id", "=", sessionId).execute();
+	await db.deleteFrom("oauth_token_request_session").where("id", "=", session.id).execute();
 
 	return tokenResponse;
 }

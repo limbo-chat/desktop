@@ -107,6 +107,13 @@ export async function exchangeCodeForAccessToken(opts: ExchangeCodeForAccessToke
 	return responseParseResult.data;
 }
 
+export class InvalidRefreshTokenError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = "InvalidRefreshTokenError";
+	}
+}
+
 export interface RefreshAccessTokenOptions {
 	clientId: string;
 	tokenUrl: string;
@@ -129,6 +136,10 @@ export async function refreshAccessToken(opts: RefreshAccessTokenOptions) {
 	});
 
 	if (!response.ok) {
+		if (response.status === 401 || response.status === 403) {
+			throw new InvalidRefreshTokenError("Refresh token is invalid or expired");
+		}
+
 		throw new Error(`Failed to refresh access token: ${response.statusText}`);
 	}
 

@@ -26,7 +26,7 @@ export interface OAuthTokenTable {
 	client_id: number;
 	access_token: string;
 	refresh_token: string | null;
-	expires_at: string | null;
+	expires_at: string;
 }
 
 export type OAuthToken = Selectable<OAuthTokenTable>;
