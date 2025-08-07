@@ -232,27 +232,24 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 						);
 					}
 
+					const origin = new URL(options.authUrl).origin;
+
 					const confirmed = await showConfirmDialog({
 						title: "Authentication required",
-						description: `The plugin "${plugin.manifest.name}" is requesting to authenticate with ${options.issuerUrl}. Do you want to proceed?`,
+						description: `The plugin "${plugin.manifest.name}" is requesting to authenticate with ${origin.toString()}. Do you want to proceed?`,
 					});
 
 					if (!confirmed) {
 						throw new Error("Authentication cancelled by user");
 					}
 
-					const response =
-						await mainRouterClient.auth.startPluginOAuthTokenRequest.mutate({
-							pluginId,
-							options: {
-								issuerUrl: options.issuerUrl,
-								authUrl: options.authUrl,
-								tokenUrl: options.tokenUrl,
-								registrationUrl: options.registrationUrl,
-								clientId: options.clientId,
-								scopes: options.scopes,
-							},
-						});
+					const response = await mainRouterClient.auth.startOAuthTokenRequest.mutate({
+						authUrl: options.authUrl,
+						tokenUrl: options.tokenUrl,
+						registrationUrl: options.registrationUrl,
+						clientId: options.clientId,
+						scopes: options.scopes,
+					});
 
 					if ("accessToken" in response) {
 						return response.accessToken;

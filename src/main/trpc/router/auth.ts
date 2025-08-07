@@ -10,7 +10,6 @@ import { getDb } from "../../db/utils";
 import { publicProcedure, router } from "../trpc";
 
 export const startOAuthTokenRequestInputSchema = z.object({
-	issuerUrl: z.string(),
 	authUrl: z.string(),
 	tokenUrl: z.string(),
 	registrationUrl: z.string().optional(),
