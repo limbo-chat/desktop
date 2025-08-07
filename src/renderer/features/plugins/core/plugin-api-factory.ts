@@ -186,6 +186,7 @@ export class PluginAPIFactory {
 							options: opts,
 						});
 					} catch {
+						// note: we are losing the original error here and the other methods here in the factory that catch
 						throw new Error("Failed to authenticate");
 					}
 				},
