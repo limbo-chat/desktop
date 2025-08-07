@@ -2,43 +2,43 @@ import type * as limbo from "@limbo/api";
 
 // storage
 
-export interface PluginStorageGetOptions {
+export interface PluginStorageGetOArgs {
 	pluginId: string;
 	key: string;
 }
 
-export interface PluginStorageSetOptions {
+export interface PluginStorageSetArgs {
 	pluginId: string;
 	key: string;
 	value: limbo.JsonValue;
 }
 
-export interface PluginStorageRemoveOptions {
+export interface PluginStorageRemoveArgs {
 	pluginId: string;
 	key: string;
 }
 
-export interface PluginStorageClearOptions {
+export interface PluginStorageClearArgs {
 	pluginId: string;
 }
 
 export interface PluginEnvironmentStorage {
-	get: (opts: PluginStorageGetOptions) => Promise<limbo.JsonValue | undefined>;
-	set: (opts: PluginStorageSetOptions) => Promise<void>;
-	remove: (opts: PluginStorageRemoveOptions) => Promise<void>;
-	clear: (opts: PluginStorageClearOptions) => Promise<void>;
+	get: (opts: PluginStorageGetOArgs) => Promise<limbo.JsonValue | undefined>;
+	set: (opts: PluginStorageSetArgs) => Promise<void>;
+	remove: (opts: PluginStorageRemoveArgs) => Promise<void>;
+	clear: (opts: PluginStorageClearArgs) => Promise<void>;
 }
 
 // database
 
-export interface PluginDatabaseQueryOptions {
+export interface PluginDatabaseQueryArgs {
 	pluginId: string;
 	sql: string;
 	params?: any[];
 }
 
 export interface PluginEnvironmentDatabase {
-	query: (opts: PluginDatabaseQueryOptions) => Promise<limbo.database.QueryResult>;
+	query: (opts: PluginDatabaseQueryArgs) => Promise<limbo.database.QueryResult>;
 }
 
 // chats
@@ -59,18 +59,23 @@ export interface PluginEnvironmentModels {
 
 // notifications
 
-export interface PluginShowNotificationOptions {
+export interface PluginShowNotificationArgs {
 	pluginId: string;
 	notification: limbo.Notification;
 }
 
 export interface PluginEnvironmentUI {
-	showNotification: (opts: PluginShowNotificationOptions) => void;
+	showNotification: (opts: PluginShowNotificationArgs) => void;
 	showChatPanel: typeof limbo.ui.showChatPanel;
 }
 
+export interface PluginEnvironmentAuthenticateArgs {
+	pluginId: string;
+	options: limbo.auth.AuthenticateOptions;
+}
+
 export interface PluginEnvironmentAuth {
-	authenticate: typeof limbo.auth.authenticate;
+	authenticate: (opts: PluginEnvironmentAuthenticateArgs) => Promise<string>;
 }
 
 export interface PluginEnvironment {

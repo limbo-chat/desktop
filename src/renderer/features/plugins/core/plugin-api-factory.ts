@@ -181,7 +181,10 @@ export class PluginAPIFactory {
 			auth: {
 				authenticate: (opts) => {
 					try {
-						return this.pluginEnvironment.auth.authenticate(opts);
+						return this.pluginEnvironment.auth.authenticate({
+							pluginId,
+							options: opts,
+						});
 					} catch {
 						throw new Error("Failed to authenticate");
 					}

@@ -24,6 +24,7 @@ import {
 	useCustomStylesSubscriber,
 	useRegisterCustomStylesCommands,
 } from "./features/custom-styles/hooks";
+import { showConfirmDialog } from "./features/interactions/confirm/utils";
 import { ModalHost } from "./features/modals/components";
 import { showNotification } from "./features/notifications/utils";
 import {
@@ -222,8 +223,25 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 				},
 			},
 			auth: {
-				authenticate: async (opts) => {
-					// TODO, wire up
+				authenticate: async ({ pluginId, options }) => {
+					const plugin = pluginManager.getPlugin(pluginId);
+
+					if (!plugin) {
+						throw new Error(
+							`Plugin with ID ${pluginId} not found. This is likely a bug.`
+						);
+					}
+
+					const confirmed = await showConfirmDialog({
+						title: "Authentication required",
+						description: `The plugin "${plugin.manifest.name}" is requesting to authenticate with ${options.issuerUrl}. Do you want to proceed?`,
+					});
+
+					if (!confirmed) {
+						throw new Error("Authentication cancelled by user");
+					}
+
+					return "";
 				},
 			},
 		};
