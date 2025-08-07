@@ -7,6 +7,7 @@ export interface OAuthProviderTable {
 	issuer_url: string;
 	auth_url: string;
 	token_url: string;
+	registration_url: string | null;
 }
 
 export type OAuthProvider = Selectable<OAuthProviderTable>;

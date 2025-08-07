@@ -19,6 +19,7 @@ export async function getDb(): Promise<AppDatabaseClient> {
 		.addColumn("issuer_url", "text", (col) => col.notNull().unique())
 		.addColumn("auth_url", "text", (col) => col.notNull())
 		.addColumn("token_url", "text", (col) => col.notNull())
+		.addColumn("registration_url", "text")
 		.ifNotExists()
 		.execute();
 
