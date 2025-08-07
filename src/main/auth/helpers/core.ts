@@ -3,29 +3,18 @@ import pkceChallenge from "pkce-challenge";
 import type { AppDatabaseClient } from "../../db/types";
 import { buildOAuthAuthorizationUrl, exchangeCodeForAccessToken } from "./oauth";
 
-export async function getOAuthProviderByIssuerUrl(db: AppDatabaseClient, issuerUrl: string) {
-	const provider = await db
-		.selectFrom("oauth_provider")
-		.selectAll()
-		.where("issuer_url", "=", issuerUrl)
-		.executeTakeFirst();
-
-	return provider ?? null;
-}
-
-export interface FindOAuthClientByProviderOptions {
-	providerId: number;
+export interface FindOAuthClientOptions {
+	authUrl: string;
+	tokenUrl: string;
 	scopes?: string[];
 }
 
-export async function findOAuthClientByProvider(
-	db: AppDatabaseClient,
-	opts: FindOAuthClientByProviderOptions
-) {
+export async function findOAuthClient(db: AppDatabaseClient, opts: FindOAuthClientOptions) {
 	const getClientQuery = await db
 		.selectFrom("oauth_client")
 		.selectAll()
-		.where("provider_id", "=", opts.providerId);
+		.where("auth_url", "=", opts.authUrl)
+		.where("token_url", "=", opts.tokenUrl);
 
 	if (opts.scopes) {
 		getClientQuery
@@ -62,47 +51,9 @@ export async function findOAuthToken(db: AppDatabaseClient, opts: FindAccessToke
 	return tokenResult ?? null;
 }
 
-export interface CreateOAuthProviderOptions {
-	issuerUrl: string;
+export interface CreateOAuthClientOptions {
 	authUrl: string;
 	tokenUrl: string;
-	registrationUrl?: string;
-}
-
-export async function createOAuthProvider(db: AppDatabaseClient, opts: CreateOAuthProviderOptions) {
-	const newProvider = await db
-		.insertInto("oauth_provider")
-		.values({
-			issuer_url: opts.issuerUrl,
-			auth_url: opts.authUrl,
-			token_url: opts.tokenUrl,
-			registration_url: opts.registrationUrl,
-		})
-		.returningAll()
-		.executeTakeFirst();
-
-	if (!newProvider) {
-		throw new Error("Failed to create OAuth provider");
-	}
-
-	return newProvider;
-}
-
-export async function findOrCreateOAuthProvider(
-	db: AppDatabaseClient,
-	opts: CreateOAuthProviderOptions
-) {
-	const provider = await getOAuthProviderByIssuerUrl(db, opts.issuerUrl);
-
-	if (provider) {
-		return provider;
-	}
-
-	return await createOAuthProvider(db, opts);
-}
-
-export interface CreateOAuthClientOptions {
-	providerId: number;
 	remoteClientId: string;
 	scopes?: string[];
 }
@@ -111,7 +62,8 @@ export async function createOAuthClient(db: AppDatabaseClient, opts: CreateOAuth
 	const newClient = await db
 		.insertInto("oauth_client")
 		.values({
-			provider_id: opts.providerId,
+			auth_url: opts.authUrl,
+			token_url: opts.tokenUrl,
 			remote_client_id: opts.remoteClientId,
 			created_at: new Date().toISOString(),
 		})
@@ -217,17 +169,6 @@ export async function startOAuthTokenRequestSession(
 		throw new Error("OAuth client not found");
 	}
 
-	const provider = await db
-		.selectFrom("oauth_provider")
-		.selectAll()
-		.where("id", "=", client.provider_id)
-		.executeTakeFirst();
-
-	// should not happen, but just in case
-	if (!provider) {
-		throw new Error("OAuth provider not found");
-	}
-
 	const challenge = await pkceChallenge();
 
 	const tokenRequestSession = await createTokenRequestSession(db, {
@@ -236,7 +177,7 @@ export async function startOAuthTokenRequestSession(
 	});
 
 	const authUrl = buildOAuthAuthorizationUrl({
-		authUrl: provider.auth_url,
+		authUrl: client.auth_url,
 		clientId: client.remote_client_id,
 		redirectUri: "limbo://auth/callback",
 		state: tokenRequestSession.id.toString(),
@@ -286,21 +227,11 @@ export async function endOAuthTokenRequestSession(
 		throw new Error("OAuth client not found");
 	}
 
-	const provider = await db
-		.selectFrom("oauth_provider")
-		.selectAll()
-		.where("id", "=", client.provider_id)
-		.executeTakeFirst();
-
-	if (!provider) {
-		throw new Error("OAuth provider not found");
-	}
-
 	// Exchange the authorization code for an access token
 	const tokenResponse = await exchangeCodeForAccessToken({
 		code,
 		clientId: client.remote_client_id,
-		tokenUrl: provider.token_url,
+		tokenUrl: client.token_url,
 		codeVerifier: tokenRequestSession.code_verifier,
 	});
 

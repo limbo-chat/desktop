@@ -1,9 +1,8 @@
 import { z } from "zod";
 import {
 	createOAuthClient,
-	findOAuthClientByProvider,
 	findOAuthToken,
-	findOrCreateOAuthProvider,
+	findOAuthClient,
 	startOAuthTokenRequestSession,
 } from "../../auth/helpers/core";
 import { registerClient } from "../../auth/helpers/oauth";
@@ -25,45 +24,35 @@ export const authRouter = router({
 		.mutation(async ({ input }) => {
 			const db = await getDb();
 
-			const provider = await findOrCreateOAuthProvider(db, {
-				issuerUrl: input.issuerUrl,
+			let client = await findOAuthClient(db, {
 				authUrl: input.authUrl,
 				tokenUrl: input.tokenUrl,
-				registrationUrl: input.registrationUrl,
-			});
-
-			let client = await findOAuthClientByProvider(db, {
-				providerId: provider.id,
 				scopes: input.scopes,
 			});
 
-			if (client) {
-			}
-
 			if (!client) {
-				if (input.clientId) {
-					// use the provided client ID to make a new client
-					client = await createOAuthClient(db, {
-						providerId: provider.id,
-						remoteClientId: input.clientId,
-					});
-				} else {
-					// attempt to register a new client
-					if (!provider.registration_url) {
+				let newRemoteClientId = input.clientId;
+
+				if (!newRemoteClientId) {
+					// try to register a new client
+					if (!input.registrationUrl) {
 						throw new Error("Cannot register OAuth client without registration URL");
 					}
 
 					const registeredOAuthClient = await registerClient({
-						registrationUrl: provider.registration_url,
+						registrationUrl: input.registrationUrl,
 						clientName: "Limbo Desktop", // TODO: use plugin provided name
 					});
 
-					client = await createOAuthClient(db, {
-						providerId: provider.id,
-						remoteClientId: registeredOAuthClient.client_id,
-						scopes: input.scopes,
-					});
+					newRemoteClientId = registeredOAuthClient.client_id;
 				}
+
+				client = await createOAuthClient(db, {
+					remoteClientId: newRemoteClientId,
+					authUrl: input.authUrl,
+					tokenUrl: input.tokenUrl,
+					scopes: input.scopes,
+				});
 			}
 
 			const token = await findOAuthToken(db, {

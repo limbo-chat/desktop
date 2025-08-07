@@ -1,22 +1,12 @@
-import type { Data } from "electron";
 import type { Generated, Insertable, JSONColumnType, Kysely, Selectable } from "kysely";
 import type { ChatMessageNode } from "@limbo/api";
 
-export interface OAuthProviderTable {
-	id: Generated<number>;
-	issuer_url: string;
-	auth_url: string;
-	token_url: string;
-	registration_url: string | null;
-}
-
-export type OAuthProvider = Selectable<OAuthProviderTable>;
-export type NewOAuthProvider = Insertable<OAuthProviderTable>;
-
 export interface OAuthClientTable {
 	id: Generated<number>;
-	provider_id: number;
 	remote_client_id: string;
+	auth_url: string;
+	token_url: string;
+	// consider adding revocation_url in the future
 	created_at: string;
 }
 
@@ -85,7 +75,6 @@ export type ChatMessage = Selectable<ChatMessageTable>;
 export type NewChatMessage = Insertable<ChatMessageTable>;
 
 export interface AppDatabase {
-	oauth_provider: OAuthProviderTable;
 	oauth_client: OAuthClientTable;
 	oauth_client_scope: OAuthClientScopeTable;
 	oauth_token: OAuthTokenTable;
