@@ -6,7 +6,6 @@ import {
 	DialogContent,
 	DialogFooter,
 	DialogHeader,
-	DialogInfo,
 	DialogTitle,
 } from "../../../components/dialog";
 import * as FieldController from "../../../components/field-controller";
@@ -50,9 +49,7 @@ export const RenameChatDialog = ({ chat }: RenameChatDialogProps) => {
 		<FormProvider {...form}>
 			<Dialog component="form" onSubmit={onSubmit}>
 				<DialogHeader>
-					<DialogInfo>
-						<DialogTitle>Rename chat</DialogTitle>
-					</DialogInfo>
+					<DialogTitle>Rename chat</DialogTitle>
 				</DialogHeader>
 				<DialogContent>
 					<FieldController.Root id="name" name="name">

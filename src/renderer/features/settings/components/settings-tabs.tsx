@@ -27,13 +27,11 @@ import {
 	Dialog,
 	DialogTitle,
 	DialogActions,
-	DialogInfo,
 	DialogContent,
 } from "../../../components/dialog";
 import {
 	ErrorRoot,
 	ErrorContainer,
-	ErrorControl,
 	ErrorDescription,
 	ErrorInfo,
 	ErrorTitle,
@@ -392,12 +390,10 @@ const InstallPluginDialog = () => {
 		<FormProvider {...form}>
 			<Dialog component="form" onSubmit={onSubmit}>
 				<DialogHeader>
-					<DialogInfo>
-						<DialogTitle>Install plugin</DialogTitle>
-						<DialogDescription>
-							Enter the GitHub repository URL of the plugin you want to install.
-						</DialogDescription>
-					</DialogInfo>
+					<DialogTitle>Install plugin</DialogTitle>
+					<DialogDescription>
+						Enter the GitHub repository URL of the plugin you want to install.
+					</DialogDescription>
 				</DialogHeader>
 				<DialogContent>
 					<FieldController.Root id="repo-url" name="repoUrl">
@@ -448,9 +444,7 @@ const UninstallPluginDialog = ({ plugin }: UninstallPluginDialogProps) => {
 	return (
 		<Dialog>
 			<DialogHeader>
-				<DialogInfo>
-					<DialogTitle>Uninstall {plugin.name}</DialogTitle>
-				</DialogInfo>
+				<DialogTitle>Uninstall {plugin.name}</DialogTitle>
 			</DialogHeader>
 			<DialogContent>
 				<p>

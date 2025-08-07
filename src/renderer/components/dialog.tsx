@@ -8,19 +8,20 @@ export interface DialogProps extends HTMLAttributes<HTMLDivElement> {
 export const Dialog = ({ component, className, ...props }: DialogProps) => {
 	const Component = component ?? "div";
 
-	return <Component className={clsx("dialog")} {...props} />;
+	return (
+		<Component
+			className={clsx("dialog", className)}
+			role="dialog"
+			aria-labelledby="dialog-title"
+			{...props}
+		/>
+	);
 };
 
 export interface DialogHeaderProps extends HTMLAttributes<HTMLDivElement> {}
 
 export const DialogHeader = ({ className, ...props }: DialogHeaderProps) => {
 	return <div className={clsx("dialog-header", className)} {...props} />;
-};
-
-export interface DialogInfoProps extends HTMLAttributes<HTMLDivElement> {}
-
-export const DialogInfo = ({ className, ...props }: DialogInfoProps) => {
-	return <div className={clsx("dialog-info", className)} {...props} />;
 };
 
 export interface DialogTitleProps extends HTMLAttributes<HTMLDivElement> {}

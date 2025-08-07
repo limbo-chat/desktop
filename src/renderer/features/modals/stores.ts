@@ -4,6 +4,7 @@ import { create } from "zustand";
 export interface Modal {
 	id: string;
 	component: FC;
+	onClose?: () => void;
 }
 
 export interface ModalStore {

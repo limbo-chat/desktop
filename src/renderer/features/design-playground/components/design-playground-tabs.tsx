@@ -13,7 +13,6 @@ import {
 	DialogDescription,
 	DialogFooter,
 	DialogHeader,
-	DialogInfo,
 	DialogTitle,
 } from "../../../components/dialog";
 import { Field } from "../../../components/field";
@@ -330,10 +329,8 @@ const DemoDialog = () => {
 	return (
 		<Dialog>
 			<DialogHeader>
-				<DialogInfo>
-					<DialogTitle>Hello world!</DialogTitle>
-					<DialogDescription>This is a dialog</DialogDescription>
-				</DialogInfo>
+				<DialogTitle>Hello world!</DialogTitle>
+				<DialogDescription>This is a dialog</DialogDescription>
 			</DialogHeader>
 			<DialogContent>
 				<p>
