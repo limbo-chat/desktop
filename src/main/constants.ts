@@ -14,3 +14,5 @@ export const PRELOAD_FILE_PATH = path.join(PRELOAD_DIST_PATH, "main.cjs");
 
 export const RENDERER_DIST_PATH = path.join(DIST_PATH, "renderer");
 export const HTML_PATH = path.join(RENDERER_DIST_PATH, "index.html");
+
+export const PROTOCOL = "limbo";

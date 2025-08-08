@@ -1,8 +1,10 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import { createIPCHandler } from "trpc-electron/main";
+import { PROTOCOL } from "./constants";
 import { CustomStylesWatcher } from "./custom-styles/watcher";
 import { LATEST_DATA_VERSION } from "./data/constants";
 import { ensureData, migrateToLatestVersion } from "./data/utils";
+import { handleDeepLink } from "./deep-linking/utils";
 import { readMeta, writeMeta } from "./meta/utils";
 import { readSettings } from "./settings/utils";
 import { mainRouter } from "./trpc/router";
@@ -97,6 +99,8 @@ windowManager.events.on("window:created", (windowId) => {
 	});
 });
 
+app.setAsDefaultProtocolClient(PROTOCOL);
+
 // quit when all windows are closed, except on macos.
 app.on("window-all-closed", () => {
 	if (process.platform !== "darwin") {
@@ -109,6 +113,13 @@ app.on("activate", () => {
 		// recreate a window if there are no windows open
 		launchWindow();
 	}
+});
+
+// this is used to handle custom protocol links on macos
+app.on("open-url", async (event, url) => {
+	event.preventDefault();
+
+	await handleDeepLink(url);
 });
 
 // start the app when electron is ready

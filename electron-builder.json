@@ -15,10 +15,11 @@
 	},
 	"mac": {
 		"category": "public.app-category.productivity",
-		"target": [
+		"artifactName": "${productName}-Mac-${version}-Installer.${ext}",
+		"protocols": [
 			{
-				"target": "dmg",
-				"arch": ["arm64"]
+				"name": "Limbo",
+				"schemes": ["limbo"]
 			}
 		]
 	}
