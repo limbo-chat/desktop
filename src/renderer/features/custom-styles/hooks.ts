@@ -22,8 +22,6 @@ export const useCustomStylesLoader = (opts?: UseCustomStylesLoaderOptions) => {
 		const loadedPaths = new Set<string>();
 
 		const loadCustomStyles = async () => {
-			console.log("loading custom styles");
-
 			const customStyles = await Promise.allSettled(
 				customStylesPaths.map(async (path) => {
 					const styleContent = await mainRouterClient.customStyles.get.query({
@@ -106,8 +104,6 @@ export const useRegisterCustomStylesCommands = () => {
 			id: "custom-styles:reload",
 			name: "Reload custom styles",
 			execute: () => {
-				console.log("invalidating custom styles paths query");
-
 				queryClient.resetQueries(mainRouter.customStyles.getPaths.queryFilter());
 			},
 		});

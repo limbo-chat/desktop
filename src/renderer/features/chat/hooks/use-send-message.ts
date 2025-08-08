@@ -156,8 +156,6 @@ export const useSendMessage = () => {
 					createdAt: new Date().toISOString(),
 				});
 
-				console.log("done");
-
 				chatStore.setIsResponsePending(chatId, false);
 
 				chatStore.setAbortController(chatId, null);
