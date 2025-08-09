@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, dialog, ipcMain } from "electron";
 import { createIPCHandler } from "trpc-electron/main";
 import { PROTOCOL } from "./constants";
 import { CustomStylesWatcher } from "./custom-styles/watcher";
@@ -117,9 +117,7 @@ app.on("activate", () => {
 
 // this is used to handle custom protocol links on macos
 app.on("open-url", async (event, url) => {
-	event.preventDefault();
-
-	await handleDeepLink(url);
+	await handleDeepLink(url, windowManager);
 });
 
 // start the app when electron is ready

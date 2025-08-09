@@ -1,22 +1,19 @@
 import { endOAuthTokenRequestSession } from "../auth/helpers/core";
 import { getDb } from "../db/utils";
+import type { WindowManager } from "../windows/manager";
 
-async function handleAuthCallback(url: URL) {
+async function handleAuthCallback(url: URL, windowManager: WindowManager) {
 	const code = url.searchParams.get("code");
 	const state = url.searchParams.get("state");
 
 	if (!code || !state) {
-		console.error("Invalid deep link: missing code or state");
-
-		return;
+		throw new Error("Invalid deep link: missing code or state");
 	}
 
 	const sessionId = Number(state);
 
 	if (isNaN(sessionId)) {
-		console.error("Invalid deep link: state is not a valid session ID");
-
-		return;
+		throw new Error("Invalid deep link: missing code or state");
 	}
 
 	const db = await getDb();
@@ -28,28 +25,46 @@ async function handleAuthCallback(url: URL) {
 		.executeTakeFirst();
 
 	if (!tokenRequestSession) {
-		console.error("Invalid deep link: session not found");
-
-		return;
+		throw new Error("Invalid deep link: session not found");
 	}
 
 	try {
-		await endOAuthTokenRequestSession(db, {
+		const result = await endOAuthTokenRequestSession(db, {
 			code: code,
 			session: tokenRequestSession,
 		});
+
+		// send the result to the renderer
+		windowManager.sendMessageToAllWindows("auth-session:token-granted", {
+			sessionId: tokenRequestSession.id,
+			accessToken: result.access_token,
+		});
 	} catch (error) {
-		console.error("Error handling OAuth callback:", error);
+		let errorMessage = "An unknown error occurred";
+
+		if (error instanceof Error) {
+			errorMessage = error.message;
+		}
+
+		windowManager.sendMessageToAllWindows("auth-session:error", {
+			sessionId: tokenRequestSession.id,
+			error: errorMessage,
+		});
 	}
 }
 
-export async function handleDeepLink(url: string) {
+const pathHandlers: Record<string, any> = {
+	"/auth/callback": handleAuthCallback,
+} as const;
+
+export async function handleDeepLink(url: string, windowManager: WindowManager) {
 	const parsedUrl = new URL(url);
 	const pathname = parsedUrl.pathname;
+	const handler = pathHandlers[pathname];
 
-	switch (pathname) {
-		case "/auth/callback":
-			await handleAuthCallback(parsedUrl);
-			break;
+	if (!handler) {
+		throw new Error(`No handler for deep link path: ${pathname}`);
 	}
+
+	await handler(parsedUrl, windowManager);
 }

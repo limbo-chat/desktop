@@ -278,6 +278,9 @@ export async function endOAuthTokenRequestSession(
 	const tokenRequestSessionExpiresAt = addMinutes(tokenRequestSessionCreatedAt, 10);
 
 	if (isPast(tokenRequestSessionExpiresAt)) {
+		// delete the expired token request session
+		await db.deleteFrom("oauth_token_request_session").where("id", "=", session.id).execute();
+
 		throw new Error("OAuth token request session has expired");
 	}
 
@@ -297,6 +300,17 @@ export async function endOAuthTokenRequestSession(
 		clientId: client.remote_client_id,
 		tokenUrl: client.token_url,
 		codeVerifier: session.code_verifier,
+	});
+
+	const expiresAt = addSeconds(new Date(), tokenResponse.expires_in);
+
+	// store the oauth token in the db
+	await createOAuthToken(db, {
+		clientId: client.id,
+		accessToken: tokenResponse.access_token,
+		refreshToken: tokenResponse.refresh_token,
+		scopes: [], // TODO, get actual scopes
+		expiresAt,
 	});
 
 	// delete the token request session
