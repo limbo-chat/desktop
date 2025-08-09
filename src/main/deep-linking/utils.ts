@@ -13,7 +13,7 @@ async function handleAuthCallback(url: URL, windowManager: WindowManager) {
 	const sessionId = Number(state);
 
 	if (isNaN(sessionId)) {
-		throw new Error("Invalid deep link: missing code or state");
+		throw new Error("Invalid session ID in state");
 	}
 
 	const db = await getDb();
@@ -25,7 +25,7 @@ async function handleAuthCallback(url: URL, windowManager: WindowManager) {
 		.executeTakeFirst();
 
 	if (!tokenRequestSession) {
-		throw new Error("Invalid deep link: session not found");
+		throw new Error("OAuth token request session not found");
 	}
 
 	try {
@@ -35,7 +35,7 @@ async function handleAuthCallback(url: URL, windowManager: WindowManager) {
 		});
 
 		// send the result to the renderer
-		windowManager.sendMessageToAllWindows("auth-session:token-granted", {
+		windowManager.sendMessageToAllWindows("oauth-token-request:end", {
 			sessionId: tokenRequestSession.id,
 			accessToken: result.access_token,
 		});
@@ -46,7 +46,7 @@ async function handleAuthCallback(url: URL, windowManager: WindowManager) {
 			errorMessage = error.message;
 		}
 
-		windowManager.sendMessageToAllWindows("auth-session:error", {
+		windowManager.sendMessageToAllWindows("oauth-token-request:error", {
 			sessionId: tokenRequestSession.id,
 			error: errorMessage,
 		});

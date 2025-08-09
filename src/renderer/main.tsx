@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider, QueryErrorResetBoundary } from "@tanstack/react-query";
 import { createTRPCClient } from "@trpc/client";
+import { minutesToMilliseconds } from "date-fns";
 import { Suspense, useMemo, useRef, type PropsWithChildren } from "react";
 import { createRoot } from "react-dom/client";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
@@ -261,19 +262,50 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 					});
 
 					// wait for the token request to complete
-					return new Promise((resolve) => {
-						const handleTokenRequestDone = ({ sessionId, accessToken }: any) => {
-							if (sessionId === response.sessionId) {
-								window.ipcRenderer.removeListener(
-									"oauth_token_request:done",
-									handleTokenRequestDone
-								);
+					return new Promise((resolve, reject) => {
+						// if the request takes too long, reject with a timeout error
+						const timeout = setTimeout(() => {
+							removeListeners();
+							reject(new Error("OAuth token request timed out"));
+						}, minutesToMilliseconds(10));
 
+						const removeListeners = () => {
+							clearTimeout(timeout);
+
+							window.ipcRenderer.removeListener(
+								"oauth-token-request:end",
+								handleOAuthTokenRequestEnd
+							);
+
+							window.ipcRenderer.removeListener(
+								"oauth-token-request:error",
+								handleOAuthTokenRequestError
+							);
+						};
+
+						const handleOAuthTokenRequestEnd = ({ sessionId, accessToken }: any) => {
+							if (sessionId === response.sessionId) {
+								removeListeners();
 								resolve(accessToken);
 							}
 						};
 
-						window.ipcRenderer.on("oauth_token_request:done", handleTokenRequestDone);
+						const handleOAuthTokenRequestError = ({ sessionId, error }: any) => {
+							if (sessionId === response.sessionId) {
+								removeListeners();
+								reject(new Error(error));
+							}
+						};
+
+						window.ipcRenderer.on(
+							"oauth-token-request:end",
+							handleOAuthTokenRequestEnd
+						);
+
+						window.ipcRenderer.on(
+							"oauth-token-request:error",
+							handleOAuthTokenRequestError
+						);
 					});
 				},
 			},
