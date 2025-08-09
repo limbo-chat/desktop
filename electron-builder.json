@@ -1,34 +1,25 @@
 {
 	"$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
 	"appId": "com.limbo.limbo",
-	"productName": "limbo",
-	"asar": true,
+	"productName": "Limbo",
 	"files": ["dist", "package.json"],
 	"directories": {
 		"output": "build"
 	},
-	"nsis": {
-		"oneClick": false,
-		"perMachine": false,
-		"allowToChangeInstallationDirectory": true,
-		"deleteAppDataOnUninstall": false
+	"dmg": {
+		"iconSize": 100,
+		"contents": [
+			{ "x": 130, "y": 220, "type": "file" },
+			{ "x": 410, "y": 220, "type": "link", "path": "/Applications" }
+		]
 	},
 	"mac": {
-		"target": "dmg",
 		"category": "public.app-category.productivity",
-		"artifactName": "${productName}-Mac-${version}-Installer.${ext}"
-	},
-	"linux": {
-		"target": "AppImage",
-		"artifactName": "${productName}-Linux-${version}.${ext}"
-	},
-	"win": {
 		"target": [
 			{
-				"target": "nsis",
-				"arch": ["x64"]
+				"target": "dmg",
+				"arch": ["arm64"]
 			}
-		],
-		"artifactName": "${productName}-Windows-${version}-Setup.${ext}"
+		]
 	}
 }

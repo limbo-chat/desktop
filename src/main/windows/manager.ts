@@ -58,7 +58,7 @@ export class WindowManager {
 		if (DEV_SERVER_URL) {
 			mainWindow.loadURL(`${DEV_SERVER_URL}?${queryParams.toString()}`);
 		} else {
-			mainWindow.loadURL(`${HTML_PATH}?${queryParams.toString()}`);
+			mainWindow.loadURL(`file://${HTML_PATH}?${queryParams.toString()}`);
 		}
 
 		this.windows.set("main", mainWindow);
