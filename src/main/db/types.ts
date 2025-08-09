@@ -50,6 +50,14 @@ export interface OAuthTokenRequestSessionTable {
 export type OAuthTokenRequestSession = Selectable<OAuthTokenRequestSessionTable>;
 export type NewOAuthTokenRequestSession = Insertable<OAuthTokenRequestSessionTable>;
 
+export interface OAuthTokenRequestSessionScopeTable {
+	request_session_id: number;
+	scope: string;
+}
+
+export type OAuthTokenRequestSessionScope = Selectable<OAuthTokenRequestSessionScopeTable>;
+export type NewOAuthTokenRequestSessionScope = Insertable<OAuthTokenRequestSessionScopeTable>;
+
 export interface ChatTable {
 	id: string;
 	name: string;
@@ -80,6 +88,7 @@ export interface AppDatabase {
 	oauth_token: OAuthTokenTable;
 	oauth_token_scope: OAuthTokenScopeTable;
 	oauth_token_request_session: OAuthTokenRequestSessionTable;
+	oauth_token_request_session_scope: OAuthTokenRequestSessionScopeTable;
 	chat: ChatTable;
 	chatMessage: ChatMessageTable;
 }

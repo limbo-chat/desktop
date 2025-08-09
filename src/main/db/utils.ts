@@ -67,6 +67,19 @@ export async function getDb(): Promise<AppDatabaseClient> {
 		.ifNotExists()
 		.execute();
 
+	await db.schema
+		.createTable("oauth_token_request_session_scope")
+		.addColumn("request_session_id", "integer", (col) =>
+			col.notNull().references("oauth_token_request_session.id").onDelete("cascade")
+		)
+		.addColumn("scope", "text", (col) => col.notNull())
+		.addUniqueConstraint("oauth_token_request_session_scope_request_session_id_scope_unique", [
+			"request_session_id",
+			"scope",
+		])
+		.ifNotExists()
+		.execute();
+
 	await await db.schema
 		.createTable("chat")
 		.addColumn("id", "text", (col) => col.primaryKey())

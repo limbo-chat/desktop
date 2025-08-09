@@ -284,12 +284,19 @@ export async function endOAuthTokenRequestSession(
 		throw new Error("OAuth token request session has expired");
 	}
 
+	const sessionScopes = await db
+		.selectFrom("oauth_token_request_session_scope")
+		.where("request_session_id", "=", session.id)
+		.selectAll()
+		.execute();
+
 	const client = await db
 		.selectFrom("oauth_client")
 		.selectAll()
 		.where("id", "=", session.client_id)
 		.executeTakeFirst();
 
+	// this should never happen, but just in case
 	if (!client) {
 		throw new Error("OAuth client not found");
 	}
@@ -305,16 +312,16 @@ export async function endOAuthTokenRequestSession(
 	const expiresAt = addSeconds(new Date(), tokenResponse.expires_in);
 
 	// store the oauth token in the db
-	await createOAuthToken(db, {
+	const token = await createOAuthToken(db, {
 		clientId: client.id,
 		accessToken: tokenResponse.access_token,
 		refreshToken: tokenResponse.refresh_token,
-		scopes: [], // TODO, get actual scopes
+		scopes: sessionScopes.map((scope) => scope.scope),
 		expiresAt,
 	});
 
 	// delete the token request session
 	await db.deleteFrom("oauth_token_request_session").where("id", "=", session.id).execute();
 
-	return tokenResponse;
+	return token;
 }
