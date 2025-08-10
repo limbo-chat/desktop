@@ -1,8 +1,7 @@
 import clsx from "clsx";
-import type { HTMLAttributes } from "react";
 import { Button, type ButtonProps } from "./button";
 
-export interface RootProps extends HTMLAttributes<HTMLFormElement> {
+export interface RootProps extends React.ComponentProps<"form"> {
 	/** an identifier for the form */
 	id?: string;
 }
@@ -13,25 +12,25 @@ export const Root = ({ id, className, ...props }: RootProps) => {
 
 // form header
 
-export interface HeaderProps extends HTMLAttributes<HTMLDivElement> {}
+export interface HeaderProps extends React.ComponentProps<"div"> {}
 
 export const Header = ({ className, ...props }: HeaderProps) => {
 	return <div className={clsx("form-header", className)} {...props} />;
 };
 
-export interface TitleProps extends HTMLAttributes<HTMLDivElement> {}
+export interface TitleProps extends React.ComponentProps<"div"> {}
 
 export const Title = ({ className, ...props }: TitleProps) => {
 	return <div className={clsx("form-title", className)} {...props} />;
 };
 
-export interface DescriptionProps extends HTMLAttributes<HTMLDivElement> {}
+export interface DescriptionProps extends React.ComponentProps<"div"> {}
 
 export const Description = ({ className, ...props }: DescriptionProps) => {
 	return <div className={clsx("form-description", className)} {...props} />;
 };
 
-export interface ContentProps extends HTMLAttributes<HTMLDivElement> {}
+export interface ContentProps extends React.ComponentProps<"div"> {}
 
 export const Content = ({ className, ...props }: ContentProps) => {
 	return <div className={clsx("form-content")} {...props} />;
@@ -39,7 +38,7 @@ export const Content = ({ className, ...props }: ContentProps) => {
 
 // form sections
 
-export interface SectionProps extends HTMLAttributes<HTMLDivElement> {
+export interface SectionProps extends React.ComponentProps<"div"> {
 	/* an identifier of the section */
 	id?: string;
 }
@@ -48,25 +47,25 @@ export const Section = ({ id, className, ...props }: SectionProps) => {
 	return <div data-section={id} className={clsx("form-section")} {...props} />;
 };
 
-export interface SectionHeaderProps extends HTMLAttributes<HTMLDivElement> {}
+export interface SectionHeaderProps extends React.ComponentProps<"div"> {}
 
 export const SectionHeader = ({ className, ...props }: SectionHeaderProps) => {
 	return <div className={clsx("form-section-header")} {...props} />;
 };
 
-export interface SectionTitleProps extends HTMLAttributes<HTMLDivElement> {}
+export interface SectionTitleProps extends React.ComponentProps<"div"> {}
 
 export const SectionTitle = ({ className, ...props }: SectionTitleProps) => {
 	return <div className={clsx("form-section-title", className)} {...props} />;
 };
 
-export interface SectionDescriptionProps extends HTMLAttributes<HTMLDivElement> {}
+export interface SectionDescriptionProps extends React.ComponentProps<"div"> {}
 
 export const SectionDescription = ({ className, ...props }: SectionDescriptionProps) => {
 	return <div className={clsx("form-section-description", className)} {...props} />;
 };
 
-export interface SectionContentProps extends HTMLAttributes<HTMLDivElement> {}
+export interface SectionContentProps extends React.ComponentProps<"div"> {}
 
 export const SectionContent = ({ className, ...props }: SectionContentProps) => {
 	return <div className={clsx("form-section-content", className)} {...props} />;
@@ -74,13 +73,13 @@ export const SectionContent = ({ className, ...props }: SectionContentProps) => 
 
 // form footer
 
-export interface FooterProps extends HTMLAttributes<HTMLDivElement> {}
+export interface FooterProps extends React.ComponentProps<"div"> {}
 
 export const Footer = ({ className, ...props }: FooterProps) => {
 	return <div className={clsx("form-footer")} {...props} />;
 };
 
-export interface FormActionsProps extends HTMLAttributes<HTMLDivElement> {}
+export interface FormActionsProps extends React.ComponentProps<"div"> {}
 
 export const Actions = ({ className, ...props }: FormActionsProps) => {
 	return <div className={clsx("form-actions")} {...props} />;

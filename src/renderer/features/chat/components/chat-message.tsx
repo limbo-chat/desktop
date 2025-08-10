@@ -1,17 +1,15 @@
 import { formatRelative } from "date-fns";
-import { enUS } from "date-fns/locale";
-import { memo, useMemo, type HTMLAttributes } from "react";
+import { memo, useMemo } from "react";
 import { CopyIconButton } from "../../../components/copy-icon-button";
 import { Tooltip } from "../../../components/tooltip";
 import { ChatNodeRenderer } from "../../chat-nodes/components/chat-node-renderer";
-// Example: English locale
 import type {
 	AssistantChatMessage as AssistantChatMessageRenderer,
 	ChatMessageType,
 	UserChatMessage as UserChatMessageRenderer,
 } from "../types";
 
-interface ChatMessageContainerProps extends HTMLAttributes<HTMLDivElement> {
+interface ChatMessageContainerProps extends React.ComponentProps<"div"> {
 	message: ChatMessageType;
 }
 
@@ -19,23 +17,23 @@ const ChatMessageContainer = ({ message, ...props }: ChatMessageContainerProps) 
 	return <div className="chat-message" data-role={message.role} {...props} />;
 };
 
-const ChatMessageContent = (props: HTMLAttributes<HTMLDivElement>) => {
+const ChatMessageContent = (props: React.ComponentProps<"div">) => {
 	return <div className="chat-message-content" {...props} />;
 };
 
-const ChatMessageFooter = (props: HTMLAttributes<HTMLDivElement>) => {
+const ChatMessageFooter = (props: React.ComponentProps<"div">) => {
 	return <div className="chat-message-footer" {...props} />;
 };
 
-const ChatMessageActions = (props: HTMLAttributes<HTMLDivElement>) => {
+const ChatMessageActions = (props: React.ComponentProps<"div">) => {
 	return <div className="chat-message-actions" {...props} />;
 };
 
-const ChatMessageInfo = (props: HTMLAttributes<HTMLDivElement>) => {
+const ChatMessageInfo = (props: React.ComponentProps<"div">) => {
 	return <div className="chat-message-info" {...props} />;
 };
 
-interface ChatMessageDateProps extends HTMLAttributes<HTMLDivElement> {
+interface ChatMessageDateProps extends React.ComponentProps<"div"> {
 	date: Date;
 }
 

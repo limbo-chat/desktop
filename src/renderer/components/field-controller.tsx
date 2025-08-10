@@ -1,4 +1,4 @@
-import { createContext, useContext, type InputHTMLAttributes, type PropsWithChildren } from "react";
+import { createContext, useContext, type PropsWithChildren } from "react";
 import { useController } from "react-hook-form";
 import { Field as ComposedField, type FieldProps } from "./field";
 import * as Field from "./field-primitive";
@@ -35,14 +35,14 @@ export const Root = ({ name, children, ...fieldProps }: PropsWithChildren<RootPr
 	);
 };
 
-export const TextInput = (props: InputHTMLAttributes<HTMLInputElement>) => {
+export const TextInput = (props: React.ComponentProps<"input">) => {
 	const { name } = useFieldControllerContext();
 	const { field } = useController({ name });
 
 	return <Field.TextInput {...field} value={field.value || ""} {...props} />;
 };
 
-export const Textarea = (props: InputHTMLAttributes<HTMLTextAreaElement>) => {
+export const Textarea = (props: React.ComponentProps<"textarea">) => {
 	const { name } = useFieldControllerContext();
 	const { field } = useController({ name });
 

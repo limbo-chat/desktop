@@ -1,12 +1,5 @@
 import clsx from "clsx";
-import {
-	createContext,
-	useContext,
-	useMemo,
-	type HTMLAttributes,
-	type InputHTMLAttributes,
-	type LabelHTMLAttributes,
-} from "react";
+import { createContext, useContext, useMemo, type ComponentProps } from "react";
 import * as RadioGroupPrimitive from "./radio-group-primitive";
 
 export interface FieldContext {
@@ -52,7 +45,7 @@ export const useFieldControlAccessibilityProps = () => {
 	};
 };
 
-export interface RootProps extends HTMLAttributes<HTMLDivElement> {
+export interface RootProps extends React.ComponentProps<"div"> {
 	/** an identifier for the field */
 	id: string;
 	isError?: boolean;
@@ -80,7 +73,7 @@ export const Root = ({
 	);
 };
 
-export interface LabelProps extends LabelHTMLAttributes<HTMLLabelElement> {}
+export interface LabelProps extends React.ComponentProps<"label"> {}
 
 export const Label = ({ className, ...props }: LabelProps) => {
 	const { id } = useFieldContext();
@@ -88,7 +81,7 @@ export const Label = ({ className, ...props }: LabelProps) => {
 	return <label htmlFor={id} className={clsx("field-label", className)} {...props} />;
 };
 
-export interface DescriptionProps extends HTMLAttributes<HTMLParagraphElement> {}
+export interface DescriptionProps extends React.ComponentProps<"p"> {}
 
 export const Description = ({ className, ...props }: DescriptionProps) => {
 	const { id } = useFieldContext();
@@ -98,7 +91,7 @@ export const Description = ({ className, ...props }: DescriptionProps) => {
 	);
 };
 
-export interface ErrorProps extends HTMLAttributes<HTMLParagraphElement> {}
+export interface ErrorProps extends React.ComponentProps<"p"> {}
 
 const FieldError = ({ className, ...props }: ErrorProps) => {
 	const { id } = useFieldContext();
@@ -106,7 +99,7 @@ const FieldError = ({ className, ...props }: ErrorProps) => {
 	return <p id={`${id}-error`} className={clsx("field-error", className)} {...props} />;
 };
 
-export interface ControlProps extends HTMLAttributes<HTMLDivElement> {}
+export interface ControlProps extends React.ComponentProps<"div"> {}
 
 export const Control = ({ className, ...props }: ControlProps) => {
 	return <div className={clsx("field-control", className)} {...props} />;
@@ -114,13 +107,13 @@ export const Control = ({ className, ...props }: ControlProps) => {
 
 // controls
 
-export const TextInput = (props: InputHTMLAttributes<HTMLInputElement>) => {
+export const TextInput = (props: ComponentProps<"input">) => {
 	const accessibilityProps = useFieldControlAccessibilityProps();
 
 	return <input type="text" {...accessibilityProps} {...props} />;
 };
 
-export const Textarea = (props: InputHTMLAttributes<HTMLTextAreaElement>) => {
+export const Textarea = (props: ComponentProps<"textarea">) => {
 	const accessibilityProps = useFieldControlAccessibilityProps();
 
 	return <textarea {...accessibilityProps} {...props} />;

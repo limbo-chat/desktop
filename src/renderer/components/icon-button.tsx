@@ -1,7 +1,6 @@
 import clsx from "clsx";
-import type { ButtonHTMLAttributes } from "react";
 
-export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface IconButtonProps extends React.ComponentProps<"button"> {
 	/** an identifier for the action */
 	action?: string;
 }

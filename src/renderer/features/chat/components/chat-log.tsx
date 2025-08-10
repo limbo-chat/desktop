@@ -1,9 +1,8 @@
 import clsx from "clsx";
-import type { HTMLAttributes, ReactNode } from "react";
 import type { ChatMessageType } from "../types";
 import { ChatMessage } from "./chat-message";
 
-export interface ChatLogProps extends HTMLAttributes<HTMLDivElement> {
+export interface ChatLogProps extends React.ComponentProps<"div"> {
 	messages: ChatMessageType[];
 }
 

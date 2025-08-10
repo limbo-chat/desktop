@@ -1,14 +1,13 @@
 import clsx from "clsx";
 import { Command } from "cmdk";
-import type { ComponentProps, HTMLAttributes } from "react";
 
-export interface SearchPromptProps extends ComponentProps<typeof Command> {}
+export interface SearchPromptProps extends React.ComponentProps<typeof Command> {}
 
 export const SearchPrompt = ({ className, ...props }: SearchPromptProps) => {
 	return <Command className={clsx("search-prompt", className)} {...props} />;
 };
 
-export interface SearchPromptInputContainerProps extends HTMLAttributes<HTMLDivElement> {}
+export interface SearchPromptInputContainerProps extends React.ComponentProps<"div"> {}
 
 export const SearchPromptInputContainer = ({
 	className,
@@ -17,13 +16,13 @@ export const SearchPromptInputContainer = ({
 	return <div className={clsx("search-prompt-input-container", className)} {...props} />;
 };
 
-export interface SearchPromptInputProps extends ComponentProps<typeof Command.Input> {}
+export interface SearchPromptInputProps extends React.ComponentProps<typeof Command.Input> {}
 
 export const SearchPromptInput = ({ className, ...props }: SearchPromptInputProps) => {
 	return <Command.Input className={clsx("search-prompt-input", className)} {...props} />;
 };
 
-export interface SearchPromptResultsProps extends ComponentProps<typeof Command.List> {}
+export interface SearchPromptResultsProps extends React.ComponentProps<typeof Command.List> {}
 
 export const SearchPromptResults = ({ className, ...props }: SearchPromptResultsProps) => {
 	return <Command.List className={clsx("search-prompt-results", className)} {...props} />;
@@ -31,25 +30,25 @@ export const SearchPromptResults = ({ className, ...props }: SearchPromptResults
 
 // result items
 
-export interface ResultItemProps extends ComponentProps<typeof Command.Item> {}
+export interface ResultItemProps extends React.ComponentProps<typeof Command.Item> {}
 
 export const ResultItem = ({ className, ...props }: ResultItemProps) => {
 	return <Command.Item className={clsx("result-item")} {...props} />;
 };
 
-export interface ResultContentProps extends HTMLAttributes<HTMLDivElement> {}
+export interface ResultContentProps extends React.ComponentProps<"div"> {}
 
 export const ResultContent = ({ className, ...props }: ResultContentProps) => {
 	return <div className={clsx("result-content")} {...props} />;
 };
 
-export interface ResultTitleProps extends HTMLAttributes<HTMLDivElement> {}
+export interface ResultTitleProps extends React.ComponentProps<"div"> {}
 
 export const ResultTitle = ({ className, ...props }: ResultTitleProps) => {
 	return <div className={clsx("result-title")} {...props} />;
 };
 
-export interface EmptyResultProps extends HTMLAttributes<HTMLDivElement> {}
+export interface EmptyResultProps extends React.ComponentProps<"div"> {}
 
 export const EmptyResult = ({ className, ...props }: EmptyResultProps) => {
 	return <div className={clsx("empty-result")} {...props} />;
@@ -57,7 +56,7 @@ export const EmptyResult = ({ className, ...props }: EmptyResultProps) => {
 
 // instructions
 
-export interface SearchPromptInstructionsProps extends HTMLAttributes<HTMLDivElement> {}
+export interface SearchPromptInstructionsProps extends React.ComponentProps<"div"> {}
 
 export const SearchPromptInstructions = ({
 	className,
@@ -66,7 +65,7 @@ export const SearchPromptInstructions = ({
 	return <div className={clsx("search-prompt-instructions")} {...props} />;
 };
 
-export interface SearchPromptInstructionItemProps extends HTMLAttributes<HTMLDivElement> {}
+export interface SearchPromptInstructionItemProps extends React.ComponentProps<"div"> {}
 
 export const SearchPromptInstructionItem = ({
 	className,
@@ -75,7 +74,7 @@ export const SearchPromptInstructionItem = ({
 	return <div className="search-prompt-instruction-item" {...props} />;
 };
 
-export interface SearchPromptInstructionCommandProps extends HTMLAttributes<HTMLSpanElement> {}
+export interface SearchPromptInstructionCommandProps extends React.ComponentProps<"span"> {}
 
 export const SearchPromptInstructionCommand = ({
 	className,
@@ -84,7 +83,7 @@ export const SearchPromptInstructionCommand = ({
 	return <span className="search-prompt-instruction-command" {...props} />;
 };
 
-export interface SearchPromptInstructionTextProps extends HTMLAttributes<HTMLSpanElement> {}
+export interface SearchPromptInstructionTextProps extends React.ComponentProps<"span"> {}
 
 export const SearchPromptInstructionText = ({
 	className,

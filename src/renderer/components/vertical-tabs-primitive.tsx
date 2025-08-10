@@ -1,6 +1,5 @@
 import * as RadixTabs from "@radix-ui/react-tabs";
 import clsx from "clsx";
-import type { HTMLAttributes } from "react";
 
 export interface RootProps extends RadixTabs.TabsProps {}
 
@@ -20,25 +19,25 @@ export const List = ({ className, ...props }: ListProps) => {
 	return <RadixTabs.List className={clsx("vertical-tabs-list", className)} {...props} />;
 };
 
-export interface ListSectionProps extends HTMLAttributes<HTMLDivElement> {}
+export interface ListSectionProps extends React.ComponentProps<"div"> {}
 
 export const ListSection = ({ className, ...props }: ListSectionProps) => {
 	return <div className={clsx("vertical-tabs-list-section", className)} {...props} />;
 };
 
-export interface ListSectionHeaderProps extends HTMLAttributes<HTMLDivElement> {}
+export interface ListSectionHeaderProps extends React.ComponentProps<"div"> {}
 
 export const ListSectionHeader = ({ className, ...props }: ListSectionHeaderProps) => (
 	<div className={clsx("vertical-tabs-list-section-header", className)} {...props} />
 );
 
-export interface ListSectionTitleProps extends HTMLAttributes<HTMLDivElement> {}
+export interface ListSectionTitleProps extends React.ComponentProps<"div"> {}
 
 export const ListSectionTitle = ({ className, ...props }: ListSectionTitleProps) => (
 	<div className={clsx("vertical-tabs-list-section-title", className)} {...props} />
 );
 
-export interface ListSectionContentProps extends HTMLAttributes<HTMLDivElement> {}
+export interface ListSectionContentProps extends React.ComponentProps<"div"> {}
 
 export const ListSectionContent = ({ className, ...props }: ListSectionContentProps) => (
 	<div className={clsx("vertical-tabs-list-section-content", className)} {...props} />

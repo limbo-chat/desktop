@@ -1,8 +1,7 @@
 import clsx from "clsx";
-import type { ButtonHTMLAttributes } from "react";
 import { LoadingIcon } from "./loading-icon";
 
-export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "color"> {
+export interface ButtonProps extends React.ComponentProps<"button"> {
 	/** an identifier for the action */
 	action?: string;
 	isLoading?: boolean;

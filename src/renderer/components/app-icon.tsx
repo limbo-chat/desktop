@@ -92,8 +92,9 @@ const appIconMap: Record<limbo.AppIcon, FC> = {
 	"forward": lucide.ChevronRight,
 } as const;
 
-export interface AppIconProps extends React.HTMLAttributes<HTMLElement> {
+export interface AppIconProps {
 	icon: limbo.AppIcon;
+	className?: string;
 }
 
 export const AppIcon = ({ icon, ...props }: AppIconProps) => {

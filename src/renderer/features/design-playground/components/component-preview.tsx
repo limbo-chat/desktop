@@ -1,13 +1,12 @@
 import clsx from "clsx";
-import type { HTMLAttributes } from "react";
 
-export interface ComponentPreviewProps extends HTMLAttributes<HTMLDivElement> {}
+export interface ComponentPreviewProps extends React.ComponentProps<"div"> {}
 
 export const ComponentPreview = ({ className, ...divProps }: ComponentPreviewProps) => {
 	return <div className={clsx("component-preview", className)} {...divProps} />;
 };
 
-export interface ComponentPreviewContentProps extends HTMLAttributes<HTMLDivElement> {}
+export interface ComponentPreviewContentProps extends React.ComponentProps<"div"> {}
 
 export const ComponentPreviewContent = ({
 	className,
@@ -16,7 +15,7 @@ export const ComponentPreviewContent = ({
 	return <div className={clsx("component-preview-content", className)} {...divProps} />;
 };
 
-export interface ComponentPreviewPanelProps extends HTMLAttributes<HTMLDivElement> {}
+export interface ComponentPreviewPanelProps extends React.ComponentProps<"div"> {}
 
 export const ComponentPreviewPanel = ({ className, ...divProps }: ComponentPreviewPanelProps) => {
 	return <div className={clsx("component-preview-panel", className)} {...divProps} />;

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMeasure } from "@uidotdev/usehooks";
 import { debounce } from "es-toolkit";
-import { useCallback, useEffect, useRef, useState, type ButtonHTMLAttributes } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import type { UpdateChatInput } from "../../../../main/trpc/router/chats";
 import { AppIcon } from "../../../components/app-icon";
@@ -20,7 +20,7 @@ import { renderSystemPrompt } from "../utils";
 import { ChatComposer } from "./chat-composer";
 import { ChatLog } from "./chat-log";
 
-interface ScrollToBottomButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ScrollToBottomButtonProps extends React.ComponentProps<"button"> {
 	state: "visible" | "hidden";
 }
 
