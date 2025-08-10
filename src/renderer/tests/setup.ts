@@ -1,5 +1,6 @@
-import { afterEach } from "vitest";
+// sort-imports-ignore
 import "@testing-library/jest-dom/vitest";
+import { afterEach } from "vitest";
 import { cleanup } from "@testing-library/react";
 
 afterEach(() => {

@@ -12,6 +12,7 @@ export default defineConfig({
 				test: {
 					name: "main-process",
 					environment: "node",
+					setupFiles: ["./tests/setup.ts"],
 				},
 			},
 			{
@@ -20,7 +21,7 @@ export default defineConfig({
 				test: {
 					name: "renderer-process",
 					environment: "jsdom",
-					setupFiles: ["./setup-tests.ts"],
+					setupFiles: ["./tests/setup.ts"],
 				},
 			},
 		],
