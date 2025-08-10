@@ -40,6 +40,16 @@ export async function findOAuthClient(db: AppDatabaseClient, opts: FindOAuthClie
 	return client ?? null;
 }
 
+export async function getOAuthClient(db: AppDatabaseClient, clientId: number) {
+	const client = await db
+		.selectFrom("oauth_client")
+		.selectAll()
+		.where("id", "=", clientId)
+		.executeTakeFirst();
+
+	return client ?? null;
+}
+
 export interface FindAccessTokenOptions {
 	clientId: number;
 	scopes?: string[];

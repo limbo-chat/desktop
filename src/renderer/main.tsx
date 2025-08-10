@@ -233,6 +233,27 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 						);
 					}
 
+					// look for an existing auth token
+					const existingClient = await mainRouterClient.auth.findOAuthClient.query({
+						authUrl: options.authUrl,
+						tokenUrl: options.tokenUrl,
+						scopes: options.scopes,
+					});
+
+					if (existingClient) {
+						const existingToken = await mainRouterClient.auth.findOAuthToken.query({
+							clientId: existingClient.id,
+							scopes: options.scopes,
+						});
+
+						// if an existing token is found, return that
+						if (existingToken) {
+							return existingToken.access_token;
+						}
+					}
+
+					// otherwise, start a new auth session
+
 					const origin = new URL(options.authUrl).origin;
 
 					const confirmed = await showConfirmDialog({
@@ -252,10 +273,6 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 						clientName: options.clientName,
 						scopes: options.scopes,
 					});
-
-					if ("accessToken" in response) {
-						return response.accessToken;
-					}
 
 					// open the auth URL in the browser
 					await mainRouterClient.common.openUrl.mutate({

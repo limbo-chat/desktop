@@ -7,10 +7,22 @@ import {
 	startOAuthTokenRequestSession,
 	refreshOrDeleteAuthTokenIfNeeded,
 	deleteExpiredOAuthTokenRequestSessions,
+	getOAuthClient,
 } from "../../auth/helpers/core";
 import { registerClient } from "../../auth/helpers/oauth";
 import { getDb } from "../../db/utils";
 import { publicProcedure, router } from "../trpc";
+
+export const findOAuthClientInputSchema = z.object({
+	authUrl: z.string(),
+	tokenUrl: z.string(),
+	scopes: z.array(z.string()),
+});
+
+export const findOAuthTokenInputSchema = z.object({
+	clientId: z.number(),
+	scopes: z.array(z.string()),
+});
 
 export const startOAuthTokenRequestInputSchema = z.object({
 	authUrl: z.string(),
@@ -22,6 +34,41 @@ export const startOAuthTokenRequestInputSchema = z.object({
 });
 
 export const authRouter = router({
+	findOAuthClient: publicProcedure.input(findOAuthClientInputSchema).query(async ({ input }) => {
+		const db = await getDb();
+
+		const client = await findOAuthClient(db, {
+			authUrl: input.authUrl,
+			tokenUrl: input.tokenUrl,
+			scopes: input.scopes,
+		});
+
+		return client ?? null;
+	}),
+	findOAuthToken: publicProcedure.input(findOAuthTokenInputSchema).query(async ({ input }) => {
+		const db = await getDb();
+
+		const client = await getOAuthClient(db, input.clientId);
+
+		if (!client) {
+			return null;
+		}
+
+		let token = await findOAuthToken(db, {
+			clientId: input.clientId,
+			scopes: input.scopes,
+		});
+
+		if (token) {
+			// this can return null if the token is expired and cannot be refreshed
+			token = await refreshOrDeleteAuthTokenIfNeeded(db, {
+				client,
+				token,
+			});
+		}
+
+		return token ?? null;
+	}),
 	startOAuthTokenRequest: publicProcedure
 		.input(startOAuthTokenRequestInputSchema)
 		.mutation(async ({ input }) => {
@@ -63,28 +110,6 @@ export const authRouter = router({
 				});
 			}
 
-			// look for an existing token for this client and scopes
-			const token = await findOAuthToken(db, {
-				clientId: client.id,
-				scopes: input.scopes,
-			});
-
-			if (token) {
-				// this can return null if the token is expired and cannot be refreshed
-				// in that case, we will want to start a new token request session
-				const maybeRefreshedToken = await refreshOrDeleteAuthTokenIfNeeded(db, {
-					client,
-					token,
-				});
-
-				if (maybeRefreshedToken) {
-					return {
-						accessToken: maybeRefreshedToken.access_token,
-					};
-				}
-			}
-
-			// if no token exists, start a new token request session
 			const result = await startOAuthTokenRequestSession(db, {
 				client: client,
 				scopes: input.scopes,
