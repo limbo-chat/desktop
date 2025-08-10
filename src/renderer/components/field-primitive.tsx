@@ -4,7 +4,6 @@ import * as RadioGroupPrimitive from "./radio-group-primitive";
 
 export interface FieldContext {
 	id: string;
-	isError: boolean;
 	hasError: boolean;
 	hasDescription: boolean;
 }
@@ -48,25 +47,23 @@ export const useFieldControlAccessibilityProps = () => {
 export interface RootProps extends React.ComponentProps<"div"> {
 	/** an identifier for the field */
 	id: string;
-	isError?: boolean;
 	hasDescription?: boolean;
 	hasError?: boolean;
 }
 
 export const Root = ({
 	id,
-	isError = false,
 	hasError = false,
 	hasDescription = false,
 	className,
 	...props
 }: RootProps) => {
 	return (
-		<fieldContext.Provider value={{ id, isError, hasError, hasDescription }}>
+		<fieldContext.Provider value={{ id, hasError, hasDescription }}>
 			<div
 				className={clsx("field", className)}
 				data-field={id}
-				data-error={isError || undefined}
+				data-error={hasError || undefined}
 				{...props}
 			/>
 		</fieldContext.Provider>

@@ -16,12 +16,7 @@ export const Field = ({
 	children,
 }: PropsWithChildren<FieldProps>) => {
 	return (
-		<FieldPrimitive.Root
-			id={id}
-			isError={!!error}
-			hasDescription={!!description}
-			hasError={!!error}
-		>
+		<FieldPrimitive.Root id={id} hasDescription={!!description} hasError={!!error}>
 			{label && <FieldPrimitive.Label>{label}</FieldPrimitive.Label>}
 			{description && <FieldPrimitive.Description>{description}</FieldPrimitive.Description>}
 			<FieldPrimitive.Control>{children}</FieldPrimitive.Control>
