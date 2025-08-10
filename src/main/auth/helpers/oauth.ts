@@ -86,6 +86,7 @@ export async function exchangeCodeForAccessToken(opts: ExchangeCodeForAccessToke
 	params.append("code_verifier", opts.codeVerifier);
 
 	const response = await fetch(opts.tokenUrl, {
+		method: "POST",
 		headers: {
 			"Accept": "application/json",
 			"Content-Type": "application/x-www-form-urlencoded",

@@ -6,7 +6,7 @@ import type {
 	OAuthToken,
 	OAuthTokenRequestSession,
 } from "../../db/types";
-import { TOKEN_REFRESH_THRESHOLD_MINUTES } from "../constants";
+import { AUTH_REDIRECT_URI, TOKEN_REFRESH_THRESHOLD_MINUTES } from "../constants";
 import {
 	buildOAuthAuthorizationUrl,
 	exchangeCodeForAccessToken,
@@ -21,16 +21,17 @@ export interface FindOAuthClientOptions {
 }
 
 export async function findOAuthClient(db: AppDatabaseClient, opts: FindOAuthClientOptions) {
-	const getClientQuery = await db
+	let getClientQuery = await db
 		.selectFrom("oauth_client")
 		.selectAll()
 		.where("auth_url", "=", opts.authUrl)
 		.where("token_url", "=", opts.tokenUrl);
 
 	if (opts.scopes) {
-		getClientQuery
+		getClientQuery = getClientQuery
 			.innerJoin("oauth_client_scope", "oauth_client.id", "oauth_client_scope.client_id")
 			.where("oauth_client_scope.scope", "in", opts.scopes)
+			.groupBy("oauth_client.id")
 			.having((eb) => eb.fn.count("oauth_client_scope.scope"), "=", opts.scopes.length);
 	}
 
@@ -45,15 +46,16 @@ export interface FindAccessTokenOptions {
 }
 
 export async function findOAuthToken(db: AppDatabaseClient, opts: FindAccessTokenOptions) {
-	const getTokenQuery = await db
+	let getTokenQuery = await db
 		.selectFrom("oauth_token")
 		.selectAll()
 		.where("client_id", "=", opts.clientId);
 
 	if (opts.scopes && opts.scopes.length > 0) {
-		getTokenQuery
+		getTokenQuery = getTokenQuery
 			.innerJoin("oauth_token_scope", "oauth_token.id", "oauth_token_scope.token_id")
 			.where("oauth_token_scope.scope", "in", opts.scopes)
+			.groupBy("oauth_token.id")
 			.having((eb) => eb.fn.count("oauth_token_scope.scope"), "=", opts.scopes.length);
 	}
 
@@ -131,6 +133,7 @@ export async function createOAuthToken(db: AppDatabaseClient, opts: CreateOAuthT
 
 export interface CreateTokenRequestSessionOptions {
 	clientId: number;
+	scopes: string[];
 	codeVerifier: string;
 }
 
@@ -152,7 +155,23 @@ export async function createTokenRequestSession(
 		throw new Error("Failed to create OAuth token request session");
 	}
 
+	// insert the scopes for this token request session
+
+	const newScopes = opts.scopes.map((scope) => ({
+		request_session_id: tokenRequestSession.id,
+		scope,
+	}));
+
+	await db.insertInto("oauth_token_request_session_scope").values(newScopes).execute();
+
 	return tokenRequestSession;
+}
+
+export async function deleteExpiredOAuthTokenRequestSessions(db: AppDatabaseClient) {
+	await db
+		.deleteFrom("oauth_token_request_session")
+		.where("created_at", "<", subMinutes(new Date(), 10).toISOString())
+		.execute();
 }
 
 // core oauth flow
@@ -248,12 +267,13 @@ export async function startOAuthTokenRequestSession(
 	const tokenRequestSession = await createTokenRequestSession(db, {
 		clientId: client.id,
 		codeVerifier: challenge.code_verifier,
+		scopes,
 	});
 
 	const authUrl = buildOAuthAuthorizationUrl({
 		authUrl: client.auth_url,
 		clientId: client.remote_client_id,
-		redirectUri: "limbo://auth/callback",
+		redirectUri: AUTH_REDIRECT_URI,
 		state: tokenRequestSession.id.toString(),
 		codeChallenge: challenge.code_challenge,
 		scopes,

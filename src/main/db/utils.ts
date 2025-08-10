@@ -20,7 +20,6 @@ export async function getDb(): Promise<AppDatabaseClient> {
 		.addColumn("auth_url", "text", (col) => col.notNull())
 		.addColumn("token_url", "text", (col) => col.notNull())
 		.addColumn("created_at", "text", (col) => col.notNull())
-		.addUniqueConstraint("oauth_client_auth_url_token_url_unique", ["auth_url", "token_url"])
 		.ifNotExists()
 		.execute();
 

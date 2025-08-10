@@ -272,25 +272,31 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 						const removeListeners = () => {
 							clearTimeout(timeout);
 
-							window.ipcRenderer.removeListener(
+							window.ipcRenderer.off(
 								"oauth-token-request:end",
 								handleOAuthTokenRequestEnd
 							);
 
-							window.ipcRenderer.removeListener(
+							window.ipcRenderer.off(
 								"oauth-token-request:error",
 								handleOAuthTokenRequestError
 							);
 						};
 
-						const handleOAuthTokenRequestEnd = ({ sessionId, accessToken }: any) => {
+						const handleOAuthTokenRequestEnd = (
+							_event: any,
+							{ sessionId, accessToken }: any
+						) => {
 							if (sessionId === response.sessionId) {
 								removeListeners();
 								resolve(accessToken);
 							}
 						};
 
-						const handleOAuthTokenRequestError = ({ sessionId, error }: any) => {
+						const handleOAuthTokenRequestError = (
+							_event: any,
+							{ sessionId, error }: any
+						) => {
 							if (sessionId === response.sessionId) {
 								removeListeners();
 								reject(new Error(error));

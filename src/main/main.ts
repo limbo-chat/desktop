@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import { createIPCHandler } from "trpc-electron/main";
 import { PROTOCOL } from "./constants";
 import { CustomStylesWatcher } from "./custom-styles/watcher";

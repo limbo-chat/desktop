@@ -6,6 +6,7 @@ import {
 	findOAuthClient,
 	startOAuthTokenRequestSession,
 	refreshOrDeleteAuthTokenIfNeeded,
+	deleteExpiredOAuthTokenRequestSessions,
 } from "../../auth/helpers/core";
 import { registerClient } from "../../auth/helpers/oauth";
 import { getDb } from "../../db/utils";
@@ -24,6 +25,9 @@ export const authRouter = router({
 		.input(startOAuthTokenRequestInputSchema)
 		.mutation(async ({ input }) => {
 			const db = await getDb();
+
+			// clean up expired token request sessions on each of these requests
+			await deleteExpiredOAuthTokenRequestSessions(db);
 
 			let client = await findOAuthClient(db, {
 				authUrl: input.authUrl,

@@ -53,17 +53,17 @@ async function handleAuthCallback(url: URL, windowManager: WindowManager) {
 	}
 }
 
-const pathHandlers: Record<string, any> = {
-	"/auth/callback": handleAuthCallback,
+const actionHandlers: Record<string, any> = {
+	"auth/callback": handleAuthCallback,
 } as const;
 
 export async function handleDeepLink(url: string, windowManager: WindowManager) {
 	const parsedUrl = new URL(url);
-	const pathname = parsedUrl.pathname;
-	const handler = pathHandlers[pathname];
+	const actionName = `${parsedUrl.hostname}/${parsedUrl.pathname}`;
+	const handler = actionHandlers[actionName];
 
 	if (!handler) {
-		throw new Error(`No handler for deep link path: ${pathname}`);
+		throw new Error(`No handler for deep link: ${actionName}`);
 	}
 
 	await handler(parsedUrl, windowManager);
