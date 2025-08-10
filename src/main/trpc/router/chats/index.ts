@@ -15,6 +15,7 @@ const updateChatInputSchema = z.object({
 		.object({
 			name: z.string(),
 			userMessageDraft: z.string().nullable(),
+			assistantId: z.string().nullable(),
 			llmId: z.string().nullable(),
 			enabledToolIds: z.string().array(),
 			lastActivityAt: z.string(),
@@ -90,6 +91,7 @@ export const chatsRouter = router({
 			.set({
 				name: input.data.name,
 				user_message_draft: input.data.userMessageDraft ?? null,
+				assistant_id: input.data.assistantId,
 				llm_id: input.data.llmId ?? null,
 				enabled_tool_ids: newEnabledToolIds,
 				last_activity_at: input.data.lastActivityAt,

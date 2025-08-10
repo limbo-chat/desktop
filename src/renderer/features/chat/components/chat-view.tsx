@@ -5,8 +5,11 @@ import { debounce } from "es-toolkit";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import type { UpdateChatInput } from "../../../../main/trpc/router/chats";
 import { AppIcon } from "../../../components/app-icon";
+import { Button } from "../../../components/button";
+import { PopoverContent, PopoverRoot, PopoverTrigger } from "../../../components/popover";
 import { useAnimationUnmount, useIsAtBottom } from "../../../hooks/common";
 import { useMainRouter, useMainRouterClient } from "../../../lib/trpc";
+import { AssistantPicker } from "../../assistants/components/assistant-picker";
 import { ChatPanelRenderer } from "../../chat-panels/components/chat-panel-renderer";
 import { useActiveChatPanel } from "../../chat-panels/hooks";
 import { useActiveChatPanelStore } from "../../chat-panels/stores";
@@ -57,6 +60,7 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 	const { sendMessage, cancelResponse } = useSendMessage();
 
 	const [userMessage, setUserMessage] = useState("");
+	const [selectedAssistantId, setSelectedAssistantId] = useState<string | null>(null);
 	const [selectedLLMId, setSelectedLLMId] = useState<string | null>(null);
 	const [enabledToolIds, setEnabledToolIds] = useState<string[]>([]);
 
@@ -64,11 +68,27 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 	const chatLogContainerRef = useRef<HTMLDivElement>(null);
 	const hasScrolledToBottomOnLoad = useRef(false);
 
+	const getAssistantsQuery = useQuery(mainRouter.assistants.getAll.queryOptions());
+	const assistants = getAssistantsQuery.data ?? [];
+
 	const getChatQuery = useQuery(
 		mainRouter.chats.get.queryOptions({
 			id: chatId,
 		})
 	);
+
+	const getAssistantQuery = useQuery(
+		mainRouter.assistants.get.queryOptions(
+			{
+				id: selectedAssistantId as string,
+			},
+			{
+				enabled: !!selectedAssistantId,
+			}
+		)
+	);
+
+	const assistant = getAssistantQuery.data;
 
 	const getSettingsQuery = useQuery(mainRouter.settings.get.queryOptions());
 	const settings = getSettingsQuery.data;
@@ -94,7 +114,7 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 		typeof chatComposerDimensions.height === "number";
 
 	const handleSend = useCallback(async () => {
-		if (!selectedLLMId || !settings) {
+		if (!assistant || !selectedLLMId || !settings) {
 			return;
 		}
 
@@ -125,7 +145,7 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 		} catch (err) {
 			console.error("Failed to send message:", err);
 		}
-	}, [chatId, settings, selectedLLMId, userMessage]);
+	}, [chatId, settings, assistant, selectedLLMId, userMessage]);
 
 	const handleCancel = useCallback(() => {
 		cancelResponse(chatId);
@@ -166,6 +186,7 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 	useEffect(() => {
 		return () => {
 			setUserMessage("");
+			setSelectedAssistantId(null);
 			setSelectedLLMId(null);
 			setEnabledToolIds([]);
 
@@ -186,6 +207,10 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 				setUserMessage(chat.user_message_draft);
 			}
 
+			if (chat.assistant_id) {
+				setSelectedAssistantId(chat.assistant_id);
+			}
+
 			if (chat.llm_id) {
 				setSelectedLLMId(chat.llm_id);
 			}
@@ -204,10 +229,11 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 
 		updateChat({
 			userMessageDraft: userMessage,
+			assistantId: selectedAssistantId,
 			llmId: selectedLLMId,
 			enabledToolIds,
 		});
-	}, [chat, chatId, userMessage, selectedLLMId, enabledToolIds]);
+	}, [chat, chatId, userMessage, selectedAssistantId, selectedLLMId, enabledToolIds]);
 
 	useEffect(() => {
 		if (chatState || !chat || !listChatMessagesQuery.data) {
@@ -255,6 +281,21 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 			}}
 		>
 			<Panel className="chat-view-main" id="main" order={1} minSize={25}>
+				<div className="chat-view-header">
+					<PopoverRoot>
+						<PopoverTrigger asChild>
+							<Button>{assistant ? assistant.name : "Select assistant"}</Button>
+						</PopoverTrigger>
+						<PopoverContent align="start">
+							<AssistantPicker
+								assistants={assistants}
+								value={selectedAssistantId ?? undefined}
+								onChange={setSelectedAssistantId}
+							/>
+						</PopoverContent>
+					</PopoverRoot>
+				</div>
+
 				<div className="chat-log-container" ref={chatLogContainerRef}>
 					<ChatLog messages={messages} />
 					{shouldShowSpacer && <div className="chat-scroll-spacer" />}
