@@ -172,12 +172,29 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 			},
 			chats: {
 				get: async (chatId) => {
-					return await mainRouterClient.chats.get.query({
+					const chat = await mainRouterClient.chats.get.query({
 						id: chatId,
 					});
+
+					if (!chat) {
+						return null;
+					}
+
+					return {
+						id: chat.id,
+						name: chat.name,
+						createdAt: chat.created_at,
+					};
 				},
 				getMessages: async (opts) => {
-					return await mainRouterClient.chats.messages.getMany.query(opts);
+					const messages = await mainRouterClient.chats.messages.getMany.query(opts);
+
+					return messages.map((message) => ({
+						id: message.id,
+						content: message.content,
+						createdAt: message.created_at,
+						role: message.role,
+					}));
 				},
 				rename: async (chatId, newName) => {
 					await mainRouterClient.chats.update.mutate({

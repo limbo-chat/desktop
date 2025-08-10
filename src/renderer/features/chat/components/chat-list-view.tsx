@@ -103,7 +103,7 @@ const ChatItem = ({ chat, isActive }: ChatItemProps) => {
 
 interface ChatSection {
 	title: string;
-	chats: { id: string; name: string; createdAt: string }[];
+	chats: { id: string; name: string; created_at: string }[];
 }
 
 export const ChatListView = () => {
@@ -120,7 +120,7 @@ export const ChatListView = () => {
 		const older: ChatSection = { title: "Older", chats: [] };
 
 		for (const chat of chats) {
-			const numDaysAgo = differenceInDays(new Date(), new Date(chat.createdAt));
+			const numDaysAgo = differenceInDays(new Date(), new Date(chat.created_at));
 
 			if (numDaysAgo === 0) {
 				today.chats.push(chat);

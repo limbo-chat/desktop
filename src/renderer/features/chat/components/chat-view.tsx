@@ -177,16 +177,16 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 
 	useEffect(() => {
 		if (chat) {
-			if (chat.userMessageDraft) {
-				setUserMessage(chat.userMessageDraft);
+			if (chat.user_message_draft) {
+				setUserMessage(chat.user_message_draft);
 			}
 
-			if (chat.llmId) {
-				setSelectedLLMId(chat.llmId);
+			if (chat.llm_id) {
+				setSelectedLLMId(chat.llm_id);
 			}
 
-			if (chat.enabledToolIds.length > 0) {
-				setEnabledToolIds(chat.enabledToolIds);
+			if (chat.enabled_tool_ids.length > 0) {
+				setEnabledToolIds(chat.enabled_tool_ids);
 			}
 		}
 	}, [chat]);
@@ -216,7 +216,7 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 				content: message.content,
 				role: message.role,
 				status: "complete",
-				createdAt: message.createdAt,
+				createdAt: message.created_at,
 			});
 		}
 	}, [chat, chatState, listChatMessagesQuery.data]);
