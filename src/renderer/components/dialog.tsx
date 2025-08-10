@@ -12,6 +12,7 @@ export const Dialog = ({ component, className, ...props }: DialogProps) => {
 			className={clsx("dialog", className)}
 			role="dialog"
 			aria-labelledby="dialog-title"
+			aria-describedby="dialog-description"
 			{...props}
 		/>
 	);
@@ -26,13 +27,15 @@ export const DialogHeader = ({ className, ...props }: DialogHeaderProps) => {
 export interface DialogTitleProps extends React.ComponentProps<"div"> {}
 
 export const DialogTitle = ({ className, ...props }: DialogTitleProps) => {
-	return <div className={clsx("dialog-title", className)} {...props} />;
+	return <div id="dialog-title" className={clsx("dialog-title", className)} {...props} />;
 };
 
 export interface DialogDescriptionProps extends React.ComponentProps<"div"> {}
 
 export const DialogDescription = ({ className, ...props }: DialogDescriptionProps) => {
-	return <p className={clsx("dialog-description", className)} {...props} />;
+	return (
+		<p id="dialog-description" className={clsx("dialog-description", className)} {...props} />
+	);
 };
 
 export interface DialogContentProps extends React.ComponentProps<"div"> {}
