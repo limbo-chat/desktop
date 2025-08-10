@@ -17,6 +17,7 @@ export const findOAuthClientInputSchema = z.object({
 	authUrl: z.string(),
 	tokenUrl: z.string(),
 	scopes: z.array(z.string()),
+	remoteClientId: z.string().optional(),
 });
 
 export const findOAuthTokenInputSchema = z.object({
@@ -41,6 +42,7 @@ export const authRouter = router({
 			authUrl: input.authUrl,
 			tokenUrl: input.tokenUrl,
 			scopes: input.scopes,
+			remoteClientId: input.remoteClientId,
 		});
 
 		return client ?? null;
@@ -81,6 +83,7 @@ export const authRouter = router({
 				authUrl: input.authUrl,
 				tokenUrl: input.tokenUrl,
 				scopes: input.scopes,
+				remoteClientId: input.clientId,
 			});
 
 			if (!client) {

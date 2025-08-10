@@ -17,6 +17,7 @@ import {
 export interface FindOAuthClientOptions {
 	authUrl: string;
 	tokenUrl: string;
+	remoteClientId?: string;
 	scopes?: string[];
 }
 
@@ -26,6 +27,10 @@ export async function findOAuthClient(db: AppDatabaseClient, opts: FindOAuthClie
 		.selectAll()
 		.where("auth_url", "=", opts.authUrl)
 		.where("token_url", "=", opts.tokenUrl);
+
+	if (opts.remoteClientId) {
+		getClientQuery = getClientQuery.where("remote_client_id", "=", opts.remoteClientId);
+	}
 
 	if (opts.scopes) {
 		getClientQuery = getClientQuery

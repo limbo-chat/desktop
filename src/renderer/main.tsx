@@ -255,6 +255,7 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 						authUrl: options.authUrl,
 						tokenUrl: options.tokenUrl,
 						scopes: options.scopes,
+						remoteClientId: options.clientId,
 					});
 
 					if (existingClient) {
