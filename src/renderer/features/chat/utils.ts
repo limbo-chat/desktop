@@ -3,18 +3,6 @@ import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import handlebars from "handlebars";
 import type { MainRouter, MainRouterOutputs } from "../../../main/trpc/router";
 
-export interface RenderSystemPromptContext {
-	user: {
-		username: string;
-	};
-}
-
-export function renderSystemPrompt(systemPromptTemplate: string, ctx: RenderSystemPromptContext) {
-	const template = handlebars.compile(systemPromptTemplate);
-
-	return template(ctx);
-}
-
 export function removeChatFromQueryCache(
 	queryClient: QueryClient,
 	mainRouter: TRPCOptionsProxy<MainRouter>,

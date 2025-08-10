@@ -1,10 +1,5 @@
 import type * as limbo from "@limbo/api";
 
-export interface PromptBuilderOptions {
-	systemPrompt?: string;
-	userPrompt?: string;
-}
-
 export class ChatMessage implements limbo.ChatMessage {
 	private role: limbo.ChatMessageRole;
 	private nodes: limbo.ChatMessageNode[] = [];

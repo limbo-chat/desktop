@@ -16,7 +16,6 @@ import { ChatMessage } from "../core/chat-prompt";
 import { useChatState } from "../hooks/common";
 import { useSendMessage } from "../hooks/use-send-message";
 import { useChatStore } from "../stores";
-import { renderSystemPrompt } from "../utils";
 import { ChatComposer } from "./chat-composer";
 import { ChatLog } from "./chat-log";
 
@@ -106,13 +105,6 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 		}
 
 		setUserMessage("");
-
-		// reconsider whether it should be trimmed or not
-		const systemPrompt = renderSystemPrompt(settings.systemPrompt, {
-			user: {
-				username: settings.username,
-			},
-		}).trim();
 
 		const userMessageObj = new ChatMessage("user");
 

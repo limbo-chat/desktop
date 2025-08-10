@@ -140,7 +140,6 @@ const PersonalizationTabContent = () => {
 	const form = useForm({
 		values: {
 			username: settings.username,
-			systemPrompt: settings.systemPrompt,
 		},
 	});
 
@@ -161,27 +160,6 @@ const PersonalizationTabContent = () => {
 								description="What would you like to be called?"
 							>
 								<FieldController.TextInput placeholder="Enter your name" />
-							</FieldController.Root>
-							<FieldController.Root
-								id="system-prompt"
-								name="systemPrompt"
-								label="System prompt"
-								description={
-									<>
-										This prompt is used to set the context for all chat
-										completions. Learn about{" "}
-										<Anchor
-											href="https://handlebarsjs.com"
-											target="_blank"
-											tabIndex={-1}
-										>
-											Handlebars
-										</Anchor>
-										.
-									</>
-								}
-							>
-								<FieldController.Textarea />
 							</FieldController.Root>
 						</Form.SectionContent>
 					</Form.Section>

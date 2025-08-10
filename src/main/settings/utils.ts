@@ -4,8 +4,6 @@ import { settingsSchema, type Settings } from "./schemas";
 
 export const defaultSettings: Settings = {
 	username: "",
-	systemPrompt:
-		"You are a helpful assistant. You are currently conversing with {{user.username}}. Answer {{user.username}}'s questions to the best of your ability. ",
 	isTransparencyEnabled: false,
 	isDeveloperModeEnabled: false,
 } as const;
