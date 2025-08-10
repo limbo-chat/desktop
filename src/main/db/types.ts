@@ -62,6 +62,7 @@ export interface ChatTable {
 	id: string;
 	name: string;
 	user_message_draft: string | null;
+	assistant_id: string | null;
 	llm_id: string | null;
 	enabled_tool_ids: JSONColumnType<string[]>;
 	created_at: string;

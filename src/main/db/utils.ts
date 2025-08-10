@@ -84,6 +84,7 @@ export async function getDb(): Promise<AppDatabaseClient> {
 		.addColumn("id", "text", (col) => col.primaryKey())
 		.addColumn("name", "text", (col) => col.notNull())
 		.addColumn("user_message_draft", "text")
+		.addColumn("assistant_id", "text")
 		.addColumn("llm_id", "text")
 		.addColumn("enabled_tool_ids", "text", (col) => col.notNull())
 		.addColumn("created_at", "text", (col) => col.notNull())
