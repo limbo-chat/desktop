@@ -11,6 +11,7 @@ import { ChatPanelRenderer } from "../../chat-panels/components/chat-panel-rende
 import { useActiveChatPanel } from "../../chat-panels/hooks";
 import { useActiveChatPanelStore } from "../../chat-panels/stores";
 import { usePluginManager } from "../../plugins/hooks/core";
+import { setActiveChatId } from "../../workspace/utils";
 import { ChatMessage } from "../core/chat-prompt";
 import { useChatState } from "../hooks/common";
 import { useSendMessage } from "../hooks/use-send-message";
@@ -159,6 +160,19 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 	}, []);
 
 	useEffect(() => {
+		console.log(getChatQuery);
+
+		if (!getChatQuery.isError) {
+			return;
+		}
+
+		// if the chat is not found, clear the active chat ID
+		if (getChatQuery.error.data?.code === "NOT_FOUND") {
+			setActiveChatId(null);
+		}
+	}, [getChatQuery]);
+
+	useEffect(() => {
 		return () => {
 			setUserMessage("");
 			setSelectedLLMId(null);
@@ -192,12 +206,17 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 	}, [chat]);
 
 	useEffect(() => {
+		// only attempt to update the chat it is found
+		if (!chat) {
+			return;
+		}
+
 		updateChat({
 			userMessageDraft: userMessage,
 			llmId: selectedLLMId,
 			enabledToolIds,
 		});
-	}, [chatId, userMessage, selectedLLMId, enabledToolIds]);
+	}, [chat, chatId, userMessage, selectedLLMId, enabledToolIds]);
 
 	useEffect(() => {
 		if (chatState || !chat || !listChatMessagesQuery.data) {
