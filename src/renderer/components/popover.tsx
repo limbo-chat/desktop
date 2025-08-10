@@ -16,7 +16,7 @@ export interface PopoverContentProps extends RadixPopover.PopoverContentProps {}
 export const PopoverContent = ({ className, ...props }: PopoverContentProps) => {
 	return (
 		<RadixPopover.Portal>
-			<RadixPopover.Content className={clsx("popover")} {...props} />
+			<RadixPopover.Content className={clsx("popover", className)} {...props} />
 		</RadixPopover.Portal>
 	);
 };

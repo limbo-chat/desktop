@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/shallow";
@@ -27,6 +28,7 @@ import {
 import { Field } from "../../../components/field";
 import * as FieldController from "../../../components/field-controller";
 import * as Form from "../../../components/form-primitive";
+import { LoadingState } from "../../../components/loading-state";
 import {
 	MenuContent,
 	MenuItem,
@@ -51,6 +53,8 @@ import {
 } from "../../../components/select";
 import { Tooltip } from "../../../components/tooltip";
 import * as VerticalTabs from "../../../components/vertical-tabs-primitive";
+import { useMainRouter } from "../../../lib/trpc";
+import { AssistantPicker } from "../../assistants/components/assistant-picker";
 import { MarkdownContainer } from "../../markdown/components/markdown-container";
 import { MarkdownRenderer } from "../../markdown/components/markdown-renderer";
 import { useModalContext } from "../../modals/hooks";
@@ -542,6 +546,24 @@ const MarkdownTabContent = () => {
 	);
 };
 
+const AssistantPickerTabContent = () => {
+	const mainRouter = useMainRouter();
+	const getAssistantsQuery = useQuery(mainRouter.assistants.getAll.queryOptions());
+	const assistants = getAssistantsQuery.data;
+
+	if (!assistants) {
+		return <LoadingState />;
+	}
+
+	return (
+		<ComponentPreview>
+			<ComponentPreviewContent>
+				<AssistantPicker assistants={assistants} />
+			</ComponentPreviewContent>
+		</ComponentPreview>
+	);
+};
+
 export const DesignPlaygroundTabs = () => {
 	const designPlaygroundTabsStore = useDesignPlaygroundTabsStore(
 		useShallow((state) => ({
@@ -587,6 +609,9 @@ export const DesignPlaygroundTabs = () => {
 							<VerticalTabs.ListSectionItem value="markdown">
 								Markdown
 							</VerticalTabs.ListSectionItem>
+							<VerticalTabs.ListSectionItem value="assistant-picker">
+								Assistant picker
+							</VerticalTabs.ListSectionItem>
 						</VerticalTabs.ListSectionContent>
 					</VerticalTabs.ListSectionContent>
 				</VerticalTabs.ListSection>
@@ -614,6 +639,9 @@ export const DesignPlaygroundTabs = () => {
 			</VerticalTabs.Content>
 			<VerticalTabs.Content value="markdown">
 				<MarkdownTabContent />
+			</VerticalTabs.Content>
+			<VerticalTabs.Content value="assistant-picker">
+				<AssistantPickerTabContent />
 			</VerticalTabs.Content>
 		</VerticalTabs.Root>
 	);
