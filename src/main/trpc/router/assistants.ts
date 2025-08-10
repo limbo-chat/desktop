@@ -18,9 +18,9 @@ const updateAssistantInputSchema = z.object({
 		.pick({
 			name: true,
 			description: true,
-			systemPrompt: true,
-			recommendedPlugins: true,
-			recommendedTools: true,
+			system_prompt: true,
+			recommended_plugins: true,
+			recommended_tools: true,
 		})
 		.partial(),
 });
@@ -60,8 +60,8 @@ export const assistantsRouter = router({
 			.insertInto("assistant")
 			.values({
 				...input.assistant,
-				recommendedPlugins: JSON.stringify(input.assistant.recommendedPlugins),
-				recommendedTools: JSON.stringify(input.assistant.recommendedTools),
+				recommended_plugins: JSON.stringify(input.assistant.recommended_plugins),
+				recommended_tools: JSON.stringify(input.assistant.recommended_tools),
 			})
 			.execute();
 
@@ -74,11 +74,11 @@ export const assistantsRouter = router({
 			.updateTable("assistant")
 			.set({
 				...input.data,
-				recommendedPlugins: input.data.recommendedPlugins
-					? JSON.stringify(input.data.recommendedPlugins)
+				recommended_plugins: input.data.recommended_plugins
+					? JSON.stringify(input.data.recommended_plugins)
 					: undefined,
-				recommendedTools: input.data.recommendedTools
-					? JSON.stringify(input.data.recommendedTools)
+				recommended_tools: input.data.recommended_tools
+					? JSON.stringify(input.data.recommended_tools)
 					: undefined,
 			})
 			.where("id", "=", input.id)

@@ -25,9 +25,9 @@ export const CreateAssistantView = () => {
 			id: "",
 			name: "",
 			description: "",
-			systemPrompt: "",
-			recommendedPlugins: [],
-			recommendedTools: [],
+			system_prompt: "",
+			recommended_plugins: [],
+			recommended_tools: [],
 		},
 	});
 
@@ -39,6 +39,10 @@ export const CreateAssistantView = () => {
 			{
 				onSuccess: () => {
 					viewStack.pop();
+				},
+				onError: (err) => {
+					// Handle error, e.g., show a notification
+					console.error("Failed to create assistant", err);
 				},
 			}
 		);

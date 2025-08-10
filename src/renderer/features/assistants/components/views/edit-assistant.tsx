@@ -35,9 +35,9 @@ export const EditAssistantView = ({ view }: ViewComponentProps<EditAssistantView
 			name: assistant.name,
 			tagline: assistant.tagline,
 			description: assistant.description,
-			systemPrompt: assistant.systemPrompt,
-			recommendedPlugins: assistant.recommendedPlugins,
-			recommendedTools: assistant.recommendedTools,
+			system_prompt: assistant.system_prompt,
+			recommended_plugins: assistant.recommended_plugins,
+			recommended_tools: assistant.recommended_tools,
 		},
 	});
 

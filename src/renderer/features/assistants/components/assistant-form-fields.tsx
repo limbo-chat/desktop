@@ -120,14 +120,14 @@ export const BaseAssistantFormFields = () => {
 			</FieldController.Root>
 			<FieldController.Root
 				id="system-prompt"
-				name="systemPrompt"
+				name="system_prompt"
 				label="System prompt"
 				description="Enter a the system prompt for your assistant"
 			>
 				<FieldController.Textarea placeholder="A brief description of your assistant" />
 			</FieldController.Root>
 			<Controller
-				name="recommendedPlugins"
+				name="recommended_plugins"
 				render={({ field }) => (
 					<Field
 						id="recommended-plugins"
@@ -139,7 +139,7 @@ export const BaseAssistantFormFields = () => {
 				)}
 			/>
 			<Controller
-				name="recommendedTools"
+				name="recommended_tools"
 				render={({ field }) => (
 					<Field
 						id="recommended-tools"

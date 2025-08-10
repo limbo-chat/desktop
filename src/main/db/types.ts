@@ -87,17 +87,9 @@ export interface AssistantTable {
 	name: string;
 	tagline: string;
 	description: string;
-	systemPrompt: string;
-	recommendedPlugins: JSONColumnType<string[]>;
-	recommendedTools: JSONColumnType<string[]>;
-}
-
-export interface AssistantTable {
-	id: string;
-	name: string;
-	description: string;
-	recommendedPlugins: JSONColumnType<string[]>;
-	recommendedTools: JSONColumnType<string[]>;
+	system_prompt: string;
+	recommended_plugins: JSONColumnType<string[]>;
+	recommended_tools: JSONColumnType<string[]>;
 }
 
 export interface AppDatabase {
