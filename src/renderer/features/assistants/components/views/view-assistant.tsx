@@ -8,7 +8,6 @@ import {
 	DialogContent,
 	DialogFooter,
 	DialogHeader,
-	DialogInfo,
 	DialogTitle,
 } from "../../../../components/dialog";
 import { IconButton } from "../../../../components/icon-button";
@@ -51,9 +50,7 @@ const DeleteAssistantDialog = ({ assistant, onDelete }: UninstallAssistantDialog
 	return (
 		<Dialog>
 			<DialogHeader>
-				<DialogInfo>
-					<DialogTitle>Delete {assistant.name}</DialogTitle>
-				</DialogInfo>
+				<DialogTitle>Delete {assistant.name}</DialogTitle>
 			</DialogHeader>
 			<DialogContent>
 				<p>Are you sure you want to delete this assistant?</p>
