@@ -85,8 +85,11 @@ export const chatsRouter = router({
 			.updateTable("chat")
 			.where("id", "=", input.id)
 			.set({
-				...input.data,
+				name: input.data.name,
+				user_message_draft: input.data.userMessageDraft ?? null,
+				llm_id: input.data.llmId ?? null,
 				enabled_tool_ids: newEnabledToolIds,
+				last_activity_at: input.data.lastActivityAt,
 			})
 			.returningAll()
 			.executeTakeFirst();
