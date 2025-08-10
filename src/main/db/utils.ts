@@ -29,7 +29,7 @@ export async function getDb(): Promise<AppDatabaseClient> {
 			col.notNull().references("oauth_client.id").onDelete("cascade")
 		)
 		.addColumn("scope", "text", (col) => col.notNull())
-		.addUniqueConstraint("oauth_client_scope_client_id_scope_unique", ["client_id", "scope"])
+		.addPrimaryKeyConstraint("oauth_client_scope_pk", ["client_id", "scope"])
 		.ifNotExists()
 		.execute();
 
@@ -51,7 +51,7 @@ export async function getDb(): Promise<AppDatabaseClient> {
 			col.notNull().references("oauth_token.id").onDelete("cascade")
 		)
 		.addColumn("scope", "text", (col) => col.notNull())
-		.addUniqueConstraint("oauth_token_scope_token_id_scope_unique", ["token_id", "scope"])
+		.addPrimaryKeyConstraint("oauth_token_scope_pk", ["token_id", "scope"])
 		.ifNotExists()
 		.execute();
 
@@ -72,7 +72,7 @@ export async function getDb(): Promise<AppDatabaseClient> {
 			col.notNull().references("oauth_token_request_session.id").onDelete("cascade")
 		)
 		.addColumn("scope", "text", (col) => col.notNull())
-		.addUniqueConstraint("oauth_token_request_session_scope_request_session_id_scope_unique", [
+		.addPrimaryKeyConstraint("oauth_token_request_session_scope_pk", [
 			"request_session_id",
 			"scope",
 		])
