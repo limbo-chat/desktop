@@ -1,5 +1,5 @@
-import { FocusScope } from "@radix-ui/react-focus-scope";
 import { useEffect } from "react";
+import { FocusScope } from "@radix-ui/react-focus-scope";
 import { modalContext } from "./contexts";
 import { useModalStore, type Modal } from "./stores";
 

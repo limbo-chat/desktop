@@ -1,7 +1,7 @@
-import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { Suspense, useMemo } from "react";
-import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import type * as limbo from "@limbo/api";
+import { QueryErrorResetBoundary } from "@tanstack/react-query";
+import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import { Button } from "../../../components/button";
 import {
 	ErrorState,

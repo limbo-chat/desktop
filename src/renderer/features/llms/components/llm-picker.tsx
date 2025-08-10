@@ -1,7 +1,7 @@
-import { Command } from "cmdk";
-import Fuse from "fuse.js";
 import { useMemo, useState } from "react";
 import type * as limbo from "@limbo/api";
+import { Command } from "cmdk";
+import Fuse from "fuse.js";
 import { AppIcon } from "../../../components/app-icon";
 import { useLLMList } from "../hooks";
 

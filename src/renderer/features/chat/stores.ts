@@ -1,6 +1,6 @@
+import type * as limbo from "@limbo/api";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import type * as limbo from "@limbo/api";
 import type { ChatMessageType } from "./types";
 
 export interface ChatState {

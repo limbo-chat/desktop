@@ -1,5 +1,5 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMainRouter } from "../../../lib/trpc";
 import { useWorkspaceStore } from "../stores";
 

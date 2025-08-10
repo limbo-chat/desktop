@@ -1,5 +1,5 @@
-import { type BrowserWindow } from "electron";
 import fs from "node:fs";
+import { type BrowserWindow } from "electron";
 import { WINDOW_STATE_PATH } from "./constants";
 import { windowStateSchema, type WindowState } from "./schemas";
 

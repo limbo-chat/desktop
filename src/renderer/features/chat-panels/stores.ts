@@ -1,5 +1,5 @@
-import { create } from "zustand";
 import type * as limbo from "@limbo/api";
+import { create } from "zustand";
 
 export interface ChatPanelStore {
 	chatPanels: Map<string, limbo.ui.ChatPanel>;

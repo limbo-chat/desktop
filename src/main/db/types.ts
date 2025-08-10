@@ -1,5 +1,5 @@
-import type { Generated, Insertable, JSONColumnType, Kysely, Selectable } from "kysely";
 import type { ChatMessageNode } from "@limbo/api";
+import type { Generated, Insertable, JSONColumnType, Kysely, Selectable } from "kysely";
 
 export interface OAuthClientTable {
 	id: Generated<number>;

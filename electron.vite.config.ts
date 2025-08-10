@@ -1,6 +1,6 @@
+import path from "node:path";
 import react from "@vitejs/plugin-react";
 import { defineConfig, externalizeDepsPlugin } from "electron-vite";
-import path from "node:path";
 
 const outDir = path.join(__dirname, "dist");
 const srcDir = path.join(__dirname, "src");

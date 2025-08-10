@@ -1,5 +1,5 @@
-import { debounce } from "es-toolkit";
 import { useEffect } from "react";
+import { debounce } from "es-toolkit";
 import type { Workspace } from "../../../../main/workspace/schemas";
 import { useMainRouterClient } from "../../../lib/trpc";
 import { useWorkspaceStore } from "../stores";

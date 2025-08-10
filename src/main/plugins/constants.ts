@@ -1,5 +1,5 @@
-import { app } from "electron";
 import path from "node:path";
+import { app } from "electron";
 
 export const PLUGINS_DIR = path.join(app.getPath("userData"), "plugins");
 export const PLUGIN_MANIFEST_FILE = "plugin.json";

@@ -1,6 +1,6 @@
+import type * as limbo from "@limbo/api";
 import Ajv from "ajv";
 import { ulid } from "ulid";
-import type * as limbo from "@limbo/api";
 import type { PluginManager } from "../../plugins/core/plugin-manager";
 import { getToolDefinitionsFromToolMap } from "../../tools/utils";
 import { adaptPromptForCapabilities, transformBuiltInNodesInPrompt } from "./utils";

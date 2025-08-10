@@ -1,7 +1,7 @@
-import { watch, type FSWatcher } from "chokidar";
-import type { BrowserWindow } from "electron";
-import EventEmitter from "eventemitter3";
 import path from "node:path";
+import type { BrowserWindow } from "electron";
+import { watch, type FSWatcher } from "chokidar";
+import EventEmitter from "eventemitter3";
 import { CUSTOM_STYLES_DIR } from "./constants";
 
 export interface CustomStylesWatcherEvents {

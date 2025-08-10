@@ -1,5 +1,5 @@
-import clsx from "clsx";
 import { createContext, useContext, useMemo, type ComponentProps } from "react";
+import clsx from "clsx";
 import * as RadioGroupPrimitive from "./radio-group-primitive";
 
 export interface FieldContext {

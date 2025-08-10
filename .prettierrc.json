@@ -8,5 +8,13 @@
 	"quoteProps": "consistent",
 	"arrowParens": "always",
 	"plugins": ["@trivago/prettier-plugin-sort-imports"],
-	"importOrder": ["<THIRD_PARTY_MODULES>", "limbo", "^[./]"]
+	"importOrder": [
+		"^vitest$",
+		"^node:*",
+		"^electron$",
+		"^react$",
+		"^@limbo/*",
+		"<THIRD_PARTY_MODULES>",
+		"^[./]"
+	]
 }

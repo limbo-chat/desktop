@@ -1,6 +1,6 @@
+import type { PropsWithChildren } from "react";
 import * as RadixSelect from "@radix-ui/react-select";
 import clsx from "clsx";
-import type { PropsWithChildren } from "react";
 import { AppIcon } from "./app-icon";
 
 export interface SelectRootProps extends RadixSelect.SelectProps {}

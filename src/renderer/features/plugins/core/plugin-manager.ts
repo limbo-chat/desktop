@@ -1,5 +1,5 @@
-import EventEmitter from "eventemitter3";
 import type * as limbo from "@limbo/api";
+import EventEmitter from "eventemitter3";
 import type { PluginManifest } from "../../../../main/plugins/schemas";
 import { parseNamespacedResourceId } from "../../../lib/utils";
 import { PluginContext } from "./plugin-context";

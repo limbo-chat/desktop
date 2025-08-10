@@ -1,7 +1,7 @@
+import { Suspense, useMemo, useRef, type PropsWithChildren } from "react";
 import { QueryClient, QueryClientProvider, QueryErrorResetBoundary } from "@tanstack/react-query";
 import { createTRPCClient } from "@trpc/client";
 import { minutesToMilliseconds } from "date-fns";
-import { Suspense, useMemo, useRef, type PropsWithChildren } from "react";
 import { createRoot } from "react-dom/client";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import { Toaster } from "sonner";

@@ -1,8 +1,8 @@
+import { Suspense, useMemo } from "react";
+import type * as limbo from "@limbo/api";
 import * as RadixCollapsible from "@radix-ui/react-collapsible";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
-import { Suspense, useMemo } from "react";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
-import type * as limbo from "@limbo/api";
 import { AppIcon, ImageLikeRenderer } from "../../../components/app-icon";
 import { Button } from "../../../components/button";
 import {
