@@ -58,7 +58,7 @@ export async function getDb(): Promise<AppDatabaseClient> {
 	await db.schema
 		.createTable("oauth_token_request_session")
 		.addColumn("id", "integer", (col) => col.primaryKey().autoIncrement())
-		.addColumn("client_id", "text", (col) =>
+		.addColumn("client_id", "integer", (col) =>
 			col.notNull().references("oauth_client.id").onDelete("cascade")
 		)
 		.addColumn("code_verifier", "text", (col) => col.notNull())
