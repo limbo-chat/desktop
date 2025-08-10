@@ -17,6 +17,7 @@ export const startOAuthTokenRequestInputSchema = z.object({
 	tokenUrl: z.string(),
 	registrationUrl: z.string().optional(),
 	clientId: z.string().optional(),
+	clientName: z.string().optional(),
 	scopes: z.array(z.string()),
 });
 
@@ -46,7 +47,7 @@ export const authRouter = router({
 
 					const registeredOAuthClient = await registerClient({
 						registrationUrl: input.registrationUrl,
-						clientName: "Limbo Desktop", // TODO: use plugin provided name
+						clientName: input.clientName ?? "Limbo Desktop",
 						redirectUris: [AUTH_REDIRECT_URI],
 						scopes: input.scopes,
 					});

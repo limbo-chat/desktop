@@ -249,6 +249,7 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 						tokenUrl: options.tokenUrl,
 						registrationUrl: options.registrationUrl,
 						clientId: options.clientId,
+						clientName: options.clientName,
 						scopes: options.scopes,
 					});
 
