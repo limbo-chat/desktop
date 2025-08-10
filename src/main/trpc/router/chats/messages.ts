@@ -41,9 +41,9 @@ export const chatMessagesRouter = router({
 		const db = await getDb();
 
 		const chatMessages = await db
-			.selectFrom("chatMessage")
+			.selectFrom("chat_message")
 			.selectAll()
-			.where("chatId", "=", input.chatId)
+			.where("chat_id", "=", input.chatId)
 			.execute();
 
 		return chatMessages;
@@ -52,18 +52,18 @@ export const chatMessagesRouter = router({
 		const db = await getDb();
 
 		const chatMessagesQuery = db
-			.selectFrom("chatMessage")
+			.selectFrom("chat_message")
 			.selectAll()
-			.where("chatId", "=", input.chatId);
+			.where("chat_id", "=", input.chatId);
 
 		if (input.role) {
 			chatMessagesQuery.where("role", "=", input.role);
 		}
 
 		if (input.sort === "newest") {
-			chatMessagesQuery.orderBy("createdAt", "desc");
+			chatMessagesQuery.orderBy("created_at", "desc");
 		} else {
-			chatMessagesQuery.orderBy("createdAt", "asc");
+			chatMessagesQuery.orderBy("created_at", "asc");
 		}
 
 		if (input.limit) {
@@ -76,9 +76,12 @@ export const chatMessagesRouter = router({
 		const db = await getDb();
 
 		const chatMessage = await db
-			.insertInto("chatMessage")
+			.insertInto("chat_message")
 			.values({
-				...input,
+				id: input.id,
+				chat_id: input.chatId,
+				created_at: input.createdAt,
+				role: input.role,
 				content: JSON.stringify(input.content),
 			})
 			.returningAll()
@@ -98,7 +101,7 @@ export const chatMessagesRouter = router({
 		const db = await getDb();
 
 		await db
-			.updateTable("chatMessage")
+			.updateTable("chat_message")
 			.set({
 				...input.data,
 				content: input.data.content ? JSON.stringify(input.data.content) : undefined,

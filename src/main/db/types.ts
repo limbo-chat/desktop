@@ -61,11 +61,11 @@ export type NewOAuthTokenRequestSessionScope = Insertable<OAuthTokenRequestSessi
 export interface ChatTable {
 	id: string;
 	name: string;
-	userMessageDraft: string | null;
-	llmId: string | null;
-	enabledToolIds: JSONColumnType<string[]>;
-	createdAt: string;
-	lastActivityAt: string | null;
+	user_message_draft: string | null;
+	llm_id: string | null;
+	enabled_tool_ids: JSONColumnType<string[]>;
+	created_at: string;
+	last_activity_at: string | null;
 }
 
 export type Chat = Selectable<ChatTable>;
@@ -73,10 +73,10 @@ export type NewChat = Insertable<ChatTable>;
 
 export interface ChatMessageTable {
 	id: string;
-	chatId: string;
+	chat_id: string;
 	role: "user" | "assistant";
 	content: JSONColumnType<ChatMessageNode[]>;
-	createdAt: string;
+	created_at: string;
 }
 
 export type ChatMessage = Selectable<ChatMessageTable>;
@@ -90,7 +90,7 @@ export interface AppDatabase {
 	oauth_token_request_session: OAuthTokenRequestSessionTable;
 	oauth_token_request_session_scope: OAuthTokenRequestSessionScopeTable;
 	chat: ChatTable;
-	chatMessage: ChatMessageTable;
+	chat_message: ChatMessageTable;
 }
 
 export type AppDatabaseClient = Kysely<AppDatabase>;

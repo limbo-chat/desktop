@@ -31,9 +31,9 @@ export const chatsRouter = router({
 
 		const chats = await db
 			.selectFrom("chat")
-			.select(["id", "name", "createdAt"])
-			.orderBy("lastActivityAt", "desc")
-			.orderBy("createdAt", "desc")
+			.select(["id", "name", "created_at"])
+			.orderBy("last_activity_at", "desc")
+			.orderBy("created_at", "desc")
 			.execute();
 
 		return chats;
@@ -64,8 +64,8 @@ export const chatsRouter = router({
 			.values({
 				id: ulid(),
 				name: input.name,
-				enabledToolIds: JSON.stringify([]),
-				createdAt: new Date().toISOString(),
+				enabled_tool_ids: JSON.stringify([]),
+				created_at: new Date().toISOString(),
 			})
 			.returningAll()
 			.executeTakeFirstOrThrow();
@@ -86,7 +86,7 @@ export const chatsRouter = router({
 			.where("id", "=", input.id)
 			.set({
 				...input.data,
-				enabledToolIds: newEnabledToolIds,
+				enabled_tool_ids: newEnabledToolIds,
 			})
 			.returningAll()
 			.executeTakeFirst();

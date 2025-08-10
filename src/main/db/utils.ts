@@ -79,27 +79,27 @@ export async function getDb(): Promise<AppDatabaseClient> {
 		.ifNotExists()
 		.execute();
 
-	await await db.schema
+	await db.schema
 		.createTable("chat")
 		.addColumn("id", "text", (col) => col.primaryKey())
 		.addColumn("name", "text", (col) => col.notNull())
-		.addColumn("userMessageDraft", "text")
-		.addColumn("llmId", "text")
-		.addColumn("enabledToolIds", "text", (col) => col.notNull())
-		.addColumn("createdAt", "text", (col) => col.notNull())
-		.addColumn("lastActivityAt", "text")
+		.addColumn("user_message_draft", "text")
+		.addColumn("llm_id", "text")
+		.addColumn("enabled_tool_ids", "text", (col) => col.notNull())
+		.addColumn("created_at", "text", (col) => col.notNull())
+		.addColumn("last_activity_at", "text")
 		.ifNotExists()
 		.execute();
 
 	await db.schema
-		.createTable("chatMessage")
+		.createTable("chat_message")
 		.addColumn("id", "text", (col) => col.primaryKey())
-		.addColumn("chatId", "text", (col) =>
+		.addColumn("chat_id", "text", (col) =>
 			col.references("chat.id").onDelete("cascade").notNull()
 		)
 		.addColumn("role", "text", (col) => col.notNull()) // e.g., user, assistant
 		.addColumn("content", "text", (col) => col.notNull())
-		.addColumn("createdAt", "text", (col) => col.notNull())
+		.addColumn("created_at", "text", (col) => col.notNull())
 		.ifNotExists()
 		.execute();
 
