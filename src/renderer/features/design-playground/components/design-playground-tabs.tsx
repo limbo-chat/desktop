@@ -550,6 +550,7 @@ const AssistantPickerTabContent = () => {
 	const mainRouter = useMainRouter();
 	const getAssistantsQuery = useQuery(mainRouter.assistants.getAll.queryOptions());
 	const assistants = getAssistantsQuery.data;
+	const [selectedAssistantId, setSelectedAssistantId] = useState<string | null>(null);
 
 	if (!assistants) {
 		return <LoadingState />;
@@ -558,7 +559,11 @@ const AssistantPickerTabContent = () => {
 	return (
 		<ComponentPreview>
 			<ComponentPreviewContent>
-				<AssistantPicker assistants={assistants} />
+				<AssistantPicker
+					assistants={assistants}
+					value={selectedAssistantId ?? undefined}
+					onChange={setSelectedAssistantId}
+				/>
 			</ComponentPreviewContent>
 		</ComponentPreview>
 	);

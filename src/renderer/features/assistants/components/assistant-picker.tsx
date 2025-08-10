@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Command } from "cmdk";
 import Fuse from "fuse.js";
 import type { Assistant } from "../../../../main/assistants/schemas";
@@ -7,12 +7,18 @@ import { EmptyState, EmptyStateTitle } from "../../../components/empty-state";
 
 interface AssistantItemProps {
 	assistant: Assistant;
+	isActive: boolean;
 	onSelect: () => void;
 }
 
-const AssistantItem = ({ assistant, onSelect }: AssistantItemProps) => {
+const AssistantItem = ({ assistant, isActive, onSelect }: AssistantItemProps) => {
 	return (
-		<Command.Item className="assistant-item" value={assistant.id} onSelect={onSelect}>
+		<Command.Item
+			className="assistant-item"
+			value={assistant.id}
+			data-is-active={isActive || undefined}
+			onSelect={onSelect}
+		>
 			<div className="assistant-item-name">{assistant.name}</div>
 		</Command.Item>
 	);
@@ -20,11 +26,12 @@ const AssistantItem = ({ assistant, onSelect }: AssistantItemProps) => {
 
 export interface AssistantPickerProps {
 	assistants: Assistant[];
+	value?: string;
+	onChange: (id: string) => void;
 }
 
-export const AssistantPicker = ({ assistants }: AssistantPickerProps) => {
+export const AssistantPicker = ({ assistants, value, onChange }: AssistantPickerProps) => {
 	const [search, setSearch] = useState("");
-	const [activeAssistantId, setActiveAssistantId] = useState<string | null>(null);
 
 	const fuse = useMemo(() => {
 		return new Fuse(assistants, {
@@ -42,18 +49,8 @@ export const AssistantPicker = ({ assistants }: AssistantPickerProps) => {
 		return fuse.search(search).map((item) => item.item);
 	}, [fuse, search, assistants]);
 
-	useEffect(() => {
-		setActiveAssistantId(assistants[0]?.id ?? null);
-	}, [assistants]);
-
 	return (
-		<Command
-			className="assistant-picker"
-			loop
-			shouldFilter={false}
-			value={activeAssistantId ?? undefined}
-			onValueChange={setActiveAssistantId}
-		>
+		<Command className="assistant-picker" loop shouldFilter={false} value={value}>
 			<div className="assistant-picker-search-container">
 				<div className="assistant-picker-search-icon">
 					<AppIcon icon="search" />
@@ -70,8 +67,9 @@ export const AssistantPicker = ({ assistants }: AssistantPickerProps) => {
 					assistants.map((assistant) => (
 						<AssistantItem
 							assistant={assistant}
+							isActive={value === assistant.id}
+							onSelect={() => onChange(assistant.id)}
 							key={assistant.id}
-							onSelect={() => {}}
 						/>
 					))
 				) : (
