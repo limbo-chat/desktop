@@ -3,6 +3,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/shallow";
+import {
+	Alert,
+	AlertActions,
+	AlertContent,
+	AlertDescription,
+	AlertIcon,
+	AlertInfo,
+	AlertTitle,
+} from "../../../components/alert";
 import { AppIcon } from "../../../components/app-icon";
 import { Button } from "../../../components/button";
 import { Checkbox } from "../../../components/checkbox";
@@ -213,6 +222,29 @@ const MenuTabContent = () => {
 				</MenuSection>
 			</MenuContent>
 		</MenuRoot>
+	);
+};
+
+const AlertTabContent = () => {
+	return (
+		<ComponentPreview>
+			<ComponentPreviewContent>
+				<Alert variant="info">
+					<AlertIcon>
+						<AppIcon icon="info" />
+					</AlertIcon>
+					<AlertContent>
+						<AlertInfo>
+							<AlertTitle>Alert title</AlertTitle>
+							<AlertDescription>This is an alert description</AlertDescription>
+						</AlertInfo>
+						<AlertActions>
+							<Button>Action</Button>
+						</AlertActions>
+					</AlertContent>
+				</Alert>
+			</ComponentPreviewContent>
+		</ComponentPreview>
 	);
 };
 
@@ -557,6 +589,9 @@ export const DesignPlaygroundTabs = () => {
 							<VerticalTabs.ListSectionItem value="menu">
 								Menu
 							</VerticalTabs.ListSectionItem>
+							<VerticalTabs.ListSectionItem value="alert">
+								Alert
+							</VerticalTabs.ListSectionItem>
 							<VerticalTabs.ListSectionItem value="form">
 								Form
 							</VerticalTabs.ListSectionItem>
@@ -584,6 +619,9 @@ export const DesignPlaygroundTabs = () => {
 			</VerticalTabs.Content>
 			<VerticalTabs.Content value="menu">
 				<MenuTabContent />
+			</VerticalTabs.Content>
+			<VerticalTabs.Content value="alert">
+				<AlertTabContent />
 			</VerticalTabs.Content>
 			<VerticalTabs.Content value="form">
 				<FormTabContent />

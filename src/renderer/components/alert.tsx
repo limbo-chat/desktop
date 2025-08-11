@@ -1,14 +1,18 @@
 import { clsx } from "clsx";
 
-export interface AlertProps extends React.ComponentProps<"div"> {}
+export interface AlertProps extends React.ComponentProps<"div"> {
+	variant: "info" | "success" | "warning" | "error";
+}
 
-export const Alert = ({ className, ...props }: AlertProps) => {
-	return <div className={clsx("alert", className)} role="alert" {...props} />;
+export const Alert = ({ className, variant, ...props }: AlertProps) => {
+	return (
+		<div className={clsx("alert", className)} data-variant={variant} role="alert" {...props} />
+	);
 };
 
 export interface AlertIconProps extends React.ComponentProps<"div"> {}
 
-export const AlertIcon = ({ className, ...props }: AlertProps) => {
+export const AlertIcon = ({ className, ...props }: AlertIconProps) => {
 	return <div className={clsx("alert-icon", className)} {...props} />;
 };
 
