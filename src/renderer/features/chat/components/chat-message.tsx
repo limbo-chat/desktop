@@ -1,13 +1,11 @@
-import { memo, useMemo } from "react";
+import { useMemo } from "react";
 import { formatRelative } from "date-fns";
+import { AppIcon } from "../../../components/app-icon";
 import { CopyIconButton } from "../../../components/copy-icon-button";
+import { IconButton } from "../../../components/icon-button";
 import { Tooltip } from "../../../components/tooltip";
 import { ChatNodeRenderer } from "../../chat-nodes/components/chat-node-renderer";
-import type {
-	AssistantChatMessage as AssistantChatMessageRenderer,
-	ChatMessageType,
-	UserChatMessage as UserChatMessageRenderer,
-} from "../types";
+import type { ChatMessageType } from "../types";
 
 interface ChatMessageContainerProps extends React.ComponentProps<"div"> {
 	message: ChatMessageType;
@@ -47,11 +45,11 @@ const ChatMessageDate = ({ date, ...props }: ChatMessageDateProps) => {
 	);
 };
 
-interface UserChatMessageRendererProps {
-	message: UserChatMessageRenderer;
+export interface ChatMessageProps {
+	message: ChatMessageType;
 }
 
-const UserChatMessageRenderer = ({ message }: UserChatMessageRendererProps) => {
+export const ChatMessage = ({ message }: ChatMessageProps) => {
 	const createdAt = useMemo(() => new Date(message.createdAt), [message.createdAt]);
 
 	const gatheredText = useMemo(() => {
@@ -66,8 +64,10 @@ const UserChatMessageRenderer = ({ message }: UserChatMessageRendererProps) => {
 		return text;
 	}, [message.content]);
 
+	const status = message.role === "assistant" ? message.status : undefined;
+
 	return (
-		<ChatMessageContainer message={message}>
+		<ChatMessageContainer message={message} data-status={status}>
 			<ChatMessageContent>
 				{message.content.map((node, idx) => (
 					<ChatNodeRenderer node={node} key={idx} />
@@ -81,64 +81,13 @@ const UserChatMessageRenderer = ({ message }: UserChatMessageRendererProps) => {
 					<Tooltip label="Copy message">
 						<CopyIconButton content={gatheredText} />
 					</Tooltip>
-				</ChatMessageActions>
-			</ChatMessageFooter>
-		</ChatMessageContainer>
-	);
-};
-
-interface AssistantChatMessageRendererProps {
-	message: AssistantChatMessageRenderer;
-}
-
-const AssistantChatMessageRenderer = ({ message }: AssistantChatMessageRendererProps) => {
-	const createdAt = useMemo(() => new Date(message.createdAt), [message.createdAt]);
-
-	const textContent = useMemo(() => {
-		let gatheredText = "";
-
-		for (const node of message.content) {
-			if (node.type === "markdown") {
-				gatheredText += node.data.content;
-			}
-		}
-
-		return gatheredText;
-	}, [message.content]);
-
-	return (
-		<ChatMessageContainer message={message} data-status={message.status}>
-			<ChatMessageContent>
-				{message.content.map((node, idx) => (
-					<ChatNodeRenderer node={node} key={idx} />
-				))}
-			</ChatMessageContent>
-			<ChatMessageFooter>
-				<ChatMessageInfo>
-					<ChatMessageDate date={createdAt} />
-				</ChatMessageInfo>
-				<ChatMessageActions>
-					<Tooltip label="Copy message">
-						<CopyIconButton content={textContent} />
+					<Tooltip label="Delete message">
+						<IconButton onClick={() => {}}>
+							<AppIcon icon="delete" />
+						</IconButton>
 					</Tooltip>
 				</ChatMessageActions>
 			</ChatMessageFooter>
 		</ChatMessageContainer>
 	);
 };
-
-const chatMessageRenderers = {
-	user: UserChatMessageRenderer,
-	assistant: AssistantChatMessageRenderer,
-} as const;
-
-export interface ChatMessageProps {
-	message: ChatMessageType;
-}
-
-export const ChatMessage = memo(({ message }: ChatMessageProps) => {
-	const Component = chatMessageRenderers[message.role];
-
-	// @ts-ignore
-	return <Component message={message} />;
-});
