@@ -177,6 +177,13 @@ export class PluginAPIFactory {
 						throw new Error("Failed to show chat panel");
 					}
 				},
+				showConfirmDialog: async (opts) => {
+					try {
+						return await this.pluginEnvironment.ui.showConfirmDialog(opts);
+					} catch {
+						throw new Error("Failed to show confirm dialog");
+					}
+				},
 			},
 			auth: {
 				authenticate: (opts) => {

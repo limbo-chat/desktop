@@ -239,6 +239,9 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 						data: opts.data ?? null,
 					});
 				},
+				showConfirmDialog: async (opts) => {
+					return await showConfirmDialog(opts);
+				},
 			},
 			auth: {
 				authenticate: async ({ pluginId, options }) => {

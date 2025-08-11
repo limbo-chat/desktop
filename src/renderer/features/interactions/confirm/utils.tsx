@@ -1,11 +1,8 @@
 import { useModalContext } from "../../modals/hooks";
 import { showModal } from "../../modals/utils";
-import { ConfirmDialog } from "./components/confirm-dialog";
+import { ConfirmDialog, type ConfirmDialogProps } from "./components/confirm-dialog";
 
-export interface ShowConfirmDialogOptions {
-	title: string;
-	description?: string;
-}
+export type ShowConfirmDialogOptions = Omit<ConfirmDialogProps, "onConfirm" | "onCancel">;
 
 export function showConfirmDialog(opts: ShowConfirmDialogOptions): Promise<boolean> {
 	return new Promise((resolve) => {
@@ -17,8 +14,7 @@ export function showConfirmDialog(opts: ShowConfirmDialogOptions): Promise<boole
 
 				return (
 					<ConfirmDialog
-						title={opts.title}
-						description={opts.description}
+						{...opts}
 						onConfirm={() => {
 							resolve(true);
 

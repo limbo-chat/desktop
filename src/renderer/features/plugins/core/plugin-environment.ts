@@ -67,6 +67,7 @@ export interface PluginShowNotificationArgs {
 export interface PluginEnvironmentUI {
 	showNotification: (opts: PluginShowNotificationArgs) => void;
 	showChatPanel: typeof limbo.ui.showChatPanel;
+	showConfirmDialog: typeof limbo.ui.showConfirmDialog;
 }
 
 export interface PluginEnvironmentAuthenticateArgs {
