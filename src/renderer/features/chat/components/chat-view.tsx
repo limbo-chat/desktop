@@ -138,8 +138,12 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 		try {
 			await sendMessage({
 				chatId: chatId,
+				assistant,
 				llm,
 				enabledToolIds,
+				user: {
+					username: settings.username,
+				},
 				userMessage: userMessageObj,
 			});
 		} catch (err) {

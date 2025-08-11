@@ -2,7 +2,9 @@ import { useCallback } from "react";
 import type * as limbo from "@limbo/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { ulid } from "ulid";
+import { type Assistant } from "../../../../main/assistants/schemas";
 import { useMainRouter, useMainRouterClient } from "../../../lib/trpc";
+import { renderSystemPrompt } from "../../assistants/utils";
 import { usePluginManager } from "../../plugins/hooks/core";
 import { useTools } from "../../tools/hooks";
 import { runChatGeneration } from "../core/chat-generation";
@@ -15,9 +17,13 @@ import {
 import { useChatStore } from "../stores";
 
 export interface SendMessageOptions {
-	llm: limbo.LLM;
 	chatId: string;
+	assistant: Assistant;
+	llm: limbo.LLM;
 	enabledToolIds: string[];
+	user: {
+		username: string;
+	};
 	userMessage: ChatMessage;
 }
 
@@ -29,7 +35,14 @@ export const useSendMessage = () => {
 	const tools = useTools();
 
 	const sendMessage = useCallback(
-		async ({ llm, chatId, userMessage, enabledToolIds }: SendMessageOptions) => {
+		async ({
+			assistant,
+			llm,
+			chatId,
+			enabledToolIds,
+			user,
+			userMessage,
+		}: SendMessageOptions) => {
 			const chatStore = useChatStore.getState();
 			const chatState = chatStore.chats[chatId];
 
@@ -113,6 +126,22 @@ export const useSendMessage = () => {
 
 			// create a new prompt
 			const prompt = new ChatPrompt();
+
+			// construct the system message
+			const systemMessage = new ChatMessage("system");
+
+			const rendereredSystemPrompt = renderSystemPrompt(assistant.system_prompt, {
+				user,
+			});
+
+			systemMessage.appendNode({
+				type: "text",
+				data: {
+					content: rendereredSystemPrompt,
+				},
+			});
+
+			prompt.appendMessage(systemMessage);
 
 			// add the user message to the prompt
 			prompt.appendMessage(userMessage);
