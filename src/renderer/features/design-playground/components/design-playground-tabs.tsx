@@ -602,7 +602,7 @@ export const DesignPlaygroundTabs = () => {
 								Markdown
 							</VerticalTabs.ListSectionItem>
 							<VerticalTabs.ListSectionItem value="llm-picker">
-								LLM Picker
+								LLM picker
 							</VerticalTabs.ListSectionItem>
 						</VerticalTabs.ListSectionContent>
 					</VerticalTabs.ListSectionContent>
