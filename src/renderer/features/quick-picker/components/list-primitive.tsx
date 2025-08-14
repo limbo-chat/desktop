@@ -5,7 +5,7 @@ interface ListQuickPickerContext {
 	activeItemId: string | null;
 	selectedItemId: string | null;
 	setActiveItemId: (id: string) => void;
-	setSelectedItemId: (id: string | null) => void;
+	setSelectedItemId: (id: string) => void;
 }
 
 const listQuickPickerContext = createContext<ListQuickPickerContext | null>(null);
@@ -23,7 +23,7 @@ export const useListQuickPickerContext = () => {
 export interface RootProps extends Omit<QuickPicker.RootProps, "onSelect"> {
 	items: string[];
 	selectedItemId: string | null;
-	onSelect: (id: string | null) => void;
+	onSelect: (id: string) => void;
 }
 
 export const Root = ({ items, selectedItemId, onSelect, ...props }: RootProps) => {
@@ -42,7 +42,9 @@ export const Root = ({ items, selectedItemId, onSelect, ...props }: RootProps) =
 				setActiveItemIdx((prev) => (prev + 1) % items.length);
 				break;
 			case "Enter":
-				onSelect(activeItemId);
+				if (activeItemId) {
+					onSelect(activeItemId);
+				}
 		}
 	};
 

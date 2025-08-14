@@ -3,9 +3,8 @@ import TextareaAutosize from "react-textarea-autosize";
 import { AppIcon } from "../../../components/app-icon";
 import { Button } from "../../../components/button";
 import { IconButton } from "../../../components/icon-button";
-import { PopoverContent, PopoverRoot, PopoverTrigger } from "../../../components/popover";
-import { RegisteredLLMPicker } from "../../llms/components/llm-picker";
 import { useMaybeLLM } from "../../llms/hooks";
+import { showLLMPickerModal } from "../../llms/utils";
 import { ChatToolsMenu } from "./chat-tools-menu";
 
 export interface ChatComposerProps {
@@ -34,8 +33,6 @@ export const ChatComposer = ({
 	ref,
 }: ChatComposerProps) => {
 	const selectedChatLLM = useMaybeLLM(selectedLLMId);
-	const [isChatLLMPickerOpen, setIsChatLLMPickerOpen] = useState(false);
-
 	const canSend = value.length > 0;
 
 	const handleSend = () => {
@@ -89,19 +86,16 @@ export const ChatComposer = ({
 				</IconButton>
 			</form>
 			<div className="chat-composer-accessories">
-				<PopoverRoot open={isChatLLMPickerOpen} onOpenChange={setIsChatLLMPickerOpen}>
-					<PopoverTrigger asChild>
-						<Button>{selectedChatLLM ? selectedChatLLM.name : "Select llm"}</Button>
-					</PopoverTrigger>
-					<PopoverContent>
-						<RegisteredLLMPicker
-							onChange={(selectedId) => {
-								onSelectedLLMIdChange(selectedId);
-								setIsChatLLMPickerOpen(false);
-							}}
-						/>
-					</PopoverContent>
-				</PopoverRoot>
+				<Button
+					onClick={() =>
+						showLLMPickerModal({
+							selectedLLMId,
+							onSelect: onSelectedLLMIdChange,
+						})
+					}
+				>
+					{selectedChatLLM ? selectedChatLLM.name : "Select llm"}
+				</Button>
 				<ChatToolsMenu
 					enabledToolIds={enabledToolIds}
 					onEnabledToolIdsChange={onEnabledToolIdsChange}

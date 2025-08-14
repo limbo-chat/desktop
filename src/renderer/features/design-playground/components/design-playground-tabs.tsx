@@ -544,18 +544,6 @@ const MarkdownTabContent = () => {
 	);
 };
 
-const LLMPickerTabContent = () => {
-	const llms = useLLMList();
-
-	return (
-		<ComponentPreview>
-			<ComponentPreviewContent>
-				<LLMPicker llms={llms} onChange={console.log} />
-			</ComponentPreviewContent>
-		</ComponentPreview>
-	);
-};
-
 export const DesignPlaygroundTabs = () => {
 	const designPlaygroundTabsStore = useDesignPlaygroundTabsStore(
 		useShallow((state) => ({
@@ -601,9 +589,6 @@ export const DesignPlaygroundTabs = () => {
 							<VerticalTabs.ListSectionItem value="markdown">
 								Markdown
 							</VerticalTabs.ListSectionItem>
-							<VerticalTabs.ListSectionItem value="llm-picker">
-								LLM picker
-							</VerticalTabs.ListSectionItem>
 						</VerticalTabs.ListSectionContent>
 					</VerticalTabs.ListSectionContent>
 				</VerticalTabs.ListSection>
@@ -631,9 +616,6 @@ export const DesignPlaygroundTabs = () => {
 			</VerticalTabs.Content>
 			<VerticalTabs.Content value="markdown">
 				<MarkdownTabContent />
-			</VerticalTabs.Content>
-			<VerticalTabs.Content value="llm-picker">
-				<LLMPickerTabContent />
 			</VerticalTabs.Content>
 		</VerticalTabs.Root>
 	);

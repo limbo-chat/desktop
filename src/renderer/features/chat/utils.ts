@@ -1,7 +1,6 @@
 import type { QueryClient } from "@tanstack/react-query";
 import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import handlebars from "handlebars";
-import type { Chat } from "../../../main/db/types";
 import type { MainRouter, MainRouterOutputs } from "../../../main/trpc/router";
 
 export interface RenderSystemPromptContext {

@@ -1,38 +1,23 @@
 import { useMemo, useState } from "react";
-import type * as limbo from "@limbo/api";
-import { Command } from "cmdk";
 import Fuse from "fuse.js";
-import { AppIcon } from "../../../components/app-icon";
+import * as ListQuickPicker from "../../quick-picker/components/list-primitive";
+import * as QuickPicker from "../../quick-picker/components/primitive";
 import { useLLMList } from "../hooks";
 
-interface LLMPickerItemProps {
-	llm: limbo.LLM;
-	onSelect: () => void;
-}
-
-const LLMItem = ({ llm, onSelect }: LLMPickerItemProps) => {
-	return (
-		<Command.Item value={llm.id} className="llm-item" onSelect={onSelect}>
-			<div className="llm-info">
-				<div className="llm-name">{llm.name}</div>
-			</div>
-		</Command.Item>
-	);
-};
-
 export interface LLMPickerProps {
-	llms: limbo.LLM[];
-	onChange: (value: string) => void;
+	selectedLLMId: string | null;
+	onSelect: (id: string) => void;
 }
 
-export const LLMPicker = ({ llms, onChange }: LLMPickerProps) => {
+export const LLMPicker = ({ selectedLLMId, onSelect }: LLMPickerProps) => {
+	const llms = useLLMList();
 	const [search, setSearch] = useState("");
 
 	const fuse = useMemo(() => {
 		return new Fuse(llms, {
 			threshold: 0.3,
 			ignoreLocation: true,
-			keys: ["id", "name"],
+			keys: ["id", "name", "description"],
 		});
 	}, [llms]);
 
@@ -42,35 +27,45 @@ export const LLMPicker = ({ llms, onChange }: LLMPickerProps) => {
 		}
 
 		return fuse.search(search).map((item) => item.item);
-	}, [fuse, search, llms]);
+	}, [search, llms]);
+
+	const filteredLLMIds = useMemo(() => {
+		return filteredLLMs.map((item) => item.id);
+	}, [filteredLLMs]);
 
 	return (
-		<Command className="llm-picker" loop shouldFilter={false}>
-			<div className="llm-picker-search-container">
-				<div className="llm-picker-search-icon">
-					<AppIcon icon="search" />
-				</div>
-				<Command.Input
-					className="llm-picker-search-input"
-					placeholder="Search models..."
-					value={search}
-					onValueChange={setSearch}
-				/>
-			</div>
-			<Command.List className="llm-picker-list">
-				{filteredLLMs.map((llm) => (
-					<LLMItem llm={llm} key={llm.id} onSelect={() => onChange(llm.id)} />
-				))}
-			</Command.List>
-			<div className="llm-picker-footer">{/* todo */}</div>
-		</Command>
+		<ListQuickPicker.Root
+			className="llm-picker"
+			items={filteredLLMIds}
+			selectedItemId={selectedLLMId}
+			onSelect={onSelect}
+		>
+			<QuickPicker.Split>
+				<QuickPicker.Master>
+					<QuickPicker.Header>
+						<QuickPicker.Search
+							placeholder="Search models..."
+							value={search}
+							onChange={(e) => setSearch(e.target.value)}
+						/>
+					</QuickPicker.Header>
+					<QuickPicker.Content>
+						<ListQuickPicker.List>
+							{filteredLLMs.map((item) => (
+								<ListQuickPicker.ListItem
+									item={{
+										id: item.id,
+										title: item.name,
+										description: item.description,
+										icon: null,
+									}}
+									key={item.id}
+								/>
+							))}
+						</ListQuickPicker.List>
+					</QuickPicker.Content>
+				</QuickPicker.Master>
+			</QuickPicker.Split>
+		</ListQuickPicker.Root>
 	);
-};
-
-export interface RegisteredLLMPickerProps extends Omit<LLMPickerProps, "llms"> {}
-
-export const RegisteredLLMPicker = (props: RegisteredLLMPickerProps) => {
-	const llms = useLLMList();
-
-	return <LLMPicker llms={llms} {...props} />;
 };
