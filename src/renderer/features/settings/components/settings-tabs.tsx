@@ -30,12 +30,10 @@ import {
 	DialogContent,
 } from "../../../components/dialog";
 import {
-	ErrorRoot,
-	ErrorContainer,
-	ErrorDescription,
-	ErrorInfo,
-	ErrorTitle,
-} from "../../../components/error";
+	ErrorState,
+	ErrorStateDescription,
+	ErrorStateTitle,
+} from "../../../components/error-state";
 import * as FieldController from "../../../components/field-controller";
 import * as Form from "../../../components/form-primitive";
 import { IconButton } from "../../../components/icon-button";
@@ -65,7 +63,6 @@ import {
 	useInstallPluginMutation,
 	useUninstallPluginMutation,
 } from "../../../features/plugins/hooks/queries";
-import { useUpdatePluginSettingsMutation } from "../../../features/plugins/hooks/queries";
 import { usePluginContextSettings } from "../../../features/plugins/hooks/use-plugin-context-settings";
 import { useMainRouterClient } from "../../../lib/trpc";
 import { useDeleteAllChatsMutation } from "../../chat/hooks/queries";
@@ -666,16 +663,12 @@ const PluginTabContent = ({ pluginId }: PluginContentProps) => {
 				{plugin ? (
 					<PluginSettingsFormContainer plugin={plugin} />
 				) : (
-					<ErrorContainer>
-						<ErrorRoot>
-							<ErrorInfo>
-								<ErrorTitle>Plugin not found</ErrorTitle>
-								<ErrorDescription>
-									The plugin you are trying to access is not active.
-								</ErrorDescription>
-							</ErrorInfo>
-						</ErrorRoot>
-					</ErrorContainer>
+					<ErrorState>
+						<ErrorStateTitle>Plugin not found</ErrorStateTitle>
+						<ErrorStateDescription>
+							The plugin you are trying to access is not active.
+						</ErrorStateDescription>
+					</ErrorState>
 				)}
 			</div>
 		</div>
