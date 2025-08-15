@@ -1,17 +1,19 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Fuse from "fuse.js";
 import * as ListQuickPicker from "../../quick-picker/components/list-primitive";
 import * as QuickPicker from "../../quick-picker/components/primitive";
 import { useLLMList } from "../hooks";
 
 export interface LLMPickerProps {
-	selectedLLMId: string | null;
+	initialSelectedLLMId: string | null;
 	onSelect: (id: string) => void;
 }
 
-export const LLMPicker = ({ selectedLLMId, onSelect }: LLMPickerProps) => {
-	const llms = useLLMList();
+export const LLMPicker = ({ initialSelectedLLMId, onSelect }: LLMPickerProps) => {
+	const [focusedLLMId, setFocusedLLMId] = useState<string | null>(null);
+	const [selectedLLMId, setSelectedLLMId] = useState<string | null>(null);
 	const [search, setSearch] = useState("");
+	const llms = useLLMList();
 
 	const fuse = useMemo(() => {
 		return new Fuse(llms, {
@@ -33,12 +35,23 @@ export const LLMPicker = ({ selectedLLMId, onSelect }: LLMPickerProps) => {
 		return filteredLLMs.map((item) => item.id);
 	}, [filteredLLMs]);
 
+	const handleSelectedLLMIdChange = (selectedLLMId: string) => {
+		setSelectedLLMId(selectedLLMId);
+		onSelect(selectedLLMId);
+	};
+
+	useEffect(() => {
+		setSelectedLLMId(initialSelectedLLMId);
+	}, [initialSelectedLLMId]);
+
 	return (
 		<ListQuickPicker.Root
 			className="llm-picker"
 			items={filteredLLMIds}
-			selectedItemId={selectedLLMId}
-			onSelect={onSelect}
+			focusedId={focusedLLMId}
+			selectedId={selectedLLMId}
+			onFocusedIdChange={setFocusedLLMId}
+			onSelectedIdChange={handleSelectedLLMIdChange}
 		>
 			<QuickPicker.Split>
 				<QuickPicker.Master>
@@ -46,7 +59,9 @@ export const LLMPicker = ({ selectedLLMId, onSelect }: LLMPickerProps) => {
 						<QuickPicker.Search
 							placeholder="Search models..."
 							value={search}
-							onChange={(e) => setSearch(e.target.value)}
+							onChange={(e) => {
+								setSearch(e.target.value);
+							}}
 						/>
 					</QuickPicker.Header>
 					<QuickPicker.Content>

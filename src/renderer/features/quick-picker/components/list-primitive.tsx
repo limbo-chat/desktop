@@ -1,11 +1,14 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef } from "react";
+import clsx from "clsx";
+import { Checkbox } from "../../../components/checkbox";
 import * as QuickPicker from "./primitive";
 
 interface ListQuickPickerContext {
-	activeItemId: string | null;
-	selectedItemId: string | null;
-	setActiveItemId: (id: string) => void;
-	setSelectedItemId: (id: string) => void;
+	focusedId: string | null;
+	selectedId: string | null;
+	selectItem: (id: string) => void;
+	registerItemElement: (itemId: string, element: HTMLElement) => void;
+	unregisterItemElement: (itemId: string) => void;
 }
 
 const listQuickPickerContext = createContext<ListQuickPickerContext | null>(null);
@@ -22,49 +25,108 @@ export const useListQuickPickerContext = () => {
 
 export interface RootProps extends Omit<QuickPicker.RootProps, "onSelect"> {
 	items: string[];
-	selectedItemId: string | null;
-	onSelect: (id: string) => void;
+	focusedId: string | null;
+	selectedId: string | null;
+	onFocusedIdChange: (newFocusedId: string | null) => void;
+	onSelectedIdChange: (newSelectedId: string) => void;
 }
 
-export const Root = ({ items, selectedItemId, onSelect, ...props }: RootProps) => {
-	const [activeItemIdx, setActiveItemIdx] = useState<number>(0);
+export const Root = ({
+	items,
+	focusedId,
+	selectedId,
+	onFocusedIdChange,
+	onSelectedIdChange,
+	...props
+}: RootProps) => {
+	const itemRefs = useMemo<Map<string, HTMLElement | null>>(() => new Map(), []);
 
-	const activeItemId = useMemo(() => {
-		return items[activeItemIdx] ?? null;
-	}, [items, activeItemIdx]);
+	const scrollToItem = (itemId: string) => {
+		const itemElement = itemRefs.get(itemId);
+
+		if (itemElement) {
+			itemElement.scrollIntoView({
+				block: "nearest",
+			});
+		}
+	};
+
+	const registerItemElement = (itemId: string, element: HTMLElement) => {
+		itemRefs.set(itemId, element);
+	};
+
+	const unregisterItemElement = (itemId: string) => {
+		itemRefs.delete(itemId);
+	};
+
+	const focusItem = (id: string) => {
+		scrollToItem(id);
+		onFocusedIdChange(id);
+	};
+
+	const selectItem = (id: string) => {
+		onSelectedIdChange(id);
+	};
+
+	const selectFocused = () => {
+		if (!focusedId) {
+			return;
+		}
+
+		selectItem(focusedId);
+	};
+
+	const moveFocusUp = () => {
+		const currentIndex = items.findIndex((itemId) => itemId === focusedId);
+
+		const prevIndex = (currentIndex - 1 + items.length) % items.length;
+		const prevId = items[prevIndex]!;
+
+		focusItem(prevId);
+	};
+
+	const moveFocusDown = () => {
+		const currentIndex = items.findIndex((itemId) => itemId === focusedId);
+
+		const nextIndex = (currentIndex + 1) % items.length;
+		const nextId = items[nextIndex]!;
+
+		focusItem(nextId);
+	};
 
 	const onKeyDown = (e: React.KeyboardEvent) => {
 		switch (e.key) {
 			case "ArrowUp":
-				setActiveItemIdx((prev) => (prev - 1 + items.length) % items.length);
+				e.preventDefault();
+				moveFocusUp();
 				break;
 			case "ArrowDown":
-				setActiveItemIdx((prev) => (prev + 1) % items.length);
+				e.preventDefault();
+				moveFocusDown();
 				break;
 			case "Enter":
-				if (activeItemId) {
-					onSelect(activeItemId);
-				}
+				e.preventDefault();
+				selectFocused();
+				break;
 		}
 	};
 
-	const setActiveItemId = (id: string) => {
-		const itemIdx = items.findIndex((itemId) => itemId === id);
-
-		setActiveItemIdx(itemIdx ?? 0);
-	};
-
 	useEffect(() => {
-		setActiveItemIdx(0);
+		const firstItem = items[0];
+
+		if (firstItem) {
+			focusItem(firstItem);
+		}
 	}, [items]);
 
 	return (
 		<listQuickPickerContext.Provider
 			value={{
-				activeItemId,
-				selectedItemId,
-				setActiveItemId,
-				setSelectedItemId: onSelect,
+				focusedId,
+				selectedId,
+				selectItem,
+				registerItemElement,
+				unregisterItemElement,
 			}}
 		>
 			<QuickPicker.Root onKeyDown={onKeyDown} {...props} />
@@ -72,39 +134,73 @@ export const Root = ({ items, selectedItemId, onSelect, ...props }: RootProps) =
 	);
 };
 
-export interface ListProps extends Omit<QuickPicker.ListProps, "activeItemId"> {}
+export interface ListProps extends React.ComponentProps<"ul"> {}
 
-export const List = (props: ListProps) => {
-	const { activeItemId } = useListQuickPickerContext();
-
-	return <QuickPicker.List activeItemId={activeItemId} {...props} />;
-};
-
-export interface ListItemProps
-	extends Omit<QuickPicker.ListItemProps, "onActivate" | "onSelect" | "isActive" | "isSelected"> {
-	onSelect?: () => void;
-}
-
-export const ListItem = ({ item, onSelect, ...props }: ListItemProps) => {
-	const { selectedItemId, activeItemId, setSelectedItemId, setActiveItemId } =
-		useListQuickPickerContext();
-
-	const handleOnSelect = () => {
-		setSelectedItemId(item.id);
-
-		if (onSelect) {
-			onSelect();
-		}
-	};
+export const List = ({ className, ...props }: ListProps) => {
+	const { focusedId } = useListQuickPickerContext();
 
 	return (
-		<QuickPicker.ListItem
-			item={item}
-			isSelected={selectedItemId === item.id}
-			isActive={activeItemId === item.id}
-			onSelect={handleOnSelect}
-			onActivate={() => setActiveItemId(item.id)}
+		<ul
+			className={clsx("quick-picker-list", className)}
+			role="listbox"
+			tabIndex={-1}
+			aria-activedescendant={focusedId ?? undefined}
 			{...props}
 		/>
+	);
+};
+
+export interface ListItemData {
+	id: string;
+	title: string;
+	description: string;
+	icon: React.ReactNode;
+}
+
+export interface ListItemProps extends Omit<React.ComponentProps<"li">, "onSelect"> {
+	item: ListItemData;
+}
+
+export const ListItem = ({ item, className, ...props }: ListItemProps) => {
+	const { focusedId, selectedId, selectItem, registerItemElement, unregisterItemElement } =
+		useListQuickPickerContext();
+
+	const ref = useRef<HTMLLIElement>(null);
+	const isSelected = selectedId === item.id;
+	const isFocused = focusedId === item.id;
+
+	const handleSelect = () => {
+		selectItem(item.id);
+	};
+
+	useEffect(() => {
+		if (!ref.current) {
+			// this should't happen
+			return;
+		}
+
+		registerItemElement(item.id, ref.current);
+
+		return () => {
+			unregisterItemElement(item.id);
+		};
+	}, []);
+
+	return (
+		<li
+			ref={ref}
+			id={item.id}
+			className={clsx("quick-picker-list-item", className)}
+			role="option"
+			data-is-focused={isFocused}
+			data-is-selected={isSelected}
+			aria-selected={isSelected}
+			onClick={handleSelect}
+			{...props}
+		>
+			{item.icon && <div className="quick-picker-list-item-icon">{item.icon}</div>}
+			<div className="quick-picker-list-item-title">{item.title}</div>
+			<div className="quick-picker-list-item-description">{item.description}</div>
+		</li>
 	);
 };

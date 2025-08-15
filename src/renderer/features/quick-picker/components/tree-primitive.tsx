@@ -7,8 +7,8 @@ import * as QuickPicker from "./primitive";
 export interface BaseTreeNode {
 	id: string;
 	title: string;
-	icon?: React.ReactNode;
 	description?: string;
+	icon?: React.ReactNode;
 }
 
 export interface LeafTreeNode extends BaseTreeNode {
@@ -152,8 +152,8 @@ export const Root = ({
 	onSubmit,
 	...props
 }: RootProps) => {
-	const treeRef = useRef<HTMLUListElement>(null);
 	const searchRef = useRef<HTMLInputElement>(null);
+	const treeRef = useRef<HTMLUListElement>(null);
 	const contentRef = useRef<HTMLDivElement>(null);
 	const itemRefs = useMemo<Map<string, HTMLElement | null>>(() => new Map(), []);
 

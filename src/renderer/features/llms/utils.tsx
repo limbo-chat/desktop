@@ -33,7 +33,7 @@ export function showLLMPickerModal({ selectedLLMId, onSelect }: ShowLLMPickerMod
 				onSelect(llmId);
 			};
 
-			return <LLMPicker selectedLLMId={selectedLLMId} onSelect={handleOnSelect} />;
+			return <LLMPicker initialSelectedLLMId={selectedLLMId} onSelect={handleOnSelect} />;
 		},
 	});
 }
