@@ -108,21 +108,16 @@ export const ToolPicker = ({
 			onSelectedIdsChange={onSelectedToolIdsChange}
 			onSubmit={onSubmit}
 		>
-			<QuickPicker.Split>
-				<QuickPicker.Master>
-					<QuickPicker.Header>
-						<TreeQuickPicker.Search
-							placeholder="Search tools..."
-							value={search}
-							onChange={(e) => setSearch(e.target.value)}
-						/>
-					</QuickPicker.Header>
-					<TreeQuickPicker.Content>
-						<TreeQuickPicker.Tree />
-					</TreeQuickPicker.Content>
-				</QuickPicker.Master>
-				{/* <QuickPicker.Detail>test</QuickPicker.Detail> */}
-			</QuickPicker.Split>
+			<QuickPicker.Header>
+				<TreeQuickPicker.Search
+					placeholder="Search tools..."
+					value={search}
+					onChange={(e) => setSearch(e.target.value)}
+				/>
+			</QuickPicker.Header>
+			<TreeQuickPicker.Content>
+				<TreeQuickPicker.Tree />
+			</TreeQuickPicker.Content>
 		</TreeQuickPicker.Root>
 	);
 };

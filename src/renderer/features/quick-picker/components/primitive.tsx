@@ -18,24 +18,6 @@ export const Title = ({ className, ...props }: TitleProps) => {
 	return <div className={clsx("quick-picker-title", className)} {...props} />;
 };
 
-export interface SplitProps extends React.ComponentProps<"div"> {}
-
-export const Split = ({ className, ...props }: SplitProps) => {
-	return <div className={clsx("quick-picker-split", className)} {...props} />;
-};
-
-export interface MasterProps extends React.ComponentProps<"div"> {}
-
-export const Master = ({ className, ...props }: MasterProps) => {
-	return <div className={clsx("quick-picker-master", className)} {...props} />;
-};
-
-export interface DetailProps extends React.ComponentProps<"div"> {}
-
-export const Detail = ({ className, ...props }: DetailProps) => {
-	return <div className={clsx("quick-picker-detail", className)} {...props} />;
-};
-
 export interface HeaderProps extends React.ComponentProps<"div"> {}
 
 export const Header = ({ className, ...props }: HeaderProps) => {

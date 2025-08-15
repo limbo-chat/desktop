@@ -53,34 +53,30 @@ export const LLMPicker = ({ initialSelectedLLMId, onSelect }: LLMPickerProps) =>
 			onFocusedIdChange={setFocusedLLMId}
 			onSelectedIdChange={handleSelectedLLMIdChange}
 		>
-			<QuickPicker.Split>
-				<QuickPicker.Master>
-					<QuickPicker.Header>
-						<QuickPicker.Search
-							placeholder="Search models..."
-							value={search}
-							onChange={(e) => {
-								setSearch(e.target.value);
+			<QuickPicker.Header>
+				<QuickPicker.Search
+					placeholder="Search models..."
+					value={search}
+					onChange={(e) => {
+						setSearch(e.target.value);
+					}}
+				/>
+			</QuickPicker.Header>
+			<QuickPicker.Content>
+				<ListQuickPicker.List>
+					{filteredLLMs.map((item) => (
+						<ListQuickPicker.ListItem
+							item={{
+								id: item.id,
+								title: item.name,
+								description: item.description,
+								icon: null,
 							}}
+							key={item.id}
 						/>
-					</QuickPicker.Header>
-					<QuickPicker.Content>
-						<ListQuickPicker.List>
-							{filteredLLMs.map((item) => (
-								<ListQuickPicker.ListItem
-									item={{
-										id: item.id,
-										title: item.name,
-										description: item.description,
-										icon: null,
-									}}
-									key={item.id}
-								/>
-							))}
-						</ListQuickPicker.List>
-					</QuickPicker.Content>
-				</QuickPicker.Master>
-			</QuickPicker.Split>
+					))}
+				</ListQuickPicker.List>
+			</QuickPicker.Content>
 		</ListQuickPicker.Root>
 	);
 };
