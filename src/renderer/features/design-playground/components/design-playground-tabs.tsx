@@ -51,8 +51,6 @@ import {
 } from "../../../components/select";
 import { Tooltip } from "../../../components/tooltip";
 import * as VerticalTabs from "../../../components/vertical-tabs-primitive";
-import { LLMPicker } from "../../llms/components/llm-picker";
-import { useLLMList } from "../../llms/hooks";
 import { MarkdownContainer } from "../../markdown/components/markdown-container";
 import { MarkdownRenderer } from "../../markdown/components/markdown-renderer";
 import { useModalContext } from "../../modals/hooks";

@@ -4,11 +4,11 @@ import { AppIcon } from "./app-icon";
 
 export interface CheckboxProps extends RadixCheckbox.CheckboxProps {}
 
-export const Checkbox = ({ className, ...props }: CheckboxProps) => {
+export const Checkbox = ({ checked, className, ...props }: CheckboxProps) => {
 	return (
-		<RadixCheckbox.Root className={clsx("checkbox", className)} {...props}>
+		<RadixCheckbox.Root className={clsx("checkbox", className)} checked={checked} {...props}>
 			<RadixCheckbox.Indicator className="checkbox-indicator">
-				<AppIcon icon="check" />
+				{checked === "indeterminate" ? <AppIcon icon="remove" /> : <AppIcon icon="check" />}
 			</RadixCheckbox.Indicator>
 		</RadixCheckbox.Root>
 	);

@@ -45,7 +45,7 @@ export const Header = ({ className, ...props }: HeaderProps) => {
 export interface SearchProps extends React.ComponentProps<"input"> {}
 
 export const Search = ({ className, ...props }: SearchProps) => {
-	return <input className={clsx("quick-picker-search", className)} {...props} />;
+	return <input className={clsx("quick-picker-search", className)} type="text" {...props} />;
 };
 
 export interface ContentProps extends React.ComponentProps<"div"> {}
