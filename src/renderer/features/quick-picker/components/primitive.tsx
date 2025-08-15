@@ -1,9 +1,17 @@
 import clsx from "clsx";
+import {
+	LoadingBar as CoreLoadingBar,
+	type LoadingBarProps,
+} from "../../../components/loading-bar";
 
-export interface RootProps extends React.ComponentProps<"div"> {}
+export interface RootProps extends React.ComponentProps<"div"> {
+	isLoading?: boolean;
+}
 
-export const Root = ({ className, ...props }: RootProps) => {
-	return <div className={clsx("quick-picker", className)} {...props} />;
+export const Root = ({ className, isLoading, ...props }: RootProps) => {
+	return (
+		<div className={clsx("quick-picker", className)} data-is-loading={isLoading} {...props} />
+	);
 };
 
 export interface TitleBarProps extends React.ComponentProps<"div"> {}
@@ -60,6 +68,10 @@ export interface ContentProps extends React.ComponentProps<"div"> {}
 
 export const Content = ({ className, ...props }: ContentProps) => {
 	return <div className={clsx("quick-picker-content", className)} {...props} />;
+};
+
+export const LoadingBar = ({ className, ...props }: LoadingBarProps) => {
+	return <CoreLoadingBar className={clsx("quick-picker-loading-bar", className)} {...props} />;
 };
 
 export interface FooterProps extends React.ComponentProps<"div"> {}
