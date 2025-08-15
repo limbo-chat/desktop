@@ -146,7 +146,7 @@ function flattenTreeItems(nodes: TreeItem[]): FlattenedTreeItem[] {
 
 interface TreeQuickPickerContext {
 	items: TreeItem[];
-	searchRef: React.Ref<HTMLInputElement>;
+	searchInputRef: React.Ref<HTMLInputElement>;
 	treeRef: React.Ref<HTMLUListElement>;
 	contentRef: React.Ref<HTMLDivElement>;
 	focusedId: string | null;
@@ -197,7 +197,7 @@ export const Root = ({
 	onSubmit,
 	...props
 }: RootProps) => {
-	const searchRef = useRef<HTMLInputElement>(null);
+	const searchInputRef = useRef<HTMLInputElement>(null);
 	const treeRef = useRef<HTMLUListElement>(null);
 	const contentRef = useRef<HTMLDivElement>(null);
 	const itemRefs = useMemo<Map<string, HTMLElement | null>>(() => new Map(), []);
@@ -216,8 +216,22 @@ export const Root = ({
 		if (itemElement) {
 			itemElement.scrollIntoView({
 				block: "nearest",
+				behavior: "auto",
 			});
 		}
+	};
+
+	const focusItem = (itemId: string) => {
+		blurSearch();
+		focusTree();
+		scrollToItem(itemId);
+		onFocusedIdChange(itemId);
+	};
+
+	const clearFocusedItem = () => {
+		scrollToTopOfContent();
+		focusSearch();
+		onFocusedIdChange(null);
 	};
 
 	const registerItemElement = (itemId: string, element: HTMLElement) => {
@@ -233,11 +247,11 @@ export const Root = ({
 	};
 
 	const focusSearch = () => {
-		searchRef.current?.focus();
+		searchInputRef.current?.focus();
 	};
 
 	const blurSearch = () => {
-		searchRef.current?.blur();
+		searchInputRef.current?.blur();
 	};
 
 	const flattenedItems = useMemo(() => {
@@ -281,17 +295,16 @@ export const Root = ({
 
 		if (focusedItemIdx === 0) {
 			nextItemId = null;
-
-			focusSearch();
 		} else {
 			// move to previous item
 			nextItemId = flattenedVisibleItems[focusedItemIdx - 1]!.item.id;
-
-			blurSearch();
-			focusTree();
 		}
 
-		onFocusedIdChange(nextItemId);
+		if (nextItemId) {
+			focusItem(nextItemId);
+		} else {
+			clearFocusedItem();
+		}
 	};
 
 	const moveFocusDown = () => {
@@ -310,17 +323,16 @@ export const Root = ({
 		if (nextItemIdx >= flattenedVisibleItems.length) {
 			// at last item, wrap to search input
 			nextItemId = null;
-
-			focusSearch();
 		} else {
 			// move to next item
 			nextItemId = flattenedVisibleItems[focusedItemIdx + 1]!.item.id;
-
-			blurSearch();
-			focusTree();
 		}
 
-		onFocusedIdChange(nextItemId);
+		if (nextItemId) {
+			focusItem(nextItemId);
+		} else {
+			clearFocusedItem();
+		}
 	};
 
 	const expandItem = (item: GroupTreeItem) => {
@@ -444,33 +456,33 @@ export const Root = ({
 	};
 
 	const onKeyDown = (e: React.KeyboardEvent) => {
-		if (e.target !== searchRef.current) {
-			e.preventDefault();
-		}
-
 		switch (e.key) {
 			case "ArrowUp":
+				e.preventDefault();
+
 				moveFocusUp();
 
 				break;
 			case "ArrowDown":
+				e.preventDefault();
+
 				moveFocusDown();
 
 				break;
 			case "ArrowRight":
-				if (e.target !== searchRef.current) {
+				if (e.target !== searchInputRef.current) {
 					expandFocused();
 				}
 
 				break;
 			case "ArrowLeft":
-				if (e.target !== searchRef.current) {
+				if (e.target !== searchInputRef.current) {
 					collapseFocused();
 				}
 
 				break;
 			case " ":
-				if (e.target !== searchRef.current) {
+				if (e.target !== searchInputRef.current) {
 					toggleFocusedSelected();
 				}
 
@@ -481,20 +493,12 @@ export const Root = ({
 		}
 	};
 
-	useEffect(() => {
-		if (focusedId) {
-			scrollToItem(focusedId);
-		} else {
-			scrollToTopOfContent();
-		}
-	}, [focusedId]);
-
 	return (
 		<treeQuickPickerContext.Provider
 			value={{
 				items,
 				treeRef,
-				searchRef,
+				searchInputRef,
 				contentRef,
 				focusedId,
 				expandedIds,
@@ -518,9 +522,9 @@ export const Root = ({
 export interface SearchInputProps extends QuickPicker.SearchInputProps {}
 
 export const SearchInput = (props: SearchInputProps) => {
-	const { searchRef } = useTreeQuickPickerContext();
+	const { searchInputRef } = useTreeQuickPickerContext();
 
-	return <QuickPicker.SearchInput ref={searchRef} {...props} />;
+	return <QuickPicker.SearchInput ref={searchInputRef} {...props} />;
 };
 
 export interface ContentProps extends QuickPicker.ContentProps {}
