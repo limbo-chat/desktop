@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useRef } from "react";
 import { AppIcon } from "../../../components/app-icon";
+import { Badge } from "../../../components/badge";
 import { Checkbox } from "../../../components/checkbox";
 import { IconButton } from "../../../components/icon-button";
 import * as QuickPicker from "./primitive";
@@ -609,5 +610,17 @@ export const Tree = () => {
 				return <TreeItem depth={0} node={node} key={node.id} />;
 			})}
 		</ul>
+	);
+};
+
+// misc
+
+export const SelectedCountBadge = () => {
+	const { selectedIds } = useTreeQuickPickerContext();
+
+	return (
+		<Badge className="quick-picker-tree-selected-count-badge">
+			{selectedIds.size} Selected
+		</Badge>
 	);
 };
