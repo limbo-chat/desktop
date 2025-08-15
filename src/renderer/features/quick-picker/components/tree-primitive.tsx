@@ -1,27 +1,43 @@
 import { createContext, useContext, useEffect, useMemo, useRef } from "react";
+import clsx from "clsx";
 import { AppIcon } from "../../../components/app-icon";
-import { Badge } from "../../../components/badge";
-import { Checkbox } from "../../../components/checkbox";
+import { Badge, type BadgeProps } from "../../../components/badge";
+import { Button, type ButtonProps } from "../../../components/button";
+import { Checkbox, type CheckboxProps } from "../../../components/checkbox";
 import { IconButton } from "../../../components/icon-button";
 import * as QuickPicker from "./primitive";
 
-export interface BaseTreeNode {
+export interface LeafTreeNode {
 	id: string;
-	title: string;
-	description?: string;
-	icon?: React.ReactNode;
-}
-
-export interface LeafTreeNode extends BaseTreeNode {
 	type: "leaf";
 }
 
-export interface GroupTreeNode extends BaseTreeNode {
+export interface GroupTreeNode {
+	id: string;
 	type: "group";
 	children: TreeNode[];
 }
 
 export type TreeNode = LeafTreeNode | GroupTreeNode;
+
+export interface BaseTreeItem {
+	title: string;
+	description?: string;
+	icon?: React.ReactNode;
+}
+
+export interface LeafTreeItem extends BaseTreeItem {
+	id: string;
+	type: "leaf";
+}
+
+export interface GroupTreeItem extends BaseTreeItem {
+	id: string;
+	type: "group";
+	children: TreeItem[];
+}
+
+export type TreeItem = LeafTreeItem | GroupTreeItem;
 
 function isLeafNodeSelected(node: LeafTreeNode, selectedIds: Set<string>): boolean {
 	return selectedIds.has(node.id);
@@ -45,48 +61,6 @@ function isNodeSelected(node: TreeNode, selectedIds: Set<string>): boolean {
 	}
 }
 
-function filterVisibleNodes(nodes: TreeNode[], expandedIds: Set<string>): TreeNode[] {
-	return nodes.map((node) => {
-		if (node.type === "leaf") {
-			return node;
-		} else {
-			if (expandedIds.has(node.id)) {
-				return {
-					...node,
-					children: filterVisibleNodes(node.children, expandedIds),
-				};
-			}
-		}
-
-		return { ...node, children: [] };
-	});
-}
-
-interface FlattenedTreeNode {
-	node: TreeNode;
-	parent: TreeNode | null;
-}
-
-function flattenTreeNodes(nodes: TreeNode[]): FlattenedTreeNode[] {
-	const result: FlattenedTreeNode[] = [];
-
-	function traverse(node: TreeNode, parent: TreeNode | null): void {
-		result.push({ node, parent });
-
-		if (node.type === "group") {
-			for (const child of node.children) {
-				traverse(child, node);
-			}
-		}
-	}
-
-	for (const node of nodes) {
-		traverse(node, null);
-	}
-
-	return result;
-}
-
 function collectLeafNodes(node: GroupTreeNode): TreeNode[] {
 	const collectedChildNodes: TreeNode[] = [];
 
@@ -101,22 +75,92 @@ function collectLeafNodes(node: GroupTreeNode): TreeNode[] {
 	return collectedChildNodes;
 }
 
+type NodeCheckboxState = "selected" | "unselected" | "indeterminate";
+
+function getNodeCheckboxState(node: TreeNode, selectedIds: Set<string>): NodeCheckboxState {
+	if (node.type === "leaf") {
+		return selectedIds.has(node.id) ? "selected" : "unselected";
+	}
+
+	let hasSelected = false;
+	let hasUnselected = false;
+
+	for (const child of node.children) {
+		const childState = getNodeCheckboxState(child, selectedIds);
+
+		if (childState === "selected") {
+			hasSelected = true;
+		} else if (childState === "unselected") {
+			hasUnselected = true;
+		}
+
+		if (hasSelected && hasUnselected) {
+			return "indeterminate";
+		}
+	}
+
+	return hasSelected ? "selected" : "unselected";
+}
+
+function filterVisibleItems(items: TreeItem[], expandedIds: Set<string>): TreeItem[] {
+	return items.map((item) => {
+		if (item.type === "leaf") {
+			return item;
+		} else {
+			if (expandedIds.has(item.id)) {
+				return {
+					...item,
+					children: filterVisibleItems(item.children, expandedIds),
+				};
+			}
+		}
+
+		return { ...item, children: [] };
+	});
+}
+
+interface FlattenedTreeItem {
+	item: TreeItem;
+	parent: GroupTreeItem | null;
+}
+
+function flattenTreeItems(nodes: TreeItem[]): FlattenedTreeItem[] {
+	const result: FlattenedTreeItem[] = [];
+
+	function traverse(item: TreeItem, parent: GroupTreeItem | null): void {
+		result.push({ item, parent });
+
+		if (item.type === "group") {
+			for (const child of item.children) {
+				traverse(child, item);
+			}
+		}
+	}
+
+	for (const node of nodes) {
+		traverse(node, null);
+	}
+
+	return result;
+}
+
 interface TreeQuickPickerContext {
-	nodes: TreeNode[];
+	items: TreeItem[];
 	searchRef: React.Ref<HTMLInputElement>;
 	treeRef: React.Ref<HTMLUListElement>;
 	contentRef: React.Ref<HTMLDivElement>;
 	focusedId: string | null;
 	expandedIds: Set<string>;
 	selectedIds: Set<string>;
+	submit: () => void;
 	registerItemElement: (itemId: string, element: HTMLElement) => void;
 	unregisterItemElement: (itemId: string) => void;
-	expandNode: (node: GroupTreeNode) => void;
-	collapseNode: (node: GroupTreeNode) => void;
-	toggleNodeExpanded: (node: GroupTreeNode) => void;
-	selectNode: (node: TreeNode) => void;
-	unselectNode: (node: TreeNode) => void;
-	toggleNodeSelected: (node: TreeNode) => void;
+	expandItem: (item: GroupTreeItem) => void;
+	collapseItem: (item: GroupTreeItem) => void;
+	toggleItemExpanded: (item: GroupTreeItem) => void;
+	selectItem: (item: TreeItem) => void;
+	unselectItem: (item: TreeItem) => void;
+	toggleItemSelected: (item: TreeItem) => void;
 }
 
 const treeQuickPickerContext = createContext<TreeQuickPickerContext | null>(null);
@@ -132,7 +176,7 @@ export const useTreeQuickPickerContext = () => {
 };
 
 export interface RootProps extends QuickPicker.RootProps {
-	nodes: TreeNode[];
+	items: TreeItem[];
 	focusedId: string | null;
 	expandedIds: Set<string>;
 	selectedIds: Set<string>;
@@ -143,7 +187,7 @@ export interface RootProps extends QuickPicker.RootProps {
 }
 
 export const Root = ({
-	nodes,
+	items,
 	focusedId,
 	expandedIds,
 	selectedIds,
@@ -157,6 +201,10 @@ export const Root = ({
 	const treeRef = useRef<HTMLUListElement>(null);
 	const contentRef = useRef<HTMLDivElement>(null);
 	const itemRefs = useMemo<Map<string, HTMLElement | null>>(() => new Map(), []);
+
+	const submit = () => {
+		onSubmit();
+	};
 
 	const scrollToTopOfContent = () => {
 		contentRef.current?.scrollTo({ top: 0 });
@@ -192,28 +240,28 @@ export const Root = ({
 		searchRef.current?.blur();
 	};
 
-	const flattenedNodes = useMemo(() => {
-		return flattenTreeNodes(nodes);
-	}, [nodes]);
+	const flattenedItems = useMemo(() => {
+		return flattenTreeItems(items);
+	}, [items]);
 
-	const visibleNodes = useMemo(() => {
-		return filterVisibleNodes(nodes, expandedIds);
-	}, [nodes, expandedIds]);
+	const visibleItems = useMemo(() => {
+		return filterVisibleItems(items, expandedIds);
+	}, [items, expandedIds]);
 
-	const flattenedVisibleNodes = useMemo(() => {
-		return flattenTreeNodes(visibleNodes);
-	}, [visibleNodes]);
+	const flattenedVisibleItems = useMemo(() => {
+		return flattenTreeItems(visibleItems);
+	}, [visibleItems]);
 
-	const focusedNode = useMemo(() => {
+	const focusedItem = useMemo(() => {
 		if (focusedId === null) {
 			return null;
 		}
 
-		return flattenedNodes.find((node) => node.node.id === focusedId) ?? null;
-	}, [flattenedNodes, focusedId]);
+		return flattenedItems.find((item) => item.item.id === focusedId) ?? null;
+	}, [flattenedItems, focusedId]);
 
 	const moveFocusUp = () => {
-		if (flattenedVisibleNodes.length === 0) {
+		if (flattenedVisibleItems.length === 0) {
 			return;
 		}
 
@@ -221,63 +269,63 @@ export const Root = ({
 			return;
 		}
 
-		const focusedNodeIdx = flattenedVisibleNodes.findIndex(
-			(node) => node.node.id === focusedId
+		const focusedItemIdx = flattenedVisibleItems.findIndex(
+			(item) => item.item.id === focusedId
 		);
 
-		if (focusedNodeIdx === -1) {
+		if (focusedItemIdx === -1) {
 			return;
 		}
 
-		let nextNodeId: string | null;
+		let nextItemId: string | null;
 
-		if (focusedNodeIdx === 0) {
-			nextNodeId = null;
+		if (focusedItemIdx === 0) {
+			nextItemId = null;
 
 			focusSearch();
 		} else {
-			// move to previous node
-			nextNodeId = flattenedVisibleNodes[focusedNodeIdx - 1]!.node.id;
+			// move to previous item
+			nextItemId = flattenedVisibleItems[focusedItemIdx - 1]!.item.id;
 
 			blurSearch();
 			focusTree();
 		}
 
-		onFocusedIdChange(nextNodeId);
+		onFocusedIdChange(nextItemId);
 	};
 
 	const moveFocusDown = () => {
-		if (flattenedVisibleNodes.length === 0) {
+		if (flattenedVisibleItems.length === 0) {
 			return;
 		}
 
-		const focusedNodeIdx = flattenedVisibleNodes.findIndex(
-			(node) => node.node.id === focusedId
+		const focusedItemIdx = flattenedVisibleItems.findIndex(
+			(item) => item.item.id === focusedId
 		);
 
-		const nextNodeIdx = focusedNodeIdx + 1;
+		const nextItemIdx = focusedItemIdx + 1;
 
-		let nextNodeId: string | null;
+		let nextItemId: string | null;
 
-		if (nextNodeIdx >= flattenedVisibleNodes.length) {
-			// at last node, wrap to search input
-			nextNodeId = null;
+		if (nextItemIdx >= flattenedVisibleItems.length) {
+			// at last item, wrap to search input
+			nextItemId = null;
 
 			focusSearch();
 		} else {
-			// move to next node
-			nextNodeId = flattenedVisibleNodes[focusedNodeIdx + 1]!.node.id;
+			// move to next item
+			nextItemId = flattenedVisibleItems[focusedItemIdx + 1]!.item.id;
 
 			blurSearch();
 			focusTree();
 		}
 
-		onFocusedIdChange(nextNodeId);
+		onFocusedIdChange(nextItemId);
 	};
 
-	const expandNode = (node: GroupTreeNode) => {
-		if (expandedIds.has(node.id)) {
-			const firstChild = node.children[0];
+	const expandItem = (item: GroupTreeItem) => {
+		if (expandedIds.has(item.id)) {
+			const firstChild = item.children[0];
 
 			if (firstChild) {
 				onFocusedIdChange(firstChild.id);
@@ -288,111 +336,111 @@ export const Root = ({
 
 		const newExpandedIds = new Set(expandedIds);
 
-		newExpandedIds.add(node.id);
+		newExpandedIds.add(item.id);
 
 		onExpandedIdsChange(newExpandedIds);
 	};
 
-	const collapseNode = (node: GroupTreeNode) => {
-		if (!expandedIds.has(node.id)) {
+	const collapseItem = (item: GroupTreeItem) => {
+		if (!expandedIds.has(item.id)) {
 			// the group is already collapsed
 			return;
 		}
 
 		const newExpandedIds = new Set(expandedIds);
 
-		newExpandedIds.delete(node.id);
+		newExpandedIds.delete(item.id);
 
 		onExpandedIdsChange(newExpandedIds);
-		onFocusedIdChange(node.id);
+		onFocusedIdChange(item.id);
 	};
 
-	const toggleNodeExpanded = (node: GroupTreeNode) => {
-		if (expandedIds.has(node.id)) {
-			collapseNode(node);
+	const toggleItemExpanded = (item: GroupTreeItem) => {
+		if (expandedIds.has(item.id)) {
+			collapseItem(item);
 		} else {
-			expandNode(node);
+			expandItem(item);
 		}
 	};
 
 	const expandFocused = () => {
-		if (!focusedNode) {
+		if (!focusedItem) {
 			return;
 		}
 
-		if (focusedNode.node.type !== "group") {
+		if (focusedItem.item.type !== "group") {
 			return;
 		}
 
-		expandNode(focusedNode.node);
+		expandItem(focusedItem.item);
 	};
 
 	const collapseFocused = () => {
-		if (!focusedNode) {
+		if (!focusedItem) {
 			return;
 		}
 
-		if (focusedNode.node.type === "leaf") {
-			if (focusedNode.parent) {
-				onFocusedIdChange(focusedNode.parent.id);
+		if (focusedItem.item.type === "leaf") {
+			if (focusedItem.parent) {
+				onFocusedIdChange(focusedItem.parent.id);
 			}
 		} else {
-			collapseNode(focusedNode.node);
+			collapseItem(focusedItem.item);
 		}
 	};
 
-	const selectNode = (node: TreeNode) => {
+	const selectItem = (item: TreeItem) => {
 		const newSelectedIds = new Set(selectedIds);
 
-		let nodesToSelect;
+		let itemsToSelect;
 
-		if (node.type === "leaf") {
-			nodesToSelect = [node];
+		if (item.type === "leaf") {
+			itemsToSelect = [item];
 		} else {
-			nodesToSelect = collectLeafNodes(node);
+			itemsToSelect = collectLeafNodes(item);
 		}
 
-		for (const nodeToSelect of nodesToSelect) {
-			newSelectedIds.add(nodeToSelect.id);
+		for (const itemToSelect of itemsToSelect) {
+			newSelectedIds.add(itemToSelect.id);
 		}
 
 		onSelectedIdsChange(newSelectedIds);
 	};
 
-	const unselectNode = (node: TreeNode) => {
+	const unselectItem = (item: TreeItem) => {
 		const newSelectedIds = new Set(selectedIds);
 
-		let nodesToUnselect;
+		let itemsToUnselect;
 
-		if (node.type === "leaf") {
-			nodesToUnselect = [node];
+		if (item.type === "leaf") {
+			itemsToUnselect = [item];
 		} else {
-			nodesToUnselect = collectLeafNodes(node);
+			itemsToUnselect = collectLeafNodes(item);
 		}
 
-		for (const nodeToUnselectSelect of nodesToUnselect) {
-			newSelectedIds.delete(nodeToUnselectSelect.id);
+		for (const itemToUnselectSelect of itemsToUnselect) {
+			newSelectedIds.delete(itemToUnselectSelect.id);
 		}
 
 		onSelectedIdsChange(newSelectedIds);
 	};
 
-	const toggleNodeSelected = (node: TreeNode) => {
-		const isSelected = isNodeSelected(node, selectedIds);
+	const toggleItemSelected = (item: TreeItem) => {
+		const isSelected = isNodeSelected(item, selectedIds);
 
 		if (isSelected) {
-			unselectNode(node);
+			unselectItem(item);
 		} else {
-			selectNode(node);
+			selectItem(item);
 		}
 	};
 
 	const toggleFocusedSelected = () => {
-		if (!focusedNode) {
+		if (!focusedItem) {
 			return;
 		}
 
-		toggleNodeSelected(focusedNode.node);
+		toggleItemSelected(focusedItem.item);
 	};
 
 	const onKeyDown = (e: React.KeyboardEvent) => {
@@ -444,19 +492,20 @@ export const Root = ({
 	return (
 		<treeQuickPickerContext.Provider
 			value={{
-				nodes,
+				items,
 				treeRef,
 				searchRef,
 				contentRef,
 				focusedId,
 				expandedIds,
 				selectedIds,
-				selectNode,
-				unselectNode,
-				toggleNodeSelected,
-				expandNode,
-				collapseNode,
-				toggleNodeExpanded,
+				submit,
+				selectItem,
+				unselectItem,
+				toggleItemSelected,
+				expandItem,
+				collapseItem,
+				toggleItemExpanded,
 				registerItemElement,
 				unregisterItemElement,
 			}}
@@ -466,12 +515,12 @@ export const Root = ({
 	);
 };
 
-export interface SearchProps extends QuickPicker.SearchProps {}
+export interface SearchInputProps extends QuickPicker.SearchInputProps {}
 
-export const Search = (props: SearchProps) => {
+export const SearchInput = (props: SearchInputProps) => {
 	const { searchRef } = useTreeQuickPickerContext();
 
-	return <QuickPicker.Search ref={searchRef} {...props} />;
+	return <QuickPicker.SearchInput ref={searchRef} {...props} />;
 };
 
 export interface ContentProps extends QuickPicker.ContentProps {}
@@ -483,57 +532,40 @@ export const Content = (props: ContentProps) => {
 };
 
 interface TreeItemProps {
-	node: TreeNode;
+	item: TreeItem;
 	depth: number;
 }
 
-const TreeItem = ({ node, depth }: TreeItemProps) => {
+const TreeItem = ({ item, depth }: TreeItemProps) => {
 	const {
 		focusedId,
 		expandedIds,
 		selectedIds,
-		toggleNodeExpanded,
-		toggleNodeSelected,
+		toggleItemExpanded,
+		toggleItemSelected,
 		registerItemElement,
 		unregisterItemElement,
 	} = useTreeQuickPickerContext();
 
 	const ref = useRef<HTMLLIElement>(null);
-	const isFocused = focusedId === node.id;
-	const isExpanded = expandedIds.has(node.id);
+	const isFocused = focusedId === item.id;
+	const isExpanded = expandedIds.has(item.id);
 
-	const leafNodes = useMemo(() => {
-		if (node.type === "leaf") {
-			return [];
-		}
+	const checkboxState = useMemo(() => {
+		return getNodeCheckboxState(item, selectedIds);
+	}, [item, selectedIds]);
 
-		return collectLeafNodes(node);
-	}, [node]);
-
-	const isSelected = useMemo(() => {
-		if (node.type === "leaf") {
-			return selectedIds.has(node.id);
-		}
-
-		return leafNodes.every((leaf) => selectedIds.has(leaf.id));
-	}, [node, leafNodes, selectedIds]);
-
-	const isIndeterminate = useMemo(() => {
-		const someSelected = leafNodes.some((leaf) => selectedIds.has(leaf.id));
-		const someUnselected = leafNodes.some((leaf) => !selectedIds.has(leaf.id));
-
-		return someSelected && someUnselected;
-	}, [leafNodes, selectedIds]);
+	const isSelected = checkboxState === "selected";
 
 	const onSelect = () => {
-		toggleNodeSelected(node);
+		toggleItemSelected(item);
 	};
 
 	const onExpandClick = (e: React.MouseEvent) => {
 		e.stopPropagation();
 
-		if (node.type === "group") {
-			toggleNodeExpanded(node);
+		if (item.type === "group") {
+			toggleItemExpanded(item);
 		}
 	};
 
@@ -543,10 +575,10 @@ const TreeItem = ({ node, depth }: TreeItemProps) => {
 			return;
 		}
 
-		registerItemElement(node.id, ref.current);
+		registerItemElement(item.id, ref.current);
 
 		return () => {
-			unregisterItemElement(node.id);
+			unregisterItemElement(item.id);
 		};
 	}, []);
 
@@ -554,10 +586,10 @@ const TreeItem = ({ node, depth }: TreeItemProps) => {
 		<>
 			<li
 				ref={ref}
-				id={`qp-tree-item-${node.id}`}
+				id={`qp-tree-item-${item.id}`}
 				className="quick-picker-tree-item"
 				role="checkbox"
-				data-type={node.type}
+				data-type={item.type}
 				data-is-expanded={isExpanded}
 				data-is-focused={isFocused}
 				data-is-selected={isSelected}
@@ -570,7 +602,7 @@ const TreeItem = ({ node, depth }: TreeItemProps) => {
 					"--tree-depth": depth,
 				}}
 			>
-				{node.type === "group" && (
+				{item.type === "group" && (
 					<IconButton
 						className="quick-picker-tree-item-collapse-button"
 						onClick={onExpandClick}
@@ -580,23 +612,23 @@ const TreeItem = ({ node, depth }: TreeItemProps) => {
 				)}
 				<Checkbox
 					className="quick-picker-tree-item-checkbox"
-					checked={isIndeterminate ? "indeterminate" : isSelected}
+					checked={checkboxState === "indeterminate" ? "indeterminate" : isSelected}
 				/>
-				{node.icon && <div className="quick-picker-tree-item-icon">{node.icon}</div>}
-				<div className="quick-picker-tree-item-title">{node.title}</div>
-				<div className="quick-picker-tree-item-description">{node.description}</div>
+				{item.icon && <div className="quick-picker-tree-item-icon">{item.icon}</div>}
+				<div className="quick-picker-tree-item-title">{item.title}</div>
+				<div className="quick-picker-tree-item-description">{item.description}</div>
 			</li>
-			{node.type == "group" &&
+			{item.type == "group" &&
 				isExpanded &&
-				node.children.map((child) => (
-					<TreeItem node={child} depth={depth + 1} key={child.id} />
+				item.children.map((child) => (
+					<TreeItem item={child} depth={depth + 1} key={child.id} />
 				))}
 		</>
 	);
 };
 
 export const Tree = () => {
-	const { treeRef, nodes, focusedId } = useTreeQuickPickerContext();
+	const { treeRef, items, focusedId } = useTreeQuickPickerContext();
 
 	return (
 		<ul
@@ -606,8 +638,8 @@ export const Tree = () => {
 			aria-activedescendant={focusedId ? `qp-tree-item-${focusedId}` : undefined}
 			ref={treeRef}
 		>
-			{nodes.map((node) => {
-				return <TreeItem depth={0} node={node} key={node.id} />;
+			{items.map((item) => {
+				return <TreeItem item={item} depth={0} key={item.id} />;
 			})}
 		</ul>
 	);
@@ -615,11 +647,72 @@ export const Tree = () => {
 
 // misc
 
-export const SelectedCountBadge = () => {
+export const MasterCheckbox = ({ className, ...props }: CheckboxProps) => {
+	const { items, selectedIds, selectItem, unselectItem } = useTreeQuickPickerContext();
+
+	const checkboxState = useMemo(() => {
+		const rootGroup: GroupTreeNode = {
+			id: "root",
+			type: "group",
+			children: items,
+		};
+
+		return getNodeCheckboxState(rootGroup, selectedIds);
+	}, [items, selectedIds]);
+
+	const selectAll = () => {
+		for (const item of items) {
+			selectItem(item);
+		}
+	};
+
+	const unselectAll = () => {
+		for (const item of items) {
+			unselectItem(item);
+		}
+	};
+
+	const toggleAllSelected = () => {
+		if (checkboxState === "selected") {
+			unselectAll();
+		} else {
+			selectAll();
+		}
+	};
+
+	return (
+		<Checkbox
+			className={clsx("quick-picker-tree-master-checkbox", className)}
+			checked={
+				checkboxState === "indeterminate" ? "indeterminate" : checkboxState === "selected"
+			}
+			onClick={toggleAllSelected}
+			{...props}
+		/>
+	);
+};
+
+export const SubmitButton = ({ className, ...props }: ButtonProps) => {
+	const { submit } = useTreeQuickPickerContext();
+
+	return (
+		<Button
+			className={clsx("quick-picker-tree-submit-button", className)}
+			onClick={submit}
+			{...props}
+		/>
+	);
+};
+
+export const SelectedCountBadge = ({ className, ...props }: BadgeProps) => {
 	const { selectedIds } = useTreeQuickPickerContext();
 
 	return (
-		<Badge className="quick-picker-tree-selected-count-badge">
+		<Badge
+			className={clsx("quick-picker-tree-selected-count-badge", className)}
+			aria-live="polite"
+			{...props}
+		>
 			{selectedIds.size} Selected
 		</Badge>
 	);

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import type * as limbo from "@limbo/api";
-import { ImageLikeRenderer } from "../../../components/app-icon";
 import { parseNamespacedResourceId } from "../../../lib/utils";
 import * as QuickPicker from "../../quick-picker/components/primitive";
 import * as TreeQuickPicker from "../../quick-picker/components/tree-primitive";
@@ -54,8 +53,8 @@ export const ToolPicker = ({
 		return groups;
 	}, [tools]);
 
-	const nodes = useMemo<TreeQuickPicker.TreeNode[]>(() => {
-		const result: TreeQuickPicker.TreeNode[] = [];
+	const items = useMemo<TreeQuickPicker.TreeItem[]>(() => {
+		const result: TreeQuickPicker.TreeItem[] = [];
 
 		for (const group of toolGroups.values()) {
 			result.push({
@@ -99,7 +98,7 @@ export const ToolPicker = ({
 
 	return (
 		<TreeQuickPicker.Root
-			nodes={nodes}
+			items={items}
 			focusedId={focusedId}
 			expandedIds={expandedIds}
 			selectedIds={selectedToolIds}
@@ -109,11 +108,20 @@ export const ToolPicker = ({
 			onSubmit={onSubmit}
 		>
 			<QuickPicker.Header>
-				<TreeQuickPicker.Search
-					placeholder="Search tools..."
-					value={search}
-					onChange={(e) => setSearch(e.target.value)}
-				/>
+				<TreeQuickPicker.MasterCheckbox />
+				<QuickPicker.Search>
+					<TreeQuickPicker.SearchInput
+						placeholder="Search tools..."
+						value={search}
+						onChange={(e) => setSearch(e.target.value)}
+					/>
+					<QuickPicker.SearchAccessories>
+						<TreeQuickPicker.SelectedCountBadge />
+					</QuickPicker.SearchAccessories>
+				</QuickPicker.Search>
+				<QuickPicker.PrimaryAction>
+					<TreeQuickPicker.SubmitButton>Ok</TreeQuickPicker.SubmitButton>
+				</QuickPicker.PrimaryAction>
 			</QuickPicker.Header>
 			<TreeQuickPicker.Content>
 				<TreeQuickPicker.Tree />

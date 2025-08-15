@@ -54,13 +54,15 @@ export const LLMPicker = ({ initialSelectedLLMId, onSelect }: LLMPickerProps) =>
 			onSelectedIdChange={handleSelectedLLMIdChange}
 		>
 			<QuickPicker.Header>
-				<QuickPicker.Search
-					placeholder="Search models..."
-					value={search}
-					onChange={(e) => {
-						setSearch(e.target.value);
-					}}
-				/>
+				<QuickPicker.Search>
+					<QuickPicker.SearchInput
+						placeholder="Search models..."
+						value={search}
+						onChange={(e) => {
+							setSearch(e.target.value);
+						}}
+					/>
+				</QuickPicker.Search>
 			</QuickPicker.Header>
 			<QuickPicker.Content>
 				<ListQuickPicker.List>

@@ -24,10 +24,36 @@ export const Header = ({ className, ...props }: HeaderProps) => {
 	return <div className={clsx("quick-picker-header", className)} {...props} />;
 };
 
-export interface SearchProps extends React.ComponentProps<"input"> {}
+export interface IndicatorsProps extends React.ComponentProps<"div"> {}
 
-export const Search = ({ className, ...props }: SearchProps) => {
-	return <input className={clsx("quick-picker-search", className)} type="text" {...props} />;
+export const Indicators = ({ className, ...props }: ActionProps) => {
+	return <div className={clsx("quick-picker-indicators", className)} {...props} />;
+};
+
+export interface ActionProps extends React.ComponentProps<"div"> {}
+
+export const PrimaryAction = ({ className, ...props }: ActionProps) => {
+	return <div className={clsx("quick-picker-primary-action", className)} {...props} />;
+};
+
+export interface Search extends React.ComponentProps<"div"> {}
+
+export const Search = ({ className, ...props }: Search) => {
+	return <div className={clsx("quick-picker-search", className)} {...props} />;
+};
+
+export interface SearchInputProps extends React.ComponentProps<"input"> {}
+
+export const SearchInput = ({ className, ...props }: SearchInputProps) => {
+	return (
+		<input className={clsx("quick-picker-search-input", className)} type="text" {...props} />
+	);
+};
+
+export interface SearchAccessoriesProps extends React.ComponentProps<"div"> {}
+
+export const SearchAccessories = ({ className, ...props }: SearchAccessoriesProps) => {
+	return <div className={clsx("quick-picker-search-accessories", className)} {...props} />;
 };
 
 export interface ContentProps extends React.ComponentProps<"div"> {}
