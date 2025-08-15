@@ -1,14 +1,12 @@
-import { useState, type Ref } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { AppIcon } from "../../../components/app-icon";
 import { Button } from "../../../components/button";
 import { IconButton } from "../../../components/icon-button";
 import { useMaybeLLM } from "../../llms/hooks";
 import { showLLMPickerModal } from "../../llms/utils";
-import { ChatToolsMenu } from "./chat-tools-menu";
+import { showToolPickerModal } from "../../tools/utils";
 
-export interface ChatComposerProps {
-	ref?: Ref<HTMLDivElement>;
+export interface ChatComposerProps extends React.ComponentProps<"div"> {
 	isPending: boolean;
 	value: string;
 	onValueChange: (value: string) => void;
@@ -96,10 +94,16 @@ export const ChatComposer = ({
 				>
 					{selectedChatLLM ? selectedChatLLM.name : "Select llm"}
 				</Button>
-				<ChatToolsMenu
-					enabledToolIds={enabledToolIds}
-					onEnabledToolIdsChange={onEnabledToolIdsChange}
-				/>
+				<IconButton
+					onClick={() => {
+						showToolPickerModal({
+							initialSelectedToolIds: enabledToolIds,
+							onSubmit: onEnabledToolIdsChange,
+						});
+					}}
+				>
+					<AppIcon icon="hammer" />
+				</IconButton>
 			</div>
 		</div>
 	);

@@ -138,6 +138,7 @@ export interface RootProps extends QuickPicker.RootProps {
 	onFocusedIdChange: (focusedId: string | null) => void;
 	onExpandedIdsChange: (newExpandedIds: Set<string>) => void;
 	onSelectedIdsChange: (newExpandedIds: Set<string>) => void;
+	onSubmit: () => void;
 }
 
 export const Root = ({
@@ -148,6 +149,7 @@ export const Root = ({
 	onFocusedIdChange,
 	onExpandedIdsChange,
 	onSelectedIdsChange,
+	onSubmit,
 	...props
 }: RootProps) => {
 	const treeRef = useRef<HTMLUListElement>(null);
@@ -425,7 +427,7 @@ export const Root = ({
 
 				break;
 			case "Enter":
-				// submit (ignored for now!)
+				onSubmit();
 				break;
 		}
 	};
@@ -520,7 +522,7 @@ const TreeItem = ({ node, depth }: TreeItemProps) => {
 		const someUnselected = leafNodes.some((leaf) => !selectedIds.has(leaf.id));
 
 		return someSelected && someUnselected;
-	}, [leafNodes]);
+	}, [leafNodes, selectedIds]);
 
 	const onSelect = () => {
 		toggleNodeSelected(node);

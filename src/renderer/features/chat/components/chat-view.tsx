@@ -160,8 +160,6 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 	}, []);
 
 	useEffect(() => {
-		console.log(getChatQuery);
-
 		if (!getChatQuery.isError) {
 			return;
 		}
