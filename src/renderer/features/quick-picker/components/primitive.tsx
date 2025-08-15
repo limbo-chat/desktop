@@ -1,5 +1,13 @@
 import clsx from "clsx";
 import {
+	EmptyState as CoreEmptyState,
+	type EmptyStateProps,
+} from "../../../components/empty-state";
+import {
+	ErrorState as CoreErrorState,
+	type ErrorStateProps,
+} from "../../../components/error-state";
+import {
 	LoadingBar as CoreLoadingBar,
 	type LoadingBarProps,
 } from "../../../components/loading-bar";
@@ -72,6 +80,14 @@ export const Content = ({ className, ...props }: ContentProps) => {
 
 export const LoadingBar = ({ className, ...props }: LoadingBarProps) => {
 	return <CoreLoadingBar className={clsx("quick-picker-loading-bar", className)} {...props} />;
+};
+
+export const EmptyState = ({ className, ...props }: EmptyStateProps) => {
+	return <CoreEmptyState className={clsx("quick-picker-empty-state", className)} {...props} />;
+};
+
+export const ErrorState = ({ className, ...props }: ErrorStateProps) => {
+	return <CoreErrorState className={clsx("quick-picker-error-state", className)} {...props} />;
 };
 
 export interface FooterProps extends React.ComponentProps<"div"> {}
