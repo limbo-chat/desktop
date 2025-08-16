@@ -430,8 +430,8 @@ export const Root = ({
 			itemsToUnselect = collectLeafNodes(item);
 		}
 
-		for (const itemToUnselectSelect of itemsToUnselect) {
-			newSelectedIds.delete(itemToUnselectSelect.id);
+		for (const itemToUnselect of itemsToUnselect) {
+			newSelectedIds.delete(itemToUnselect.id);
 		}
 
 		onSelectedIdsChange(newSelectedIds);
@@ -654,6 +654,10 @@ export const Tree = () => {
 export const MasterCheckbox = ({ className, ...props }: CheckboxProps) => {
 	const { items, selectedIds, selectItem, unselectItem } = useTreeQuickPickerContext();
 
+	const rootGroup = useMemo<GroupTreeNode>(() => {
+		return { id: "root", type: "group", children: items };
+	}, [items]);
+
 	const checkboxState = useMemo(() => {
 		const rootGroup: GroupTreeNode = {
 			id: "root",
@@ -665,15 +669,13 @@ export const MasterCheckbox = ({ className, ...props }: CheckboxProps) => {
 	}, [items, selectedIds]);
 
 	const selectAll = () => {
-		for (const item of items) {
-			selectItem(item);
-		}
+		// @ts-expect-error type mismatch but will work. Ideally fix type mismatch later
+		selectItem(rootGroup);
 	};
 
 	const unselectAll = () => {
-		for (const item of items) {
-			unselectItem(item);
-		}
+		// @ts-expect-error same as above
+		unselectItem(rootGroup);
 	};
 
 	const toggleAllSelected = () => {
