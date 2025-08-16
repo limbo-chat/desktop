@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Fuse from "fuse.js";
+import { EmptyStateDescription, EmptyStateTitle } from "../../../components/empty-state";
 import * as ListQuickPicker from "../../quick-picker/components/list-primitive";
 import * as QuickPicker from "../../quick-picker/components/primitive";
 import { useLLMList } from "../hooks";
@@ -65,19 +66,26 @@ export const LLMPicker = ({ initialSelectedLLMId, onSelect }: LLMPickerProps) =>
 				</QuickPicker.Search>
 			</QuickPicker.Header>
 			<QuickPicker.Content>
-				<ListQuickPicker.List>
-					{filteredLLMs.map((item) => (
-						<ListQuickPicker.ListItem
-							item={{
-								id: item.id,
-								title: item.name,
-								description: item.description,
-								icon: null,
-							}}
-							key={item.id}
-						/>
-					))}
-				</ListQuickPicker.List>
+				{filteredLLMs.length > 0 ? (
+					<ListQuickPicker.List>
+						{filteredLLMs.map((item) => (
+							<ListQuickPicker.ListItem
+								item={{
+									id: item.id,
+									title: item.name,
+									description: item.description,
+									icon: null,
+								}}
+								key={item.id}
+							/>
+						))}
+					</ListQuickPicker.List>
+				) : (
+					<QuickPicker.EmptyState>
+						<EmptyStateTitle>No models found</EmptyStateTitle>
+						<EmptyStateDescription>Try another search</EmptyStateDescription>
+					</QuickPicker.EmptyState>
+				)}
 			</QuickPicker.Content>
 		</ListQuickPicker.Root>
 	);
