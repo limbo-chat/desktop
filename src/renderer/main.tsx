@@ -41,6 +41,7 @@ import { EvalPluginModuleLoader } from "./features/plugins/core/plugin-module-lo
 import { PluginSystem } from "./features/plugins/core/plugin-system";
 import { usePluginHotReloader, usePluginLoader } from "./features/plugins/hooks/core";
 import { usePluginSyncLayer } from "./features/plugins/hooks/use-plugin-sync-layer";
+import { useRegisterCoreTools } from "./features/tools/hooks";
 import { WindowInfoProvider } from "./features/window-info/components";
 import { useWindowInfoContext } from "./features/window-info/hooks";
 import { Workspace } from "./features/workspace/components/workspace";
@@ -436,6 +437,7 @@ const AppContent = () => {
 	usePluginLoader();
 	usePluginHotReloader();
 
+	useRegisterCoreTools();
 	useRegisterCoreCommands();
 	useRegisterActiveChatCommands();
 	useRegisterCustomStylesCommands();
