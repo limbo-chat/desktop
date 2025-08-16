@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type * as limbo from "@limbo/api";
+import Fuse from "fuse.js";
 import { buildNamespacedResourceId, parseNamespacedResourceId } from "../../../lib/utils";
 import { usePlugins } from "../../plugins/hooks/core";
 import * as QuickPicker from "../../quick-picker/components/primitive";
@@ -30,10 +31,24 @@ export const ToolPicker = ({
 	const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 	const [search, setSearch] = useState("");
 
+	const filteredTools = useMemo(() => {
+		if (!search) {
+			return tools;
+		}
+
+		const fuse = new Fuse(tools, {
+			threshold: 0.3,
+			ignoreLocation: true,
+			keys: ["id"],
+		});
+
+		return fuse.search(search).map((item) => item.item);
+	}, [tools, search]);
+
 	const toolGroups = useMemo(() => {
 		const groups = new Map<string, ToolGroup>();
 
-		for (const tool of tools) {
+		for (const tool of filteredTools) {
 			const resourceId = parseNamespacedResourceId(tool.id)!;
 			const plugin = plugins.get(resourceId.namespace);
 
@@ -58,7 +73,7 @@ export const ToolPicker = ({
 		}
 
 		return [...groups.values()];
-	}, [plugins, tools]);
+	}, [plugins, filteredTools]);
 
 	const items = useMemo<TreeQuickPicker.TreeItem[]>(() => {
 		const result: TreeQuickPicker.TreeItem[] = [];
@@ -99,14 +114,6 @@ export const ToolPicker = ({
 
 		setExpandedIds(newExpandedIds);
 	}, [toolGroups]);
-
-	// const fuse = useMemo(() => {
-	// 	return new Fuse([], {
-	// 		threshold: 0.3,
-	// 		ignoreLocation: true,
-	// 		keys: ["id", "name", "description"],
-	// 	});
-	// }, []);
 
 	return (
 		<TreeQuickPicker.Root
