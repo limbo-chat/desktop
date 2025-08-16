@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type * as limbo from "@limbo/api";
-import { parseNamespacedResourceId } from "../../../lib/utils";
+import { buildNamespacedResourceId, parseNamespacedResourceId } from "../../../lib/utils";
+import { usePlugins } from "../../plugins/hooks/core";
 import * as QuickPicker from "../../quick-picker/components/primitive";
 import * as TreeQuickPicker from "../../quick-picker/components/tree-primitive";
 import { useToolList } from "../hooks";
@@ -22,54 +23,65 @@ export const ToolPicker = ({
 	onSelectedToolIdsChange,
 	onSubmit,
 }: ToolPickerProps) => {
+	const plugins = usePlugins();
+	const tools = useToolList();
+
 	const [focusedId, setFocusedId] = useState<string | null>(null);
 	const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 	const [search, setSearch] = useState("");
-	const tools = useToolList();
 
 	const toolGroups = useMemo(() => {
 		const groups = new Map<string, ToolGroup>();
 
 		for (const tool of tools) {
-			const resourceId = parseNamespacedResourceId(tool.id);
+			const resourceId = parseNamespacedResourceId(tool.id)!;
+			const plugin = plugins.get(resourceId.namespace);
 
-			if (!resourceId) {
+			if (!plugin) {
 				continue;
 			}
 
+			const groupId = buildNamespacedResourceId("plugin", plugin.manifest.id);
 			const existingGroup = groups.get(resourceId.namespace);
 
 			if (existingGroup) {
 				existingGroup.tools.push(tool);
 			} else {
-				groups.set(resourceId.namespace, {
-					id: resourceId.namespace,
-					name: resourceId.namespace,
+				const newGroup: ToolGroup = {
+					id: groupId,
+					name: plugin.manifest.name,
 					tools: [tool],
-				});
+				};
+
+				groups.set(resourceId.namespace, newGroup);
 			}
 		}
 
-		return groups;
-	}, [tools]);
+		return [...groups.values()];
+	}, [plugins, tools]);
 
 	const items = useMemo<TreeQuickPicker.TreeItem[]>(() => {
 		const result: TreeQuickPicker.TreeItem[] = [];
 
-		for (const group of toolGroups.values()) {
+		for (const group of toolGroups) {
 			result.push({
 				type: "group",
 				id: group.id,
 				title: group.name,
-				children: group.tools.map((tool) => ({
-					type: "leaf",
-					id: tool.id,
-					title: tool.id,
-					description: tool.description,
-					// this isn't possible at the moment because plugins are able to provide a function to render their icon depending on the tool call.
-					// that complicates this too much IMO.
-					// icon: tool.icon && <ImageLikeRenderer imageLike={tool.icon} />,
-				})),
+				children: group.tools.map((tool) => {
+					// should never fail
+					const resourceId = parseNamespacedResourceId(tool.id)!;
+
+					return {
+						type: "leaf",
+						id: tool.id,
+						title: resourceId.resource,
+						description: tool.description,
+						// this isn't possible at the moment because plugins are able to provide a function to render their icon depending on the tool call.
+						// that complicates this too much IMO.
+						// icon: tool.icon && <ImageLikeRenderer imageLike={tool.icon} />,
+					};
+				}),
 			});
 		}
 
