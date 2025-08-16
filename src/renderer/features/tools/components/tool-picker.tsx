@@ -50,25 +50,36 @@ export const ToolPicker = ({
 
 		for (const tool of filteredTools) {
 			const resourceId = parseNamespacedResourceId(tool.id)!;
-			const plugin = plugins.get(resourceId.namespace);
 
-			if (!plugin) {
-				continue;
+			let groupName;
+			let groupId;
+
+			if (resourceId.namespace === "core") {
+				groupId = "core";
+				groupName = "Core";
+			} else {
+				const plugin = plugins.get(resourceId.namespace);
+
+				if (!plugin) {
+					continue;
+				}
+
+				groupId = buildNamespacedResourceId("plugin", plugin.manifest.id);
+				groupName = plugin.manifest.name;
 			}
 
-			const groupId = buildNamespacedResourceId("plugin", plugin.manifest.id);
-			const existingGroup = groups.get(resourceId.namespace);
+			const existingGroup = groups.get(groupId);
 
 			if (existingGroup) {
 				existingGroup.tools.push(tool);
 			} else {
 				const newGroup: ToolGroup = {
 					id: groupId,
-					name: plugin.manifest.name,
+					name: groupName,
 					tools: [tool],
 				};
 
-				groups.set(resourceId.namespace, newGroup);
+				groups.set(groupId, newGroup);
 			}
 		}
 
