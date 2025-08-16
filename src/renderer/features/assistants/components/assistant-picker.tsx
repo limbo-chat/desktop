@@ -1,43 +1,32 @@
-import { useMemo, useState } from "react";
-import { Command } from "cmdk";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Fuse from "fuse.js";
-import type { Assistant } from "../../../../main/assistants/schemas";
-import { AppIcon } from "../../../components/app-icon";
-import { EmptyState, EmptyStateTitle } from "../../../components/empty-state";
-
-interface AssistantItemProps {
-	assistant: Assistant;
-	isActive: boolean;
-	onSelect: () => void;
-}
-
-const AssistantItem = ({ assistant, isActive, onSelect }: AssistantItemProps) => {
-	return (
-		<Command.Item
-			className="assistant-item"
-			value={assistant.id}
-			data-is-active={isActive || undefined}
-			onSelect={onSelect}
-		>
-			<div className="assistant-item-name">{assistant.name}</div>
-		</Command.Item>
-	);
-};
+import { EmptyStateDescription, EmptyStateTitle } from "../../../components/empty-state";
+import { useMainRouter, useMainRouterClient } from "../../../lib/trpc";
+import * as ListQuickPicker from "../../quick-picker/components/list-primitive";
+import * as QuickPicker from "../../quick-picker/components/primitive";
 
 export interface AssistantPickerProps {
-	assistants: Assistant[];
-	value?: string;
-	onChange: (id: string) => void;
+	initialSelectedAssistantId: string | null;
+	onSelect: (id: string) => void;
 }
 
-export const AssistantPicker = ({ assistants, value, onChange }: AssistantPickerProps) => {
+export const AssistantPicker = ({ initialSelectedAssistantId, onSelect }: AssistantPickerProps) => {
+	const [focusedAssistantId, setFocusedAssistantId] = useState<string | null>(null);
+	const [selectedAssistantId, setSelectedAssistantId] = useState<string | null>(null);
 	const [search, setSearch] = useState("");
+
+	const mainRouter = useMainRouter();
+	const getAssistantsQuery = useQuery(mainRouter.assistants.getAll.queryOptions());
+
+	const assistants = getAssistantsQuery.data ?? [];
+	const isLoading = getAssistantsQuery.isLoading;
 
 	const fuse = useMemo(() => {
 		return new Fuse(assistants, {
 			threshold: 0.3,
 			ignoreLocation: true,
-			keys: ["id", "name"],
+			keys: ["id", "name", "description"],
 		});
 	}, [assistants]);
 
@@ -47,37 +36,68 @@ export const AssistantPicker = ({ assistants, value, onChange }: AssistantPicker
 		}
 
 		return fuse.search(search).map((item) => item.item);
-	}, [fuse, search, assistants]);
+	}, [search, assistants]);
+
+	const filteredAssistantIds = useMemo(() => {
+		return filteredAssistants.map((item) => item.id);
+	}, [filteredAssistants]);
+
+	const handleSelectedAssistantIdChange = (selectedLLMId: string) => {
+		setSelectedAssistantId(selectedLLMId);
+		onSelect(selectedLLMId);
+	};
+
+	useEffect(() => {
+		setSelectedAssistantId(initialSelectedAssistantId);
+	}, [initialSelectedAssistantId]);
 
 	return (
-		<Command className="assistant-picker" loop shouldFilter={false} value={value}>
-			<div className="assistant-picker-search-container">
-				<div className="assistant-picker-search-icon">
-					<AppIcon icon="search" />
-				</div>
-				<Command.Input
-					className="assistant-picker-search-input"
-					placeholder="Search assistants..."
-					value={search}
-					onValueChange={setSearch}
-				/>
-			</div>
-			<Command.List className="assistant-picker-list">
-				{filteredAssistants.length > 0 ? (
-					assistants.map((assistant) => (
-						<AssistantItem
-							assistant={assistant}
-							isActive={value === assistant.id}
-							onSelect={() => onChange(assistant.id)}
-							key={assistant.id}
-						/>
-					))
-				) : (
-					<EmptyState>
-						<EmptyStateTitle>No assistants found</EmptyStateTitle>
-					</EmptyState>
+		<ListQuickPicker.Root
+			className="assistant-picker"
+			isLoading={isLoading}
+			items={filteredAssistantIds}
+			focusedId={focusedAssistantId}
+			selectedId={selectedAssistantId}
+			onFocusedIdChange={setFocusedAssistantId}
+			onSelectedIdChange={handleSelectedAssistantIdChange}
+		>
+			<QuickPicker.Header>
+				<QuickPicker.Search>
+					<QuickPicker.SearchInput
+						placeholder="Search assistants..."
+						value={search}
+						onChange={(e) => {
+							setSearch(e.target.value);
+						}}
+					/>
+				</QuickPicker.Search>
+			</QuickPicker.Header>
+			<QuickPicker.Content>
+				{isLoading && <QuickPicker.LoadingBar />}
+				{filteredAssistantIds.length > 0 && (
+					<ListQuickPicker.List>
+						{filteredAssistants.map((item) => (
+							<ListQuickPicker.ListItem
+								item={{
+									id: item.id,
+									title: item.name,
+									description: item.description,
+									icon: null,
+								}}
+								key={item.id}
+							/>
+						))}
+					</ListQuickPicker.List>
 				)}
-			</Command.List>
-		</Command>
+				{!isLoading && filteredAssistantIds.length === 0 && (
+					<QuickPicker.EmptyState>
+						<EmptyStateTitle>No assistants found</EmptyStateTitle>
+						<EmptyStateDescription>
+							Try another search, or create a new assistant
+						</EmptyStateDescription>
+					</QuickPicker.EmptyState>
+				)}
+			</QuickPicker.Content>
+		</ListQuickPicker.Root>
 	);
 };

@@ -10,6 +10,7 @@ import { PopoverContent, PopoverRoot, PopoverTrigger } from "../../../components
 import { useAnimationUnmount, useIsAtBottom } from "../../../hooks/common";
 import { useMainRouter, useMainRouterClient } from "../../../lib/trpc";
 import { AssistantPicker } from "../../assistants/components/assistant-picker";
+import { showAssistantPickerModal } from "../../assistants/utils";
 import { ChatPanelRenderer } from "../../chat-panels/components/chat-panel-renderer";
 import { useActiveChatPanel } from "../../chat-panels/hooks";
 import { useActiveChatPanelStore } from "../../chat-panels/stores";
@@ -286,18 +287,18 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 		>
 			<Panel className="chat-view-main" id="main" order={1} minSize={25}>
 				<div className="chat-view-header">
-					<PopoverRoot>
-						<PopoverTrigger asChild>
-							<Button>{assistant ? assistant.name : "Select assistant"}</Button>
-						</PopoverTrigger>
-						<PopoverContent align="start">
-							<AssistantPicker
-								assistants={assistants}
-								value={selectedAssistantId ?? undefined}
-								onChange={setSelectedAssistantId}
-							/>
-						</PopoverContent>
-					</PopoverRoot>
+					<Button
+						onClick={() => {
+							showAssistantPickerModal({
+								selectedAssistantId,
+								onSelect: (assistantId) => {
+									setSelectedAssistantId(assistantId);
+								},
+							});
+						}}
+					>
+						{assistant ? assistant.name : "Select assistant"}
+					</Button>
 				</div>
 
 				<div className="chat-log-container" ref={chatLogContainerRef}>
