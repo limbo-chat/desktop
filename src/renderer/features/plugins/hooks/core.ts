@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { pluginBackendContext, pluginManagerContext, pluginSystemContext } from "../contexts";
 import type { ActivePlugin } from "../core/plugin-manager";
 import { usePluginStore } from "../stores";
@@ -33,10 +33,16 @@ export const usePluginBackend = () => {
 	return pluginBackend;
 };
 
-export const usePluginList = () => {
-	const pluginMap = usePluginStore((state) => state.plugins);
+export const usePlugins = () => {
+	return usePluginStore((state) => state.plugins);
+};
 
-	return [...pluginMap.values()];
+export const usePluginList = () => {
+	const plugins = usePlugins();
+
+	return useMemo(() => {
+		return [...plugins.values()];
+	}, [plugins]);
 };
 
 export const usePluginLoader = () => {
