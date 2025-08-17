@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useRef } from "react";
 import clsx from "clsx";
-import { Checkbox } from "../../../components/checkbox";
 import * as QuickPicker from "./primitive";
 
 interface ListQuickPickerContext {
@@ -153,8 +152,8 @@ export const List = ({ className, ...props }: ListProps) => {
 export interface ListItemData {
 	id: string;
 	title: string;
-	description: string;
-	icon: React.ReactNode;
+	description?: string;
+	icon?: React.ReactNode;
 }
 
 export interface ListItemProps extends Omit<React.ComponentProps<"li">, "onSelect"> {
@@ -200,7 +199,9 @@ export const ListItem = ({ item, className, ...props }: ListItemProps) => {
 		>
 			{item.icon && <div className="quick-picker-list-item-icon">{item.icon}</div>}
 			<div className="quick-picker-list-item-title">{item.title}</div>
-			<div className="quick-picker-list-item-description">{item.description}</div>
+			{item.description && (
+				<div className="quick-picker-list-item-description">{item.description}</div>
+			)}
 		</li>
 	);
 };

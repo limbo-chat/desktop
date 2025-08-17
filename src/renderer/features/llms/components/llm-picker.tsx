@@ -74,7 +74,6 @@ export const LLMPicker = ({ initialSelectedLLMId, onSelect }: LLMPickerProps) =>
 									id: item.id,
 									title: item.name,
 									description: item.description,
-									icon: null,
 								}}
 								key={item.id}
 							/>

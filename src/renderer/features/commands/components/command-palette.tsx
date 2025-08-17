@@ -70,7 +70,6 @@ export const CommandPalette = ({ onExecuteCommand }: CommandPaletteProps) => {
 									id: item.id,
 									title: item.name,
 									description: "",
-									icon: null,
 								}}
 								key={item.id}
 							/>
