@@ -3,7 +3,7 @@ import { toJsxRuntime } from "hast-util-to-jsx-runtime";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 import { AppIcon } from "../../../components/app-icon";
 import { CopyIconButton } from "../../../components/copy-icon-button";
-import { IconButton, type IconButtonProps } from "../../../components/icon-button";
+import { IconButton } from "../../../components/icon-button";
 import { Tooltip } from "../../../components/tooltip";
 import { lowlight } from "../lib";
 

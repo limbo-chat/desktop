@@ -18,13 +18,13 @@ import {
 } from "./components/error-state";
 import { LoadingState } from "./components/loading-state";
 import { useActiveChatPanelStore } from "./features/chat-panels/stores";
-import { useRegisterActiveChatCommands } from "./features/chat/hooks/use-register-active-chat-commands";
-import { useOpenCommandPaletteHotkey, useRegisterCoreCommands } from "./features/commands/hooks";
+import { useOpenCommandPaletteHotkey } from "./features/commands/hooks";
 import {
-	useCustomStylesLoader,
-	useCustomStylesSubscriber,
-	useRegisterCustomStylesCommands,
-} from "./features/custom-styles/hooks";
+	useRegisterActiveChatCommands,
+	useRegisterCoreCommands,
+} from "./features/core/commands/hooks";
+import { useRegisterCoreTools } from "./features/core/tools/hooks";
+import { useCustomStylesLoader, useCustomStylesSubscriber } from "./features/custom-styles/hooks";
 import { showConfirmDialog } from "./features/interactions/confirm/utils";
 import { ModalHost } from "./features/modals/components";
 import { showNotification } from "./features/notifications/utils";
@@ -41,7 +41,6 @@ import { EvalPluginModuleLoader } from "./features/plugins/core/plugin-module-lo
 import { PluginSystem } from "./features/plugins/core/plugin-system";
 import { usePluginHotReloader, usePluginLoader } from "./features/plugins/hooks/core";
 import { usePluginSyncLayer } from "./features/plugins/hooks/use-plugin-sync-layer";
-import { useRegisterCoreTools } from "./features/tools/hooks";
 import { WindowInfoProvider } from "./features/window-info/components";
 import { useWindowInfoContext } from "./features/window-info/hooks";
 import { Workspace } from "./features/workspace/components/workspace";
@@ -440,7 +439,6 @@ const AppContent = () => {
 	useRegisterCoreTools();
 	useRegisterCoreCommands();
 	useRegisterActiveChatCommands();
-	useRegisterCustomStylesCommands();
 	useOpenCommandPaletteHotkey();
 
 	return (

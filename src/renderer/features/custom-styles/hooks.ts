@@ -1,7 +1,6 @@
 import { useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useMainRouter, useMainRouterClient } from "../../lib/trpc";
-import { addCommand, removeCommand } from "../commands/utils";
 import { addCustomStyle, removeCustomStyle } from "./utils";
 
 export interface UseCustomStylesLoaderOptions {
@@ -91,25 +90,6 @@ export const useCustomStylesSubscriber = () => {
 			window.ipcRenderer.off("custom-style:add", onCustomStylesAdd);
 			window.ipcRenderer.off("custom-style:remove", onCustomStylesRemove);
 			window.ipcRenderer.off("custom-style:reload", onCustomStylesReload);
-		};
-	}, []);
-};
-
-export const useRegisterCustomStylesCommands = () => {
-	const mainRouter = useMainRouter();
-	const queryClient = useQueryClient();
-
-	useEffect(() => {
-		addCommand({
-			id: "custom-styles:reload",
-			name: "Reload custom styles",
-			execute: () => {
-				queryClient.resetQueries(mainRouter.customStyles.getPaths.queryFilter());
-			},
-		});
-
-		return () => {
-			removeCommand("custom-styles:reload");
 		};
 	}, []);
 };

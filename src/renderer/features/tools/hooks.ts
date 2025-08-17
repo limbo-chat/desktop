@@ -1,8 +1,5 @@
-import { useEffect, useMemo } from "react";
-import { usePluginManager } from "../plugins/hooks/core";
-import { createGetModelsTool } from "./core-tools/get-models";
+import { useMemo } from "react";
 import { useToolStore } from "./stores";
-import { addTool, removeTool } from "./utils";
 
 export const useTools = () => {
 	return useToolStore((state) => state.tools);
@@ -20,18 +17,4 @@ export const useToolList = () => {
 	return useMemo(() => {
 		return [...tools.values()];
 	}, [tools]);
-};
-
-export const useRegisterCoreTools = () => {
-	const pluginManager = usePluginManager();
-
-	useEffect(() => {
-		const getModelsTool = createGetModelsTool(pluginManager);
-
-		addTool(getModelsTool);
-
-		return () => {
-			removeTool(getModelsTool.id);
-		};
-	}, [pluginManager]);
 };
