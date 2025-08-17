@@ -3,8 +3,8 @@ import type * as limbo from "@limbo/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { ulid } from "ulid";
 import { useMainRouter, useMainRouterClient } from "../../../lib/trpc";
-import { buildNamespacedResourceId } from "../../../lib/utils";
 import { usePluginManager } from "../../plugins/hooks/core";
+import { useTools } from "../../tools/hooks";
 import { runChatGeneration } from "../core/chat-generation";
 import { ChatPrompt, ChatMessage } from "../core/chat-prompt";
 import { createStoreConnectedMessage } from "../core/utils";
@@ -22,6 +22,7 @@ export const useSendMessage = () => {
 	const mainRouter = useMainRouter();
 	const mainRouterClient = useMainRouterClient();
 	const queryClient = useQueryClient();
+	const tools = useTools();
 
 	const sendMessage = useCallback(
 		async ({ llm, chatId, userMessage, enabledToolIds }: SendMessageOptions) => {
@@ -48,22 +49,14 @@ export const useSendMessage = () => {
 			// trigger the loading state
 			chatStore.setIsResponsePending(chatId, true);
 
-			const plugins = pluginManager.getPlugins();
-			const toolMap = new Map<string, limbo.Tool>();
+			// create an map containing the enabled tools
+			const enabledToolMap = new Map<string, limbo.Tool>();
 
-			// gather tools from plugins
-			for (const plugin of plugins) {
-				const tools = plugin.context.getTools();
+			for (const enabledToolId of enabledToolIds) {
+				const tool = tools.get(enabledToolId);
 
-				for (const tool of tools) {
-					const namespacedToolId = buildNamespacedResourceId(plugin.manifest.id, tool.id);
-
-					if (enabledToolIds.includes(namespacedToolId)) {
-						toolMap.set(namespacedToolId, {
-							...tool,
-							id: namespacedToolId,
-						});
-					}
+				if (tool) {
+					enabledToolMap.set(enabledToolId, tool);
 				}
 			}
 
@@ -145,7 +138,7 @@ export const useSendMessage = () => {
 				await runChatGeneration({
 					generation,
 					pluginManager,
-					tools: toolMap,
+					tools: enabledToolMap,
 					maxIterations: 25,
 					abortSignal: abortController.signal,
 				});
