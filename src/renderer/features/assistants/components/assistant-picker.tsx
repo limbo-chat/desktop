@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Fuse from "fuse.js";
 import { EmptyStateDescription, EmptyStateTitle } from "../../../components/empty-state";
-import { useMainRouter, useMainRouterClient } from "../../../lib/trpc";
+import { useMainRouter } from "../../../lib/trpc";
 import * as ListQuickPicker from "../../quick-picker/components/list-primitive";
 import * as QuickPicker from "../../quick-picker/components/primitive";
 
@@ -82,7 +82,6 @@ export const AssistantPicker = ({ initialSelectedAssistantId, onSelect }: Assist
 									id: item.id,
 									title: item.name,
 									description: item.description,
-									icon: null,
 								}}
 								key={item.id}
 							/>
