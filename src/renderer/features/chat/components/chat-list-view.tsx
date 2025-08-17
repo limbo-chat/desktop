@@ -32,19 +32,7 @@ const ChatItem = ({ chat, isActive }: ChatItemProps) => {
 	const deleteChatMutation = useDeleteChatMutation();
 
 	const handleDelete = () => {
-		deleteChatMutation.mutate(
-			{ id: chat.id },
-			{
-				onSuccess: () => {
-					const workspaceStore = useWorkspaceStore.getState();
-					const workspaceState = workspaceStore.workspace!;
-
-					if (workspaceState.activeChatId === chat.id) {
-						workspaceStore.setActiveChatId(null);
-					}
-				},
-			}
-		);
+		deleteChatMutation.mutate({ id: chat.id });
 	};
 
 	return (

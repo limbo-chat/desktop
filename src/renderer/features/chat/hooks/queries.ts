@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMainRouter } from "../../../lib/trpc";
 import { usePluginManager } from "../../plugins/hooks/core";
+import { useWorkspaceStore } from "../../workspace/stores";
 import { setActiveChatId } from "../../workspace/utils";
 import { useChatStore } from "../stores";
 import { removeChatFromQueryCache, updateChatInQueryCache } from "../utils";
@@ -50,6 +51,13 @@ export const useDeleteChatMutation = () => {
 	return useMutation(
 		mainRouter.chats.delete.mutationOptions({
 			onSuccess: async (_, variables) => {
+				const workspaceStore = useWorkspaceStore.getState();
+				const workspaceState = workspaceStore.workspace!;
+
+				if (workspaceState.activeChatId === variables.id) {
+					workspaceStore.setActiveChatId(null);
+				}
+
 				removeChatFromQueryCache(queryClient, mainRouter, variables.id);
 
 				await pluginManager.executeOnChatDeletedHooks(variables.id);

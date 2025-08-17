@@ -6,6 +6,7 @@ import { useMainRouter } from "../../../lib/trpc";
 import { useMainRouterClient } from "../../../lib/trpc";
 import { buildNamespacedResourceId } from "../../../lib/utils";
 import { RenameChatDialog } from "../../chat/components/rename-chat-dialog";
+import { useDeleteChatMutation } from "../../chat/hooks/queries";
 import { addCommand, removeCommand } from "../../commands/utils";
 import { showDesignPlaygroundModal } from "../../design-playground/utils";
 import { showModal } from "../../modals/utils";
@@ -44,8 +45,8 @@ export const useRegisterCoreCommands = () => {
 
 export const useRegisterActiveChatCommands = () => {
 	const mainRouter = useMainRouter();
-	const mainRouterClient = useMainRouterClient();
 	const activeChatId = useWorkspaceStore((state) => state.workspace?.activeChatId ?? null);
+	const deleteChatMutation = useDeleteChatMutation();
 
 	const getActiveChatQuery = useQuery(
 		mainRouter.chats.get.queryOptions(
@@ -87,13 +88,7 @@ export const useRegisterActiveChatCommands = () => {
 			id: buildNamespacedResourceId("core", "current-chat:delete"),
 			name: "Delete current chat",
 			execute: async () => {
-				try {
-					// todo, this should remove the chat from the query cache or invalidate the list and unset the active chat ID
-					await mainRouterClient.chats.delete.mutate({ id: activeChat.id });
-				} catch (error) {
-					// todo, this should show an error notification if it fails
-					console.error("Failed to delete chat:", error);
-				}
+				await deleteChatMutation.mutateAsync({ id: activeChat.id });
 			},
 		};
 
