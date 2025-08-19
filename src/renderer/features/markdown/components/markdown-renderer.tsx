@@ -1,6 +1,6 @@
 import { Fragment, useMemo } from "react";
 import Markdown, { type MarkdownToJSX } from "markdown-to-jsx";
-import { CodeBlock } from "../../markdown/components/code-block";
+import { CodeBlock } from "../../../components/code-block";
 import { useCollatedMarkdownComponents } from "../hooks";
 
 const coreOverrides: MarkdownToJSX.Overrides = {
