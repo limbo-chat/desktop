@@ -65,7 +65,7 @@ export interface ChatTable {
 	llm_id: string | null;
 	enabled_tool_ids: JSONColumnType<string[]>;
 	created_at: string;
-	last_activity_at: string | null;
+	last_activity_at: string;
 }
 
 export type Chat = Selectable<ChatTable>;

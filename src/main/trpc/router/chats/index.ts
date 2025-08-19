@@ -17,7 +17,7 @@ const updateChatInputSchema = z.object({
 			userMessageDraft: z.string().nullable(),
 			llmId: z.string().nullable(),
 			enabledToolIds: z.string().array(),
-			lastActivityAt: z.string().nullable(),
+			lastActivityAt: z.string(),
 		})
 		.partial(),
 });
@@ -59,13 +59,16 @@ export const chatsRouter = router({
 	create: publicProcedure.input(createChatInputSchema).mutation(async ({ input, ctx }) => {
 		const db = await getDb();
 
+		const now = new Date().toISOString();
+
 		const chat = await db
 			.insertInto("chat")
 			.values({
 				id: ulid(),
 				name: input.name,
 				enabled_tool_ids: JSON.stringify([]),
-				created_at: new Date().toISOString(),
+				created_at: now,
+				last_activity_at: now,
 			})
 			.returningAll()
 			.executeTakeFirstOrThrow();

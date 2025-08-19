@@ -87,7 +87,7 @@ export async function getDb(): Promise<AppDatabaseClient> {
 		.addColumn("llm_id", "text")
 		.addColumn("enabled_tool_ids", "text", (col) => col.notNull())
 		.addColumn("created_at", "text", (col) => col.notNull())
-		.addColumn("last_activity_at", "text")
+		.addColumn("last_activity_at", "text", (col) => col.notNull())
 		.ifNotExists()
 		.execute();
 
