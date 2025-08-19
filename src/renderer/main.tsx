@@ -24,6 +24,7 @@ import {
 	useRegisterActiveChatCommands,
 	useRegisterCoreCommands,
 } from "./features/core/commands/hooks";
+import { useRegisterCoreMarkdownElements } from "./features/core/markdown-elements/hooks";
 import { useRegisterCoreTools } from "./features/core/tools/hooks";
 import { useCustomStylesLoader, useCustomStylesSubscriber } from "./features/custom-styles/hooks";
 import { showConfirmDialog } from "./features/interactions/confirm/utils";
@@ -436,12 +437,13 @@ const AppContent = () => {
 	usePluginSyncLayer();
 	usePluginLoader();
 	usePluginHotReloader();
+	useOpenCommandPaletteHotkey();
 
-	useRegisterCoreChatNodes();
-	useRegisterCoreTools();
 	useRegisterCoreCommands();
 	useRegisterActiveChatCommands();
-	useOpenCommandPaletteHotkey();
+	useRegisterCoreChatNodes();
+	useRegisterCoreMarkdownElements();
+	useRegisterCoreTools();
 
 	return (
 		<div className="app" data-platform={windowInfo.platform} data-is-focused={isAppFocused}>
