@@ -7,7 +7,11 @@ import { usePluginManager } from "../../plugins/hooks/core";
 import { useTools } from "../../tools/hooks";
 import { runChatGeneration } from "../core/chat-generation";
 import { ChatPrompt, ChatMessage } from "../core/chat-prompt";
-import { createStoreConnectedMessage } from "../core/utils";
+import {
+	adaptPromptForCapabilities,
+	createStoreConnectedMessage,
+	transformBuiltInNodesInPrompt,
+} from "../core/utils";
 import { useChatStore } from "../stores";
 
 export interface SendMessageOptions {
@@ -135,12 +139,41 @@ export const useSendMessage = () => {
 			};
 
 			try {
+				await pluginManager.executeOnBeforeChatGenerationHooks({
+					generation,
+					abortSignal: abortController.signal,
+				});
+
 				await runChatGeneration({
 					generation,
-					pluginManager,
 					tools: enabledToolMap,
 					maxIterations: 25,
 					abortSignal: abortController.signal,
+					onBeforeIteration: async (iteration) => {
+						await pluginManager.executeOnBeforeChatIterationHooks({
+							iteration,
+							generation,
+							abortSignal: abortController.signal,
+						});
+
+						transformBuiltInNodesInPrompt(iteration.prompt);
+
+						adaptPromptForCapabilities({
+							capabilities: generation.llm.capabilities,
+							prompt: iteration.prompt,
+						});
+					},
+					onAfterIteration: async (iteration) => {
+						await pluginManager.executeOnAfterChatIterationHooks({
+							iteration,
+							generation,
+							abortSignal: abortController.signal,
+						});
+					},
+				});
+
+				await pluginManager.executeOnAfterChatGenerationHooks({
+					generation,
 				});
 			} finally {
 				chatStore.updateMessage(chatId, assistantMessageId, {

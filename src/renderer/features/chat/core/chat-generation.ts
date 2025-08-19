@@ -1,9 +1,7 @@
 import type * as limbo from "@limbo/api";
 import Ajv from "ajv";
 import { ulid } from "ulid";
-import type { PluginManager } from "../../plugins/core/plugin-manager";
 import { getToolDefinitionsFromToolMap } from "../../tools/utils";
-import { adaptPromptForCapabilities, transformBuiltInNodesInPrompt } from "./utils";
 
 const ajv = new Ajv();
 
@@ -129,8 +127,6 @@ interface RunChatIterationOptions {
 	generation: limbo.ChatGeneration;
 	iteration: limbo.ChatIteration;
 	tools: Map<string, limbo.Tool>;
-	pluginManager: PluginManager;
-	generationContext: limbo.ChatGenerationContext;
 	abortSignal: AbortSignal;
 }
 
@@ -138,26 +134,9 @@ async function runChatIteration({
 	generation,
 	iteration,
 	tools,
-	pluginManager,
-	generationContext,
 	abortSignal,
 }: RunChatIterationOptions) {
 	const toolDefinitions = getToolDefinitionsFromToolMap(tools);
-
-	await pluginManager.executeOnBeforeChatIterationHooks({
-		generation,
-		iteration,
-		context: generationContext,
-		abortSignal,
-	});
-
-	transformBuiltInNodesInPrompt(iteration.prompt);
-
-	adaptPromptForCapabilities({
-		capabilities: generation.llm.capabilities,
-		prompt: iteration.prompt,
-	});
-
 	const toolCallExecutionPromises: Promise<limbo.SettledToolCall>[] = [];
 
 	let markdownContent = "";
@@ -208,38 +187,25 @@ async function runChatIteration({
 	for (const toolCall of settledToolCalls) {
 		iteration.toolCalls.push(toolCall);
 	}
-
-	await pluginManager.executeOnAfterChatIterationHooks({
-		generation,
-		iteration,
-		context: generationContext,
-		abortSignal,
-	});
 }
 
 export interface RunChatGenerationOptions {
 	generation: limbo.ChatGeneration;
-	pluginManager: PluginManager;
 	tools: Map<string, limbo.Tool>;
 	abortSignal: AbortSignal;
 	maxIterations?: number;
+	onBeforeIteration: (iteration: limbo.ChatIteration) => void;
+	onAfterIteration: (iteration: limbo.ChatIteration) => void;
 }
 
 export async function runChatGeneration({
 	generation,
-	pluginManager,
 	tools,
 	abortSignal,
 	maxIterations = 1,
+	onAfterIteration,
+	onBeforeIteration,
 }: RunChatGenerationOptions) {
-	const generationContext = new Map<string, unknown>();
-
-	await pluginManager.executeOnBeforeChatGenerationHooks({
-		generation,
-		context: generationContext,
-		abortSignal,
-	});
-
 	let iterationIdx = 0;
 
 	while (true) {
@@ -249,17 +215,19 @@ export async function runChatGeneration({
 			toolCalls: [],
 		};
 
+		await onBeforeIteration(iteration);
+
 		await runChatIteration({
-			pluginManager,
 			generation,
 			iteration,
-			generationContext,
 			tools,
 			abortSignal,
 		});
 
 		// add the iteration to the generation
 		generation.iterations.push(iteration);
+
+		await onAfterIteration(iteration);
 
 		const shouldContinue =
 			iteration.toolCalls.length > 0 && iterationIdx < maxIterations && !abortSignal.aborted;
@@ -270,9 +238,4 @@ export async function runChatGeneration({
 
 		iterationIdx++;
 	}
-
-	await pluginManager.executeOnAfterChatGenerationHooks({
-		generation,
-		context: generationContext,
-	});
 }
