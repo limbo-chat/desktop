@@ -51,23 +51,23 @@ export const chatMessagesRouter = router({
 	getMany: publicProcedure.input(getManyChatMessagesInputSchema).query(async ({ input }) => {
 		const db = await getDb();
 
-		const chatMessagesQuery = db
+		let chatMessagesQuery = db
 			.selectFrom("chat_message")
 			.selectAll()
 			.where("chat_id", "=", input.chatId);
 
 		if (input.role) {
-			chatMessagesQuery.where("role", "=", input.role);
+			chatMessagesQuery = chatMessagesQuery.where("role", "=", input.role);
 		}
 
 		if (input.sort === "newest") {
-			chatMessagesQuery.orderBy("created_at", "desc");
+			chatMessagesQuery = chatMessagesQuery.orderBy("created_at", "desc");
 		} else {
-			chatMessagesQuery.orderBy("created_at", "asc");
+			chatMessagesQuery = chatMessagesQuery.orderBy("created_at", "asc");
 		}
 
 		if (input.limit) {
-			chatMessagesQuery.limit(input.limit);
+			chatMessagesQuery = chatMessagesQuery.limit(input.limit);
 		}
 
 		return await chatMessagesQuery.execute();

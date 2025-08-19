@@ -2,14 +2,14 @@ import { BrowserWindow } from "electron";
 import { publicProcedure, router } from "../trpc";
 
 export const windowRouter = router({
-	minimize: publicProcedure.mutation(({ ctx }) => {
+	minimize: publicProcedure.mutation(() => {
 		const focusedWindow = BrowserWindow.getFocusedWindow();
 
 		if (focusedWindow) {
 			focusedWindow.minimize();
 		}
 	}),
-	maximize: publicProcedure.mutation(({ ctx }) => {
+	maximize: publicProcedure.mutation(() => {
 		const focusedWindow = BrowserWindow.getFocusedWindow();
 
 		if (focusedWindow) {
@@ -20,7 +20,7 @@ export const windowRouter = router({
 			}
 		}
 	}),
-	close: publicProcedure.mutation(({ ctx }) => {
+	close: publicProcedure.mutation(() => {
 		const focusedWindow = BrowserWindow.getFocusedWindow();
 
 		if (focusedWindow) {
