@@ -1,13 +1,12 @@
 import { useEffect } from "react";
 import { buildNamespacedResourceId } from "../../../lib/utils";
-import { useChatNodeStore } from "../../chat-nodes/stores";
+import { addChatNode, removeChatNode } from "../../chat-nodes/utils";
 import { usePluginManager } from "./core";
 
 export const useSyncPluginChatNodes = () => {
 	const pluginManager = usePluginManager();
 
 	useEffect(() => {
-		const chatNodeStore = useChatNodeStore.getState();
 		const addedChatNodeIds = new Set<string>();
 
 		const syncChatNodes = () => {
@@ -24,14 +23,14 @@ export const useSyncPluginChatNodes = () => {
 
 					addedChatNodeIds.add(namespacedChatNodeId);
 
-					chatNodeStore.addChatNode(namespacedChatNodeId, chatNode);
+					addChatNode(namespacedChatNodeId, chatNode);
 				}
 			}
 		};
 
 		const removeRegistedChatNodes = () => {
 			for (const addedChatNodeId of addedChatNodeIds) {
-				chatNodeStore.removeChatNode(addedChatNodeId);
+				removeChatNode(addedChatNodeId);
 			}
 
 			addedChatNodeIds.clear();

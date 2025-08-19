@@ -132,7 +132,7 @@ const ToolCallRenderer = ({ toolCall }: ToolCallRendererProps) => {
 	);
 };
 
-export const ToolCallNodeRenderer = ({ node }: limbo.ui.ChatNodeComponentProps) => {
+const ToolCallNodeRenderer = ({ node }: limbo.ui.ChatNodeComponentProps) => {
 	const toolCall = node.data as any as limbo.ToolCall;
 
 	return (
@@ -140,4 +140,9 @@ export const ToolCallNodeRenderer = ({ node }: limbo.ui.ChatNodeComponentProps) 
 			<ToolCallRenderer toolCall={toolCall} />
 		</div>
 	);
+};
+
+export const toolCallNode: limbo.ui.ChatNode = {
+	id: "tool_call",
+	component: ToolCallNodeRenderer,
 };

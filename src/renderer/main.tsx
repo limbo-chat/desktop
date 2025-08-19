@@ -19,6 +19,7 @@ import {
 import { LoadingState } from "./components/loading-state";
 import { useActiveChatPanelStore } from "./features/chat-panels/stores";
 import { useOpenCommandPaletteHotkey } from "./features/commands/hooks";
+import { useRegisterCoreChatNodes } from "./features/core/chat-nodes/hooks";
 import {
 	useRegisterActiveChatCommands,
 	useRegisterCoreCommands,
@@ -436,6 +437,7 @@ const AppContent = () => {
 	usePluginLoader();
 	usePluginHotReloader();
 
+	useRegisterCoreChatNodes();
 	useRegisterCoreTools();
 	useRegisterCoreCommands();
 	useRegisterActiveChatCommands();

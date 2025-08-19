@@ -2,14 +2,15 @@ import type * as limbo from "@limbo/api";
 import { MarkdownContainer } from "../../markdown/components/markdown-container";
 import { MarkdownRenderer } from "../../markdown/components/markdown-renderer";
 
-export interface MarkdownNodeRendererProps {
-	node: limbo.ChatMessageNode;
-}
-
-export const MarkdownNodeRenderer = ({ node }: MarkdownNodeRendererProps) => {
+const MarkdownNodeRenderer = ({ node }: limbo.ui.ChatNodeComponentProps) => {
 	return (
 		<MarkdownContainer>
 			<MarkdownRenderer content={node.data.content as string} />
 		</MarkdownContainer>
 	);
+};
+
+export const markdownNode: limbo.ui.ChatNode = {
+	id: "markdown",
+	component: MarkdownNodeRenderer,
 };
