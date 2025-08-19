@@ -143,6 +143,21 @@ export const useSendMessage = () => {
 
 			prompt.appendMessage(systemMessage);
 
+			// add previous messages in the chat
+			// this amount will likely be configurable in the future
+			const prevChatMessages = await mainRouterClient.chats.messages.getMany.query({
+				chatId: chatId,
+				limit: 32,
+			});
+
+			for (const message of prevChatMessages) {
+				const chatMessage = new ChatMessage(message.role);
+
+				chatMessage.setNodes(message.content);
+
+				prompt.appendMessage(chatMessage);
+			}
+
 			// add the user message to the prompt
 			prompt.appendMessage(userMessage);
 
