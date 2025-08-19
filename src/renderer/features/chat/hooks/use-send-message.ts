@@ -8,9 +8,9 @@ import { useTools } from "../../tools/hooks";
 import { runChatGeneration } from "../core/chat-generation";
 import { ChatPrompt, ChatMessage } from "../core/chat-prompt";
 import {
-	adaptPromptForCapabilities,
-	createStoreConnectedMessage,
+	polyfillPromptForLLM,
 	transformBuiltInNodesInPrompt,
+	createStoreConnectedMessage,
 } from "../core/utils";
 import { useChatStore } from "../stores";
 
@@ -157,11 +157,7 @@ export const useSendMessage = () => {
 						});
 
 						transformBuiltInNodesInPrompt(iteration.prompt);
-
-						adaptPromptForCapabilities({
-							capabilities: generation.llm.capabilities,
-							prompt: iteration.prompt,
-						});
+						polyfillPromptForLLM(generation.llm, iteration.prompt);
 					},
 					onAfterIteration: async (iteration) => {
 						await pluginManager.executeOnAfterChatIterationHooks({

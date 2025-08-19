@@ -1,51 +1,45 @@
 import type * as limbo from "@limbo/api";
 import { useChatStore } from "../stores";
 
-export function convertMarkdownNodesToTextInMessage(message: limbo.ChatMessage) {
-	for (const node of message.getNodes()) {
-		if (node.type === "markdown") {
-			message.replaceNode(node, {
-				type: "text",
-				data: {
-					content: node.data.content,
-				},
-			});
-		}
-	}
-}
-
 export function convertMarkdownNodesToTextInPrompt(prompt: limbo.ChatPrompt) {
 	for (const message of prompt.getMessages()) {
-		convertMarkdownNodesToTextInMessage(message);
-	}
-}
-
-export function serializeToolCallNodesInMessage(message: limbo.ChatMessage) {
-	for (const node of message.getNodes()) {
-		if (node.type === "tool_call") {
-			const toolCallData = node.data;
-
-			let resultText = "";
-
-			if (toolCallData.status === "success") {
-				resultText = `Result: ${toolCallData.result}`;
-			} else if (toolCallData.status === "error") {
-				resultText = `Error: ${toolCallData.error ?? "Unknown error"}`;
+		for (const node of message.getNodes()) {
+			if (node.type === "markdown") {
+				message.replaceNode(node, {
+					type: "text",
+					data: {
+						content: node.data.content,
+					},
+				});
 			}
-
-			message.replaceNode(node, {
-				type: "text",
-				data: {
-					content: `Tool call: ${toolCallData.id}\nArguments: ${JSON.stringify(toolCallData.arguments)}\n${resultText}`,
-				},
-			});
 		}
 	}
 }
 
-export function serializeToolCallNodesInPrompt(prompt: limbo.ChatPrompt) {
-	for (const message of prompt.getMessages()) {
-		serializeToolCallNodesInMessage(message);
+export function polyfillToolCallingInPrompt(prompt: limbo.ChatPrompt) {
+	const messages = prompt.getMessages();
+
+	for (const message of messages) {
+		for (const node of message.getNodes()) {
+			if (node.type === "tool_call") {
+				const toolCallData = node.data;
+
+				let resultText = "";
+
+				if (toolCallData.status === "success") {
+					resultText = `Result: ${toolCallData.result}`;
+				} else if (toolCallData.status === "error") {
+					resultText = `Error: ${toolCallData.error ?? "Unknown error"}`;
+				}
+
+				message.replaceNode(node, {
+					type: "text",
+					data: {
+						content: `Tool call: ${toolCallData.id}\nArguments: ${JSON.stringify(toolCallData.arguments)}\n${resultText}`,
+					},
+				});
+			}
+		}
 	}
 }
 
@@ -53,17 +47,9 @@ export function transformBuiltInNodesInPrompt(prompt: limbo.ChatPrompt) {
 	convertMarkdownNodesToTextInPrompt(prompt);
 }
 
-export interface AdaptPromptForCapabilitiesOptions {
-	capabilities: limbo.LLM.Capability[];
-	prompt: limbo.ChatPrompt;
-}
-
-export function adaptPromptForCapabilities({
-	capabilities,
-	prompt,
-}: AdaptPromptForCapabilitiesOptions) {
-	if (!capabilities.includes("tool_calling")) {
-		serializeToolCallNodesInPrompt(prompt);
+export function polyfillPromptForLLM(llm: limbo.LLM, prompt: limbo.ChatPrompt) {
+	if (!llm.capabilities.includes("tool_calling")) {
+		polyfillToolCallingInPrompt(prompt);
 	}
 }
 
