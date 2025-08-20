@@ -119,7 +119,9 @@ const PersonalizationTabContent = () => {
 				<Form.Footer>
 					<Form.Actions>
 						<RhfForm.ResetButton>Cancel</RhfForm.ResetButton>
-						<Form.SubmitButton>Save changes</Form.SubmitButton>
+						<Form.SubmitButton disabled={!form.formState.isDirty}>
+							Save changes
+						</Form.SubmitButton>
 					</Form.Actions>
 				</Form.Footer>
 			</Form.Root>
