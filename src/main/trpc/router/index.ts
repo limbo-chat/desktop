@@ -6,11 +6,13 @@ import { chatsRouter } from "./chats";
 import { commonRouter } from "./common";
 import { customStylesRouter } from "./custom-styles";
 import { pluginsRouter } from "./plugins";
+import { preferencesRouter } from "./preferences";
 import { settingsRouter } from "./settings";
 import { windowRouter } from "./window";
 import { workspaceRouter } from "./workspace";
 
 export const mainRouter = router({
+	preferences: preferencesRouter,
 	common: commonRouter,
 	window: windowRouter,
 	auth: authRouter,

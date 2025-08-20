@@ -14,6 +14,18 @@ export async function getPreference(db: AppDatabaseClient, key: string): Promise
 	return result.value;
 }
 
+export async function getAllPreferences(db: AppDatabaseClient): Promise<Record<string, string>> {
+	const preferences = new Map<string, string>();
+
+	const results = await db.selectFrom("preference").selectAll().execute();
+
+	for (const row of results) {
+		preferences.set(row.key, row.value);
+	}
+
+	return Object.fromEntries(preferences);
+}
+
 export async function setPreference(db: AppDatabaseClient, key: string, value: string) {
 	await db
 		.insertInto("preference")
