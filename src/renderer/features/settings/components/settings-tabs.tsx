@@ -20,7 +20,6 @@ import { useDeleteAllChatsMutation } from "../../chat/hooks/queries";
 import { showNotification } from "../../notifications/utils";
 import { PluginViewStack } from "../../plugins/components/plugin-view-stack";
 import { useSyncedPreference } from "../../preferences/hooks";
-import { useGetSettingsSuspenseQuery, useUpdateSettingsMutation } from "../hooks";
 import { useSettingsTabsStore } from "../stores";
 
 const GeneralTabContent = () => {
@@ -138,9 +137,10 @@ const DataTabContent = () => {
 
 const AppearanceTabContent = () => {
 	const mainRouterClient = useMainRouterClient();
-	const getSettingsQuery = useGetSettingsSuspenseQuery();
-	const updateSettingsMutation = useUpdateSettingsMutation();
-	const settings = getSettingsQuery.data;
+	const [isTransparencyEnabledPref, setIsTransparencyEnabledPref] =
+		useSyncedPreference("transparency");
+
+	const isTransparencyEnabled = isTransparencyEnabledPref === "true";
 
 	const openCustomStylesFolder = () => {
 		mainRouterClient.customStyles.openFolder.mutate();
@@ -159,34 +159,27 @@ const AppearanceTabContent = () => {
 					</SettingItemInfo>
 					<SettingItemControl>
 						<Checkbox
-							checked={settings.isTransparencyEnabled}
+							checked={isTransparencyEnabled}
 							onCheckedChange={(isChecked) => {
 								if (typeof isChecked !== "boolean") {
 									return;
 								}
 
-								updateSettingsMutation.mutate(
-									{
-										isTransparencyEnabled: isChecked,
-									},
-									{
-										onSuccess: (newSettings) => {
-											if (newSettings.isTransparencyEnabled) {
-												showNotification({
-													level: "info",
-													title: "Transparency enabled",
-													message: "Restart the app to apply changes",
-												});
-											} else {
-												showNotification({
-													level: "info",
-													title: "Transparency disabled",
-													message: "Restart the app to apply changes",
-												});
-											}
-										},
-									}
-								);
+								setIsTransparencyEnabledPref(isChecked ? "true" : "false");
+
+								if (isChecked) {
+									showNotification({
+										level: "info",
+										title: "Transparency enabled",
+										message: "Restart the app to apply changes",
+									});
+								} else {
+									showNotification({
+										level: "info",
+										title: "Transparency disabled",
+										message: "Restart the app to apply changes",
+									});
+								}
 							}}
 						/>
 					</SettingItemControl>
