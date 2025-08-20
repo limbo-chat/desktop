@@ -1,10 +1,6 @@
-import { FormProvider, useForm } from "react-hook-form";
 import { useShallow } from "zustand/shallow";
 import { Button } from "../../../components/button";
 import { Checkbox } from "../../../components/checkbox";
-import * as FieldController from "../../../components/field-controller";
-import * as Form from "../../../components/form-primitive";
-import * as RhfForm from "../../../components/rhf-form";
 import {
 	SettingItem,
 	SettingItemControl,
@@ -23,6 +19,7 @@ import { AssistantViewStack } from "../../assistants/components/assistant-view-s
 import { useDeleteAllChatsMutation } from "../../chat/hooks/queries";
 import { showNotification } from "../../notifications/utils";
 import { PluginViewStack } from "../../plugins/components/plugin-view-stack";
+import { useSyncedPreference } from "../../preferences/hooks";
 import { useGetSettingsSuspenseQuery, useUpdateSettingsMutation } from "../hooks";
 import { useSettingsTabsStore } from "../stores";
 
@@ -85,47 +82,29 @@ const GeneralTabContent = () => {
 };
 
 const PersonalizationTabContent = () => {
-	const getSettingsQuery = useGetSettingsSuspenseQuery();
-	const updateSettingsMutation = useUpdateSettingsMutation();
-	const settings = getSettingsQuery.data;
-
-	const form = useForm({
-		values: {
-			username: settings.username,
-		},
-	});
-
-	const handleSubmit = form.handleSubmit((data) => {
-		updateSettingsMutation.mutate(data);
-	});
+	const [username, setUsername] = useSyncedPreference("username");
 
 	return (
-		<FormProvider {...form}>
-			<Form.Root onSubmit={handleSubmit}>
-				<Form.Content>
-					<Form.Section>
-						<Form.SectionContent>
-							<FieldController.Root
-								id="username"
-								name="username"
-								label="Username"
-								description="What would you like to be called?"
-							>
-								<FieldController.TextInput placeholder="Enter your name" />
-							</FieldController.Root>
-						</Form.SectionContent>
-					</Form.Section>
-				</Form.Content>
-				<Form.Footer>
-					<Form.Actions>
-						<RhfForm.ResetButton>Cancel</RhfForm.ResetButton>
-						<Form.SubmitButton disabled={!form.formState.isDirty}>
-							Save changes
-						</Form.SubmitButton>
-					</Form.Actions>
-				</Form.Footer>
-			</Form.Root>
-		</FormProvider>
+		<SettingsSection>
+			<SettingsSectionContent>
+				<SettingItem id="username">
+					<SettingItemInfo>
+						<SettingItemTitle>Username</SettingItemTitle>
+						<SettingItemDescription>
+							What would you like to be called?
+						</SettingItemDescription>
+					</SettingItemInfo>
+					<SettingItemControl>
+						<input
+							type="text"
+							placeholder="Enter your name"
+							value={username ?? ""}
+							onChange={(e) => setUsername(e.target.value)}
+						/>
+					</SettingItemControl>
+				</SettingItem>
+			</SettingsSectionContent>
+		</SettingsSection>
 	);
 };
 

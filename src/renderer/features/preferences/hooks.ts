@@ -1,5 +1,7 @@
-import { useContext } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { debounce } from "es-toolkit";
+import type { Preference } from "../../../main/db/types";
 import { useMainRouter } from "../../lib/trpc";
 import { preferencesContext } from "./context";
 
@@ -24,4 +26,38 @@ export const useSetPreferenceMutation = () => {
 			},
 		})
 	);
+};
+
+export const useSyncedPreference = (key: string) => {
+	const preferences = usePreferences();
+	const preferenceValue = preferences[key];
+	const setPreferenceMutation = useSetPreferenceMutation();
+	const [localValue, setLocalValue] = useState<string | undefined>();
+
+	const debouncedSetPreference = useCallback(
+		debounce((preference: Preference) => {
+			console.log("syncing preference:", preference);
+
+			setPreferenceMutation.mutate(preference);
+		}, 500),
+		[]
+	);
+
+	const update = useCallback(
+		(newValue: string) => {
+			setLocalValue(newValue);
+
+			debouncedSetPreference({
+				key,
+				value: newValue,
+			});
+		},
+		[key]
+	);
+
+	useEffect(() => {
+		setLocalValue(preferenceValue);
+	}, [preferenceValue]);
+
+	return [localValue, update] as const;
 };

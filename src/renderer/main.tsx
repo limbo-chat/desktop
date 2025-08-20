@@ -478,7 +478,9 @@ const AppContent = () => {
 const App = () => {
 	return (
 		<AppProviders>
-			<AppContent />
+			<Suspense fallback={null}>
+				<AppContent />
+			</Suspense>
 		</AppProviders>
 	);
 };

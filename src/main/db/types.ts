@@ -6,10 +6,16 @@ export interface KVTable {
 	value: string;
 }
 
+export type KVEntry = Selectable<KVTable>;
+export type NewKVEntry = Insertable<KVTable>;
+
 export interface PreferenceTable {
 	key: string;
 	value: string;
 }
+
+export type Preference = Selectable<PreferenceTable>;
+export type NewPreference = Insertable<PreferenceTable>;
 
 export interface OAuthClientTable {
 	id: Generated<number>;
