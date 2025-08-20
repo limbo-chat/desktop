@@ -208,9 +208,10 @@ const AppearanceTabContent = () => {
 };
 
 const DeveloperTabContent = () => {
-	const getSettingsQuery = useGetSettingsSuspenseQuery();
-	const updateSettingsMutation = useUpdateSettingsMutation();
-	const settings = getSettingsQuery.data;
+	const [isDeveloperModeEnabledPref, setIsDeveloperModeEnabledPref] =
+		useSyncedPreference("developer-mode:enabled");
+
+	const isDeveloperModeEnabled = isDeveloperModeEnabledPref === "true";
 
 	return (
 		<SettingsSection>
@@ -224,34 +225,27 @@ const DeveloperTabContent = () => {
 					</SettingItemInfo>
 					<SettingItemControl>
 						<Checkbox
-							checked={settings.isDeveloperModeEnabled}
+							checked={isDeveloperModeEnabled}
 							onCheckedChange={(isChecked) => {
 								if (typeof isChecked !== "boolean") {
 									return;
 								}
 
-								updateSettingsMutation.mutate(
-									{
-										isDeveloperModeEnabled: isChecked,
-									},
-									{
-										onSuccess: (newSettings) => {
-											if (newSettings.isDeveloperModeEnabled) {
-												showNotification({
-													level: "info",
-													title: "Developer mode enabled",
-													message: "Restart the app to apply changes",
-												});
-											} else {
-												showNotification({
-													level: "info",
-													title: "Developer mode disabled",
-													message: "Restart the app to apply changes",
-												});
-											}
-										},
-									}
-								);
+								setIsDeveloperModeEnabledPref(isChecked ? "true" : "false");
+
+								if (isChecked) {
+									showNotification({
+										level: "info",
+										title: "Developer mode enabled",
+										message: "Restart the app to apply changes",
+									});
+								} else {
+									showNotification({
+										level: "info",
+										title: "Developer mode disabled",
+										message: "Restart the app to apply changes",
+									});
+								}
 							}}
 						/>
 					</SettingItemControl>
