@@ -171,7 +171,7 @@ export const PluginsView = () => {
 								showModal({ id: "install-plugin", component: InstallPluginDialog })
 							}
 						>
-							<AppIcon icon="add" />
+							<AppIcon icon="download" />
 						</IconButton>
 					</Tooltip>
 				</View.HeaderActions>
