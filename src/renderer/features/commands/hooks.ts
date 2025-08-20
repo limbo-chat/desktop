@@ -19,6 +19,8 @@ export const useOpenCommandPaletteHotkey = () => {
 	useHotkey({
 		key: "p",
 		metakey: true,
-		execute: showCommandPalette,
+		execute: () => {
+			showCommandPalette();
+		},
 	});
 };

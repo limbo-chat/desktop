@@ -1,5 +1,5 @@
 import type * as limbo from "@limbo/api";
-import { showModal } from "../modals/utils";
+import { replaceModals } from "../modals/utils";
 import { CommandPaletteModal } from "./components/command-palette";
 import { useCommandStore } from "./stores";
 
@@ -16,7 +16,7 @@ export function removeCommand(commandId: string) {
 }
 
 export function showCommandPalette() {
-	showModal({
+	replaceModals({
 		id: "command-palette",
 		component: CommandPaletteModal,
 	});

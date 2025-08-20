@@ -1,20 +1,11 @@
 import { useEffect } from "react";
 import { FocusScope } from "@radix-ui/react-focus-scope";
 import { modalContext } from "./contexts";
-import { useModalStore, type Modal } from "./stores";
+import { useModalStore } from "./stores";
+import { closeModal } from "./utils";
 
 export const ModalHost = () => {
 	const modals = useModalStore((state) => state.modals);
-
-	const closeModal = (modal: Modal) => {
-		const modalStore = useModalStore.getState();
-
-		if (modal.onClose) {
-			modal.onClose();
-		}
-
-		modalStore.removeModal(modal.id);
-	};
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
