@@ -1,6 +1,16 @@
 import type { ChatMessageNode } from "@limbo/api";
 import type { Generated, Insertable, JSONColumnType, Kysely, Selectable } from "kysely";
 
+export interface KVTable {
+	key: string;
+	value: string;
+}
+
+export interface PreferenceTable {
+	key: string;
+	value: string;
+}
+
 export interface OAuthClientTable {
 	id: Generated<number>;
 	remote_client_id: string;
@@ -94,6 +104,8 @@ export interface AssistantTable {
 }
 
 export interface AppDatabase {
+	kv: KVTable;
+	preference: PreferenceTable;
 	oauth_client: OAuthClientTable;
 	oauth_client_scope: OAuthClientScopeTable;
 	oauth_token: OAuthTokenTable;

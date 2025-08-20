@@ -14,6 +14,20 @@ export async function getDb(): Promise<AppDatabaseClient> {
 	});
 
 	await db.schema
+		.createTable("kv")
+		.addColumn("key", "text", (col) => col.primaryKey())
+		.addColumn("value", "text", (col) => col.notNull())
+		.ifNotExists()
+		.execute();
+
+	await db.schema
+		.createTable("preference")
+		.addColumn("key", "text", (col) => col.primaryKey())
+		.addColumn("value", "text", (col) => col.notNull())
+		.ifNotExists()
+		.execute();
+
+	await db.schema
 		.createTable("oauth_client")
 		.addColumn("id", "integer", (col) => col.primaryKey().autoIncrement())
 		.addColumn("remote_client_id", "text", (col) => col.notNull())
