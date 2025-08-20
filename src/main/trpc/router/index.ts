@@ -7,7 +7,6 @@ import { commonRouter } from "./common";
 import { customStylesRouter } from "./custom-styles";
 import { pluginsRouter } from "./plugins";
 import { preferencesRouter } from "./preferences";
-import { settingsRouter } from "./settings";
 import { windowRouter } from "./window";
 import { workspaceRouter } from "./workspace";
 
@@ -17,7 +16,6 @@ export const mainRouter = router({
 	window: windowRouter,
 	auth: authRouter,
 	workspace: workspaceRouter,
-	settings: settingsRouter,
 	customStyles: customStylesRouter,
 	plugins: pluginsRouter,
 	chats: chatsRouter,

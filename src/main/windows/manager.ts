@@ -1,7 +1,6 @@
-import { BrowserWindow } from "electron";
+import { BrowserWindow, type BrowserWindowConstructorOptions } from "electron";
 import EventEmitter from "eventemitter3";
 import { DEV_SERVER_URL, ICON_PATH, PRELOAD_FILE_PATH, HTML_PATH } from "../constants";
-import { readSettings } from "../settings/utils";
 import { getPlatformName } from "../utils";
 import { manageWindowState, readWindowState } from "../window-state/utils";
 import type { WindowType } from "./types";
@@ -19,8 +18,7 @@ export class WindowManager {
 		return this.windows.get(type);
 	}
 
-	public createMainWindow() {
-		const settings = readSettings();
+	public createMainWindow(opts?: Partial<BrowserWindowConstructorOptions>) {
 		const windowState = readWindowState();
 
 		const mainWindow = new BrowserWindow({
@@ -34,11 +32,11 @@ export class WindowManager {
 			y: windowState?.y,
 			height: windowState?.height ?? 600,
 			width: windowState?.width ?? 800,
-			transparent: settings.isTransparencyEnabled,
 			titleBarOverlay: process.platform !== "darwin",
 			webPreferences: {
 				preload: PRELOAD_FILE_PATH,
 			},
+			...opts,
 		});
 
 		mainWindow.on("close", () => {

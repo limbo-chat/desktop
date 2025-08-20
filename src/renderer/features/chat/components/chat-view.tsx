@@ -13,6 +13,7 @@ import { ChatPanelRenderer } from "../../chat-panels/components/chat-panel-rende
 import { useActiveChatPanel } from "../../chat-panels/hooks";
 import { useActiveChatPanelStore } from "../../chat-panels/stores";
 import { usePluginManager } from "../../plugins/hooks/core";
+import { usePreferences } from "../../preferences/hooks";
 import { setActiveChatId } from "../../workspace/utils";
 import { ChatMessage } from "../core/chat-prompt";
 import { useChatState } from "../hooks/common";
@@ -51,6 +52,7 @@ export interface ChatViewProps {
 }
 
 export const ChatView = ({ chatId }: ChatViewProps) => {
+	const preferences = usePreferences();
 	const mainRouterClient = useMainRouterClient();
 	const mainRouter = useMainRouter();
 	const pluginManager = usePluginManager();
@@ -86,9 +88,6 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 
 	const assistant = getAssistantQuery.data;
 
-	const getSettingsQuery = useQuery(mainRouter.settings.get.queryOptions());
-	const settings = getSettingsQuery.data;
-
 	const chat = getChatQuery.data;
 	const messages = chatState?.messages ?? [];
 
@@ -110,7 +109,7 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 		typeof chatComposerDimensions.height === "number";
 
 	const handleSend = useCallback(async () => {
-		if (!assistant || !selectedLLMId || !settings) {
+		if (!assistant || !selectedLLMId) {
 			return;
 		}
 
@@ -138,14 +137,14 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 				llm,
 				enabledToolIds,
 				user: {
-					username: settings.username,
+					username: preferences["username"] ?? "",
 				},
 				userMessage: userMessageObj,
 			});
 		} catch (err) {
 			console.error("Failed to send message:", err);
 		}
-	}, [chatId, settings, assistant, selectedLLMId, userMessage]);
+	}, [chatId, preferences, assistant, selectedLLMId, userMessage]);
 
 	const handleCancel = useCallback(() => {
 		cancelResponse(chatId);

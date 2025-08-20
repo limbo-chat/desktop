@@ -1,7 +1,7 @@
 /*
 The migration map should be used to bring the previous version to the current version.
 
-* The only migrations that will be included in the map will be CURRENT_MIGRATION_VERSION - 1 *
+* The only migrations that will be included in the map will be LATEST_DATA_VERSION - 1 *
 
 Lets say the current version is 2, but the user has version 1:
 The only migration that needs to be run is migration 1 to bring the user from version 1 to version 2.
