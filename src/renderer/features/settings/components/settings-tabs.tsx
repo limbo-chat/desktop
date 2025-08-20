@@ -23,6 +23,14 @@ import { useSyncedPreference } from "../../preferences/hooks";
 import { useSettingsTabsStore } from "../stores";
 
 const GeneralTabContent = () => {
+	const mainRouterClient = useMainRouterClient();
+
+	const openDiscordInviteUrl = () => {
+		mainRouterClient.common.openUrl.mutate({
+			url: window.env.DISCORD_INVITE_URL,
+		});
+	};
+
 	return (
 		<>
 			<SettingsSection>
@@ -67,11 +75,7 @@ const GeneralTabContent = () => {
 							</SettingItemDescription>
 						</SettingItemInfo>
 						<SettingItemControl>
-							<Button
-								onClick={() => window.open(window.env.DISCORD_INVITE_URL, "_blank")}
-							>
-								Join
-							</Button>
+							<Button onClick={openDiscordInviteUrl}>Join</Button>
 						</SettingItemControl>
 					</SettingItem>
 				</SettingsSectionContent>
