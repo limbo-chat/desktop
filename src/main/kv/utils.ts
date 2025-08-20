@@ -11,7 +11,7 @@ export async function getValue(db: AppDatabaseClient, key: string): Promise<stri
 }
 
 export async function setValue(db: AppDatabaseClient, key: string, value: string) {
-	const result = await db
+	await db
 		.insertInto("kv")
 		.values({ key, value })
 		.onConflict((oc) => {
@@ -20,8 +20,6 @@ export async function setValue(db: AppDatabaseClient, key: string, value: string
 			});
 		})
 		.execute();
-
-	return result;
 }
 
 export async function getOrSetValue(db: AppDatabaseClient, key: string, value: string) {
