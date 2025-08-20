@@ -12,7 +12,6 @@ export interface NumberInputProps {
 	max?: number;
 	stepSize?: number;
 	mode?: NumberInputMode;
-	allowDecimal?: boolean;
 	className?: string;
 	onChange: (value: number | null) => void;
 	ref?: React.Ref<HTMLInputElement>;

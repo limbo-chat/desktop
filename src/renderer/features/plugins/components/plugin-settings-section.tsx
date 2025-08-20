@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import type * as limbo from "@limbo/api";
 import { Checkbox } from "../../../components/checkbox";
+import { NumberInput } from "../../../components/number-input";
 import { PasswordInput } from "../../../components/password-input";
 import {
 	SettingItem,
@@ -17,8 +18,8 @@ import { useLLMList } from "../../llms/hooks";
 
 interface TextSettingRendererProps {
 	setting: limbo.TextSetting;
-	value: string;
-	onChange: (value: string) => void;
+	value: any;
+	onChange: (value: any) => void;
 }
 
 const TextSettingRenderer = ({ setting, value, onChange }: TextSettingRendererProps) => {
@@ -44,8 +45,8 @@ const TextSettingRenderer = ({ setting, value, onChange }: TextSettingRendererPr
 
 interface BooleanSettingRendererProps {
 	setting: limbo.BooleanSetting;
-	value: boolean;
-	onChange: (value: boolean) => void;
+	value: any;
+	onChange: (value: any) => void;
 }
 
 const BooleanSettingRenderer = ({ setting, value, onChange }: BooleanSettingRendererProps) => {
@@ -53,6 +54,25 @@ const BooleanSettingRenderer = ({ setting, value, onChange }: BooleanSettingRend
 		<Checkbox
 			checked={value ?? false}
 			onCheckedChange={(isChecked) => onChange(isChecked as boolean)}
+		/>
+	);
+};
+
+interface NumberSettingRendererProps {
+	setting: limbo.NumberSetting;
+	value: any;
+	onChange: (value: any) => void;
+}
+
+const NumberSettingRenderer = ({ setting, value, onChange }: NumberSettingRendererProps) => {
+	return (
+		<NumberInput
+			placeholder={setting.placeholder}
+			value={value}
+			min={setting.min}
+			max={setting.max}
+			stepSize={setting.stepSize}
+			onChange={onChange}
 		/>
 	);
 };
@@ -96,6 +116,7 @@ const LLMSettingRenderer = ({ setting, value, onChange }: LLMSettingRendererProp
 const settingRendererMap = {
 	text: TextSettingRenderer,
 	boolean: BooleanSettingRenderer,
+	number: NumberSettingRenderer,
 	llm: LLMSettingRenderer,
 } as const;
 
