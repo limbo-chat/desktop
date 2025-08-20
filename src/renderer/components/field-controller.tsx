@@ -2,6 +2,7 @@ import { createContext, useContext, type PropsWithChildren } from "react";
 import { useController } from "react-hook-form";
 import { Field as ComposedField, type FieldProps } from "./field";
 import * as Field from "./field-primitive";
+import type { NumberInputProps as CoreNumberInputProps } from "./number-input";
 import * as RadioGroupPrimitive from "./radio-group-primitive";
 
 export interface ControllerProps {
@@ -47,6 +48,17 @@ export const Textarea = (props: React.ComponentProps<"textarea">) => {
 	const { field } = useController({ name });
 
 	return <Field.Textarea {...field} value={field.value || ""} {...props} />;
+};
+
+export interface NumberInputProps extends Omit<CoreNumberInputProps, "onChange"> {}
+
+export const NumberInput = (props: NumberInputProps) => {
+	const { name } = useFieldControllerContext();
+	const { field } = useController({ name });
+
+	return (
+		<Field.NumberInput {...field} value={field.value} onChange={field.onChange} {...props} />
+	);
 };
 
 export const RadioGroup = (props: RadioGroupPrimitive.RootProps) => {

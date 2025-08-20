@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo, type ComponentProps } from "react";
 import clsx from "clsx";
+import { NumberInput as CoreNumberInput, type NumberInputProps } from "./number-input";
 import * as RadioGroupPrimitive from "./radio-group-primitive";
 
 export interface FieldContext {
@@ -114,6 +115,12 @@ export const Textarea = (props: ComponentProps<"textarea">) => {
 	const accessibilityProps = useFieldControlAccessibilityProps();
 
 	return <textarea {...accessibilityProps} {...props} />;
+};
+
+export const NumberInput = (props: NumberInputProps) => {
+	const accessibilityProps = useFieldControlAccessibilityProps();
+
+	return <CoreNumberInput {...accessibilityProps} {...props} />;
 };
 
 export const RadioGroup = (props: RadioGroupPrimitive.RootProps) => {

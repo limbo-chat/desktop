@@ -1,6 +1,6 @@
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import Fuse from "fuse.js";
-import { useEffect, useMemo, useRef, useState } from "react";
 import { AppIcon } from "../../../../components/app-icon";
 import { Button } from "../../../../components/button";
 import { EmptyState, EmptyStateActions, EmptyStateTitle } from "../../../../components/empty-state";

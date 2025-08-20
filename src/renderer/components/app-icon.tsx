@@ -34,6 +34,8 @@ const appIconMap: Record<limbo.AppIcon, FC> = {
 	"menu": lucide.EllipsisVertical,
 	"copy": lucide.Copy,
 	"check": lucide.Check,
+	"increment": lucide.ChevronUp,
+	"decrement": lucide.ChevronDown,
 	"collapse": lucide.ChevronUp,
 	"expand": lucide.ChevronDown,
 	"reply": lucide.Reply,

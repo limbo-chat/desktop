@@ -248,6 +248,7 @@ const AlertTabContent = () => {
 
 const demoFormSchema = z.object({
 	username: z.string().min(2).max(50),
+	age: z.number().int().min(0).max(100),
 	about: z
 		.string()
 		.min(10, {
@@ -266,6 +267,7 @@ const FormTabContent = () => {
 		resolver: zodResolver(demoFormSchema),
 		defaultValues: {
 			visibility: "public",
+			// age: 0,
 		},
 	});
 
@@ -288,6 +290,14 @@ const FormTabContent = () => {
 						<Form.SectionContent>
 							<FieldController.Root id="username" name="username" label="Username">
 								<FieldController.TextInput placeholder="limbo.com/johndoe" />
+							</FieldController.Root>
+							<FieldController.Root id="age" name="age" label="Age">
+								<FieldController.NumberInput
+									placeholder="Enter your age"
+									stepSize={5}
+									min={0}
+									max={100}
+								/>
 							</FieldController.Root>
 							<FieldController.Root
 								id="about"
