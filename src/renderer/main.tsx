@@ -1,5 +1,10 @@
 import { Suspense, useMemo, useRef, type PropsWithChildren } from "react";
-import { QueryClient, QueryClientProvider, QueryErrorResetBoundary } from "@tanstack/react-query";
+import {
+	QueryClient,
+	QueryClientProvider,
+	QueryErrorResetBoundary,
+	useSuspenseQuery,
+} from "@tanstack/react-query";
 import { createTRPCClient } from "@trpc/client";
 import { minutesToMilliseconds } from "date-fns";
 import { createRoot } from "react-dom/client";
@@ -43,6 +48,7 @@ import { EvalPluginModuleLoader } from "./features/plugins/core/plugin-module-lo
 import { PluginSystem } from "./features/plugins/core/plugin-system";
 import { usePluginHotReloader, usePluginLoader } from "./features/plugins/hooks/core";
 import { usePluginSyncLayer } from "./features/plugins/hooks/use-plugin-sync-layer";
+import { PreferencesProvider } from "./features/preferences/components";
 import { WindowInfoProvider } from "./features/window-info/components";
 import { useWindowInfoContext } from "./features/window-info/hooks";
 import { Workspace } from "./features/workspace/components/workspace";
@@ -50,7 +56,7 @@ import { useWorkspaceLoader } from "./features/workspace/hooks/use-workspace-loa
 import { useWorkspacePersister } from "./features/workspace/hooks/use-workspace-persister";
 import { useWorkspaceStore } from "./features/workspace/stores";
 import { useIsAppFocused } from "./hooks/common";
-import { MainRouterProvider } from "./lib/trpc";
+import { MainRouterProvider, useMainRouter } from "./lib/trpc";
 
 // parse the window params defined from the main process
 const windowParams = new URLSearchParams(window.location.search);
@@ -431,6 +437,8 @@ const WorkspaceContainer = () => {
 const AppContent = () => {
 	const isAppFocused = useIsAppFocused();
 	const windowInfo = useWindowInfoContext();
+	const mainRouter = useMainRouter();
+	const getPreferencesQuery = useSuspenseQuery(mainRouter.preferences.getAll.queryOptions());
 
 	useRendererLoader();
 	useCustomStylesSubscriber();
@@ -446,19 +454,24 @@ const AppContent = () => {
 	useRegisterCoreTools();
 
 	return (
-		<div className="app" data-platform={windowInfo.platform} data-is-focused={isAppFocused}>
-			<ModalHost />
-			<Toaster />
-			<QueryErrorResetBoundary>
-				{(queryBoundary) => (
-					<ErrorBoundary FallbackComponent={ErrorFallback} onReset={queryBoundary.reset}>
-						<Suspense fallback={<LoadingState />}>
-							<WorkspaceContainer />
-						</Suspense>
-					</ErrorBoundary>
-				)}
-			</QueryErrorResetBoundary>
-		</div>
+		<PreferencesProvider preferences={getPreferencesQuery.data}>
+			<div className="app" data-platform={windowInfo.platform} data-is-focused={isAppFocused}>
+				<ModalHost />
+				<Toaster />
+				<QueryErrorResetBoundary>
+					{(queryBoundary) => (
+						<ErrorBoundary
+							FallbackComponent={ErrorFallback}
+							onReset={queryBoundary.reset}
+						>
+							<Suspense fallback={<LoadingState />}>
+								<WorkspaceContainer />
+							</Suspense>
+						</ErrorBoundary>
+					)}
+				</QueryErrorResetBoundary>
+			</div>
+		</PreferencesProvider>
 	);
 };
 
