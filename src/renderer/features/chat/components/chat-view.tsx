@@ -6,10 +6,8 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import type { UpdateChatInput } from "../../../../main/trpc/router/chats";
 import { AppIcon } from "../../../components/app-icon";
 import { Button } from "../../../components/button";
-import { PopoverContent, PopoverRoot, PopoverTrigger } from "../../../components/popover";
 import { useAnimationUnmount, useIsAtBottom } from "../../../hooks/common";
 import { useMainRouter, useMainRouterClient } from "../../../lib/trpc";
-import { AssistantPicker } from "../../assistants/components/assistant-picker";
 import { showAssistantPickerModal } from "../../assistants/utils";
 import { ChatPanelRenderer } from "../../chat-panels/components/chat-panel-renderer";
 import { useActiveChatPanel } from "../../chat-panels/hooks";
@@ -68,9 +66,6 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 	const [chatComposerRef, chatComposerDimensions] = useMeasure();
 	const chatLogContainerRef = useRef<HTMLDivElement>(null);
 	const hasScrolledToBottomOnLoad = useRef(false);
-
-	const getAssistantsQuery = useQuery(mainRouter.assistants.getAll.queryOptions());
-	const assistants = getAssistantsQuery.data ?? [];
 
 	const getChatQuery = useQuery(
 		mainRouter.chats.get.queryOptions({

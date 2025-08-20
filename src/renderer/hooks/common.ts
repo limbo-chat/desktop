@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type Ref, type RefObject } from "react";
+import { useEffect, useMemo, useState, type RefObject } from "react";
 
 export const useIsAppFocused = () => {
 	const [isAppFocused, setIsAppFocused] = useState(true);

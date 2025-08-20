@@ -1,6 +1,5 @@
 import { Button } from "../../../components/button";
 import {
-	DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	Dialog,

@@ -3,7 +3,6 @@ import type * as limbo from "@limbo/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { useMainRouter } from "../../../lib/trpc";
-import { useMainRouterClient } from "../../../lib/trpc";
 import { buildNamespacedResourceId } from "../../../lib/utils";
 import { RenameChatDialog } from "../../chat/components/rename-chat-dialog";
 import { useDeleteChatMutation } from "../../chat/hooks/queries";

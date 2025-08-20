@@ -13,7 +13,7 @@ import {
 } from "../../../components/dialog";
 import * as FieldController from "../../../components/field-controller";
 import { useModalContext } from "../../modals/hooks";
-import { useInstallPluginMutation, useUninstallPluginMutation } from "../hooks/queries";
+import { useInstallPluginMutation } from "../hooks/queries";
 
 const installPluginFormSchema = z.object({
 	repoUrl: z.string().regex(/^https:\/\/github\.com\/[^/]+\/[^/]+$/, {
