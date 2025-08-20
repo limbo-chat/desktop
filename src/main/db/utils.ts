@@ -1,9 +1,41 @@
+import fs from "node:fs";
 import Sqlite from "better-sqlite3";
 import { Kysely, SqliteDialect, ParseJSONResultsPlugin } from "kysely";
-import { DB_PATH } from "./constants";
+import { getValue, setValue } from "../kv/utils";
+import { getPreference } from "../preferences/utils";
+import { DB_PATH, LATEST_DATA_VERSION } from "./constants";
+import { migrations } from "./migrations";
 import type { AppDatabase, AppDatabaseClient } from "./types";
 
+async function migrateToLatestVersion(db: Kysely<any>, currentDataVersion: number) {
+	let version = currentDataVersion;
+
+	const transaction = await db.startTransaction().execute();
+
+	try {
+		while (version < LATEST_DATA_VERSION) {
+			const migration = migrations[version];
+
+			if (!migration) {
+				continue;
+			}
+
+			await migration(transaction);
+
+			version++;
+		}
+
+		// commit the transaction
+		await transaction.commit().execute();
+	} catch (err) {
+		await transaction.rollback().execute();
+
+		throw err;
+	}
+}
+
 export async function getDb(): Promise<AppDatabaseClient> {
+	const dbExisted = fs.existsSync(DB_PATH);
 	const sqlite = Sqlite(DB_PATH);
 
 	const db = new Kysely<AppDatabase>({
@@ -13,126 +45,26 @@ export async function getDb(): Promise<AppDatabaseClient> {
 		plugins: [new ParseJSONResultsPlugin()],
 	});
 
-	await db.schema
-		.createTable("kv")
-		.addColumn("key", "text", (col) => col.primaryKey())
-		.addColumn("value", "text", (col) => col.notNull())
-		.ifNotExists()
-		.execute();
+	let currentDataVersion;
 
-	await db.schema
-		.createTable("preference")
-		.addColumn("key", "text", (col) => col.primaryKey())
-		.addColumn("value", "text", (col) => col.notNull())
-		.ifNotExists()
-		.execute();
+	if (dbExisted) {
+		console.log("Database exists, checking data version...");
 
-	await db.schema
-		.createTable("oauth_client")
-		.addColumn("id", "integer", (col) => col.primaryKey().autoIncrement())
-		.addColumn("remote_client_id", "text", (col) => col.notNull())
-		.addColumn("auth_url", "text", (col) => col.notNull())
-		.addColumn("token_url", "text", (col) => col.notNull())
-		.addColumn("created_at", "text", (col) => col.notNull())
-		.ifNotExists()
-		.execute();
+		const dataVersionValue = await getValue(db, "data_version");
 
-	await db.schema
-		.createTable("oauth_client_scope")
-		.addColumn("client_id", "integer", (col) =>
-			col.notNull().references("oauth_client.id").onDelete("cascade")
-		)
-		.addColumn("scope", "text", (col) => col.notNull())
-		.addPrimaryKeyConstraint("oauth_client_scope_pk", ["client_id", "scope"])
-		.ifNotExists()
-		.execute();
+		currentDataVersion = dataVersionValue ? parseInt(dataVersionValue, 10) : 0;
+	} else {
+		currentDataVersion = 0;
+	}
 
-	await db.schema
-		.createTable("oauth_token")
-		.addColumn("id", "integer", (col) => col.primaryKey().autoIncrement())
-		.addColumn("client_id", "integer", (col) =>
-			col.notNull().references("oauth_client.id").onDelete("cascade")
-		)
-		.addColumn("access_token", "text", (col) => col.notNull())
-		.addColumn("expires_at", "text", (col) => col.notNull())
-		.addColumn("refresh_token", "text")
-		.ifNotExists()
-		.execute();
+	// check if the user's data version is behind the latest version
+	if (currentDataVersion < LATEST_DATA_VERSION) {
+		// if so, run migrations to bring it up to date
+		await migrateToLatestVersion(db, currentDataVersion);
 
-	await db.schema
-		.createTable("oauth_token_scope")
-		.addColumn("token_id", "integer", (col) =>
-			col.notNull().references("oauth_token.id").onDelete("cascade")
-		)
-		.addColumn("scope", "text", (col) => col.notNull())
-		.addPrimaryKeyConstraint("oauth_token_scope_pk", ["token_id", "scope"])
-		.ifNotExists()
-		.execute();
-
-	await db.schema
-		.createTable("oauth_token_request_session")
-		.addColumn("id", "integer", (col) => col.primaryKey().autoIncrement())
-		.addColumn("client_id", "integer", (col) =>
-			col.notNull().references("oauth_client.id").onDelete("cascade")
-		)
-		.addColumn("code_verifier", "text", (col) => col.notNull())
-		.addColumn("created_at", "text", (col) => col.notNull())
-		.ifNotExists()
-		.execute();
-
-	await db.schema
-		.createTable("oauth_token_request_session_scope")
-		.addColumn("request_session_id", "integer", (col) =>
-			col.notNull().references("oauth_token_request_session.id").onDelete("cascade")
-		)
-		.addColumn("scope", "text", (col) => col.notNull())
-		.addPrimaryKeyConstraint("oauth_token_request_session_scope_pk", [
-			"request_session_id",
-			"scope",
-		])
-		.ifNotExists()
-		.execute();
-
-	await db.schema
-		.createTable("chat")
-		.addColumn("id", "text", (col) => col.primaryKey())
-		.addColumn("name", "text", (col) => col.notNull())
-		.addColumn("user_message_draft", "text")
-		.addColumn("assistant_id", "text")
-		.addColumn("llm_id", "text")
-		.addColumn("enabled_tool_ids", "text", (col) => col.notNull())
-		.addColumn("created_at", "text", (col) => col.notNull())
-		.addColumn("last_activity_at", "text", (col) => col.notNull())
-		.ifNotExists()
-		.execute();
-
-	await db.schema
-		.createTable("chat_message")
-		.addColumn("id", "text", (col) => col.primaryKey())
-		.addColumn("chat_id", "text", (col) =>
-			col.references("chat.id").onDelete("cascade").notNull()
-		)
-		.addColumn("role", "text", (col) => col.notNull()) // e.g., user, assistant
-		.addColumn("content", "text", (col) => col.notNull())
-		.addColumn("created_at", "text", (col) => col.notNull())
-		.ifNotExists()
-		.execute();
-
-	await db.schema
-		.createTable("assistant")
-		.addColumn("id", "text", (col) => col.primaryKey())
-		.addColumn("name", "text", (col) => col.notNull())
-		.addColumn("tagline", "text", (col) => col.notNull())
-		.addColumn("description", "text", (col) => col.notNull())
-		.addColumn("system_prompt", "text", (col) => col.notNull())
-		.addColumn("recommended_plugins", "text", (col) => col.notNull())
-		.addColumn("recommended_tools", "text", (col) => col.notNull())
-		.ifNotExists()
-		.execute();
+		// update the meta file with the latest data version
+		await setValue(db, "data_version", LATEST_DATA_VERSION.toString());
+	}
 
 	return db;
-}
-
-export async function ensureDb() {
-	await getDb();
 }
