@@ -2,7 +2,6 @@ import fs from "node:fs";
 import Sqlite from "better-sqlite3";
 import { Kysely, SqliteDialect, ParseJSONResultsPlugin } from "kysely";
 import { getValue, setValue } from "../kv/utils";
-import { getPreference } from "../preferences/utils";
 import { DB_PATH, LATEST_DATA_VERSION } from "./constants";
 import { migrations } from "./migrations";
 import type { AppDatabase, AppDatabaseClient } from "./types";

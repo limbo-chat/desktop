@@ -2,7 +2,7 @@ import { BrowserWindow, type BrowserWindowConstructorOptions } from "electron";
 import EventEmitter from "eventemitter3";
 import { DEV_SERVER_URL, ICON_PATH, PRELOAD_FILE_PATH, HTML_PATH } from "../constants";
 import { getPlatformName } from "../utils";
-import { manageWindowState, readWindowState } from "../window-state/utils";
+import { manageWindowState } from "../window-state/utils";
 import type { WindowType } from "./types";
 import { applyDefaultWindowOptions } from "./utils";
 
@@ -19,8 +19,6 @@ export class WindowManager {
 	}
 
 	public createMainWindow(opts?: Partial<BrowserWindowConstructorOptions>) {
-		const windowState = readWindowState();
-
 		const mainWindow = new BrowserWindow({
 			title: "Limbo",
 			icon: ICON_PATH,
@@ -28,10 +26,8 @@ export class WindowManager {
 			minHeight: 200,
 			minWidth: 300,
 			show: false,
-			x: windowState?.x,
-			y: windowState?.y,
-			height: windowState?.height ?? 600,
-			width: windowState?.width ?? 800,
+			height: 600,
+			width: 800,
 			titleBarOverlay: process.platform !== "darwin",
 			webPreferences: {
 				preload: PRELOAD_FILE_PATH,
@@ -44,9 +40,6 @@ export class WindowManager {
 		});
 
 		applyDefaultWindowOptions(mainWindow);
-
-		// we want to track the state of the main window
-		manageWindowState(mainWindow);
 
 		const queryParams = new URLSearchParams({
 			type: "main",

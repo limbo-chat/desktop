@@ -1,21 +1,22 @@
-import fs from "node:fs";
 import { type BrowserWindow } from "electron";
-import { WINDOW_STATE_PATH } from "./constants";
+import type { AppDatabaseClient } from "../db/types";
+import { getValue, setValue } from "../kv/utils";
 import { windowStateSchema, type WindowState } from "./schemas";
 
-export function readWindowState(): WindowState | null {
-	try {
-		const windowStateStr = fs.readFileSync(WINDOW_STATE_PATH, "utf8");
-		const rawWindowState = JSON.parse(windowStateStr);
-
-		return windowStateSchema.parse(rawWindowState);
-	} catch (error) {
-		return null;
-	}
+export async function saveWindowState(db: AppDatabaseClient, windowState: WindowState) {
+	await setValue(db, "window_state", JSON.stringify(windowState));
 }
 
-export function writeWindowState(windowState: WindowState) {
-	fs.writeFileSync(WINDOW_STATE_PATH, JSON.stringify(windowState));
+export async function getWindowState(db: AppDatabaseClient): Promise<WindowState | null> {
+	const windowStateJson = await getValue(db, "window_state");
+
+	if (!windowStateJson) {
+		return null;
+	}
+
+	const windowStateParseResult = windowStateSchema.safeParse(windowStateJson);
+
+	return windowStateParseResult.data ?? null;
 }
 
 export function getWindowStateFromWindow(window: BrowserWindow): WindowState {
@@ -29,10 +30,10 @@ export function getWindowStateFromWindow(window: BrowserWindow): WindowState {
 	};
 }
 
-export function manageWindowState(window: BrowserWindow) {
-	window.on("close", () => {
+export function manageWindowState(db: AppDatabaseClient, window: BrowserWindow) {
+	window.on("close", async () => {
 		const newWindowState = getWindowStateFromWindow(window);
 
-		writeWindowState(newWindowState);
+		await saveWindowState(db, newWindowState);
 	});
 }

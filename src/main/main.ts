@@ -3,11 +3,13 @@ import { createIPCHandler } from "trpc-electron/main";
 import { PROTOCOL } from "./constants";
 import { ensureCustomStylesDirectory } from "./custom-styles/utils";
 import { CustomStylesWatcher } from "./custom-styles/watcher";
+import type { AppDatabaseClient } from "./db/types";
 import { getDb } from "./db/utils";
 import { handleDeepLink } from "./deep-linking/utils";
 import { ensurePluginsDir } from "./plugins/utils";
-import { getAllPreferences } from "./preferences/utils";
+import { getAllPreferences, getPreference } from "./preferences/utils";
 import { mainRouter } from "./trpc/router";
+import { getWindowState, manageWindowState } from "./window-state/utils";
 import { WindowManager } from "./windows/manager";
 import type { WindowType } from "./windows/types";
 
@@ -45,10 +47,20 @@ function watchCustomStyles() {
 	customStylesWatcher.start();
 }
 
-async function launchWindow(prefs: Record<string, string>) {
-	windowManager.createMainWindow({
-		transparent: prefs["transparent"] === "true",
+async function launchWindow(db: AppDatabaseClient) {
+	const transparentPref = await getPreference(db, "transparent");
+	const windowState = await getWindowState(db);
+
+	const mainWindow = windowManager.createMainWindow({
+		transparent: transparentPref === "true",
+		x: windowState?.x,
+		y: windowState?.y,
+		height: windowState?.height,
+		width: windowState?.width,
 	});
+
+	// we want to track the state of the main window
+	manageWindowState(db, mainWindow);
 }
 
 async function startApp() {
@@ -56,10 +68,11 @@ async function startApp() {
 	await ensureDirectories();
 
 	const db = await getDb();
-	const prefs = await getAllPreferences(db);
+
+	const developerModeEnabledPref = await getPreference(db, "developer-mode:enabled");
 
 	// read the settings before creating the window
-	if (prefs["developer-mode:enabled"] === "true") {
+	if (developerModeEnabledPref === "true") {
 		watchCustomStyles();
 	}
 
@@ -75,7 +88,7 @@ async function startApp() {
 	});
 
 	// launch a window
-	launchWindow(prefs);
+	launchWindow(db);
 }
 
 windowManager.events.on("window:created", (windowId) => {
@@ -104,10 +117,9 @@ app.on("window-all-closed", () => {
 app.on("activate", async () => {
 	if (BrowserWindow.getAllWindows().length === 0) {
 		const db = await getDb();
-		const prefs = await getAllPreferences(db);
 
 		// recreate a window if there are no windows open
-		launchWindow(prefs);
+		launchWindow(db);
 	}
 });
 
