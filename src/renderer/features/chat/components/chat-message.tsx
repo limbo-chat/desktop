@@ -81,11 +81,6 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
 					<Tooltip label="Copy message">
 						<CopyIconButton content={gatheredText} />
 					</Tooltip>
-					<Tooltip label="Delete message">
-						<IconButton onClick={() => {}}>
-							<AppIcon icon="delete" />
-						</IconButton>
-					</Tooltip>
 				</ChatMessageActions>
 			</ChatMessageFooter>
 		</ChatMessageContainer>

@@ -500,11 +500,6 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 							<AppIcon icon="settings" />
 						</IconButton>
 					</Tooltip>
-					<Tooltip label="Reload">
-						<IconButton action="reload">
-							<AppIcon icon="refresh" />
-						</IconButton>
-					</Tooltip>
 					<Tooltip label="Uninstall">
 						<IconButton
 							action="uninstall"
