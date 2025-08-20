@@ -7,7 +7,7 @@ import type { AppDatabaseClient } from "./db/types";
 import { getDb } from "./db/utils";
 import { handleDeepLink } from "./deep-linking/utils";
 import { ensurePluginsDir } from "./plugins/utils";
-import { getAllPreferences, getPreference } from "./preferences/utils";
+import { getPreference } from "./preferences/utils";
 import { mainRouter } from "./trpc/router";
 import { getWindowState, manageWindowState } from "./window-state/utils";
 import { WindowManager } from "./windows/manager";

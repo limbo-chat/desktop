@@ -2,7 +2,6 @@ import { BrowserWindow, type BrowserWindowConstructorOptions } from "electron";
 import EventEmitter from "eventemitter3";
 import { DEV_SERVER_URL, ICON_PATH, PRELOAD_FILE_PATH, HTML_PATH } from "../constants";
 import { getPlatformName } from "../utils";
-import { manageWindowState } from "../window-state/utils";
 import type { WindowType } from "./types";
 import { applyDefaultWindowOptions } from "./utils";
 

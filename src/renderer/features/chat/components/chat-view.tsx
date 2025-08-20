@@ -13,7 +13,7 @@ import { ChatPanelRenderer } from "../../chat-panels/components/chat-panel-rende
 import { useActiveChatPanel } from "../../chat-panels/hooks";
 import { useActiveChatPanelStore } from "../../chat-panels/stores";
 import { usePluginManager } from "../../plugins/hooks/core";
-import { usePreference, usePreferences } from "../../preferences/hooks";
+import { usePreference } from "../../preferences/hooks";
 import { setActiveChatId } from "../../workspace/utils";
 import { ChatMessage } from "../core/chat-prompt";
 import { useChatState } from "../hooks/common";
