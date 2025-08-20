@@ -5,32 +5,30 @@ import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import { AppIcon, ImageLikeRenderer } from "../../../components/app-icon";
 import { Button } from "../../../components/button";
+import { CopyIconButton } from "../../../components/copy-icon-button";
 import {
 	ErrorState,
 	ErrorStateActions,
 	ErrorStateDescription,
 	ErrorStateTitle,
 } from "../../../components/error-state";
-import { IconButton } from "../../../components/icon-button";
 import { LoadingState } from "../../../components/loading-state";
 import { parseNamespacedResourceId } from "../../../lib/utils";
 import { useTool } from "../../tools/hooks";
 
 interface ToolCallDataContainerProps {
 	title: string;
-	content: string;
+	data: string;
 }
 
-const ToolCallDataContainer = ({ title, content }: ToolCallDataContainerProps) => {
+const ToolCallDataContainer = ({ title, data }: ToolCallDataContainerProps) => {
 	return (
 		<div className="tool-call-data">
 			<div className="tool-call-data-header">
 				<span className="tool-call-data-title">{title}</span>
-				<IconButton>
-					<AppIcon icon="clipboard" />
-				</IconButton>
+				<CopyIconButton className="tool-call-data-copy-button" content={data} />
 			</div>
-			<div className="tool-call-data-content">{content}</div>
+			<div className="tool-call-data-content">{data}</div>
 		</div>
 	);
 };
@@ -68,15 +66,15 @@ export const DefaultToolCallRenderer = ({ toolCall }: limbo.ToolRendererProps) =
 			<RadixCollapsible.Content className="tool-call-body">
 				<ToolCallDataContainer
 					title="Arguments"
-					content={JSON.stringify(toolCall.arguments)}
+					data={JSON.stringify(toolCall.arguments)}
 				/>
 				{toolCall.status === "success" && (
-					<ToolCallDataContainer title="Result" content={toolCall.result} />
+					<ToolCallDataContainer title="Result" data={toolCall.result} />
 				)}
 				{toolCall.status === "error" && (
 					<ToolCallDataContainer
 						title="Error"
-						content={toolCall.error ?? "An unknown error occurred"}
+						data={toolCall.error ?? "An unknown error occurred"}
 					/>
 				)}
 			</RadixCollapsible.Content>
