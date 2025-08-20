@@ -2,7 +2,7 @@ import type { PropsWithChildren } from "react";
 import { preferencesContext } from "./context";
 
 export interface PreferencesProviderProps {
-	preferences: Record<string, string>;
+	preferences: Record<string, unknown>;
 }
 
 export const PreferencesProvider = ({

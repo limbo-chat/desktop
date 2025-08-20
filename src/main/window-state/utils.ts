@@ -4,7 +4,7 @@ import { getValue, setValue } from "../kv/utils";
 import { windowStateSchema, type WindowState } from "./schemas";
 
 export async function saveWindowState(db: AppDatabaseClient, windowState: WindowState) {
-	await setValue(db, "window_state", JSON.stringify(windowState));
+	await setValue(db, "window_state", windowState);
 }
 
 export async function getWindowState(db: AppDatabaseClient): Promise<WindowState | null> {

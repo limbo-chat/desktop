@@ -3,7 +3,7 @@ import type { Generated, Insertable, JSONColumnType, Kysely, Selectable } from "
 
 export interface KVTable {
 	key: string;
-	value: string;
+	value: JSONColumnType<any>;
 }
 
 export type KVEntry = Selectable<KVTable>;
@@ -11,7 +11,7 @@ export type NewKVEntry = Insertable<KVTable>;
 
 export interface PreferenceTable {
 	key: string;
-	value: string;
+	value: JSONColumnType<any>;
 }
 
 export type Preference = Selectable<PreferenceTable>;

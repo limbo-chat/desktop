@@ -15,6 +15,10 @@ export const usePreferences = () => {
 	return ctx;
 };
 
+export const usePreference = <T = unknown>(key: string): T | undefined => {
+	return usePreferences()[key] as T | undefined;
+};
+
 export const useSetPreferenceMutation = () => {
 	const mainRouter = useMainRouter();
 	const queryClient = useQueryClient();
@@ -28,23 +32,20 @@ export const useSetPreferenceMutation = () => {
 	);
 };
 
-export const useSyncedPreference = (key: string) => {
-	const preferences = usePreferences();
-	const preferenceValue = preferences[key];
+export const useSyncedPreference = <T = unknown>(key: string) => {
+	const preferenceValue = usePreference<T>(key);
 	const setPreferenceMutation = useSetPreferenceMutation();
-	const [localValue, setLocalValue] = useState<string | undefined>();
+	const [localValue, setLocalValue] = useState<T | undefined>();
 
 	const debouncedSetPreference = useCallback(
 		debounce((preference: Preference) => {
-			console.log("syncing preference:", preference);
-
 			setPreferenceMutation.mutate(preference);
 		}, 500),
 		[]
 	);
 
 	const update = useCallback(
-		(newValue: string) => {
+		(newValue: T) => {
 			setLocalValue(newValue);
 
 			debouncedSetPreference({

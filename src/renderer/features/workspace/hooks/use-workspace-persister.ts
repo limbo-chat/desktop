@@ -10,7 +10,7 @@ export const useWorkspacePersister = () => {
 	useEffect(() => {
 		const saveWorkspace = debounce((workspace: Workspace) => {
 			mainRouterClient.workspace.set.mutate(workspace);
-		}, 1000);
+		}, 500);
 
 		const unsubscribe = useWorkspaceStore.subscribe((state) => {
 			if (!state.workspace) {

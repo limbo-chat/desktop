@@ -9,7 +9,7 @@ const getPreferenceInputSchema = z.object({
 
 const setPreferenceInputSchema = z.object({
 	key: z.string(),
-	value: z.string(),
+	value: z.unknown(),
 });
 
 export const preferencesRouter = router({

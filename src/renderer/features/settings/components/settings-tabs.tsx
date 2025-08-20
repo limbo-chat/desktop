@@ -81,7 +81,7 @@ const GeneralTabContent = () => {
 };
 
 const PersonalizationTabContent = () => {
-	const [username, setUsername] = useSyncedPreference("username");
+	const [username, setUsername] = useSyncedPreference<string>("username");
 
 	return (
 		<SettingsSection>
@@ -137,10 +137,8 @@ const DataTabContent = () => {
 
 const AppearanceTabContent = () => {
 	const mainRouterClient = useMainRouterClient();
-	const [isTransparencyEnabledPref, setIsTransparencyEnabledPref] =
-		useSyncedPreference("transparency");
-
-	const isTransparencyEnabled = isTransparencyEnabledPref === "true";
+	const [isTransparencyEnabled, setIsTransparencyEnabled] =
+		useSyncedPreference<boolean>("transparency:enabled");
 
 	const openCustomStylesFolder = () => {
 		mainRouterClient.customStyles.openFolder.mutate();
@@ -159,13 +157,13 @@ const AppearanceTabContent = () => {
 					</SettingItemInfo>
 					<SettingItemControl>
 						<Checkbox
-							checked={isTransparencyEnabled}
+							checked={isTransparencyEnabled ?? false}
 							onCheckedChange={(isChecked) => {
 								if (typeof isChecked !== "boolean") {
 									return;
 								}
 
-								setIsTransparencyEnabledPref(isChecked ? "true" : "false");
+								setIsTransparencyEnabled(isChecked);
 
 								if (isChecked) {
 									showNotification({
@@ -201,10 +199,8 @@ const AppearanceTabContent = () => {
 };
 
 const DeveloperTabContent = () => {
-	const [isDeveloperModeEnabledPref, setIsDeveloperModeEnabledPref] =
-		useSyncedPreference("developer-mode:enabled");
-
-	const isDeveloperModeEnabled = isDeveloperModeEnabledPref === "true";
+	const [isDeveloperModeEnabled, setIsDeveloperModeEnabled] =
+		useSyncedPreference<boolean>("developer-mode:enabled");
 
 	return (
 		<SettingsSection>
@@ -218,13 +214,13 @@ const DeveloperTabContent = () => {
 					</SettingItemInfo>
 					<SettingItemControl>
 						<Checkbox
-							checked={isDeveloperModeEnabled}
+							checked={isDeveloperModeEnabled ?? false}
 							onCheckedChange={(isChecked) => {
 								if (typeof isChecked !== "boolean") {
 									return;
 								}
 
-								setIsDeveloperModeEnabledPref(isChecked ? "true" : "false");
+								setIsDeveloperModeEnabled(isChecked);
 
 								if (isChecked) {
 									showNotification({

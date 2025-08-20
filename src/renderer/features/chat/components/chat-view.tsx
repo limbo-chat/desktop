@@ -13,7 +13,7 @@ import { ChatPanelRenderer } from "../../chat-panels/components/chat-panel-rende
 import { useActiveChatPanel } from "../../chat-panels/hooks";
 import { useActiveChatPanelStore } from "../../chat-panels/stores";
 import { usePluginManager } from "../../plugins/hooks/core";
-import { usePreferences } from "../../preferences/hooks";
+import { usePreference, usePreferences } from "../../preferences/hooks";
 import { setActiveChatId } from "../../workspace/utils";
 import { ChatMessage } from "../core/chat-prompt";
 import { useChatState } from "../hooks/common";
@@ -52,7 +52,7 @@ export interface ChatViewProps {
 }
 
 export const ChatView = ({ chatId }: ChatViewProps) => {
-	const preferences = usePreferences();
+	const username = usePreference<string>("username");
 	const mainRouterClient = useMainRouterClient();
 	const mainRouter = useMainRouter();
 	const pluginManager = usePluginManager();
@@ -137,14 +137,14 @@ export const ChatView = ({ chatId }: ChatViewProps) => {
 				llm,
 				enabledToolIds,
 				user: {
-					username: preferences["username"] ?? "",
+					username: username ?? "",
 				},
 				userMessage: userMessageObj,
 			});
 		} catch (err) {
 			console.error("Failed to send message:", err);
 		}
-	}, [chatId, preferences, assistant, selectedLLMId, userMessage]);
+	}, [chatId, username, assistant, selectedLLMId, userMessage]);
 
 	const handleCancel = useCallback(() => {
 		cancelResponse(chatId);

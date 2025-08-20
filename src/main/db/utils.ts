@@ -1,4 +1,3 @@
-import fs from "node:fs";
 import Sqlite from "better-sqlite3";
 import { Kysely, SqliteDialect, ParseJSONResultsPlugin } from "kysely";
 import { getValue, setValue } from "../kv/utils";
@@ -34,7 +33,6 @@ async function migrateToLatestVersion(db: Kysely<any>, currentDataVersion: numbe
 }
 
 export async function getDb(): Promise<AppDatabaseClient> {
-	const dbExisted = fs.existsSync(DB_PATH);
 	const sqlite = Sqlite(DB_PATH);
 
 	const db = new Kysely<AppDatabase>({
@@ -44,14 +42,16 @@ export async function getDb(): Promise<AppDatabaseClient> {
 		plugins: [new ParseJSONResultsPlugin()],
 	});
 
-	let currentDataVersion;
+	let currentDataVersion = 0;
 
-	if (dbExisted) {
-		const dataVersionValue = await getValue(db, "data_version");
+	try {
+		const dataVersion = await getValue<number>(db, "data_version");
 
-		currentDataVersion = dataVersionValue ? parseInt(dataVersionValue, 10) : 0;
-	} else {
-		currentDataVersion = 0;
+		if (typeof dataVersion === "number") {
+			currentDataVersion = dataVersion;
+		}
+	} catch (err) {
+		// table probably doesn't exist, leave currentDataVersion as 0
 	}
 
 	// check if the user's data version is behind the latest version
@@ -60,7 +60,7 @@ export async function getDb(): Promise<AppDatabaseClient> {
 		await migrateToLatestVersion(db, currentDataVersion);
 
 		// update the meta file with the latest data version
-		await setValue(db, "data_version", LATEST_DATA_VERSION.toString());
+		await setValue(db, "data_version", LATEST_DATA_VERSION);
 	}
 
 	return db;

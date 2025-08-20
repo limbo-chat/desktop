@@ -48,11 +48,11 @@ function watchCustomStyles() {
 }
 
 async function launchWindow(db: AppDatabaseClient) {
-	const transparentPref = await getPreference(db, "transparent");
+	const isTransparencyEnabled = await getPreference<boolean>(db, "transparency:enabled");
 	const windowState = await getWindowState(db);
 
 	const mainWindow = windowManager.createMainWindow({
-		transparent: transparentPref === "true",
+		transparent: isTransparencyEnabled,
 		x: windowState?.x,
 		y: windowState?.y,
 		height: windowState?.height,
@@ -69,10 +69,10 @@ async function startApp() {
 
 	const db = await getDb();
 
-	const developerModeEnabledPref = await getPreference(db, "developer-mode:enabled");
+	const isDeveloperModeEnabled = await getPreference<boolean>(db, "developer-mode:enabled");
 
 	// read the settings before creating the window
-	if (developerModeEnabledPref === "true") {
+	if (isDeveloperModeEnabled) {
 		watchCustomStyles();
 	}
 

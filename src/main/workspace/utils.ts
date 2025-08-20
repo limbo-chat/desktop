@@ -17,7 +17,7 @@ export const defaultWorkspace: Workspace = {
 } as const;
 
 export async function saveWorkspace(db: AppDatabaseClient, workspace: Workspace) {
-	await setValue(db, "workspace", JSON.stringify(workspace));
+	await setValue(db, "workspace", workspace);
 }
 
 export async function getWorkspace(db: AppDatabaseClient) {
@@ -32,7 +32,6 @@ export async function getWorkspace(db: AppDatabaseClient) {
 	const workspaceParseResult = workspaceSchema.safeParse(workspaceData);
 
 	if (!workspaceParseResult.success) {
-		console.log("workspace JSON does not match schema, resetting to default");
 		await saveWorkspace(db, defaultWorkspace);
 
 		return defaultWorkspace;
