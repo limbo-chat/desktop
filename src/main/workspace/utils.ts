@@ -1,5 +1,5 @@
-import fs from "node:fs";
-import { WORKSPACE_FILE_PATH } from "./constants";
+import type { AppDatabaseClient } from "../db/types";
+import { getValue, setValue } from "../kv/utils";
 import { workspaceSchema, type Workspace } from "./schemas";
 
 export const defaultWorkspace: Workspace = {
@@ -16,41 +16,24 @@ export const defaultWorkspace: Workspace = {
 	},
 } as const;
 
-export function writeWorkspace(workspace: Workspace) {
-	fs.writeFileSync(WORKSPACE_FILE_PATH, JSON.stringify(workspace));
+export async function saveWorkspace(db: AppDatabaseClient, workspace: Workspace) {
+	await setValue(db, "workspace", JSON.stringify(workspace));
 }
 
-export function ensureWorkspace() {
-	if (!fs.existsSync(WORKSPACE_FILE_PATH)) {
-		writeWorkspace(defaultWorkspace);
-	}
-}
+export async function getWorkspace(db: AppDatabaseClient) {
+	const workspaceData = await getValue(db, "workspace");
 
-export function readWorkspace(): Workspace {
-	let workspaceStr;
-
-	try {
-		workspaceStr = fs.readFileSync(WORKSPACE_FILE_PATH, "utf8");
-	} catch {
-		writeWorkspace(defaultWorkspace);
+	if (!workspaceData) {
+		await saveWorkspace(db, defaultWorkspace);
 
 		return defaultWorkspace;
 	}
 
-	let rawWorkspace;
-
-	try {
-		rawWorkspace = JSON.parse(workspaceStr);
-	} catch {
-		writeWorkspace(defaultWorkspace);
-
-		return defaultWorkspace;
-	}
-
-	const workspaceParseResult = workspaceSchema.safeParse(rawWorkspace);
+	const workspaceParseResult = workspaceSchema.safeParse(workspaceData);
 
 	if (!workspaceParseResult.success) {
-		writeWorkspace(defaultWorkspace);
+		console.log("workspace JSON does not match schema, resetting to default");
+		await saveWorkspace(db, defaultWorkspace);
 
 		return defaultWorkspace;
 	}

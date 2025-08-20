@@ -48,8 +48,6 @@ export async function getDb(): Promise<AppDatabaseClient> {
 	let currentDataVersion;
 
 	if (dbExisted) {
-		console.log("Database exists, checking data version...");
-
 		const dataVersionValue = await getValue(db, "data_version");
 
 		currentDataVersion = dataVersionValue ? parseInt(dataVersionValue, 10) : 0;
