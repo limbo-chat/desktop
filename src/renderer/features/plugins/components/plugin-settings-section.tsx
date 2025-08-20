@@ -77,6 +77,24 @@ const NumberSettingRenderer = ({ setting, value, onChange }: NumberSettingRender
 	);
 };
 
+interface EnumSettingRendererProps {
+	setting: limbo.EnumSetting;
+	value: any;
+	onChange: (value: any) => void;
+}
+
+const EnumSettingRenderer = ({ setting, value, onChange }: EnumSettingRendererProps) => {
+	return (
+		<select onChange={(e) => onChange(e.target.value)} value={value ?? ""}>
+			{setting.options.map((option) => (
+				<option value={option.value} key={option.value}>
+					{option.label}
+				</option>
+			))}
+		</select>
+	);
+};
+
 interface LLMSettingRendererProps {
 	setting: limbo.LLMSetting;
 	value: string;
@@ -117,6 +135,7 @@ const settingRendererMap = {
 	text: TextSettingRenderer,
 	boolean: BooleanSettingRenderer,
 	number: NumberSettingRenderer,
+	enum: EnumSettingRenderer,
 	llm: LLMSettingRenderer,
 } as const;
 
