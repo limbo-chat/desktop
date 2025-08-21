@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, Menu } from "electron";
 import { createIPCHandler } from "trpc-electron/main";
 import { PROTOCOL } from "./constants";
 import { ensureCustomStylesDirectory } from "./custom-styles/utils";
@@ -6,6 +6,11 @@ import { CustomStylesWatcher } from "./custom-styles/watcher";
 import type { AppDatabaseClient } from "./db/types";
 import { getDb } from "./db/utils";
 import { handleDeepLink } from "./deep-linking/utils";
+import {
+	createAppMenu,
+	setAppMenuPrimarySidebarChecked,
+	setAppMenuSecondarySidebarChecked,
+} from "./menus/app-menu";
 import { ensurePluginsDir } from "./plugins/utils";
 import { getPreference } from "./preferences/utils";
 import { mainRouter } from "./trpc/router";
@@ -64,6 +69,10 @@ async function launchWindow(db: AppDatabaseClient) {
 }
 
 async function startApp() {
+	const appMenu = createAppMenu();
+
+	Menu.setApplicationMenu(appMenu);
+
 	// ensure the required data sources are as expected
 	await ensureDirectories();
 
