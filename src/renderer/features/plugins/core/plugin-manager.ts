@@ -22,7 +22,7 @@ export interface PluginManagerEvents {
 	"plugin:markdown-element:unregistered": (pluginId: string, markdownElementId: string) => void;
 	"plugin:chat-node:registered": (pluginId: string, chatNode: limbo.ui.ChatNode) => void;
 	"plugin:chat-node:unregistered": (pluginId: string, chatNodeId: string) => void;
-	"plugin:chat-panel:registered": (pluginId: string, chatNode: limbo.ui.ChatPanel) => void;
+	"plugin:chat-panel:registered": (pluginId: string, chatPanel: limbo.ui.ChatPanel) => void;
 	"plugin:chat-panel:unregistered": (pluginId: string, chatPanelId: string) => void;
 }
 
