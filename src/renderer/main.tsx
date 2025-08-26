@@ -49,6 +49,7 @@ import { PluginSystem } from "./features/plugins/core/plugin-system";
 import { usePluginHotReloader, usePluginLoader } from "./features/plugins/hooks/core";
 import { usePluginSyncLayer } from "./features/plugins/hooks/use-plugin-sync-layer";
 import { PreferencesProvider } from "./features/preferences/components";
+import { useSettingsSubscriber } from "./features/settings/hooks";
 import { WindowInfoProvider } from "./features/window-info/components";
 import { useWindowInfoContext } from "./features/window-info/hooks";
 import { Workspace } from "./features/workspace/components/workspace";
@@ -441,6 +442,7 @@ const AppContent = () => {
 	const getPreferencesQuery = useSuspenseQuery(mainRouter.preferences.getAll.queryOptions());
 
 	useRendererLoader();
+	useSettingsSubscriber();
 	useCustomStylesSubscriber();
 	usePluginSyncLayer();
 	usePluginLoader();
