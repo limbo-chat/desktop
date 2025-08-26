@@ -85,19 +85,3 @@ export function createAppMenu(windowManager: WindowManager) {
 
 	return menu;
 }
-
-export function setAppMenuPrimarySidebarChecked(menu: Menu, isChecked: boolean) {
-	const menuItem = menu.getMenuItemById("toggle-primary-sidebar");
-
-	if (menuItem) {
-		menuItem.checked = isChecked;
-	}
-}
-
-export function setAppMenuSecondarySidebarChecked(menu: Menu, isChecked: boolean) {
-	const menuItem = menu.getMenuItemById("toggle-secondary-sidebar");
-
-	if (menuItem) {
-		menuItem.checked = isChecked;
-	}
-}
