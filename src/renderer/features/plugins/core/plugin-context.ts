@@ -2,13 +2,25 @@ import type * as limbo from "@limbo-chat/api";
 import EventEmitter from "eventemitter3";
 
 export interface PluginContextEvents {
-	"state:changed": () => void;
+	"setting:registered": (setting: limbo.Setting) => void;
+	"setting:unregistered": (settingId: string) => void;
+	"command:registered": (command: limbo.Command) => void;
+	"command:unregistered": (commandId: string) => void;
 	"llm:registered": (llm: limbo.LLM) => void;
 	"llm:unregistered": (llmId: string) => void;
+	"tool:registered": (tool: limbo.Tool) => void;
+	"tool:unregistered": (toolId: string) => void;
+	"markdown-element:registered": (markdownElement: limbo.ui.MarkdownElement) => void;
+	"markdown-element:unregistered": (markdownElementId: string) => void;
+	"chat-node:registered": (chatNode: limbo.ui.ChatNode) => void;
+	"chat-node:unregistered": (chatNodeId: string) => void;
+	"chat-panel:registered": (chatNode: limbo.ui.ChatPanel) => void;
+	"chat-panel:unregistered": (chatPanelId: string) => void;
 }
 
 export class PluginContext {
 	public events: EventEmitter<PluginContextEvents> = new EventEmitter();
+	private settingsCache = new Map<string, any>();
 
 	// registered state
 	private settings = new Map<string, limbo.Setting>();
@@ -19,32 +31,8 @@ export class PluginContext {
 	private chatNodes = new Map<string, limbo.ui.ChatNode>();
 	private chatPanels = new Map<string, limbo.ui.ChatPanel>();
 
-	private settingsCache = new Map<string, any>();
-
 	public destroy() {
 		this.events.removeAllListeners();
-	}
-
-	// settings
-
-	public getSetting(settingId: string) {
-		return this.settings.get(settingId);
-	}
-
-	public getSettings() {
-		return [...this.settings.values()];
-	}
-
-	public registerSetting(setting: limbo.Setting) {
-		this.settings.set(setting.id, setting);
-
-		this.notifyStateChanged();
-	}
-
-	public unregisterSetting(settingId: string) {
-		this.settings.delete(settingId);
-
-		this.notifyStateChanged();
 	}
 
 	// settings cache
@@ -61,6 +49,28 @@ export class PluginContext {
 		return Object.fromEntries(this.settingsCache);
 	}
 
+	// settings
+
+	public getSetting(settingId: string) {
+		return this.settings.get(settingId);
+	}
+
+	public getSettings() {
+		return [...this.settings.values()];
+	}
+
+	public registerSetting(setting: limbo.Setting) {
+		this.settings.set(setting.id, setting);
+
+		this.events.emit("setting:registered", setting);
+	}
+
+	public unregisterSetting(settingId: string) {
+		this.settings.delete(settingId);
+
+		this.events.emit("setting:unregistered", settingId);
+	}
+
 	// commands
 
 	public getCommand(commandId: string) {
@@ -74,13 +84,13 @@ export class PluginContext {
 	public registerCommand(command: limbo.Command) {
 		this.commands.set(command.id, command);
 
-		this.notifyStateChanged();
+		this.events.emit("command:registered", command);
 	}
 
 	public unregisterCommand(commandId: string) {
 		this.commands.delete(commandId);
 
-		this.notifyStateChanged();
+		this.events.emit("command:unregistered", commandId);
 	}
 
 	// llms
@@ -97,16 +107,12 @@ export class PluginContext {
 		this.llms.set(llm.id, llm);
 
 		this.events.emit("llm:registered", llm);
-
-		this.notifyStateChanged();
 	}
 
 	public unregisterLLM(llmId: string) {
 		this.llms.delete(llmId);
 
 		this.events.emit("llm:unregistered", llmId);
-
-		this.notifyStateChanged();
 	}
 
 	// tools
@@ -122,13 +128,13 @@ export class PluginContext {
 	public registerTool(tool: limbo.Tool) {
 		this.tools.set(tool.id, tool);
 
-		this.notifyStateChanged();
+		this.events.emit("tool:registered", tool);
 	}
 
 	public unregisterTool(toolId: string) {
 		this.tools.delete(toolId);
 
-		this.notifyStateChanged();
+		this.events.emit("tool:unregistered", toolId);
 	}
 
 	// markdown elements
@@ -144,13 +150,13 @@ export class PluginContext {
 	public registerMarkdownElement(markdownElement: limbo.ui.MarkdownElement) {
 		this.markdownElements.set(markdownElement.element, markdownElement);
 
-		this.notifyStateChanged();
+		this.events.emit("markdown-element:registered", markdownElement);
 	}
 
 	public unregisterMarkdownElement(elementId: string) {
 		this.markdownElements.delete(elementId);
 
-		this.notifyStateChanged();
+		this.events.emit("markdown-element:unregistered", elementId);
 	}
 
 	// chat nodes
@@ -166,13 +172,13 @@ export class PluginContext {
 	public registerChatNode(chatNode: limbo.ui.ChatNode) {
 		this.chatNodes.set(chatNode.id, chatNode);
 
-		this.notifyStateChanged();
+		this.events.emit("chat-node:registered", chatNode);
 	}
 
-	public unregisterChatNode(nodeId: string) {
-		this.chatNodes.delete(nodeId);
+	public unregisterChatNode(chatNodeid: string) {
+		this.chatNodes.delete(chatNodeid);
 
-		this.notifyStateChanged();
+		this.events.emit("chat-node:unregistered", chatNodeid);
 	}
 
 	// chat panels
@@ -188,18 +194,12 @@ export class PluginContext {
 	public registerChatPanel(chatPanel: limbo.ui.ChatPanel) {
 		this.chatPanels.set(chatPanel.id, chatPanel);
 
-		this.notifyStateChanged();
+		this.events.emit("chat-panel:registered", chatPanel);
 	}
 
 	public unregisterChatPanel(chatPanelId: string) {
 		this.chatPanels.delete(chatPanelId);
 
-		this.notifyStateChanged();
-	}
-
-	// helpers
-
-	private notifyStateChanged() {
-		this.events.emit("state:changed");
+		this.events.emit("chat-panel:unregistered", chatPanelId);
 	}
 }

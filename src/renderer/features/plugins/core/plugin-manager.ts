@@ -7,9 +7,23 @@ import { PluginContext } from "./plugin-context";
 export interface PluginManagerEvents {
 	"plugin:added": (pluginId: string) => void;
 	"plugin:removed": (pluginId: string) => void;
-	"plugin:state-changed": (pluginId: string) => void;
-	"plugin:llm-registered": (pluginId: string, llm: limbo.LLM) => void;
-	"plugin:llm-unregistered": (pluginId: string, llmId: string) => void;
+	"plugin:setting:registered": (pluginId: string, setting: limbo.Setting) => void;
+	"plugin:setting:unregistered": (pluginId: string, settingId: string) => void;
+	"plugin:command:registered": (pluginId: string, command: limbo.Command) => void;
+	"plugin:command:unregistered": (pluginId: string, commandId: string) => void;
+	"plugin:llm:registered": (pluginId: string, llm: limbo.LLM) => void;
+	"plugin:llm:unregistered": (pluginId: string, llmId: string) => void;
+	"plugin:tool:registered": (pluginId: string, tool: limbo.Tool) => void;
+	"plugin:tool:unregistered": (pluginId: string, toolId: string) => void;
+	"plugin:markdown-element:registered": (
+		pluginId: string,
+		markdownElement: limbo.ui.MarkdownElement
+	) => void;
+	"plugin:markdown-element:unregistered": (pluginId: string, markdownElementId: string) => void;
+	"plugin:chat-node:registered": (pluginId: string, chatNode: limbo.ui.ChatNode) => void;
+	"plugin:chat-node:unregistered": (pluginId: string, chatNodeId: string) => void;
+	"plugin:chat-panel:registered": (pluginId: string, chatNode: limbo.ui.ChatPanel) => void;
+	"plugin:chat-panel:unregistered": (pluginId: string, chatPanelId: string) => void;
 }
 
 export interface ActivePlugin {
@@ -33,16 +47,60 @@ export class PluginManager {
 	public async addPlugin(pluginId: string, plugin: ActivePlugin) {
 		this.plugins.set(pluginId, plugin);
 
-		plugin.context.events.on("state:changed", () => {
-			this.events.emit("plugin:state-changed", pluginId);
+		plugin.context.events.on("setting:registered", (setting) => {
+			this.events.emit("plugin:setting:registered", pluginId, setting);
+		});
+
+		plugin.context.events.on("setting:unregistered", (settingId) => {
+			this.events.emit("plugin:setting:unregistered", pluginId, settingId);
+		});
+
+		plugin.context.events.on("command:registered", (command) => {
+			this.events.emit("plugin:command:registered", pluginId, command);
+		});
+
+		plugin.context.events.on("command:unregistered", (commandId) => {
+			this.events.emit("plugin:command:unregistered", pluginId, commandId);
 		});
 
 		plugin.context.events.on("llm:registered", (llm) => {
-			this.events.emit("plugin:llm-registered", pluginId, llm);
+			this.events.emit("plugin:llm:registered", pluginId, llm);
 		});
 
-		plugin.context.events.on("llm:unregistered", (llm) => {
-			this.events.emit("plugin:llm-unregistered", pluginId, llm);
+		plugin.context.events.on("llm:unregistered", (llmId) => {
+			this.events.emit("plugin:llm:unregistered", pluginId, llmId);
+		});
+
+		plugin.context.events.on("tool:registered", (tool) => {
+			this.events.emit("plugin:tool:registered", pluginId, tool);
+		});
+
+		plugin.context.events.on("tool:unregistered", (toolId) => {
+			this.events.emit("plugin:tool:unregistered", pluginId, toolId);
+		});
+
+		plugin.context.events.on("markdown-element:registered", (markdownElement) => {
+			this.events.emit("plugin:markdown-element:registered", pluginId, markdownElement);
+		});
+
+		plugin.context.events.on("markdown-element:unregistered", (markdownElementId) => {
+			this.events.emit("plugin:markdown-element:unregistered", pluginId, markdownElementId);
+		});
+
+		plugin.context.events.on("chat-node:registered", (chatNode) => {
+			this.events.emit("plugin:chat-node:registered", pluginId, chatNode);
+		});
+
+		plugin.context.events.on("chat-node:unregistered", (chatNodeId) => {
+			this.events.emit("plugin:chat-node:unregistered", pluginId, chatNodeId);
+		});
+
+		plugin.context.events.on("chat-panel:registered", (chatPanel) => {
+			this.events.emit("plugin:chat-panel:registered", pluginId, chatPanel);
+		});
+
+		plugin.context.events.on("chat-panel:unregistered", (chatPanelId) => {
+			this.events.emit("plugin:chat-panel:unregistered", pluginId, chatPanelId);
 		});
 
 		this.events.emit("plugin:added", pluginId);
