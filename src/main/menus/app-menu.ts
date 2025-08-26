@@ -1,6 +1,7 @@
 import { Menu } from "electron";
+import type { WindowManager } from "../windows/manager";
 
-export function createAppMenu() {
+export function createAppMenu(windowManager: WindowManager) {
 	const menu = Menu.buildFromTemplate([
 		{
 			label: "File",
@@ -11,7 +12,7 @@ export function createAppMenu() {
 					label: "Settings",
 					accelerator: "CmdOrCtrl+,",
 					click: () => {
-						// TODO, implement
+						windowManager.sendMessageToAllWindows("settings:open");
 					},
 				},
 				{ type: "separator" },
@@ -36,25 +37,6 @@ export function createAppMenu() {
 			label: "View",
 			submenu: [
 				{ role: "togglefullscreen" },
-				{ type: "separator" },
-				{
-					id: "toggle-primary-sidebar",
-					label: "Primary sidebar",
-					type: "checkbox",
-					checked: false,
-					click: () => {
-						// TODO, implement
-					},
-				},
-				{
-					id: "toggle-secondary-sidebar",
-					label: "Secondary sidebar",
-					type: "checkbox",
-					checked: false,
-					click: () => {
-						// TODO, implement
-					},
-				},
 				{ type: "separator" },
 				{ role: "resetZoom" },
 				{ role: "zoomIn" },

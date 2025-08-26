@@ -6,11 +6,7 @@ import { CustomStylesWatcher } from "./custom-styles/watcher";
 import type { AppDatabaseClient } from "./db/types";
 import { getDb } from "./db/utils";
 import { handleDeepLink } from "./deep-linking/utils";
-import {
-	createAppMenu,
-	setAppMenuPrimarySidebarChecked,
-	setAppMenuSecondarySidebarChecked,
-} from "./menus/app-menu";
+import { createAppMenu } from "./menus/app-menu";
 import { ensurePluginsDir } from "./plugins/utils";
 import { getPreference } from "./preferences/utils";
 import { mainRouter } from "./trpc/router";
@@ -69,7 +65,7 @@ async function launchWindow(db: AppDatabaseClient) {
 }
 
 async function startApp() {
-	const appMenu = createAppMenu();
+	const appMenu = createAppMenu(windowManager);
 
 	Menu.setApplicationMenu(appMenu);
 
