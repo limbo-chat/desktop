@@ -8,6 +8,8 @@ export interface PluginManagerEvents {
 	"plugin:added": (pluginId: string) => void;
 	"plugin:removed": (pluginId: string) => void;
 	"plugin:state-changed": (pluginId: string) => void;
+	"plugin:llm-registered": (pluginId: string, llm: limbo.LLM) => void;
+	"plugin:llm-unregistered": (pluginId: string, llmId: string) => void;
 }
 
 export interface ActivePlugin {
@@ -29,11 +31,19 @@ export class PluginManager {
 	}
 
 	public async addPlugin(pluginId: string, plugin: ActivePlugin) {
+		this.plugins.set(pluginId, plugin);
+
 		plugin.context.events.on("state:changed", () => {
 			this.events.emit("plugin:state-changed", pluginId);
 		});
 
-		this.plugins.set(pluginId, plugin);
+		plugin.context.events.on("llm:registered", (llm) => {
+			this.events.emit("plugin:llm-registered", pluginId, llm);
+		});
+
+		plugin.context.events.on("llm:unregistered", (llm) => {
+			this.events.emit("plugin:llm-unregistered", pluginId, llm);
+		});
 
 		this.events.emit("plugin:added", pluginId);
 	}

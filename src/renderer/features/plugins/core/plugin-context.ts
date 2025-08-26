@@ -3,6 +3,8 @@ import EventEmitter from "eventemitter3";
 
 export interface PluginContextEvents {
 	"state:changed": () => void;
+	"llm:registered": (llm: limbo.LLM) => void;
+	"llm:unregistered": (llmId: string) => void;
 }
 
 export class PluginContext {
@@ -94,11 +96,15 @@ export class PluginContext {
 	public registerLLM(llm: limbo.LLM) {
 		this.llms.set(llm.id, llm);
 
+		this.events.emit("llm:registered", llm);
+
 		this.notifyStateChanged();
 	}
 
 	public unregisterLLM(llmId: string) {
 		this.llms.delete(llmId);
+
+		this.events.emit("llm:unregistered", llmId);
 
 		this.notifyStateChanged();
 	}
