@@ -19,7 +19,7 @@
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^5.0.1",
-		"@limbo/api": "file:../../../node/oss/limbo/limbo-api",
+		"@limbo/api": "file:../limbo-api",
 		"@octokit/rest": "^21.1.1",
 		"@radix-ui/react-checkbox": "^1.3.2",
 		"@radix-ui/react-collapsible": "^1.1.11",

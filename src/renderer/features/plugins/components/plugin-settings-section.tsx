@@ -23,6 +23,16 @@ interface TextSettingRendererProps {
 }
 
 const TextSettingRenderer = ({ setting, value, onChange }: TextSettingRendererProps) => {
+	if (setting.variant === "multiline") {
+		return (
+			<textarea
+				placeholder={setting.placeholder}
+				value={value ?? ""}
+				onChange={(e) => onChange(e.target.value)}
+			/>
+		);
+	}
+
 	if (setting.variant === "password") {
 		return (
 			<PasswordInput

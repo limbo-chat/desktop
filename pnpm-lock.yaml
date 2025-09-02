@@ -12,8 +12,8 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1(react-hook-form@7.56.4(react@19.1.0))
       '@limbo/api':
-        specifier: file:../../../node/oss/limbo/limbo-api
-        version: file:../../../node/oss/limbo/limbo-api
+        specifier: file:../limbo-api
+        version: file:../limbo-api
       '@octokit/rest':
         specifier: ^21.1.1
         version: 21.1.1
@@ -612,8 +612,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@limbo/api@file:../../../node/oss/limbo/limbo-api':
-    resolution: {directory: ../../../node/oss/limbo/limbo-api, type: directory}
+  '@limbo/api@file:../limbo-api':
+    resolution: {directory: ../limbo-api, type: directory}
 
   '@malept/cross-spawn-promise@2.0.0':
     resolution: {integrity: sha512-1DpKU0Z5ThltBwjNySMC14g0CkbyhCaz9FkhxqNsZI6uAPJXFS8cMXlBKo26FJ8ZuW6S9GCMcR9IO5k2X5/9Fg==}
@@ -4294,7 +4294,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@limbo/api@file:../../../node/oss/limbo/limbo-api':
+  '@limbo/api@file:../limbo-api':
     optionalDependencies:
       '@sinclair/typebox': 0.34.38
       '@types/react': 19.1.6
