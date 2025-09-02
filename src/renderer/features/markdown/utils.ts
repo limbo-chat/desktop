@@ -1,4 +1,4 @@
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import { useMarkdownElementStore } from "./stores";
 
 export function addMarkdownElement(elementId: string, element: limbo.ui.MarkdownElement) {

@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import { Button } from "../../../components/button";

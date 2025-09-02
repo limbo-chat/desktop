@@ -1,5 +1,5 @@
 import { shell } from "electron";
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import { z } from "zod";
 import { PLUGINS_DIR } from "../../plugins/constants";
 import {

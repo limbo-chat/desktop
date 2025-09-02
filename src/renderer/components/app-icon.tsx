@@ -1,6 +1,6 @@
 // hopefully this still gets tree shaken
 import type { FC } from "react";
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import * as lucide from "lucide-react";
 
 const appIconMap: Record<limbo.AppIcon, FC> = {

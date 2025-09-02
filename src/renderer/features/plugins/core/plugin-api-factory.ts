@@ -1,4 +1,4 @@
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import type { PluginContext } from "./plugin-context";
 import type { PluginEnvironment } from "./plugin-environment";
 

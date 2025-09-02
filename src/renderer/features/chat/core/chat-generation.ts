@@ -1,4 +1,4 @@
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import Ajv from "ajv";
 import { ulid } from "ulid";
 import { getToolDefinitionsFromToolMap } from "../../tools/utils";

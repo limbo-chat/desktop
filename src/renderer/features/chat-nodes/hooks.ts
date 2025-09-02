@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import { useChatNodeStore } from "./stores";
 
 export const useChatNodes = () => {

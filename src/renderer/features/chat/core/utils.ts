@@ -1,4 +1,4 @@
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import { useChatStore } from "../stores";
 
 export function convertMarkdownNodesToTextInPrompt(prompt: limbo.ChatPrompt) {

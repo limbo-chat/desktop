@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import { useMainRouter } from "../../../lib/trpc";

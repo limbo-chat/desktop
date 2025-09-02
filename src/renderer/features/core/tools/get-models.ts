@@ -1,4 +1,4 @@
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import { Type } from "@sinclair/typebox";
 import { buildNamespacedResourceId } from "../../../lib/utils";
 import type { PluginManager } from "../../plugins/core/plugin-manager";

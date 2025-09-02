@@ -1,4 +1,4 @@
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 
 export const linkElement: limbo.ui.MarkdownElement = {
 	element: "a",

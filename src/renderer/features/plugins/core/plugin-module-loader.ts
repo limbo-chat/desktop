@@ -1,4 +1,4 @@
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import type { PluginManifest } from "../../../../main/plugins/schemas";
 
 export interface LoadModuleOptions {
@@ -14,7 +14,7 @@ export interface PluginModuleLoader {
 export class EvalPluginModuleLoader implements PluginModuleLoader {
 	async loadModule(opts: LoadModuleOptions) {
 		const sandboxedImports: Record<string, any> = {
-			"@limbo/api": opts.pluginAPI,
+			"@limbo-chat/api": opts.pluginAPI,
 			"react": await import("react"),
 			"react/jsx-runtime": await import("react/jsx-runtime"),
 			"@sinclair/typebox": await import("@sinclair/typebox"),

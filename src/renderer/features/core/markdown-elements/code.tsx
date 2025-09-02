@@ -1,4 +1,4 @@
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import { CodeBlock } from "../../../components/code-block";
 
 export const codeElement: limbo.ui.MarkdownElement = {

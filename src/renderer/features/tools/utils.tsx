@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import { useModalContext } from "../modals/hooks";
 import { showModal } from "../modals/utils";
 import { ToolPicker } from "./components/tool-picker";

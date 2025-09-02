@@ -1,5 +1,5 @@
 import { Suspense, useMemo } from "react";
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import * as RadixCollapsible from "@radix-ui/react-collapsible";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";

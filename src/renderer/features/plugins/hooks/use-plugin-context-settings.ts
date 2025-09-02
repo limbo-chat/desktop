@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import type { PluginContext } from "../core/plugin-context";
 
 export const usePluginContextSettings = (pluginContext: PluginContext) => {

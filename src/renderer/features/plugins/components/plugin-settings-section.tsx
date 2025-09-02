@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import { Checkbox } from "../../../components/checkbox";
 import { NumberInput } from "../../../components/number-input";
 import { PasswordInput } from "../../../components/password-input";

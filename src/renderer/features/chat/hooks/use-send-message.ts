@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { ulid } from "ulid";
 import { type Assistant } from "../../../../main/assistants/schemas";

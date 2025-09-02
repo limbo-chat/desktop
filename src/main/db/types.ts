@@ -1,4 +1,4 @@
-import type { ChatMessageNode } from "@limbo/api";
+import type { ChatMessageNode } from "@limbo-chat/api";
 import type { Generated, Insertable, JSONColumnType, Kysely, Selectable } from "kysely";
 
 export interface KVTable {

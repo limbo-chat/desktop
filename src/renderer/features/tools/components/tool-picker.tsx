@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import Fuse from "fuse.js";
 import { buildNamespacedResourceId, parseNamespacedResourceId } from "../../../lib/utils";
 import { usePlugins } from "../../plugins/hooks/core";
