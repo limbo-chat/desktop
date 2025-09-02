@@ -32,6 +32,34 @@ export class PluginContext {
 	private chatPanels = new Map<string, limbo.ui.ChatPanel>();
 
 	public destroy() {
+		for (const setting of this.settings.values()) {
+			this.unregisterSetting(setting.id);
+		}
+
+		for (const command of this.commands.values()) {
+			this.unregisterCommand(command.id);
+		}
+
+		for (const llm of this.llms.values()) {
+			this.unregisterLLM(llm.id);
+		}
+
+		for (const tool of this.tools.values()) {
+			this.unregisterTool(tool.id);
+		}
+
+		for (const markdownElement of this.markdownElements.values()) {
+			this.unregisterMarkdownElement(markdownElement.element);
+		}
+
+		for (const chatNode of this.chatNodes.values()) {
+			this.unregisterChatNode(chatNode.id);
+		}
+
+		for (const chatPanel of this.chatPanels.values()) {
+			this.unregisterChatPanel(chatPanel.id);
+		}
+
 		this.events.removeAllListeners();
 	}
 

@@ -88,6 +88,9 @@ export class PluginSystem {
 
 				this.hostBridge.onActivatePluginError(plugin.manifest.id, errMessage);
 
+				// destroy the event listeners and unregister the entities
+				await this.unloadPlugin(plugin.manifest.id);
+
 				throw err;
 			}
 		}
@@ -104,7 +107,7 @@ export class PluginSystem {
 			await plugin.module.onDeactivate();
 		}
 
-		// destroy the event listeners
+		// destroy the event listeners and unregister the entities
 		plugin.context.destroy();
 
 		this.pluginManager.removePlugin(pluginId);
