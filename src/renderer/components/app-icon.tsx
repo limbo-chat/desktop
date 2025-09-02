@@ -65,6 +65,8 @@ const appIconMap: Record<limbo.AppIcon, FC> = {
 	"video": lucide.Video,
 	"home": lucide.Home,
 	"settings": lucide.Settings,
+	"chat": lucide.MessageCircle,
+	"sliders": lucide.SlidersHorizontal,
 	"terminal": lucide.Terminal,
 	"code": lucide.Code,
 	"bug": lucide.Bug,
