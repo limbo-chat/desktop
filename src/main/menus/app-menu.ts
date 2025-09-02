@@ -31,6 +31,7 @@ export function createAppMenu(windowManager: WindowManager) {
 				{ role: "cut" },
 				{ role: "copy" },
 				{ role: "paste" },
+				{ role: "selectAll" },
 			],
 		},
 		{
