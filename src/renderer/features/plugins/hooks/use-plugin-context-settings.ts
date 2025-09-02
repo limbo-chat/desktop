@@ -12,10 +12,12 @@ export const usePluginContextSettings = (pluginContext: PluginContext) => {
 			setPluginSettings(pluginContext.getSettings());
 		};
 
-		pluginContext.events.on("state:changed", handleChange);
+		pluginContext.events.on("setting:registered", handleChange);
+		pluginContext.events.on("setting:unregistered", handleChange);
 
 		return () => {
-			pluginContext.events.off("state:changed", handleChange);
+			pluginContext.events.off("setting:registered", handleChange);
+			pluginContext.events.off("setting:unregistered", handleChange);
 		};
 	}, [pluginContext]);
 
