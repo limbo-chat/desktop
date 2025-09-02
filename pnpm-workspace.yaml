@@ -1,12 +1,12 @@
 useNodeVersion: 22.16.0
 engineStrict: true
-
 nodeLinker: hoisted
 
 # pnpm requires you to manually specify which packages should be allowed to be built
 onlyBuiltDependencies:
     - electron
     - esbuild
+    - msw
 
 # will be built by electron builder
 ignoredBuiltDependencies:
