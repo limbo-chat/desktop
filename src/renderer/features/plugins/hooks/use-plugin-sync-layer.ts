@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import { buildNamespacedResourceId } from "../../../lib/utils";
 import { addChatNode, removeChatNode } from "../../chat-nodes/utils";
 import { addChatPanel, removeChatPanel } from "../../chat-panels/utils";

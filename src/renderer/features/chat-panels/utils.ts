@@ -1,4 +1,4 @@
-import type * as limbo from "@limbo/api";
+import type * as limbo from "@limbo-chat/api";
 import { useChatPanelStore } from "./stores";
 
 export function addChatPanel(id: string, chatPanel: limbo.ui.ChatPanel) {
