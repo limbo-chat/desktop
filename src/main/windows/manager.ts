@@ -30,6 +30,7 @@ export class WindowManager {
 			titleBarOverlay: process.platform !== "darwin",
 			webPreferences: {
 				preload: PRELOAD_FILE_PATH,
+				webSecurity: false,
 			},
 			...opts,
 		});
