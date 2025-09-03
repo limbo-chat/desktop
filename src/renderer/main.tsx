@@ -446,7 +446,7 @@ const AppContent = () => {
 
 	return (
 		<PreferencesProvider preferences={getPreferencesQuery.data}>
-			<div className="app" data-platform={windowInfo.platform} data-is-focused={isAppFocused}>
+			<div className="app" data-platform={window.env.PLATFORM} data-is-focused={isAppFocused}>
 				<ModalHost />
 				<Toaster />
 				<QueryErrorResetBoundary>

@@ -1,9 +1,11 @@
 import { ipcRenderer, contextBridge } from "electron";
 import { exposeElectronTRPC } from "trpc-electron/main";
+import { getPlatformName } from "../main/utils";
 
 exposeElectronTRPC();
 
 contextBridge.exposeInMainWorld("env", {
+	PLATFORM: getPlatformName(),
 	LIMBO_API_VERSION: import.meta.env.VITE_LIMBO_API_VERSION,
 	DISCORD_INVITE_URL: import.meta.env.VITE_DISCORD_INVITE_URL,
 });

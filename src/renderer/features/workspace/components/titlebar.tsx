@@ -25,7 +25,7 @@ const WindowControls = () => {
 
 export const Titlebar = () => {
 	const createChatMutation = useCreateChatMutation();
-	const shouldRenderControls = windowInfo.platform !== "macos";
+	const shouldRenderControls = window.env.PLATFORM !== "macos";
 
 	const workspaceStore = useWorkspaceStore(
 		useShallow((state) => ({
