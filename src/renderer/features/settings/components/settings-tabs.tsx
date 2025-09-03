@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { useShallow } from "zustand/shallow";
 import { Button } from "../../../components/button";
 import { Checkbox } from "../../../components/checkbox";
@@ -12,9 +13,8 @@ import {
 	SettingsSectionHeader,
 	SettingsSectionTitle,
 } from "../../../components/settings";
-import { Switch } from "../../../components/switch";
 import * as VerticalTabs from "../../../components/vertical-tabs-primitive";
-import { useMainRouterClient } from "../../../lib/trpc";
+import { useMainRouter, useMainRouterClient } from "../../../lib/trpc";
 import { AssistantViewStack } from "../../assistants/components/assistant-view-stack";
 import { useDeleteAllChatsMutation } from "../../chat/hooks/queries";
 import { showNotification } from "../../notifications/utils";
@@ -23,7 +23,10 @@ import { useSyncedPreference } from "../../preferences/hooks";
 import { useSettingsTabsStore } from "../stores";
 
 const GeneralTabContent = () => {
+	const mainRouter = useMainRouter();
 	const mainRouterClient = useMainRouterClient();
+	const getAppVersionQuery = useQuery(mainRouter.common.getAppVersion.queryOptions());
+	const appVersion = getAppVersionQuery.data;
 
 	const openDiscordInviteUrl = () => {
 		mainRouterClient.common.openUrl.mutate({
@@ -38,10 +41,18 @@ const GeneralTabContent = () => {
 					<SettingsSectionTitle>App</SettingsSectionTitle>
 				</SettingsSectionHeader>
 				<SettingsSectionContent>
-					<SettingItem id="update">
+					<SettingItem id="app-version">
 						<SettingItemInfo>
 							<SettingItemTitle>
-								Current version: <span className="version">0.0.0</span>
+								Current version: <span className="version">{appVersion}</span>
+							</SettingItemTitle>
+						</SettingItemInfo>
+					</SettingItem>
+					<SettingItem id="api-version">
+						<SettingItemInfo>
+							<SettingItemTitle>
+								Current API version:{" "}
+								<span className="version">{window.env.LIMBO_API_VERSION}</span>
 							</SettingItemTitle>
 						</SettingItemInfo>
 					</SettingItem>
