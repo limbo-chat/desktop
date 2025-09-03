@@ -44,20 +44,6 @@ const GeneralTabContent = () => {
 								Current version: <span className="version">0.0.0</span>
 							</SettingItemTitle>
 						</SettingItemInfo>
-						<SettingItemControl>
-							<Button>Check for updates</Button>
-						</SettingItemControl>
-					</SettingItem>
-					<SettingItem id="automatic-updates">
-						<SettingItemInfo>
-							<SettingItemTitle>Automatic updates</SettingItemTitle>
-							<SettingItemDescription>
-								Turn this off to prevent the app from checking for updates
-							</SettingItemDescription>
-						</SettingItemInfo>
-						<SettingItemControl>
-							<Switch />
-						</SettingItemControl>
 					</SettingItem>
 				</SettingsSectionContent>
 			</SettingsSection>

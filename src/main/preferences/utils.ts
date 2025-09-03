@@ -43,8 +43,6 @@ export async function getAllPreferences(db: AppDatabaseClient): Promise<Record<s
 export async function setPreference(db: AppDatabaseClient, key: string, value: unknown) {
 	const jsonString = JSON.stringify(value);
 
-	console.log("setting preference", value);
-
 	await db
 		.insertInto("preference")
 		.values({ key, value: jsonString })
