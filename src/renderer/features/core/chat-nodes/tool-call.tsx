@@ -96,7 +96,9 @@ const ToolCallRendererErrorFallback = ({
 			<ErrorStateTitle>
 				Failed to render tool call <code>{toolCall.id}</code>
 			</ErrorStateTitle>
-			{error.message && <ErrorStateDescription>{error.message}</ErrorStateDescription>}
+			<ErrorStateDescription>
+				{error.message ?? "An unknown error occurred"}
+			</ErrorStateDescription>
 			<ErrorStateActions>
 				<Button onClick={() => resetErrorBoundary()}>Try again</Button>
 			</ErrorStateActions>

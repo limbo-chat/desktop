@@ -86,8 +86,6 @@ export const ViewAssistantView = ({ view }: ViewComponentProps<ViewAssistantView
 
 	const copyAssistantToClipboard = async () => {
 		try {
-			const assistant = getAssistantQuery.data;
-
 			await navigator.clipboard.writeText(JSON.stringify(assistant));
 
 			showNotification({

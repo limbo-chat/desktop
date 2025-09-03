@@ -10,10 +10,6 @@ export const useWorkspaceLoader = () => {
 	const workspaceData = getWorkspaceQuery.data;
 
 	useEffect(() => {
-		if (!workspaceData) {
-			return;
-		}
-
 		const workspaceStore = useWorkspaceStore.getState();
 
 		workspaceStore.setWorkspace(workspaceData);

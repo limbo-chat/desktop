@@ -12,8 +12,6 @@ import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import { Toaster } from "sonner";
 import { ipcLink } from "trpc-electron/renderer";
 import type { MainRouter } from "../main/trpc/router";
-import type { PlatformName } from "../main/utils";
-import type { WindowType } from "../main/windows/types";
 import { Button } from "./components/button";
 import {
 	ErrorState,
@@ -404,7 +402,9 @@ const ErrorFallback = ({ error, resetErrorBoundary }: FallbackProps) => {
 	return (
 		<ErrorState>
 			<ErrorStateTitle>Something went wrong</ErrorStateTitle>
-			{error.message && <ErrorStateDescription>{error.message}</ErrorStateDescription>}
+			<ErrorStateDescription>
+				{error.message ?? "An unknown error occurred"}
+			</ErrorStateDescription>
 			<ErrorStateActions>
 				<Button onClick={() => resetErrorBoundary()}>Try again</Button>
 			</ErrorStateActions>
