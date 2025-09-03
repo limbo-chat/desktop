@@ -59,6 +59,7 @@ export const AssistantsView = () => {
 				<View.HeaderActions>
 					<Tooltip label="Import assistant">
 						<IconButton
+							aria-label="Import assistant"
 							onClick={() => {
 								viewStack.push({
 									id: "import-assistant",
@@ -71,6 +72,7 @@ export const AssistantsView = () => {
 					</Tooltip>
 					<Tooltip label="Create assistant">
 						<IconButton
+							aria-label="Create assistant"
 							onClick={() => viewStack.push({ id: "create-assistant", data: null })}
 						>
 							<AppIcon icon="add" />

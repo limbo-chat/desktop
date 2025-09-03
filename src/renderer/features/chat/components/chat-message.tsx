@@ -77,7 +77,7 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
 				</ChatMessageInfo>
 				<ChatMessageActions>
 					<Tooltip label="Copy message">
-						<CopyIconButton content={gatheredText} />
+						<CopyIconButton aria-label="Copy message" content={gatheredText} />
 					</Tooltip>
 				</ChatMessageActions>
 			</ChatMessageFooter>

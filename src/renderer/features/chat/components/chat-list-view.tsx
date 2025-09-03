@@ -46,7 +46,7 @@ const ChatItem = ({ chat, isActive }: ChatItemProps) => {
 			<div className="chat-item-name">{chat.name}</div>
 			<MenuRoot>
 				<MenuTrigger asChild>
-					<IconButton>
+					<IconButton aria-label="Chat options">
 						<AppIcon icon="menu" />
 					</IconButton>
 				</MenuTrigger>

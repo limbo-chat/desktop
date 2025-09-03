@@ -609,6 +609,7 @@ const TreeItem = ({ item, depth }: TreeItemProps) => {
 				{item.type === "group" && (
 					<IconButton
 						className="quick-picker-tree-item-collapse-button"
+						aria-label={isExpanded ? "Collapse group" : "Expand group"}
 						onClick={onExpandClick}
 					>
 						{isExpanded ? <AppIcon icon="collapse" /> : <AppIcon icon="expand" />}

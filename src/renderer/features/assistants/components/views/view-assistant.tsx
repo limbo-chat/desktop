@@ -108,6 +108,7 @@ export const ViewAssistantView = ({ view }: ViewComponentProps<ViewAssistantView
 				<View.HeaderActions>
 					<Tooltip label="Delete assistant">
 						<IconButton
+							aria-label="Delete assistant"
 							onClick={() => {
 								showModal({
 									id: "delete-assistant",
@@ -126,12 +127,16 @@ export const ViewAssistantView = ({ view }: ViewComponentProps<ViewAssistantView
 						</IconButton>
 					</Tooltip>
 					<Tooltip label="Export assistant">
-						<IconButton onClick={copyAssistantToClipboard}>
+						<IconButton
+							aria-label="Export assistant"
+							onClick={copyAssistantToClipboard}
+						>
 							<AppIcon icon="upload" />
 						</IconButton>
 					</Tooltip>
 					<Tooltip label="Edit assistant">
 						<IconButton
+							aria-label="Edit assistant"
 							onClick={() => {
 								viewStack.push({
 									id: "edit-assistant",

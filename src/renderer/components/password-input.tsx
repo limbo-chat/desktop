@@ -13,7 +13,10 @@ export const PasswordInput = ({ className, ...props }: PasswordInputProps) => {
 			className={clsx("password-input", className)}
 			data-state={isVisible ? "visible" : "hidden"}
 		>
-			<IconButton onClick={() => setIsVisible((prev) => !prev)}>
+			<IconButton
+				aria-label={isVisible ? "Hide password" : "Show password"}
+				onClick={() => setIsVisible((prev) => !prev)}
+			>
 				{isVisible ? <AppIcon icon="visibility-off" /> : <AppIcon icon="visibility" />}
 			</IconButton>
 			<input type={isVisible ? "text" : "password"} {...props} />

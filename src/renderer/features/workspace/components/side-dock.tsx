@@ -9,14 +9,22 @@ export const SideDock = () => {
 		<div className="side-dock">
 			<div className="side-dock-section">
 				<Tooltip label="Open command palette" contentProps={{ side: "right" }}>
-					<IconButton action="open-command-palette" onClick={showCommandPalette}>
+					<IconButton
+						action="open-command-palette"
+						aria-label="Open command palette"
+						onClick={showCommandPalette}
+					>
 						<AppIcon icon="terminal" />
 					</IconButton>
 				</Tooltip>
 			</div>
 			<div className="side-dock-section">
 				<Tooltip label="Settings" contentProps={{ side: "right" }}>
-					<IconButton action="open-settings" onClick={showSettingsModal}>
+					<IconButton
+						action="open-settings"
+						aria-label="Open settings"
+						onClick={showSettingsModal}
+					>
 						<AppIcon icon="settings" />
 					</IconButton>
 				</Tooltip>

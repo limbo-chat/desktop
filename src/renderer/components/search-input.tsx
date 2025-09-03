@@ -24,7 +24,11 @@ export const SearchInput = ({ value, onChange, className, ref, ...props }: Searc
 				{...props}
 			/>
 			{value.length > 0 && (
-				<IconButton className="search-input-clear-button" onClick={() => onChange("")}>
+				<IconButton
+					className="search-input-clear-button"
+					aria-label="Clear search"
+					onClick={() => onChange("")}
+				>
 					<AppIcon icon="close" />
 				</IconButton>
 			)}

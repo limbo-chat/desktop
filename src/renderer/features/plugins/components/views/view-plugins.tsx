@@ -83,7 +83,11 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 				<CardActions>
 					{plugin.enabled && (
 						<Tooltip label="Settings">
-							<IconButton data-action="open-settings" onClick={openSettings}>
+							<IconButton
+								data-action="open-settings"
+								aria-label="Open settings"
+								onClick={openSettings}
+							>
 								<AppIcon icon="settings" />
 							</IconButton>
 						</Tooltip>
@@ -91,6 +95,7 @@ const PluginCard = ({ plugin }: PluginCardProps) => {
 					<Tooltip label="Uninstall">
 						<IconButton
 							action="uninstall"
+							aria-label="Uninstall plugin"
 							onClick={() =>
 								showModal({
 									id: "uninstall-plugin",
@@ -161,12 +166,13 @@ export const PluginsView = () => {
 				</View.HeaderStart>
 				<View.HeaderActions>
 					<Tooltip label="Open plugins folder">
-						<IconButton onClick={openPluginsFolder}>
+						<IconButton aria-label="Open plugins folder" onClick={openPluginsFolder}>
 							<AppIcon icon="folder" />
 						</IconButton>
 					</Tooltip>
 					<Tooltip label="Install plugin">
 						<IconButton
+							aria-label="Install plugin"
 							onClick={() =>
 								showModal({ id: "install-plugin", component: InstallPluginDialog })
 							}

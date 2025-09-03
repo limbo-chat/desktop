@@ -41,6 +41,9 @@ export const CodeBlock = ({ lang, content }: CodeBlockProps) => {
 					>
 						<IconButton
 							action="toggle-text-wrap"
+							aria-label={
+								isTextWrapEnabled ? "Disable text wrapping" : "Enable text wrapping"
+							}
 							onClick={() => setIsTextWrapEnabled((prev) => !prev)}
 						>
 							{isTextWrapEnabled ? (
@@ -50,7 +53,7 @@ export const CodeBlock = ({ lang, content }: CodeBlockProps) => {
 							)}
 						</IconButton>
 					</Tooltip>
-					<CopyIconButton content={content} />
+					<CopyIconButton aria-label="Copy code" content={content} />
 				</div>
 			</div>
 			<div className="code-block-body">

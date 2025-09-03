@@ -10,13 +10,25 @@ const WindowControls = () => {
 
 	return (
 		<div className="window-controls">
-			<IconButton action="minimize" onClick={() => mainRouter.window.minimize.mutate()}>
+			<IconButton
+				action="minimize"
+				aria-label="Minimize window"
+				onClick={() => mainRouter.window.minimize.mutate()}
+			>
 				<AppIcon icon="minimize" />
 			</IconButton>
-			<IconButton action="maximize" onClick={() => mainRouter.window.maximize.mutate()}>
+			<IconButton
+				action="maximize"
+				aria-label="Maximize window"
+				onClick={() => mainRouter.window.maximize.mutate()}
+			>
 				<AppIcon icon="maximize" />
 			</IconButton>
-			<IconButton action="close" onClick={() => mainRouter.window.close.mutate()}>
+			<IconButton
+				action="close"
+				aria-label="Close window"
+				onClick={() => mainRouter.window.close.mutate()}
+			>
 				<AppIcon icon="close" />
 			</IconButton>
 		</div>
@@ -58,6 +70,11 @@ export const Titlebar = () => {
 				<div className="titlebar-action-section">
 					<IconButton
 						action="toggle-primary-sidebar"
+						aria-label={
+							workspaceStore.isPrimarySidebarOpen
+								? "Close primary sidebar"
+								: "Open primary sidebar"
+						}
 						onClick={togglePrimarySidebarIsOpen}
 					>
 						{workspaceStore.isPrimarySidebarOpen ? (
@@ -66,7 +83,11 @@ export const Titlebar = () => {
 							<AppIcon icon="panel-left" />
 						)}
 					</IconButton>
-					<IconButton action="create-new-chat" onClick={createNewChat}>
+					<IconButton
+						action="create-new-chat"
+						aria-label="Create new chat"
+						onClick={createNewChat}
+					>
 						<AppIcon icon="compose" />
 					</IconButton>
 				</div>
@@ -78,6 +99,11 @@ export const Titlebar = () => {
 				<div className="titlebar-action-section">
 					<IconButton
 						action="toggle-secondary-sidebar"
+						aria-label={
+							workspaceStore.isSecondarySidebarOpen
+								? "Close secondary sidebar"
+								: "Open secondary sidebar"
+						}
 						onClick={toggleSecondarySidebarIsOpen}
 					>
 						{workspaceStore.isSecondarySidebarOpen ? (

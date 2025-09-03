@@ -75,6 +75,7 @@ export const ChatComposer = ({
 				/>
 				<IconButton
 					disabled={!canSend && !isPending}
+					aria-label={isPending ? "Cancel" : "Send message"}
 					onClick={(e) => {
 						e.preventDefault();
 						handleSubmitClick();
@@ -95,6 +96,7 @@ export const ChatComposer = ({
 					{selectedChatLLM ? selectedChatLLM.name : "Select llm"}
 				</Button>
 				<IconButton
+					aria-label="Select tools"
 					onClick={() => {
 						showToolPickerModal({
 							initialSelectedToolIds: enabledToolIds,

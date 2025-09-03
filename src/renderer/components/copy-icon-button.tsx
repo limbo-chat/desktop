@@ -29,6 +29,7 @@ export const CopyIconButton = ({ content, ...props }: CopyButtonProps) => {
 			action="copy"
 			className="copy-button"
 			data-is-copied={copied ?? undefined}
+			aria-label="Copy text" // not super descriptive, users of CopyIconButton can override it
 			{...props}
 			onClick={handleClick}
 		>

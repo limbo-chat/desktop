@@ -1,5 +1,5 @@
-import clsx from "clsx";
 import type { HTMLAttributes } from "react";
+import clsx from "clsx";
 import { AppIcon } from "../../../components/app-icon";
 import { IconButton, type IconButtonProps } from "../../../components/icon-button";
 import { useViewStackContext } from "../hooks";
@@ -35,6 +35,7 @@ export const BackButton = ({ className, ...props }: IconButtonProps) => {
 
 	return (
 		<IconButton
+			aria-label="Go back"
 			className={clsx("view-back-button", className)}
 			onClick={viewStack.pop}
 			{...props}

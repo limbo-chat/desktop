@@ -28,7 +28,11 @@ export const Notification = ({ level, title, message, source, onClose }: Notific
 					<Icon />
 				</div>
 				<div className="notification-title">{title}</div>
-				<IconButton className="notification-close-button" onClick={() => onClose()}>
+				<IconButton
+					className="notification-close-button"
+					aria-label="Close notification"
+					onClick={() => onClose()}
+				>
 					<AppIcon icon="close" />
 				</IconButton>
 			</div>
