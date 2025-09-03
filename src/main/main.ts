@@ -12,7 +12,6 @@ import { getPreference } from "./preferences/utils";
 import { mainRouter } from "./trpc/router";
 import { getWindowState, manageWindowState } from "./window-state/utils";
 import { WindowManager } from "./windows/manager";
-import type { WindowType } from "./windows/types";
 
 const windowManager = new WindowManager();
 
@@ -82,14 +81,14 @@ async function startApp() {
 	}
 
 	// the windows have a loading process that will send a "ready" event when it is ready to show
-	ipcMain.on("window:ready", (_, windowId: WindowType) => {
-		const readyWindow = windowManager.getWindow(windowId);
+	ipcMain.on("window:ready", () => {
+		const mainWindow = windowManager.getWindow("main");
 
-		if (!readyWindow) {
+		if (!mainWindow) {
 			return;
 		}
 
-		readyWindow.show();
+		mainWindow.show();
 	});
 
 	// launch a window

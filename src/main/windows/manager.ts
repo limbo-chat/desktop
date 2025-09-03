@@ -1,7 +1,6 @@
 import { BrowserWindow, type BrowserWindowConstructorOptions } from "electron";
 import EventEmitter from "eventemitter3";
 import { DEV_SERVER_URL, ICON_PATH, PRELOAD_FILE_PATH, HTML_PATH } from "../constants";
-import { getPlatformName } from "../utils";
 import type { WindowType } from "./types";
 import { applyDefaultWindowOptions } from "./utils";
 
@@ -41,15 +40,10 @@ export class WindowManager {
 
 		applyDefaultWindowOptions(mainWindow);
 
-		const queryParams = new URLSearchParams({
-			type: "main",
-			platform: getPlatformName(),
-		});
-
 		if (DEV_SERVER_URL) {
-			mainWindow.loadURL(`${DEV_SERVER_URL}?${queryParams.toString()}`);
+			mainWindow.loadURL(DEV_SERVER_URL);
 		} else {
-			mainWindow.loadURL(`file://${HTML_PATH}?${queryParams.toString()}`);
+			mainWindow.loadURL(`file://${HTML_PATH}`);
 		}
 
 		this.windows.set("main", mainWindow);

@@ -50,8 +50,6 @@ import { usePluginHotReloader, usePluginLoader } from "./features/plugins/hooks/
 import { usePluginSyncLayer } from "./features/plugins/hooks/use-plugin-sync-layer";
 import { PreferencesProvider } from "./features/preferences/components";
 import { useSettingsSubscriber } from "./features/settings/hooks";
-import { WindowInfoProvider } from "./features/window-info/components";
-import { useWindowInfoContext } from "./features/window-info/hooks";
 import { Workspace } from "./features/workspace/components/workspace";
 import { useWorkspaceLoader } from "./features/workspace/hooks/use-workspace-loader";
 import { useWorkspacePersister } from "./features/workspace/hooks/use-workspace-persister";
@@ -59,13 +57,7 @@ import { useWorkspaceStore } from "./features/workspace/stores";
 import { useIsAppFocused } from "./hooks/common";
 import { MainRouterProvider, useMainRouter } from "./lib/trpc";
 
-// parse the window params defined from the main process
-const windowParams = new URLSearchParams(window.location.search);
-const type = windowParams.get("type") as WindowType;
-const platform = windowParams.get("platform") as PlatformName;
-
 const useRendererLoader = () => {
-	const windowInfo = useWindowInfoContext();
 	const areCutomStylesLoaded = useRef(false);
 
 	const checkLoaded = () => {
@@ -74,7 +66,7 @@ const useRendererLoader = () => {
 		}
 
 		// notify the main process that the renderer is ready
-		window.ipcRenderer.send("window:ready", windowInfo.type);
+		window.ipcRenderer.send("window:ready");
 	};
 
 	useCustomStylesLoader({
@@ -394,19 +386,17 @@ const AppProviders = ({ children }: PropsWithChildren) => {
 	}, []);
 
 	return (
-		<WindowInfoProvider windowInfo={{ type, platform }}>
-			<QueryClientProvider client={queryClient}>
-				<MainRouterProvider trpcClient={mainRouterClient} queryClient={queryClient}>
-					<PluginBackendProvider pluginBackend={pluginBackend}>
-						<PluginSystemProvider pluginSystem={pluginSystem}>
-							<PluginManagerProvider pluginManager={pluginManager}>
-								{children}
-							</PluginManagerProvider>
-						</PluginSystemProvider>
-					</PluginBackendProvider>
-				</MainRouterProvider>
-			</QueryClientProvider>
-		</WindowInfoProvider>
+		<QueryClientProvider client={queryClient}>
+			<MainRouterProvider trpcClient={mainRouterClient} queryClient={queryClient}>
+				<PluginBackendProvider pluginBackend={pluginBackend}>
+					<PluginSystemProvider pluginSystem={pluginSystem}>
+						<PluginManagerProvider pluginManager={pluginManager}>
+							{children}
+						</PluginManagerProvider>
+					</PluginSystemProvider>
+				</PluginBackendProvider>
+			</MainRouterProvider>
+		</QueryClientProvider>
 	);
 };
 
@@ -437,7 +427,6 @@ const WorkspaceContainer = () => {
 
 const AppContent = () => {
 	const isAppFocused = useIsAppFocused();
-	const windowInfo = useWindowInfoContext();
 	const mainRouter = useMainRouter();
 	const getPreferencesQuery = useSuspenseQuery(mainRouter.preferences.getAll.queryOptions());
 

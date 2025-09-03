@@ -3,7 +3,6 @@ import { AppIcon } from "../../../components/app-icon";
 import { IconButton } from "../../../components/icon-button";
 import { useMainRouterClient } from "../../../lib/trpc";
 import { useCreateChatMutation } from "../../chat/hooks/queries";
-import { useWindowInfoContext } from "../../window-info/hooks";
 import { useWorkspaceStore } from "../stores";
 
 const WindowControls = () => {
@@ -26,7 +25,6 @@ const WindowControls = () => {
 
 export const Titlebar = () => {
 	const createChatMutation = useCreateChatMutation();
-	const windowInfo = useWindowInfoContext();
 	const shouldRenderControls = windowInfo.platform !== "macos";
 
 	const workspaceStore = useWorkspaceStore(
