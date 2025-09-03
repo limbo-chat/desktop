@@ -3,6 +3,10 @@ import { replaceModals } from "../modals/utils";
 import { CommandPaletteModal } from "./components/command-palette";
 import { useCommandStore } from "./stores";
 
+export function buildNamespacedCommandName(namespace: string, commandName: string) {
+	return `${namespace}: ${commandName}`;
+}
+
 export function addCommand(command: limbo.Command) {
 	const commandStore = useCommandStore.getState();
 

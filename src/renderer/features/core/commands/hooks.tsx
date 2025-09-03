@@ -6,7 +6,7 @@ import { useMainRouter } from "../../../lib/trpc";
 import { buildNamespacedResourceId } from "../../../lib/utils";
 import { RenameChatDialog } from "../../chat/components/rename-chat-dialog";
 import { useDeleteChatMutation } from "../../chat/hooks/queries";
-import { addCommand, removeCommand } from "../../commands/utils";
+import { addCommand, buildNamespacedCommandName, removeCommand } from "../../commands/utils";
 import { showDesignPlaygroundModal } from "../../design-playground/utils";
 import { showModal } from "../../modals/utils";
 import { useWorkspaceStore } from "../../workspace/stores";
@@ -18,7 +18,7 @@ export const useRegisterCoreCommands = () => {
 	useEffect(() => {
 		const openDesignPlaygroundCommand: limbo.Command = {
 			id: buildNamespacedResourceId("core", "open-design-playground"),
-			name: "Open design playground",
+			name: buildNamespacedCommandName("Core", "Open design playground"),
 			execute: () => {
 				showDesignPlaygroundModal();
 			},
@@ -26,7 +26,7 @@ export const useRegisterCoreCommands = () => {
 
 		const reloadCustomStylesCommand: limbo.Command = {
 			id: buildNamespacedResourceId("core", "custom-styles:reload"),
-			name: "Reload custom styles",
+			name: buildNamespacedCommandName("Core", "Reload custom styles"),
 			execute: () => {
 				queryClient.resetQueries(mainRouter.customStyles.getPaths.queryFilter());
 			},
@@ -67,7 +67,7 @@ export const useRegisterActiveChatCommands = () => {
 
 		const renameCurrentChatCommand: limbo.Command = {
 			id: buildNamespacedResourceId("core", "current-chat:rename"),
-			name: "Rename current chat",
+			name: buildNamespacedCommandName("Chat", "Rename current chat"),
 			execute: () => {
 				showModal({
 					id: "rename-chat",
@@ -85,7 +85,7 @@ export const useRegisterActiveChatCommands = () => {
 
 		const deleteCurrentChatCommand: limbo.Command = {
 			id: buildNamespacedResourceId("core", "current-chat:delete"),
-			name: "Delete current chat",
+			name: buildNamespacedCommandName("Chat", "Delete current chat"),
 			execute: async () => {
 				await deleteChatMutation.mutateAsync({ id: activeChat.id });
 			},

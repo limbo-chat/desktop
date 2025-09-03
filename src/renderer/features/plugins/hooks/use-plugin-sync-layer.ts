@@ -3,7 +3,7 @@ import type * as limbo from "@limbo-chat/api";
 import { buildNamespacedResourceId } from "../../../lib/utils";
 import { addChatNode, removeChatNode } from "../../chat-nodes/utils";
 import { addChatPanel, removeChatPanel } from "../../chat-panels/utils";
-import { addCommand, removeCommand } from "../../commands/utils";
+import { addCommand, buildNamespacedCommandName, removeCommand } from "../../commands/utils";
 import { addLLM, removeLLM } from "../../llms/utils";
 import { addMarkdownElement, removeMarkdownElement } from "../../markdown/utils";
 import { addTool, removeTool } from "../../tools/utils";
@@ -14,11 +14,24 @@ export const usePluginSyncLayer = () => {
 
 	useEffect(() => {
 		const handleCommandRegistered = (pluginId: string, command: limbo.Command) => {
+			const plugin = pluginManager.getPlugin(pluginId);
+
+			// shouldn't ever happen
+			if (!plugin) {
+				return;
+			}
+
 			const namespacedCommandId = buildNamespacedResourceId(pluginId, command.id);
+
+			const namespacedCommandName = buildNamespacedCommandName(
+				plugin.manifest.name,
+				command.name
+			);
 
 			addCommand({
 				...command,
 				id: namespacedCommandId,
+				name: namespacedCommandName,
 			});
 		};
 
