@@ -1,6 +1,6 @@
 import { BrowserWindow, type BrowserWindowConstructorOptions } from "electron";
 import EventEmitter from "eventemitter3";
-import { DEV_SERVER_URL, ICON_PATH, PRELOAD_FILE_PATH, HTML_PATH } from "../constants";
+import { DEV_SERVER_URL, PRELOAD_FILE_PATH, HTML_PATH } from "../constants";
 import type { WindowType } from "./types";
 import { applyDefaultWindowOptions } from "./utils";
 
@@ -19,7 +19,6 @@ export class WindowManager {
 	public createMainWindow(opts?: Partial<BrowserWindowConstructorOptions>) {
 		const mainWindow = new BrowserWindow({
 			title: "Limbo",
-			icon: ICON_PATH,
 			titleBarStyle: "hidden",
 			minHeight: 200,
 			minWidth: 300,
