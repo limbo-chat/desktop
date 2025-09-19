@@ -22,24 +22,6 @@ export async function getPreference<T = unknown>(
 	return result.value;
 }
 
-export async function getAllPreferences(db: AppDatabaseClient): Promise<Record<string, unknown>> {
-	const preferences = new Map<string, unknown>();
-
-	const results = await db.selectFrom("preference").selectAll().execute();
-
-	for (const row of results) {
-		let value = row.value;
-
-		if (typeof row.value === "string") {
-			value = JSON.parse(row.value);
-		}
-
-		preferences.set(row.key, value);
-	}
-
-	return Object.fromEntries(preferences);
-}
-
 export async function setPreference(db: AppDatabaseClient, key: string, value: unknown) {
 	const jsonString = JSON.stringify(value);
 

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { getDb } from "../../db/utils";
-import { getAllPreferences, getPreference, setPreference } from "../../preferences/utils";
+import { getPreference, setPreference } from "../../preferences/utils";
 import { publicProcedure, router } from "../trpc";
 
 const getPreferenceInputSchema = z.object({
