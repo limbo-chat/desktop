@@ -18,11 +18,6 @@ export const preferencesRouter = router({
 
 		return await getPreference(db, input.key);
 	}),
-	getAll: publicProcedure.query(async () => {
-		const db = await getDb();
-
-		return await getAllPreferences(db);
-	}),
 	set: publicProcedure.input(setPreferenceInputSchema).mutation(async ({ input }) => {
 		const db = await getDb();
 

@@ -1,22 +1,19 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { debounce } from "es-toolkit";
 import type { Preference } from "../../../main/db/types";
 import { useMainRouter } from "../../lib/trpc";
-import { preferencesContext } from "./context";
-
-export const usePreferences = () => {
-	const ctx = useContext(preferencesContext);
-
-	if (!ctx) {
-		throw new Error("usePreferences must be used within a PreferencesProvider");
-	}
-
-	return ctx;
-};
 
 export const usePreference = <T = unknown>(key: string): T | undefined => {
-	return usePreferences()[key] as T | undefined;
+	const mainRouter = useMainRouter();
+
+	const getPreferenceQuery = useQuery(
+		mainRouter.preferences.get.queryOptions({
+			key,
+		})
+	);
+
+	return getPreferenceQuery.data as T | undefined;
 };
 
 export const useSetPreferenceMutation = () => {
@@ -25,8 +22,12 @@ export const useSetPreferenceMutation = () => {
 
 	return useMutation(
 		mainRouter.preferences.set.mutationOptions({
-			onSuccess: () => {
-				queryClient.invalidateQueries(mainRouter.preferences.getAll.queryOptions());
+			onSuccess: (_, input) => {
+				queryClient.invalidateQueries(
+					mainRouter.preferences.get.queryFilter({
+						key: input.key,
+					})
+				);
 			},
 		})
 	);

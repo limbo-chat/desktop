@@ -46,7 +46,6 @@ import { EvalPluginModuleLoader } from "./features/plugins/core/plugin-module-lo
 import { PluginSystem } from "./features/plugins/core/plugin-system";
 import { usePluginHotReloader, usePluginLoader } from "./features/plugins/hooks/core";
 import { usePluginSyncLayer } from "./features/plugins/hooks/use-plugin-sync-layer";
-import { PreferencesProvider } from "./features/preferences/components";
 import { useSettingsSubscriber } from "./features/settings/hooks";
 import { Workspace } from "./features/workspace/components/workspace";
 import { useWorkspaceLoader } from "./features/workspace/hooks/use-workspace-loader";
@@ -427,8 +426,6 @@ const WorkspaceContainer = () => {
 
 const AppContent = () => {
 	const isAppFocused = useIsAppFocused();
-	const mainRouter = useMainRouter();
-	const getPreferencesQuery = useSuspenseQuery(mainRouter.preferences.getAll.queryOptions());
 
 	useRendererLoader();
 	useSettingsSubscriber();
@@ -445,24 +442,19 @@ const AppContent = () => {
 	useRegisterCoreTools();
 
 	return (
-		<PreferencesProvider preferences={getPreferencesQuery.data}>
-			<div className="app" data-platform={window.env.PLATFORM} data-is-focused={isAppFocused}>
-				<ModalHost />
-				<Toaster />
-				<QueryErrorResetBoundary>
-					{(queryBoundary) => (
-						<ErrorBoundary
-							FallbackComponent={ErrorFallback}
-							onReset={queryBoundary.reset}
-						>
-							<Suspense fallback={<LoadingState />}>
-								<WorkspaceContainer />
-							</Suspense>
-						</ErrorBoundary>
-					)}
-				</QueryErrorResetBoundary>
-			</div>
-		</PreferencesProvider>
+		<div className="app" data-platform={window.env.PLATFORM} data-is-focused={isAppFocused}>
+			<ModalHost />
+			<Toaster />
+			<QueryErrorResetBoundary>
+				{(queryBoundary) => (
+					<ErrorBoundary FallbackComponent={ErrorFallback} onReset={queryBoundary.reset}>
+						<Suspense fallback={<LoadingState />}>
+							<WorkspaceContainer />
+						</Suspense>
+					</ErrorBoundary>
+				)}
+			</QueryErrorResetBoundary>
+		</div>
 	);
 };
 
